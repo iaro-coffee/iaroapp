@@ -18,6 +18,5 @@ nix run git clone https://git.project-insanity.org/onny/iaroapp.git
 ```
 cd iaroapp
 nix develop
-python manage.py migrate
-python manage.py runserver
+nix run
 ```
