@@ -20,3 +20,5 @@ cd iaroapp
 nix develop
 nix run
 ```
+
+Open http://localhost:8000
