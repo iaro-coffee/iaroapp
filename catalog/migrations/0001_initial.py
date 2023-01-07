@@ -22,13 +22,12 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Book',
+            name='Task',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=200)),
                 ('summary', models.CharField(max_length=200)),
                 ('imprint', models.CharField(max_length=200)),
-                ('isbn', models.CharField(max_length=13)),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='catalog.Author')),
             ],
         ),
@@ -40,7 +39,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
-            model_name='book',
+            model_name='task',
             name='subject',
             field=models.ManyToManyField(to='catalog.Subject'),
         ),

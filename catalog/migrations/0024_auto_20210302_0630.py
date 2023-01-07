@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='bookinstance',
-            name='book',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.RESTRICT, to='catalog.book'),
+            model_name='taskinstance',
+            name='task',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.RESTRICT, to='catalog.task'),
         ),
     ]

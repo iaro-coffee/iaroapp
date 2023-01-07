@@ -2,23 +2,23 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Author, Genre, Book, BookInstance, Language
+from .models import Author, Genre, Task, TaskInstance, Category
 
 """Minimal registration of Models.
-admin.site.register(Book)
+admin.site.register(Task)
 admin.site.register(Author)
-admin.site.register(BookInstance)
+admin.site.register(TaskInstance)
 admin.site.register(Genre)
-admin.site.register(Language)
+admin.site.register(Category)
 """
 
 admin.site.register(Genre)
-admin.site.register(Language)
+admin.site.register(Category)
 
 
-class BooksInline(admin.TabularInline):
-    """Defines format of inline book insertion (used in AuthorAdmin)"""
-    model = Book
+class TasksInline(admin.TabularInline):
+    """Defines format of inline task insertion (used in AuthorAdmin)"""
+    model = Task
 
 
 @admin.register(Author)
@@ -28,46 +28,46 @@ class AuthorAdmin(admin.ModelAdmin):
      - fields to be displayed in list view (list_display)
      - orders fields in detail view (fields),
        grouping the date fields horizontally
-     - adds inline addition of books in author view (inlines)
+     - adds inline addition of tasks in author view (inlines)
     """
     list_display = ('last_name',
                     'first_name', 'date_of_birth', 'date_of_death')
     fields = ['first_name', 'last_name', ('date_of_birth', 'date_of_death')]
-    inlines = [BooksInline]
+    inlines = [TasksInline]
 
 
-class BooksInstanceInline(admin.TabularInline):
-    """Defines format of inline book instance insertion (used in BookAdmin)"""
-    model = BookInstance
+class TasksInstanceInline(admin.TabularInline):
+    """Defines format of inline task instance insertion (used in TaskAdmin)"""
+    model = TaskInstance
 
 
-class BookAdmin(admin.ModelAdmin):
-    """Administration object for Book models.
+class TaskAdmin(admin.ModelAdmin):
+    """Administration object for Task models.
     Defines:
      - fields to be displayed in list view (list_display)
-     - adds inline addition of book instances in book view (inlines)
+     - adds inline addition of task instances in task view (inlines)
     """
     list_display = ('title', 'author', 'display_genre')
-    inlines = [BooksInstanceInline]
+    inlines = [TasksInstanceInline]
 
 
-admin.site.register(Book, BookAdmin)
+admin.site.register(Task, TaskAdmin)
 
 
-@admin.register(BookInstance)
-class BookInstanceAdmin(admin.ModelAdmin):
-    """Administration object for BookInstance models.
+@admin.register(TaskInstance)
+class TaskInstanceAdmin(admin.ModelAdmin):
+    """Administration object for TaskInstance models.
     Defines:
      - fields to be displayed in list view (list_display)
      - filters that will be displayed in sidebar (list_filter)
      - grouping of fields into sections (fieldsets)
     """
-    list_display = ('book', 'status', 'borrower', 'due_back', 'id')
+    list_display = ('task', 'status', 'borrower', 'due_back', 'id')
     list_filter = ('status', 'due_back')
 
     fieldsets = (
         (None, {
-            'fields': ('book', 'imprint', 'id')
+            'fields': ('task', 'imprint', 'id')
         }),
         ('Availability', {
             'fields': ('status', 'due_back', 'borrower')

@@ -20,6 +20,7 @@
       {
         devShell = pkgs.mkShell {
           packages = with pkgs; [
+            python3
             python3Packages.django
             python3Packages.dj-database-url
             python3Packages.whitenoise

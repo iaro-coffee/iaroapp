@@ -13,8 +13,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='book',
+            model_name='task',
             name='summary',
-            field=models.TextField(help_text='Enter a brief description of the book', max_length=1000),
+            field=models.TextField(help_text='Enter a brief description of the task', max_length=1000),
         ),
     ]

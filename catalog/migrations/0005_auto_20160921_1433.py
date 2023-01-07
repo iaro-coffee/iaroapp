@@ -29,13 +29,8 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='book',
-            name='isbn',
-            field=models.CharField(help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>', max_length=13),
-        ),
-        migrations.AlterField(
-            model_name='book',
+            model_name='task',
             name='subject',
-            field=models.ManyToManyField(help_text='Select a grouping category for this book', to='catalog.Subject', verbose_name='Category'),
+            field=models.ManyToManyField(help_text='Select a grouping category for this task', to='catalog.Subject', verbose_name='Category'),
         ),
     ]
