@@ -2,19 +2,16 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Author, Genre, Task, TaskInstance, Category
+from .models import Author, Category, Task, TaskInstance
 
 """Minimal registration of Models.
 admin.site.register(Task)
 admin.site.register(Author)
 admin.site.register(TaskInstance)
-admin.site.register(Genre)
 admin.site.register(Category)
 """
 
-admin.site.register(Genre)
 admin.site.register(Category)
-
 
 class TasksInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
@@ -31,8 +28,8 @@ class AuthorAdmin(admin.ModelAdmin):
      - adds inline addition of tasks in author view (inlines)
     """
     list_display = ('last_name',
-                    'first_name', 'date_of_birth', 'date_of_death')
-    fields = ['first_name', 'last_name', ('date_of_birth', 'date_of_death')]
+                    'first_name', 'date_of_joined', 'date_of_quited')
+    fields = ['first_name', 'last_name', ('date_of_joined', 'date_of_quited')]
     inlines = [TasksInline]
 
 
@@ -47,7 +44,7 @@ class TaskAdmin(admin.ModelAdmin):
      - fields to be displayed in list view (list_display)
      - adds inline addition of task instances in task view (inlines)
     """
-    list_display = ('title', 'author', 'display_genre')
+    list_display = ('title', 'author', 'display_category')
     inlines = [TasksInstanceInline]
 
 
@@ -62,14 +59,14 @@ class TaskInstanceAdmin(admin.ModelAdmin):
      - filters that will be displayed in sidebar (list_filter)
      - grouping of fields into sections (fieldsets)
     """
-    list_display = ('task', 'status', 'borrower', 'due_back', 'id')
-    list_filter = ('status', 'due_back')
+    list_display = ('task', 'status', 'borrower', 'due_done', 'id')
+    list_filter = ('status', 'due_done')
 
     fieldsets = (
         (None, {
-            'fields': ('task', 'imprint', 'id')
+            'fields': ('task', 'description', 'id')
         }),
         ('Availability', {
-            'fields': ('status', 'due_back', 'borrower')
+            'fields': ('status', 'due_done', 'borrower')
         }),
     )

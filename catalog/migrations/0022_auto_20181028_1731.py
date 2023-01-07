@@ -14,9 +14,4 @@ class Migration(migrations.Migration):
             name='author',
             options={'ordering': ['last_name', 'first_name']},
         ),
-        migrations.AlterField(
-            model_name='category',
-            name='name',
-            field=models.CharField(help_text="Enter the task's natural category (e.g. English, French, Japanese etc.)", max_length=200),
-        ),
     ]

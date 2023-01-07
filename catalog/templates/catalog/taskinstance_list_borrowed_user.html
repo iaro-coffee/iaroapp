@@ -8,7 +8,7 @@
 
       {% for taskinst in taskinstance_list %} 
       <li class="{% if taskinst.is_overdue %}text-danger{% endif %}">
-        <a href="{% url 'task-detail' taskinst.task.pk %}">{{taskinst.task.title}}</a> ({{ taskinst.due_back }})        
+        <a href="{% url 'task-detail' taskinst.task.pk %}">{{taskinst.task.title}}</a> ({{ taskinst.due_done }})        
       </li>
       {% endfor %}
     </ul>

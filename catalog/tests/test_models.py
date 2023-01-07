@@ -22,15 +22,15 @@ class AuthorModelTest(TestCase):
         field_label = author._meta.get_field('last_name').verbose_name
         self.assertEqual(field_label, 'last name')
 
-    def test_date_of_birth_label(self):
+    def test_date_of_joined_label(self):
         author = Author.objects.get(id=1)
-        field_label = author._meta.get_field('date_of_birth').verbose_name
-        self.assertEqual(field_label, 'date of birth')
+        field_label = author._meta.get_field('date_of_joined').verbose_name
+        self.assertEqual(field_label, 'date of joined')
 
-    def test_date_of_death_label(self):
+    def test_date_of_quited_label(self):
         author = Author.objects.get(id=1)
-        field_label = author._meta.get_field('date_of_death').verbose_name
-        self.assertEqual(field_label, 'died')
+        field_label = author._meta.get_field('date_of_quited').verbose_name
+        self.assertEqual(field_label, 'quited')
 
     def test_first_name_max_length(self):
         author = Author.objects.get(id=1)

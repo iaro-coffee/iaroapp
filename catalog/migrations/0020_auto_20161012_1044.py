@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='taskinstance',
-            options={'ordering': ['due_back'], 'permissions': (('can_mark_returned', 'Set task as returned'),)},
+            options={'ordering': ['due_done'], 'permissions': (('can_mark_returned', 'Set task as returned'),)},
         ),
     ]

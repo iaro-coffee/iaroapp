@@ -14,12 +14,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='author',
-            name='date_of_birth',
-            field=models.DateField(null=True, verbose_name='D.O.B'),
+            name='date_of_joined',
+            field=models.DateField(null=True, verbose_name='Joined'),
         ),
         migrations.AddField(
             model_name='author',
-            name='date_of_death',
-            field=models.DateField(null=True, verbose_name='Died'),
+            name='date_of_quited',
+            field=models.DateField(null=True, verbose_name='Quited'),
         ),
     ]

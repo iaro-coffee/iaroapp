@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('catalog', '0018_task_category'),
+        ('catalog', '0018_task_subject'),
     ]
 
     operations = [

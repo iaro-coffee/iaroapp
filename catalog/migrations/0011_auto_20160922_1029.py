@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='taskinstance',
-            options={'ordering': ['due_back']},
+            options={'ordering': ['due_done']},
         ),
         migrations.AlterField(
             model_name='taskinstance',

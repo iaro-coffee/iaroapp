@@ -49,7 +49,7 @@ class AuthorListViewTest(TestCase):
 import datetime
 from django.utils import timezone
 
-from catalog.models import TaskInstance, Task, Genre, Category
+from catalog.models import TaskInstance, Task, Category
 from django.contrib.auth.models import User  # Required to assign User as a borrower
 
 
@@ -65,17 +65,15 @@ class LoanedTaskInstancesByUserListViewTest(TestCase):
 
         # Create a task
         test_author = Author.objects.create(first_name='John', last_name='Smith')
-        test_genre = Genre.objects.create(name='Fantasy')
-        test_category = Category.objects.create(name='English')
+        test_category = Category.objects.create(name='Fantasy')
         test_task = Task.objects.create(
             title='Task Title',
             summary='My task summary',
             author=test_author,
-            category=test_category,
         )
-        # Create genre as a post-step
-        genre_objects_for_task = Genre.objects.all()
-        test_task.genre.set(genre_objects_for_task)
+        # Create category as a post-step
+        category_objects_for_task = Category.objects.all()
+        test_task.category.set(category_objects_for_task)
         test_task.save()
 
         # Create 30 TaskInstance objects
@@ -87,7 +85,7 @@ class LoanedTaskInstancesByUserListViewTest(TestCase):
             else:
                 the_borrower = test_user2
             status = 'm'
-            TaskInstance.objects.create(task=test_task, imprint='Unlikely Imprint, 2016', due_back=return_date,
+            TaskInstance.objects.create(task=test_task, description='Unlikely Description, 2016', due_done=return_date,
                                         borrower=the_borrower, status=status)
 
     def test_redirect_if_not_logged_in(self):
@@ -181,9 +179,9 @@ class LoanedTaskInstancesByUserListViewTest(TestCase):
         last_date = 0
         for copy in response.context['taskinstance_list']:
             if last_date == 0:
-                last_date = copy.due_back
+                last_date = copy.due_done
             else:
-                self.assertTrue(last_date <= copy.due_back)
+                self.assertTrue(last_date <= copy.due_done)
 
 
 from django.contrib.auth.models import Permission  # Required to grant the permission needed to set a task as returned.
@@ -204,25 +202,24 @@ class RenewTaskInstancesViewTest(TestCase):
 
         # Create a task
         test_author = Author.objects.create(first_name='John', last_name='Smith')
-        test_genre = Genre.objects.create(name='Fantasy')
-        test_category = Category.objects.create(name='English')
+        test_category = Category.objects.create(name='Fantasy')
         test_task = Task.objects.create(title='Task Title', summary='My task summary',
-                                        author=test_author, category=test_category,)
-        # Create genre as a post-step
-        genre_objects_for_task = Genre.objects.all()
-        test_task.genre.set(genre_objects_for_task)
+                                        author=test_author,)
+        # Create category as a post-step
+        category_objects_for_task = Category.objects.all()
+        test_task.category.set(category_objects_for_task)
         test_task.save()
 
         # Create a TaskInstance object for test_user1
         return_date = datetime.date.today() + datetime.timedelta(days=5)
         self.test_taskinstance1 = TaskInstance.objects.create(task=test_task,
-                                                              imprint='Unlikely Imprint, 2016', due_back=return_date,
+                                                              description='Unlikely Description, 2016', due_done=return_date,
                                                               borrower=test_user1, status='o')
 
         # Create a TaskInstance object for test_user2
         return_date = datetime.date.today() + datetime.timedelta(days=5)
-        self.test_taskinstance2 = TaskInstance.objects.create(task=test_task, imprint='Unlikely Imprint, 2016',
-                                                              due_back=return_date, borrower=test_user2, status='o')
+        self.test_taskinstance2 = TaskInstance.objects.create(task=test_task, description='Unlikely Description, 2016',
+                                                              due_done=return_date, borrower=test_user2, status='o')
 
     def test_redirect_if_not_logged_in(self):
         response = self.client.get(reverse('renew-task-librarian', kwargs={'pk': self.test_taskinstance1.pk}))
@@ -337,13 +334,13 @@ class AuthorCreateViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'catalog/author_form.html')
 
-    def test_form_date_of_death_initially_set_to_expected_date(self):
+    def test_form_date_of_quited_initially_set_to_expected_date(self):
         login = self.client.login(username='testuser2', password='2HJ1vRV0Z&3iD')
         response = self.client.get(reverse('author-create'))
         self.assertEqual(response.status_code, 200)
 
         expected_initial_date = datetime.date(2020, 6, 11)
-        response_date = response.context['form'].initial['date_of_death']
+        response_date = response.context['form'].initial['date_of_quited']
         response_date = datetime.datetime.strptime(response_date, "%d/%m/%Y").date()
         self.assertEqual(response_date, expected_initial_date)
 

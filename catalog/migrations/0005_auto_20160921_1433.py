@@ -31,6 +31,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='subject',
-            field=models.ManyToManyField(help_text='Select a grouping category for this task', to='catalog.Subject', verbose_name='Category'),
+            field=models.ManyToManyField(help_text='Select a grouping subject for this task', to='catalog.Subject', verbose_name='Subject'),
         ),
     ]

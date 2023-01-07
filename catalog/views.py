@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from .models import Task, Author, TaskInstance, Genre
+from .models import Task, Author, TaskInstance, Category
 
 
 def index(request):
@@ -63,7 +63,7 @@ class LoanedTasksByUserListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return TaskInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
+        return TaskInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_done')
 
 
 # Added as part of challenge!
@@ -78,7 +78,7 @@ class LoanedTasksAllListView(PermissionRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return TaskInstance.objects.filter(status__exact='o').order_by('due_back')
+        return TaskInstance.objects.filter(status__exact='o').order_by('due_done')
 
 
 from django.shortcuts import get_object_or_404
@@ -105,8 +105,8 @@ def renew_task_librarian(request, pk):
 
         # Check if the form is valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            task_instance.due_back = form.cleaned_data['renewal_date']
+            # process the data in form.cleaned_data as required (here we just write it to the model due_done field)
+            task_instance.due_done = form.cleaned_data['renewal_date']
             task_instance.save()
 
             # redirect to a new URL:
@@ -132,8 +132,8 @@ from .models import Author
 
 class AuthorCreate(PermissionRequiredMixin, CreateView):
     model = Author
-    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
-    initial = {'date_of_death': '11/06/2020'}
+    fields = ['first_name', 'last_name', 'date_of_joined', 'date_of_quited']
+    initial = {'date_of_quited': '11/06/2020'}
     permission_required = 'catalog.can_mark_returned'
 
 
@@ -152,13 +152,13 @@ class AuthorDelete(PermissionRequiredMixin, DeleteView):
 # Classes created for the forms challenge
 class TaskCreate(PermissionRequiredMixin, CreateView):
     model = Task
-    fields = ['title', 'author', 'summary', 'genre', 'category']
+    fields = ['title', 'author', 'summary', 'category']
     permission_required = 'catalog.can_mark_returned'
 
 
 class TaskUpdate(PermissionRequiredMixin, UpdateView):
     model = Task
-    fields = ['title', 'author', 'summary', 'genre', 'category']
+    fields = ['title', 'author', 'summary', 'category']
     permission_required = 'catalog.can_mark_returned'
 
 

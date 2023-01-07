@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='subject',
             name='subject_name',
-            field=models.CharField(help_text='Enter a task category', max_length=200),
+            field=models.CharField(help_text='Enter a task subject', max_length=200),
         ),
     ]
