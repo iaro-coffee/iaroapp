@@ -9,7 +9,7 @@ What is already supported
 - [x] Adding tasks (admin)
 - [x] Adding items to the inventory list (admin)
 
-## Setup
+## Install
 
 On MacOS
 
@@ -18,15 +18,19 @@ sh <(curl -L https://nixos.org/nix/install)
 mkdir -p ~/.config/nix
 echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
 # Restart terminal after successfull installation
-nix run git clone https://git.project-insanity.org/onny/iaroapp.git
+nix run nixpkgs#git clone https://git.project-insanity.org/onny/iaroapp.git
 ```
 
-## Run local server
+## Configure
 
 Create admin user
 ```
+cd iaroapp
+nix develop
 python3 manage.py createsuperuser
 ```
+
+## Run
 
 ```
 cd iaroapp
