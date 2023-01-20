@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>All Borrowed Tasks</h1>
+
+    {% if taskinstance_list %}
+    <ul>
+
+      {% for taskinst in taskinstance_list %} 
+      <li class="{% if taskinst.is_overdue %}text-danger{% endif %}">
+        <a href="{% url 'task-detail' taskinst.task.pk %}">{{taskinst.task.title}}</a> ({{ taskinst.due_done }}) {% if user.is_staff %}- {{ taskinst.borrower }}{% endif %} {% if perms.tasks.can_mark_returned %}- <a href="{% url 'renew-task-librarian' taskinst.id %}">Renew</a>  {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% else %}
+      <p>There are no tasks borrowed.</p>
+    {% endif %}       
+{% endblock %}

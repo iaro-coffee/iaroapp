@@ -16,7 +16,7 @@ Including another URLconf
 from django.urls import path
 from django.contrib import admin
 
-# Use include() to add URLS from the catalog application and authentication system
+# Use include() to add URLS from the tasks application and authentication system
 from django.urls import include
 
 
@@ -26,7 +26,7 @@ urlpatterns = [
 
 
 urlpatterns += [
-    path('catalog/', include('catalog.urls')),
+    path('tasks/', include('tasks.urls')),
 ]
 
 
@@ -41,7 +41,7 @@ urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 #Add URL maps to redirect the base URL to our application
 from django.views.generic import RedirectView
 urlpatterns += [
-    path('', RedirectView.as_view(url='/catalog/', permanent=True)),
+    path('', RedirectView.as_view(url='/tasks/', permanent=True)),
 ]
 
 

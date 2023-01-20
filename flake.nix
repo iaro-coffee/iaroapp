@@ -13,6 +13,7 @@
         start =
           pkgs.writeShellScriptBin "start" ''
             set -e
+            ${pkgs.python3}/bin/python manage.py makemigrations
             ${pkgs.python3}/bin/python manage.py migrate
             ${pkgs.python3}/bin/python manage.py runserver
           '';
