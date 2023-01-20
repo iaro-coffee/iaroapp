@@ -1,38 +1,100 @@
-{% extends "base_generic.html" %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  
+    {% block title %}<title>iaroapp</title>{% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="{% static 'css/bootstrap-5.3.min.css' %}" rel="stylesheet">
+    <style>
 
-{% block content %}
+      body {
+        background-color: #f5f5f5;
+      }
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
+      .contentArea {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: top;
+      }
 
-{% if next %}
-    {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-    {% else %}
-    <p>Please login to see this page.</p>
-    {% endif %}
-{% endif %}
+      .form-signin {
+        max-width: 330px;
+        padding: 15px;
+      }
 
-<form method="post" action="{% url 'login' %}">
-{% csrf_token %}
-<table>
-<tr>
-    <td>{{ form.username.label_tag }}</td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
+      .form-signin .form-floating:focus-within {
+        z-index: 2;
+      }
 
-<input type="submit" value="login">
-<input type="hidden" name="next" value="{{ next }}">
-</form>
+      .form-signin input[type="email"] {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+      }
 
-{# Assumes you setup the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+      .form-signin input[type="password"] {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
 
-{% endblock %}
+      .form-signin {
+        text-align: center;
+      }
+
+      .text-muted {
+        text-decoration: none;
+      }
+
+    </style>
+  </head>
+
+  <body>
+
+    <div class="contentArea">
+
+      <main class="form-signin w-100 m-auto">
+        <form method="post" action="{% url 'login' %}">
+        {% load static %}
+
+        {% csrf_token %}    
+        <img class="mb-4" src="{% static 'images/logo.png' %}" alt="" width="100px">
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+        {% if form.errors %}
+        <p>Your username and password didn't match. Please try again.</p>
+        {% endif %}
+
+        {% load widget_tweaks %}
+        <div class="form-floating">
+          {% render_field form.username class="form-control" id="id_username" %}
+          <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating">
+          {% render_field form.password class="form-control" id="id_password" %}
+          <label for="floatingPassword">Password</label>
+        </div>
+
+        <div class="checkbox mb-3">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+        <br><br>
+        <p><a href="{% url 'password_reset' %}" class="text-muted">Lost password?</a></p>
+      </form>
+
+    </main>
+
+    </div>
+
+    <script src="{% static 'js/bootstrap.bundle-5.3.min.js' %}"></script>
+  </body>
+</html>

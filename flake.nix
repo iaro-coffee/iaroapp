@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
+    nixpkgs.url = "github:onny/nixpkgs/django-login-required-middleware"; # FIXME
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -25,6 +25,9 @@
             python3Packages.django
             python3Packages.dj-database-url
             python3Packages.whitenoise
+            python3Packages.django-widget-tweaks
+            python3Packages.setuptools # Required by widget-tweaks
+            python3Packages.django-login-required-middleware
           ];
         };
 

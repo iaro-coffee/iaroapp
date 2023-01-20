@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Add our new application 
     'tasks.apps.CatalogConfig', #This object was created for us in /tasks/apps.py
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'login_required.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'iaroapp.urls'
@@ -122,21 +124,22 @@ USE_I18N = True
 USE_TZ = True
 
 
-
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
 
+LOGIN_REQUIRED_IGNORE_PATHS = [
+    r'/accounts/logout/$',
+    r'/accounts/signup/$',
+    r'/accounts/login/$',
+]
+
 # Add to test email:
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
 
 # Update database configuration from $DATABASE_URL environment variable (if defined)
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
-
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
