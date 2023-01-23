@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:onny/nixpkgs/django-login-required-middleware"; # FIXME
+    nixpkgs.url = "github:NixOS/nixpkgs/master"; # FIXME not yet in stable release
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
