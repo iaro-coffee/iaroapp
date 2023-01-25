@@ -1,0 +1,31 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+    {% if task_list %}
+
+    <div class="list-group w-auto contentMaxWidth" style="padding-top: 2rem;">
+    
+      {% for task in task_list %}
+      <!-- <a href="{{ task.get_absolute_url }}"> -->
+      <label class="list-group-item d-flex gap-3">
+        <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
+        <span class="pt-1 form-checked-content">
+          <strong>{{ task.title }}</strong>
+          <small class="d-block text-muted">
+            <svg class="bi me-1" width="1em" height="1em"><use xlink:href="#alarm"/></svg>
+            {{task.author}}
+          </small>
+        </span>
+      </label>
+      <!-- </a> -->
+
+      {% endfor %}
+
+    </div>
+
+    {% else %}
+      <p>There are no tasks available.</p>
+    {% endif %}       
+{% endblock %}
+

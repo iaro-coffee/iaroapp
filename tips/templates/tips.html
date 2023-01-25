@@ -1,0 +1,29 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<div class="list-group w-auto">
+  {% for user in users %}
+    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+      <svg class="bi pe-none me-2" width="32" height="32"><use xlink:href="#person"/></svg>
+      <div class="d-flex gap-2 w-100 justify-content-between">
+        <div>
+          <h6 class="mb-0">{{ user.first_name }} {{ user.last_name }}</h6>
+          <p class="mb-0 opacity-75">
+            {% for group in user.groups.all %}
+              {{ group.name }}
+            {% endfor %}
+          </p>
+        </div>
+        <div style="display: flex; flex-direction: row; gap: 0.5rem;">
+          <input type="text" pattern="[0-9.]+" class="form-control" id="tip" placeholder="">
+          <small class="opacity-50 text-nowrap">€</small>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  <button type="button" class="w-100 btn btn-lg btn-outline-primary">Submit tips</button>
+  
+
+{% endblock %}

@@ -44,9 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Add our new application 
-    'tasks.apps.CatalogConfig', #This object was created for us in /tasks/apps.py
     'widget_tweaks',
+    'tasks.apps.TasksConfig',
+    'tips.apps.TipsConfig',
 ]
 
 MIDDLEWARE = [

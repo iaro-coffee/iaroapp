@@ -65,10 +65,8 @@ class LoanedTasksByUserListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         return TaskInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_done')
 
-
 # Added as part of challenge!
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
 
 class LoanedTasksAllListView(PermissionRequiredMixin, generic.ListView):
     """Generic class-based view listing all tasks on loan. Only visible to users with can_mark_returned permission."""

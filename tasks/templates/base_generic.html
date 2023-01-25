@@ -20,11 +20,15 @@
       }
 
       .contentArea {
+        padding-top: 2rem;
         width: 100%;
         height: 100vh;
         display: flex;
-        justify-content: center;
-        align-items: top;
+        justify-content: flex-start;
+        align-items: center;
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 800px;
       }
 
       .contentMaxWidth {
@@ -114,6 +118,31 @@
       text-decoration: none;
     }
 
+    .list-group-item {
+      min-width: 800px;
+    }
+
+    .container-fluid {
+      padding-top: 2rem;
+      max-width: 800px;
+      gap: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn {
+      max-width: 200px;
+    }
+
+    .form-control {
+      max-width: 100px;
+    }
+
+    .list-group-item {
+      align-items: center;
+    }
+
     </style>
   </head>
 <body>
@@ -172,6 +201,17 @@
     <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0zm0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0zm0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/>
   </symbol>
 
+  <symbol id="cash" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/>
+    <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z"/>
+    <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
+    <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
+  </symbol>
+
+  <symbol id="person" viewBox="0 0 16 16">
+    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+  </symbol>
+
 
   </svg>
 
@@ -203,7 +243,7 @@
           <a href="{% url 'tasks' %}" class="nav-link text-white">
           {% endif %}
             <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"/></svg>
-            Aufgaben
+            Tasks
           </a>
         </li>
         <li>
@@ -214,7 +254,18 @@
           <a href="{% url 'authors' %}" class="nav-link text-white">
           {% endif %}
             <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
-            Inventar
+            Inventory
+          </a>
+        </li>
+        <li>
+          {% url 'tips' as tips_url %}
+          {% if request.path == tips_url %}
+          <a href="{% url 'tips' %}" class="nav-link text-white active">
+          {% else %}
+          <a href="{% url 'tips' %}" class="nav-link text-white">
+          {% endif %}
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#cash"/></svg>
+            Tips
           </a>
         </li>
       </ul>
@@ -239,9 +290,6 @@
 
     <div class="container-fluid">
 
-    <div class="row">
-
-      <div class="contentArea">
       {% block content %}{% endblock %}
       
       {% block pagination %}
@@ -262,10 +310,6 @@
         {% endif %}
       {% endblock %} 
       
-      
-      </div>
-    </div>
-
     </div>
 
     <script src="{% static 'js/bootstrap.bundle-5.3.min.js' %}"></script>
