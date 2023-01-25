@@ -66,6 +66,10 @@ class TaskInstanceAdmin(admin.ModelAdmin):
     )
 
 
+
+# Custom admin view added to display groups in user table
+# and hide mail address
+
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
