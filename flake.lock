@@ -17,16 +17,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1674226905,
-        "narHash": "sha256-ZMucO5HeVzJzvCPmtrifSssXy8c4shlowAqcW2fvp9Q=",
-        "owner": "onny",
+        "lastModified": 1674647451,
+        "narHash": "sha256-vhbmXvoxYak3Xx0KNeFIwdRwpcr7b0XUN51Yd0jBtSk=",
+        "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b348aebf4c29995f4a820c9c56533cad36c5aa14",
+        "rev": "55e19102526fba191a5aa4b8dc4529bd3af298e2",
         "type": "github"
       },
       "original": {
-        "owner": "onny",
-        "ref": "django-login-required-middleware",
+        "owner": "NixOS",
+        "ref": "master",
         "repo": "nixpkgs",
         "type": "github"
       }

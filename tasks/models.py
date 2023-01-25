@@ -5,11 +5,11 @@ from django.db import models
 from django.urls import reverse  # To generate URLS by reversing URL patterns
 
 
-class Category(models.Model):
-    """Model representing a task category (e.g. Science Fiction, Non Fiction)."""
+class Weekdays(models.Model):
+    """Model representing task weekdays."""
     name = models.CharField(
         max_length=200,
-        help_text="Enter a task category (e.g. Science Fiction, French Poetry etc.)"
+        help_text="Enter task weekdays."
         )
 
     def __str__(self):
@@ -20,21 +20,17 @@ class Task(models.Model):
     """Model representing a task (but not a specific copy of a task)."""
     title = models.CharField(max_length=200)
     author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
-    # Foreign Key used because task can only have one author, but authors can have multiple tasks
-    # Author as a string rather than object because it hasn't been declared yet in file.
     summary = models.TextField(max_length=1000, help_text="Enter a brief description of the task")
-    category = models.ManyToManyField(Category, help_text="Select a category for this task")
-    # ManyToManyField used because a category can contain many tasks and a Task can cover many categorys.
-    # Category class has already been defined so we can specify the object above.
+    weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task")
     
     class Meta:
         ordering = ['title', 'author']
 
-    def display_category(self):
-        """Creates a string for the Category. This is required to display category in Admin."""
-        return ', '.join([category.name for category in self.category.all()[:3]])
+    def display_weekdays(self):
+        """Creates a string for the Weekdays. This is required to display weekdays in Admin."""
+        return ', '.join([weekdays.name for weekdays in self.weekdays.all()[:3]])
 
-    display_category.short_description = 'Category'
+    display_weekdays.short_description = 'Weekdays'
 
     def get_absolute_url(self):
         """Returns the url to access a particular task instance."""

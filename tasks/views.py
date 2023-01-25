@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-from .models import Task, Author, TaskInstance, Category
+from .models import Task, Author, TaskInstance, Weekdays
 
 def index(request):
     """View function for home page of site."""
@@ -152,13 +152,13 @@ class AuthorDelete(PermissionRequiredMixin, DeleteView):
 # Classes created for the forms challenge
 class TaskCreate(PermissionRequiredMixin, CreateView):
     model = Task
-    fields = ['title', 'author', 'summary', 'category']
+    fields = ['title', 'author', 'summary', 'weekdays']
     permission_required = 'tasks.can_mark_returned'
 
 
 class TaskUpdate(PermissionRequiredMixin, UpdateView):
     model = Task
-    fields = ['title', 'author', 'summary', 'category']
+    fields = ['title', 'author', 'summary', 'weekdays']
     permission_required = 'tasks.can_mark_returned'
 
 

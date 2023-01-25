@@ -6,7 +6,7 @@
 
 <p><strong>Author:</strong> <a href="{{ task.author.get_absolute_url }}">{{ task.author }}</a></p>
 <p><strong>Summary:</strong> {{ task.summary }}</p>
-<p><strong>Category:</strong> {{ task.category.all|join:", " }}</p>
+<p><strong>Weekdays:</strong> {{ task.weekdays.all|join:", " }}</p>
 
 <div style="margin-left:20px;margin-top:20px">
 <h4>Copies</h4>

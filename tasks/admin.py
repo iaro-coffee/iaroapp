@@ -2,23 +2,19 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Author, Category, Task, TaskInstance
+from .models import Author, Weekdays, Task, TaskInstance
 
 """Minimal registration of Models.
 admin.site.register(Task)
 admin.site.register(Author)
 admin.site.register(TaskInstance)
-admin.site.register(Category)
+admin.site.register(Weekdays)
 """
-
-admin.site.register(Category)
 
 class TasksInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
     model = Task
 
-
-@admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
     """Administration object for Author models.
     Defines:
@@ -44,14 +40,12 @@ class TaskAdmin(admin.ModelAdmin):
      - fields to be displayed in list view (list_display)
      - adds inline addition of task instances in task view (inlines)
     """
-    list_display = ('title', 'author', 'display_category')
+    list_display = ('title', 'author', 'display_weekdays')
     inlines = [TasksInstanceInline]
 
 
 admin.site.register(Task, TaskAdmin)
 
-
-@admin.register(TaskInstance)
 class TaskInstanceAdmin(admin.ModelAdmin):
     """Administration object for TaskInstance models.
     Defines:
