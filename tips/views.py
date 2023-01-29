@@ -3,17 +3,45 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-from .models import Tips
+from .models import Tip
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
 users = User.objects.all()
 
+from tips.forms import Form
+from django.http import HttpResponseRedirect, HttpResponse
+
+from django.http.multipartparser import MultiPartParser
+
+from django.utils import timezone
+import json
+
+import datetime
+
 def index(request):
+    if request.method == 'POST':
+        form = Form(request.POST)
+
+        request_data = request.body
+
+        form_data = json.loads(request_data.decode("utf-8"))
+        for user_id, amount in form_data.items():
+            user = User.objects.get(id=user_id)
+            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            Tip.objects.create(user=user, amount=amount, date=date)
+
+        return HttpResponse(200)
+    else:
+        form = Form()
+        context = {
+            'users': users,
+            'form': form,
+        }
     return render(
         request,
         'tips.html',
-        context={'users': users},
+        context,
     )
 
 
@@ -21,57 +49,13 @@ from django.views import generic
 
 class TipsListView(generic.ListView):
     """Generic class-based view for a list of tips."""
-    model = Tips
+    model = Tip
     paginate_by = 10
 
 
 class TipsDetailView(generic.DetailView):
     """Generic class-based detail view for a task."""
-    model = Tips
-
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-import datetime
-from django.contrib.auth.decorators import login_required, permission_required
-
-# from .forms import RenewTipsForm
-from tips.forms import RenewTipsForm
-
-
-@login_required
-@permission_required('tips.can_mark_returned', raise_exception=True)
-def renew_task_librarian(request, pk):
-    """View function for renewing a specific TipsInstance by librarian."""
-    task_instance = get_object_or_404(TipsInstance, pk=pk)
-
-    # If this is a POST request then process the Form data
-    if request.method == 'POST':
-
-        # Create a form instance and populate it with data from the request (binding):
-        form = RenewTipsForm(request.POST)
-
-        # Check if the form is valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_done field)
-            task_instance.due_done = form.cleaned_data['renewal_date']
-            task_instance.save()
-
-            # redirect to a new URL:
-            return HttpResponseRedirect(reverse('all-borrowed'))
-
-    # If this is a GET (or any other method) create the default form
-    else:
-        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
-        form = RenewTipsForm(initial={'renewal_date': proposed_renewal_date})
-
-    context = {
-        'form': form,
-        'task_instance': task_instance,
-    }
-
-    return render(request, 'tips/task_renew_librarian.html', context)
-
+    model = Tip
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -79,13 +63,13 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 
 # Classes created for the forms challenge
 class TipsCreate(PermissionRequiredMixin, CreateView):
-    model = Tips
+    model = Tip
     fields = ['title']
 
 class TipsUpdate(PermissionRequiredMixin, UpdateView):
-    model = Tips
+    model = Tip
     fields = ['title']
 
 class TipsDelete(PermissionRequiredMixin, DeleteView):
-    model = Tips
-    success_url = reverse_lazy('tips')
+    model = Tip
+    success_url = reverse_lazy('tip')
