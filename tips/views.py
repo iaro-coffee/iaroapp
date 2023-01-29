@@ -44,6 +44,50 @@ def index(request):
         context,
     )
 
+from django.forms.models import model_to_dict
+
+def strip_day(someDate):
+    return someDate.replace(day=1)
+
+def evaluation(request):
+
+    evaluation = []
+    result = Tip.objects.all()
+    for user in users:
+        userDict = {}
+        userDict['user_id'] = user.id
+        userDict['user_name'] = user.get_username()
+        userDict['user_firstname'] = user.first_name
+        userDict['user_lastname'] = user.last_name
+        userDict['amountToday'] = 0
+        userDict['amountThisMonth'] = 0
+        userDict['amountLastMonth'] = 0
+        for tip in result:
+            tip = model_to_dict(tip)
+            if user.id == tip['user']:
+
+                tipDate = tip['date'].date()
+                today = datetime.datetime.today().date()
+                first = today.replace(day=1)
+                lastMonth = first - datetime.timedelta(days=1)
+
+                if today == tipDate:
+                    userDict['amountToday'] += float(tip['amount'])
+
+                if strip_day(today) == strip_day(tipDate):
+                    userDict['amountThisMonth'] += float(tip['amount'])
+
+                if strip_day(lastMonth) == strip_day(tipDate):
+                    userDict['amountLastMonth'] += float(tip['amount'])
+
+        evaluation.append(userDict)
+
+    return render(
+        request,
+        'evaluation.html',
+        context={'users': users, 'evaluation': evaluation},
+    )
+
 
 from django.views import generic
 

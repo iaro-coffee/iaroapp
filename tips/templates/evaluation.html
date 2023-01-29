@@ -1,0 +1,39 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<div style="margin-bottom: -1rem;">
+  <a href="/tips" class="btn btn-secondary my-2">Submit</a>
+  <a href="/tips/evaluation" class="btn btn-primary my-2">Evaluation</a>
+</div>
+
+<div style="width: 100%;">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Today</th>
+        <th scope="col">This month</th>
+        <th scope="col">Last month</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in evaluation %}
+      <tr>
+        <td>
+          {% if user.user_firstname and user.user_lastname %}
+            {{ user.user_firstname }} {{ user.user_lastname }}
+          {% else %}
+            {{ user.user_name }}
+          {% endif %}
+        </th>
+        <td>{{ user.amountToday }} €</td>
+        <td>{{ user.amountThisMonth }} €</td>
+        <td>{{ user.amountLastMonth }} €</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
