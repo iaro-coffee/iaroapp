@@ -36,4 +36,32 @@
   </table>
 </div>
 
+<div style="width: 100%;">
+  <h1>Latest tips</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in evaluation %}
+      <tr>
+        <td>
+          {% if user.user_firstname and user.user_lastname %}
+            {{ user.user_firstname }} {{ user.user_lastname }}
+          {% else %}
+            {{ user.user_name }}
+          {% endif %}
+        </th>
+        <td>{{ user.amountToday }} €</td>
+        <td>01.01.2023</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock %}
