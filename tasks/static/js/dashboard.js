@@ -2,11 +2,8 @@
 
 (() => {
   'use strict'
-
-  feather.replace({ 'aria-hidden': 'true' })
-
   // Graphs
-  const ctx = document.getElementById('myChart')
+  const ctx = document.getElementById('tipsChart')
   // eslint-disable-next-line no-unused-vars
   const myChart = new Chart(ctx, {
     type: 'line',
@@ -38,6 +35,11 @@
       }]
     },
     options: {
+      plugins: {
+        legend: {
+            display: false
+        },
+      },
       scales: {
         yAxes: [{
           ticks: {
@@ -45,9 +47,6 @@
           }
         }]
       },
-      legend: {
-        display: false
-      }
     }
   })
 })()
