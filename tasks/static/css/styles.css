@@ -62,3 +62,16 @@
   .navbar-toggler {
     margin-right: 0.5rem;
   }
+
+  .hidden {
+    display: none;
+  }
+
+  table td, th{
+    white-space: nowrap;
+    padding-right: 2rem !important;
+  }
+
+  table tbody tr:hover {
+    background-color: #9ad1f55e !important;
+  }

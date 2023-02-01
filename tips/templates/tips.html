@@ -17,7 +17,7 @@
     <div class="list-group w-auto">
     {% for user in users %}
       <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-        <span data-feather="user" class=""></span>
+        <span data-feather="user" style="width: 40px; height: 40px; stroke-width: 1;"></span>
         <div class="d-flex gap-2 w-100 justify-content-between">
           <div>
             <input type="text" name="user" value="{{user.id}}" style="display: none;" />
@@ -35,14 +35,14 @@
             </p>
           </div>
           <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-            <input name="amount" type="text" pattern="[0-9.]+" class="form-control" id="tip" value="0.0">
+            <input name="amount" type="text" pattern="[0-9.]+" class="form-control" id="tip" value="0.0" style="max-width: 100px;">
             <small class="opacity-50 text-nowrap">€</small>
           </div>
         </div>
       </a>
       {% endfor %}
     </div>
-    <input type="submit" class="w-100 btn btn-lg btn-outline-primary" value="Submit tips" style="margin-top: 1rem;" />
+    <input type="submit" class="w-100 btn btn-lg btn-outline-primary" value="Submit tips" style="margin-top: 1rem; max-width: 200px;" />
   </form>
 
   <script>

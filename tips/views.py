@@ -51,6 +51,26 @@ def strip_day(someDate):
 
 def evaluation(request):
 
+    # Calculate chart
+    chartLabels = []
+    dayNow = datetime.datetime.now()
+    for lastDays in range(0,7):
+        lastDay = dayNow - datetime.timedelta(days=6-lastDays)
+        chartLabels.append(lastDay.strftime("%A"))
+    chartValues = []
+    allTips = Tip.objects.all()
+    for lastDays in range(0,7):
+        thisDay = dayNow - datetime.timedelta(days=6-lastDays)
+        thisDay = thisDay.strftime("%Y-%m-%d")
+        amountToday = 0
+        for tip in allTips:
+            tip = model_to_dict(tip)
+            tipDate = tip['date'].date()
+            if str(tipDate) == str(thisDay):
+                amountToday += float(tip['amount'])
+        chartValues.append(amountToday)
+
+    # Calculate evaluation
     evaluation = []
     result = Tip.objects.all()
     for user in users:
@@ -79,13 +99,39 @@ def evaluation(request):
 
                 if strip_day(lastMonth) == strip_day(tipDate):
                     userDict['amountLastMonth'] += float(tip['amount'])
-
         evaluation.append(userDict)
+
+    # Calculate evaluation
+    latestTips = []
+    result = Tip.objects.all()
+    for tip in result:
+        entry = {}
+        tip = model_to_dict(tip)
+        if tip['amount'] > 0:
+            entry['amount'] = tip['amount']
+            entry['date'] = tip['date'].strftime("%d.%m.%Y %H:%M") + " Uhr"
+            user = User.objects.get(id=int(tip['user']))
+            if (user.first_name and user.last_name):
+                username = user.first_name + " " + user.last_name
+            else: 
+                username = user
+            entry['user'] = username
+            latestTips.append(entry)
+    # Reverse list, having newest tips on top
+    latestTips = list(reversed(latestTips))
+    # Limit recent tips list to 20 entries
+    latestTips = latestTips[:20]
 
     return render(
         request,
         'evaluation.html',
-        context={'users': users, 'evaluation': evaluation},
+        context={
+            'users': users,
+            'evaluation': evaluation,
+            'chartLabels': chartLabels,
+            'chartValues': chartValues,
+            'latestTips': latestTips
+        },
     )
 
 
