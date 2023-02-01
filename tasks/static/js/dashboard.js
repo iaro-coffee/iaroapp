@@ -6,7 +6,7 @@
   const ctx = document.getElementById('tipsChart')
   // eslint-disable-next-line no-unused-vars
   const myChart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: [
         'Sunday',
@@ -27,11 +27,6 @@
           24092,
           12034
         ],
-        lineTension: 0,
-        backgroundColor: 'transparent',
-        borderColor: '#007bff',
-        borderWidth: 4,
-        pointBackgroundColor: '#007bff'
       }]
     },
     options: {

@@ -51,4 +51,14 @@
 
   .navbar-nav {
     flex-direction: row !important;
+    margin-left: auto;
+    margin-right: 0.5rem;
+  }
+
+  .contentArea {
+    margin-top: 1.5rem;
+  }
+
+  .navbar-toggler {
+    margin-right: 0.5rem;
   }

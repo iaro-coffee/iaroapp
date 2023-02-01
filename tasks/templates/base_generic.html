@@ -24,9 +24,6 @@
     
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">iaroapp</a>
-      <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
       <div class="navbar-nav">
         {% if user.is_staff %}
         <div class="nav-item text-nowrap">
@@ -37,6 +34,9 @@
           <a class="nav-link px-3" href="{% url 'logout'%}?next={{request.path}}">Sign out</a>
         </div>
       </div>
+      <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
     </header>
 
     <div class="container-fluid">
@@ -73,7 +73,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                {% url 'tips' as tips_url %}
+                {% if request.path == tips_url %}
+                <a class="nav-link active" href="{% url 'tips' %}">
+                {% else %}
                 <a class="nav-link" href="{% url 'tips' %}">
+                {% endif %}
                   <span data-feather="heart" class="align-text-bottom"></span>
                   Tips
                 </a>
@@ -94,7 +99,7 @@
           </div>
         </nav>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="contentArea col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
           {% block content %}{% endblock %}
 
