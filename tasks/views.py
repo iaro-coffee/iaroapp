@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-from .models import Task, Author, TaskInstance, Weekdays
+from .models import Task, User, TaskInstance, Weekdays
 
 def index(request):
     """View function for home page of site."""
@@ -12,7 +12,6 @@ def index(request):
     num_instances = TaskInstance.objects.all().count()
     # Available copies of tasks
     num_instances_available = TaskInstance.objects.filter(status__exact='a').count()
-    num_authors = Author.objects.count()  # The 'all()' is implied by default.
 
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 1)
@@ -23,7 +22,7 @@ def index(request):
         request,
         'index.html',
         context={'num_tasks': num_tasks, 'num_instances': num_instances,
-                 'num_instances_available': num_instances_available, 'num_authors': num_authors,
+                 'num_instances_available': num_instances_available,
                  'num_visits': num_visits},
     )
 
@@ -40,18 +39,6 @@ class TaskListView(generic.ListView):
 class TaskDetailView(generic.DetailView):
     """Generic class-based detail view for a task."""
     model = Task
-
-
-class AuthorListView(generic.ListView):
-    """Generic class-based list view for a list of authors."""
-    model = Author
-    paginate_by = 10
-
-
-class AuthorDetailView(generic.DetailView):
-    """Generic class-based detail view for an author."""
-    model = Author
-
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -125,38 +112,17 @@ def renew_task_librarian(request, pk):
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Author
-
-
-class AuthorCreate(PermissionRequiredMixin, CreateView):
-    model = Author
-    fields = ['first_name', 'last_name', 'date_of_joined', 'date_of_quited']
-    initial = {'date_of_quited': '11/06/2020'}
-    permission_required = 'tasks.can_mark_returned'
-
-
-class AuthorUpdate(PermissionRequiredMixin, UpdateView):
-    model = Author
-    fields = '__all__' # Not recommended (potential security issue if more fields added)
-    permission_required = 'tasks.can_mark_returned'
-
-
-class AuthorDelete(PermissionRequiredMixin, DeleteView):
-    model = Author
-    success_url = reverse_lazy('authors')
-    permission_required = 'tasks.can_mark_returned'
-
 
 # Classes created for the forms challenge
 class TaskCreate(PermissionRequiredMixin, CreateView):
     model = Task
-    fields = ['title', 'author', 'summary', 'weekdays']
+    fields = ['title', 'user', 'summary', 'weekdays']
     permission_required = 'tasks.can_mark_returned'
 
 
 class TaskUpdate(PermissionRequiredMixin, UpdateView):
     model = Task
-    fields = ['title', 'author', 'summary', 'weekdays']
+    fields = ['title', 'user', 'summary', 'weekdays']
     permission_required = 'tasks.can_mark_returned'
 
 

@@ -13,8 +13,8 @@
         <span class="pt-1 form-checked-content">
           <strong>{{ task.title }}</strong>
           <small class="d-block text-muted">
-            <svg class="bi me-1" width="1em" height="1em"><use xlink:href="#alarm"/></svg>
-            {{task.author}}
+            <span data-feather="user" class="align-text-bottom"></span>
+            {{ task.users }}; {{ task.groups }}
           </small>
         </span>
       </label>

@@ -6,30 +6,34 @@ from django.urls import reverse  # To generate URLS by reversing URL patterns
 
 
 class Weekdays(models.Model):
-    """Model representing task weekdays."""
     name = models.CharField(
         max_length=200,
         help_text="Enter task weekdays."
         )
 
     def __str__(self):
-        """String for representing the Model object (in Admin site etc.)"""
         return self.name
+
+from django.contrib.auth.models import User, Group
 
 class Task(models.Model):
     """Model representing a task (but not a specific copy of a task)."""
     title = models.CharField(max_length=200)
-    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
-    summary = models.TextField(max_length=1000, help_text="Enter a brief description of the task")
+    users = models.ManyToManyField(User, help_text="Select which users should be assigned for the task")
+    groups = models.ManyToManyField(Group, help_text="Select which groups should be assigned for the task")
     weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task")
-    
-    class Meta:
-        ordering = ['title', 'author']
+    summary = models.TextField(max_length=1000, help_text="Enter a brief description of the task", blank=True)
+
+    def display_users(self):
+        return ', '.join([users.get_username() for users in self.users.all()[:3]])
+    display_users.short_description = 'Users'
+
+    def display_groups(self):
+        return ', '.join([groups.name for groups in self.groups.all()[:3]])
+    display_groups.short_description = 'Groups'
 
     def display_weekdays(self):
-        """Creates a string for the Weekdays. This is required to display weekdays in Admin."""
         return ', '.join([weekdays.name for weekdays in self.weekdays.all()[:3]])
-
     display_weekdays.short_description = 'Weekdays'
 
     def get_absolute_url(self):
@@ -43,9 +47,7 @@ class Task(models.Model):
 
 import uuid  # Required for unique task instances
 from datetime import date
-
 from django.contrib.auth.models import User  # Required to assign User as a borrower
-
 
 class TaskInstance(models.Model):
     """Model representing a specific copy of a task (i.e. that can be borrowed from the library)."""
@@ -82,22 +84,3 @@ class TaskInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return '{0} ({1})'.format(self.id, self.task.title)
-
-
-class Author(models.Model):
-    """Model representing an author."""
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    date_of_joined = models.DateField(null=True, blank=True)
-    date_of_quited = models.DateField('quited', null=True, blank=True)
-
-    class Meta:
-        ordering = ['last_name', 'first_name']
-
-    def get_absolute_url(self):
-        """Returns the url to access a particular author instance."""
-        return reverse('author-detail', args=[str(self.id)])
-
-    def __str__(self):
-        """String for representing the Model object."""
-        return '{0}, {1}'.format(self.last_name, self.first_name)

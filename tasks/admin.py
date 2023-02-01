@@ -1,38 +1,13 @@
 from django.contrib import admin
-
-# Register your models here.
-
-from .models import Author, Weekdays, Task, TaskInstance
-
-"""Minimal registration of Models.
-admin.site.register(Task)
-admin.site.register(Author)
-admin.site.register(TaskInstance)
-admin.site.register(Weekdays)
-"""
+from .models import User, Weekdays, Task, TaskInstance
 
 class TasksInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
     model = Task
 
-class AuthorAdmin(admin.ModelAdmin):
-    """Administration object for Author models.
-    Defines:
-     - fields to be displayed in list view (list_display)
-     - orders fields in detail view (fields),
-       grouping the date fields horizontally
-     - adds inline addition of tasks in author view (inlines)
-    """
-    list_display = ('last_name',
-                    'first_name', 'date_of_joined', 'date_of_quited')
-    fields = ['first_name', 'last_name', ('date_of_joined', 'date_of_quited')]
-    inlines = [TasksInline]
-
-
 class TasksInstanceInline(admin.TabularInline):
     """Defines format of inline task instance insertion (used in TaskAdmin)"""
     model = TaskInstance
-
 
 class TaskAdmin(admin.ModelAdmin):
     """Administration object for Task models.
@@ -40,7 +15,7 @@ class TaskAdmin(admin.ModelAdmin):
      - fields to be displayed in list view (list_display)
      - adds inline addition of task instances in task view (inlines)
     """
-    list_display = ('title', 'author', 'display_weekdays')
+    list_display = ('title', 'display_users', 'display_groups', 'display_weekdays')
     inlines = [TasksInstanceInline]
 
 
