@@ -4,21 +4,29 @@
 
     {% if task_list %}
 
-    <div class="list-group w-auto contentMaxWidth" style="padding-top: 2rem;">
+    <div class="list-group w-auto">
     
       {% for task in task_list %}
-      <!-- <a href="{{ task.get_absolute_url }}"> -->
       <label class="list-group-item d-flex gap-3">
         <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
         <span class="pt-1 form-checked-content">
-          <strong>{{ task.title }}</strong>
-          <small class="d-block text-muted">
+          {{ task.title }}
+          <small class="d-block text-muted" style="margin: 0.1rem 0;">
             <span data-feather="user" class="align-text-bottom"></span>
-            {{ task.users }}; {{ task.groups }}
+            {% for user in task.users.all %}
+              {% if user.first_name and user.last_name %}
+               {{ user.first_name }} {{ user.last_name }}{% if task.users.all|length > 1 and forloop.counter != task.users.all|length %},{% endif %}
+              {% else %}
+              {{ user }}
+              {% endif %}
+            {% endfor %}
+            – Groups:
+            {% for group in task.groups.all %}
+            {{ group }}{% if task.groups.all|length > 1 and forloop.counter != task.groups.all|length %},{% endif %}
+            {% endfor %}
           </small>
         </span>
       </label>
-      <!-- </a> -->
 
       {% endfor %}
 
