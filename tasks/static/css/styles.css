@@ -72,6 +72,11 @@
     padding-right: 2rem !important;
   }
 
+  @media (max-width: 768px) {
+    table td, th{
+      white-space: unset;    }
+  }
+
   table tbody tr:hover {
     background-color: #9ad1f55e !important;
   }
