@@ -25,7 +25,7 @@
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">iaroapp</a>
       <div class="navbar-nav">
-        {% if user.is_staff %}
+        {% if user.is_superuser %}
         <div class="nav-item text-nowrap">
           <a class="nav-link px-3" href="{% url 'admin:index' %}">Administration</a>
         </div>
@@ -83,6 +83,7 @@
                   Tips
                 </a>
               </li>
+              {% if user.is_superuser %}
               <li class="nav-item">
                 {% url 'evaluation' as evaluation_url %}
                 {% if request.path == evaluation_url %}
@@ -94,6 +95,7 @@
                   Reports
                 </a>
               </li>
+              {% endif %}
             </ul>
 
           </div>
