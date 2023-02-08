@@ -24,18 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 import os
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-
-# Set hosts to allow any app on Railway and the local testing URL
 ALLOWED_HOSTS = ['*']
-
-# Set CSRF trusted origins to allow any app on Railway and the local testing URL
 CSRF_TRUSTED_ORIGINS = ['https://*.railway.app','https://*.127.0.0.1']
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -81,20 +72,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'iaroapp.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -111,20 +94,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
 
 LOGIN_REQUIRED_IGNORE_PATHS = [
@@ -132,8 +106,6 @@ LOGIN_REQUIRED_IGNORE_PATHS = [
     r'/accounts/signup/$',
     r'/accounts/login/$',
 ]
-
-# Add to test email:
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Update database configuration from $DATABASE_URL environment variable (if defined)
