@@ -21,6 +21,21 @@ echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
 nix run nixpkgs#git clone https://git.project-insanity.org/onny/iaroapp.git
 ```
 
+On Synology
+
+Requirements
+* Setup user home directories, see [here](https://asciich.ch/wordpress/synology-home-directory-fur-benutzer-festlegen/)
+* Add Synocommunity Repo, see [here](https://synocommunity.com)
+* Install `git` via Synology Software Center
+
+```
+cd /usr/share
+sudo git clone https://git.project-insanity.org/onny/iaroapp.git
+python3 -m ensurepip
+python3 -m pip install -r requirements.txt
+python3 manage.py runserver 0.0.0.0:8000
+```
+
 ## Configure
 
 Create admin user
