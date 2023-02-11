@@ -31,9 +31,13 @@ Requirements
 ```
 cd /usr/share
 sudo git clone https://git.project-insanity.org/onny/iaroapp.git
-python3 -m ensurepip
-python3 -m pip install -r requirements.txt
-python3 manage.py runserver 0.0.0.0:8000
+chown -R http:http iaroapp
+cd iaroapp
+sudo -u http python3 -m ensurepip
+sudo -u http python3 -m pip install -r requirements.txt
+cp dist/iaroapp.service /etc/systemd/system/
+systemctl enable iaroapp.service
+systemctl start iaroapp.service
 ```
 
 ## Configure
