@@ -28,15 +28,15 @@ class TaskInstanceAdmin(admin.ModelAdmin):
      - filters that will be displayed in sidebar (list_filter)
      - grouping of fields into sections (fieldsets)
     """
-    list_display = ('task', 'status', 'borrower', 'due_done', 'id')
-    list_filter = ('status', 'due_done')
+    list_display = ('task', 'user', 'done', 'date_done', 'id')
+    list_filter = ('done', 'date_done')
 
     fieldsets = (
         (None, {
             'fields': ('task', 'description', 'id')
         }),
         ('Availability', {
-            'fields': ('status', 'due_done', 'borrower')
+            'fields': ('done', 'date_done', 'user')
         }),
     )
 

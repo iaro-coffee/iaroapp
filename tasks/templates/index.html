@@ -1,26 +1,88 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h1>iaroapp</h1>
 
-<div>
-{% load static %}
-<img src="{% static 'images/bird.png' %}" alt="My image" width="100px">
-</div>  
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">        
+    <h1 class="h3">My Tasks</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+        <span data-feather="calendar" class="align-text-bottom"></span>
+        This week
+      </button>
+    </div>
+</div>
 
-<br>
-<h2>Dynamic content</h2>
+<div class="list-group w-auto">
+    <label class="list-group-item d-flex gap-3">
+        <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
+        <span class="pt-1 form-checked-content">
+        Test Task
+        <small class="d-block text-muted" style="margin: 0.1rem 0;">
+            <span data-feather="user" class="align-text-bottom"></span>
+            My user
+        </small>
+        </span>
+    </label>
+    <label class="list-group-item d-flex gap-3">
+        <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
+        <span class="pt-1 form-checked-content">
+        Test Task
+        <small class="d-block text-muted" style="margin: 0.1rem 0;">
+            <span data-feather="user" class="align-text-bottom"></span>
+            My user
+        </small>
+        </span>
+    </label>
+    <label class="list-group-item d-flex gap-3">
+        <input class="form-check-input flex-shrink-0" type="checkbox" value="" style="font-size: 1.375em;">
+        <span class="pt-1 form-checked-content">
+        Test Task
+        <small class="d-block text-muted" style="margin: 0.1rem 0;">
+            <span data-feather="user" class="align-text-bottom"></span>
+            My user
+        </small>
+        </span>
+    </label>
+</div>
 
-<p>Following datasets are available:</p>
-<ul>
-<li><strong>Tasks:</strong> {{ num_tasks }}</li>
-<li><strong>Inventory entries:</strong> {{ num_instances }}</li>
+<br><br>
 
-<li><strong>Copies available:</strong> {{ num_instances_available }}</li>
-<li><strong>Authors:</strong> {{ num_authors }}</li>
-</ul>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">        
+    <h1 class="h3">My Tips</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+        <span data-feather="calendar" class="align-text-bottom"></span>
+        This week
+      </button>
+    </div>
+</div>
 
-
-<p>You have visited this page {{ num_visits }} time{{ num_visits|pluralize }}.</p>
+<div class="table-responsive" style="width: 100%;">
+    <table class="table table-striped table-sm table-hover">
+      <thead>
+        <tr>
+          <th scope="col" width="100%">Name</th>
+          <th scope="col">Amount</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tip in latestTips %}
+        <tr>
+          <td>
+            {{ tip.user }}
+          </th>
+          <td>{{ tip.amount }} €</td>
+          <td>{{ tip.date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
 {% endblock %}

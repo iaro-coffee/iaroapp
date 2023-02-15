@@ -2,8 +2,8 @@
 
 {% block content %}
     <h1>Renew: {{task_instance.task.title}}</h1>
-    <p>Borrower: {{task_instance.borrower}}</p>
-    <p{% if task_instance.is_overdue %} class="text-danger"{% endif %}>Due date: {{task_instance.due_done}}</p>
+    <p>User: {{task_instance.user}}</p>
+    <p{% if task_instance.is_overdue %} class="text-danger"{% endif %}>Due date: {{task_instance.date_done}}</p>
     
     <form action="" method="post">
         {% csrf_token %}

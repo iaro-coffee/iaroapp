@@ -13,8 +13,8 @@
 
 {% for copy in task.taskinstance_set.all %}
 <hr>
-<p class="{% if copy.status == 'a' %}text-success{% elif copy.status == 'd' %}text-danger{% else %}text-warning{% endif %}">{{ copy.get_status_display }}</p>
-{% if copy.status != 'a' %}<p><strong>Due to be returned:</strong> {{copy.due_done}}</p>{% endif %}
+<p class="{% if copy.done == 'a' %}text-success{% elif copy.done == 'd' %}text-danger{% else %}text-warning{% endif %}">{{ copy.get_done_display }}</p>
+{% if copy.done != 'a' %}<p><strong>Due to be returned:</strong> {{copy.date_done}}</p>{% endif %}
 <p><strong>Description:</strong> {{copy.description}}</p>
 <p class="text-muted"><strong>Id:</strong> {{copy.id}}</p>
 

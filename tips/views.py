@@ -16,6 +16,10 @@ import datetime
 
 # Tip input page
 def index(request):
+
+    User = get_user_model()
+    users = User.objects.all()
+
     if request.method == 'POST':
         form = Form(request.POST)
 
@@ -34,8 +38,6 @@ def index(request):
 
         today = datetime.datetime.today().date()
         isSubmittedToday = False
-        User = get_user_model()
-        users = User.objects.all()
 
         for tip in Tip.objects.all():
             tip = model_to_dict(tip)
@@ -66,6 +68,9 @@ def check_admin(user):
 
 @user_passes_test(check_admin)
 def evaluation(request):
+
+    User = get_user_model()
+    users = User.objects.all()
 
     # Calculate chart
     chartLabels = []

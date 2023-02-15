@@ -8,7 +8,7 @@
 
       {% for taskinst in taskinstance_list %} 
       <li class="{% if taskinst.is_overdue %}text-danger{% endif %}">
-        <a href="{% url 'task-detail' taskinst.task.pk %}">{{taskinst.task.title}}</a> ({{ taskinst.due_done }}) {% if user.is_superuser %}- {{ taskinst.borrower }}{% endif %} {% if perms.tasks.can_mark_returned %}- <a href="{% url 'renew-task-librarian' taskinst.id %}">Renew</a>  {% endif %}
+        <a href="{% url 'task-detail' taskinst.task.pk %}">{{taskinst.task.title}}</a> ({{ taskinst.date_done }}) {% if user.is_superuser %}- {{ taskinst.borrower }}{% endif %} {% if perms.tasks.can_mark_returned %}- <a href="{% url 'renew-task-librarian' taskinst.id %}">Renew</a>  {% endif %}
       </li>
       {% endfor %}
     </ul>
