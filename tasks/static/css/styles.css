@@ -67,14 +67,19 @@
     display: none;
   }
 
-  table td, th{
+  table td, th {
     white-space: nowrap;
     padding-right: 2rem !important;
   }
 
+  table td:first-child, table th:first-child {
+    padding-left: 1rem;
+  }
+
   @media (max-width: 768px) {
-    table td, th{
-      white-space: unset;    }
+    table td, th {
+      white-space: unset;
+    }
   }
 
   table tbody tr:hover {

@@ -76,11 +76,6 @@ def adm(self):
 adm.boolean = True
 adm.admin_order_field = 'is_superuser'
 
-def staff(self):
-    return self.is_staff
-staff.boolean = True
-staff.admin_order_field = 'is_staff'
-
 from django.urls import reverse
 
 def persons(self):
@@ -89,7 +84,7 @@ persons.allow_tags = True
 
 class UserAdmin(UserAdmin):
     list_display = ['username', 'first_name', 'last_name', roles, last]
-    list_filter = ['groups', 'is_staff', 'is_superuser', 'is_active']
+    list_filter = ['groups', 'is_superuser', 'is_active']
 
 class GroupAdmin(GroupAdmin):
     list_display = ['name', persons]

@@ -248,7 +248,7 @@
           {% endif %}
         </a>
         <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-          {% if user.is_staff %}
+          {% if user.is_superuser %}
           <li><a class="dropdown-item" href="/admin">Administration</a></li>
           <li><hr class="dropdown-divider"></li>
           {% endif %}

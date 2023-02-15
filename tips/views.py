@@ -29,13 +29,25 @@ def index(request):
         for user_id, amount in form_data.items():
             user = User.objects.get(id=user_id)
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            Tip.objects.create(user=user, amount=amount, date=date)
-
+            # Only add tips to database which have a value
+            if float(amount) > 0 or float(amount) < 0:
+                Tip.objects.create(user=user, amount=amount, date=date)
         return HttpResponse(200)
+
     else:
+
+        today = datetime.datetime.today().date()
+        isSubmittedToday = False
+
+        for tip in Tip.objects.all():
+            tip = model_to_dict(tip)
+            if tip['date'].date() == today:
+                isSubmittedToday = True
+                break
+
         form = Form()
         context = {
-            'isSubmittedToday': True,
+            'isSubmittedToday': isSubmittedToday,
             'users': users,
             'form': form,
         }
@@ -46,10 +58,15 @@ def index(request):
     )
 
 from django.forms.models import model_to_dict
+from django.contrib.auth.decorators import user_passes_test
 
 def strip_day(someDate):
     return someDate.replace(day=1)
 
+def check_admin(user):
+   return user.is_superuser
+
+@user_passes_test(check_admin)
 def evaluation(request):
 
     # Calculate chart
