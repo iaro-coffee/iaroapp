@@ -6,19 +6,15 @@ from django.contrib.auth.decorators import login_required
 from .models import Tip
 
 from django.contrib.auth import get_user_model
-User = get_user_model()
-users = User.objects.all()
-
 from tips.forms import Form
 from django.http import HttpResponseRedirect, HttpResponse
-
 from django.http.multipartparser import MultiPartParser
-
 from django.utils import timezone
 import json
 
 import datetime
 
+# Tip input page
 def index(request):
     if request.method == 'POST':
         form = Form(request.POST)
@@ -38,6 +34,8 @@ def index(request):
 
         today = datetime.datetime.today().date()
         isSubmittedToday = False
+        User = get_user_model()
+        users = User.objects.all()
 
         for tip in Tip.objects.all():
             tip = model_to_dict(tip)
@@ -125,7 +123,7 @@ def evaluation(request):
     for tip in result:
         entry = {}
         tip = model_to_dict(tip)
-        if tip['amount'] > 0:
+        if tip['amount'] > 0 or tip['amount'] < 0:
             entry['amount'] = tip['amount']
             entry['date'] = tip['date'].strftime("%d.%m.%Y %H:%M") + " Uhr"
             user = User.objects.get(id=int(tip['user']))
@@ -135,6 +133,7 @@ def evaluation(request):
                 username = user
             entry['user'] = username
             latestTips.append(entry)
+
     # Reverse list, having newest tips on top
     latestTips = list(reversed(latestTips))
     # Limit recent tips list to 20 entries
