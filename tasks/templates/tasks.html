@@ -13,16 +13,16 @@
           {{ task.title }}
           <small class="d-block text-muted" style="margin: 0.1rem 0;">
             <span data-feather="user" class="align-text-bottom"></span>
-            {% for user in task.users.all %}
+            {% for user in task.users %}
               {% if user.first_name and user.last_name %}
-               {{ user.first_name }} {{ user.last_name }}{% if task.users.all|length > 1 and forloop.counter != task.users.all|length %},{% endif %}
+               {{ user.first_name }} {{ user.last_name }}{% if task.users|length > 1 and forloop.counter != task.users|length %},{% endif %}
               {% else %}
               {{ user }}
               {% endif %}
             {% endfor %}
             – Groups:
-            {% for group in task.groups.all %}
-            {{ group }}{% if task.groups.all|length > 1 and forloop.counter != task.groups.all|length %},{% endif %}
+            {% for group in task.groups %}
+            {{ group }}{% if task.groups|length > 1 and forloop.counter != task.groups|length %},{% endif %}
             {% endfor %}
           </small>
         </span>

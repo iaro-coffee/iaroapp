@@ -11,7 +11,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.http.multipartparser import MultiPartParser
 from django.utils import timezone
 import json
-
 import datetime
 
 # Tip input page
