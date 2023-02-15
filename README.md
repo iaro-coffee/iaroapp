@@ -36,8 +36,10 @@ cd iaroapp
 sudo -u http python3 -m ensurepip
 sudo -u http python3 -m pip install -r requirements.txt
 cp dist/iaroapp.service /etc/systemd/system/
-systemctl enable iaroapp.service
-systemctl start iaroapp.service
+cp dist/app.iaro.co.conf /etc/nginx/sites-enabled/
+systemctl enable iaroapp
+systemctl start iaroapp
+systemctl reload nginx
 ```
 
 ## Configure

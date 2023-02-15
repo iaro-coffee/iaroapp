@@ -45,21 +45,36 @@
     <input type="submit" class="w-100 btn btn-lg btn-outline-primary" value="Submit tips" style="margin-top: 1rem; max-width: 200px;" />
   </form>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Warning</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Tips have already been submitted for today. Are you sure you want to add further tips?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Submit tips</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      document.getElementById('form').onsubmit = function (evt) {
-      
+  <script>
+
+    function submitForm() {
+
       const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
       var alerts = document.getElementsByClassName("alert");
       for(var i = 0; i < alerts.length; i++) {
         var alert = alerts[i];
         alert.classList.add('hidden');
-      }
-      evt.preventDefault();
-      var form = document.querySelector('form');
+      }      var form = document.querySelector('form');
       var form_data = new FormData(form);
-  
+
       let objSerializedForm = {};
       for (let [name, value] of form_data) {
         if (name === "user") {
@@ -69,25 +84,41 @@
           objSerializedForm[userid] = value;
         }
       }
-      console.log(objSerializedForm);
-  
+
       var request = new XMLHttpRequest();
-        request.onreadystatechange = function() {
-          if (request.readyState == 4) {
-            if(request.status == 200) {
-              var element = document.getElementsByClassName("alert-success")[0];
-              element.classList.remove("hidden");
-            } else {
-              var element = document.getElementsByClassName("alert-danger")[0];
-              element.classList.remove("hidden");
-            }
+      request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+          if(request.status == 200) {
+            var element = document.getElementsByClassName("alert-success")[0];
+            element.classList.remove("hidden");
+          } else {
+            var element = document.getElementsByClassName("alert-danger")[0];
+            element.classList.remove("hidden");
           }
         }
-        request.open('POST', '/tips/');
-        request.setRequestHeader("X-CSRFToken", csrftoken); 
-        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        request.send(JSON.stringify(objSerializedForm));
       }
+      request.open('POST', '/tips/');
+      request.setRequestHeader("X-CSRFToken", csrftoken); 
+      request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      request.send(JSON.stringify(objSerializedForm));
+
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+      document.getElementById('form').onsubmit = function (evt) {
+      
+        evt.preventDefault();
+
+        if ('{{ isSubmittedToday | safe }}' === 'True') {
+          var myModal = new bootstrap.Modal(document.getElementById("exampleModal"), {});
+          myModal.show();
+        } else {
+          submitForm();
+        }
+
+      }
+
     });
   </script>
 

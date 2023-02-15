@@ -35,6 +35,7 @@ def index(request):
     else:
         form = Form()
         context = {
+            'isSubmittedToday': True,
             'users': users,
             'form': form,
         }
