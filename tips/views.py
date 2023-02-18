@@ -28,9 +28,12 @@ def index(request):
         for user_id, amount in form_data.items():
             user = User.objects.get(id=user_id)
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            # Only add tips to database which have a value
-            if float(amount) > 0 or float(amount) < 0:
-                Tip.objects.create(user=user, amount=amount, date=date)
+            if amount:
+                amount = amount.replace(',','.')
+                amount = float(amount)
+                # Only add tips to database which have a value
+                if amount > 0 amount < 0:
+                    Tip.objects.create(user=user, amount=amount, date=date)
         return HttpResponse(200)
 
     else:
