@@ -12,14 +12,22 @@
     Inventory submitted successfully.
   </div>
 
-
-
   <form id="form" method="post">
     {% csrf_token %}
 
     {% for category in categories %}
     
-      <h1 class="h2" style="margin-bottom: 1rem;">{{ category }}</h1>
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">        
+        <h1 class="h2">{{ category }}</h1>
+        {% if forloop.counter == 1 %}
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <button type="button" class="btn btn-sm btn-outline-secondary">
+            <span data-feather="calendar" class="align-text-bottom"></span>
+            Last updated: {{ modifiedDate }}
+          </button>
+        </div>
+        {% endif %}
+      </div>
 
       <div class="list-group w-auto">
         {% for product in products %}
@@ -106,6 +114,7 @@
             var element = document.getElementsByClassName("alert-danger")[0];
             element.classList.remove("hidden");
           }
+          window.scrollTo(0, 0);
         }
       }
       request.open('POST', '/inventory/');

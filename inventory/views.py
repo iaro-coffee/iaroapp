@@ -41,6 +41,7 @@ def index(request):
         today = datetime.datetime.today().date()
         isSubmittedToday = False
         product = Product.objects.filter(id=1)
+        modified_date = "Unknown"
 
         if product.exists():
             modified_date = product.first().modified_date.date()
@@ -53,7 +54,8 @@ def index(request):
             'form': form,
             'products': products,
             'categories': categories,
-            'isSubmittedToday': isSubmittedToday
+            'isSubmittedToday': isSubmittedToday,
+            'modifiedDate': modified_date
         }
 
         return render(
@@ -61,3 +63,28 @@ def index(request):
             'inventory.html',
             context,
         )
+
+from django.contrib.auth.decorators import user_passes_test
+
+def check_admin(user):
+   return user.is_superuser
+
+@user_passes_test(check_admin)
+def inventory_evaluation(request):
+
+    products = Product.objects.all()
+    products = sorted(products,  key=lambda m: m.value_tobuy)
+    product = Product.objects.filter(id=1)
+    modified_date = "Unknown"
+
+    if product.exists():
+        modified_date = product.first().modified_date.date()
+
+    return render(
+        request,
+        'inventory_evaluation.html',
+        context={
+            'products': products,
+            'modifiedDate': modified_date
+        },
+    )

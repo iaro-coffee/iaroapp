@@ -39,6 +39,10 @@ class Product(models.Model):
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
 
+    @property
+    def value_tobuy(self):
+        return float(self.value-self.value_intended)
+
     def display_category(self):
         return ', '.join([category.name for category in self.category.all()[:3]])
     display_category.short_description = 'Categories'

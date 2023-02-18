@@ -99,6 +99,7 @@
             element.classList.remove("hidden");
           }
         }
+        window.scrollTo(0, 0);
       }
       request.open('POST', '/tips/');
       request.setRequestHeader("X-CSRFToken", csrftoken); 
