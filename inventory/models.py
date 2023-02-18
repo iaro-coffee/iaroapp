@@ -41,7 +41,7 @@ class Product(models.Model):
 
     @property
     def value_tobuy(self):
-        return float(self.value-self.value_intended)
+        return abs(float(self.value-self.value_intended))
 
     def display_category(self):
         return ', '.join([category.name for category in self.category.all()[:3]])
