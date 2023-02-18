@@ -73,7 +73,7 @@ def check_admin(user):
 def inventory_evaluation(request):
 
     products = Product.objects.all()
-    products = sorted(products,  key=lambda m: m.value_tobuy)
+    products = sorted(products,  key=lambda m: -m.value_tobuy)
     product = Product.objects.filter(id=1)
     modified_date = "Unknown"
 
