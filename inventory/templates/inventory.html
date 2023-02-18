@@ -66,8 +66,8 @@
                   </p>
                 </div>
                 <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-                  <input name="value" type="number" step="0.0" required class="form-control" id="value" value="" style="max-width: 100px;">
-                  <small class="opacity-50 text-nowrap">
+                  <input name="value" type="number" step="0.0" required class="form-control" id="value" value="" style="width: 100px;">
+                  <small class="opacity-50 text-nowrap truncate">
                     {{ product.unit.all | join:", " }}
                   </small>
                 </div>
@@ -170,5 +170,13 @@
     });
   </script>
 
+<style>
+.truncate {
+  width: 30px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ".";
+ }
+</style>
 
 {% endblock %}
