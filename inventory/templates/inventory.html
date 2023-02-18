@@ -33,7 +33,27 @@
         {% for product in products %}
           {% if category in product.category.all %}
             <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <span data-feather="box" style="width: 40px; height: 40px; stroke-width: 1;"></span>
+              <span style="font-size: 2rem">
+                {% if category|stringformat:"s" == "Obst und Gemüse" %}
+                🍊
+                {% elif category|stringformat:"s" == "Flüssig" %}
+                💧
+                {% elif category|stringformat:"s" == "Putzmittel" %}
+                🪣
+                {% elif category|stringformat:"s" == "Nüsse und Trockenfrüchte" %}
+                🥜
+                {% elif category|stringformat:"s" == "Backzutaten" %}
+                🧁
+                {% elif category|stringformat:"s" == "Milchprodukte" %}
+                🥛
+                {% elif category|stringformat:"s" == "Getränke" %}
+                🍹
+                {% elif category|stringformat:"s" == "Tiefkühler" %}
+                🧊
+                {% elif category|stringformat:"s" == "Gewürze" %}
+                🧂
+                {% endif %}
+              </span>
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <input type="number" name="product" value="{{product.id}}" style="display: none;" />
