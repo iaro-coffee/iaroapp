@@ -14,6 +14,6 @@ class ProductsAdmin(admin.ModelAdmin):
      - fields to be displayed in list view (list_display)
      - adds inline addition of task instances in task view (inlines)
     """
-    list_display = ('name', 'value')
+    list_display = ('name', 'value', 'value_intended', 'display_unit', 'display_category')
 
 admin.site.register(Product, ProductsAdmin)

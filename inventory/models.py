@@ -37,7 +37,15 @@ class Product(models.Model):
     value_intended = models.FloatField()
     category = models.ManyToManyField(Category, help_text="Select category for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
-    
+
+    def display_category(self):
+        return ', '.join([category.name for category in self.category.all()[:3]])
+    display_category.short_description = 'Categories'
+
+    def display_unit(self):
+        return ', '.join([unit.name for unit in self.unit.all()[:3]])
+    display_unit.short_description = 'Unit'
+
     def get_absolute_url(self):
         """Returns the url to access a particular tip instance."""
         return reverse('product-detail', args=[str(self.id)])
