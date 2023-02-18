@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'tasks.apps.TasksConfig',
     'tips.apps.TipsConfig',
+    'inventory.apps.InventoryConfig',
 ]
 
 MIDDLEWARE = [

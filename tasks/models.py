@@ -19,8 +19,8 @@ from django.contrib.auth.models import User, Group
 class Task(models.Model):
     """Model representing a task (but not a specific copy of a task)."""
     title = models.CharField(max_length=200)
-    users = models.ManyToManyField(User, help_text="Select which users should be assigned for the task")
-    groups = models.ManyToManyField(Group, help_text="Select which groups should be assigned for the task")
+    users = models.ManyToManyField(User, help_text="Select which users should be assigned for the task", blank=True)
+    groups = models.ManyToManyField(Group, help_text="Select which groups should be assigned for the task", blank=True)
     weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task")
     summary = models.TextField(max_length=1000, help_text="Enter a brief description of the task", blank=True)
 

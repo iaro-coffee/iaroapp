@@ -19,9 +19,13 @@ def tasks(request):
         task = model_to_dict(task)
         for weekday in task['weekdays']:
             if weekdayToday == str(weekday):
-                for group in request.user.groups.all():
-                    if request.user in task['users'] or group in task['groups']:
-                        myTasks.append(task)
+                if request.user in task['users']:
+                    myTasks.append(task)
+                else:
+                    for group in request.user.groups.all():
+                        if group in task['groups']:
+                            myTasks.append(task)
+                            break
 
     return render(
         request,
