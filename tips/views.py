@@ -32,7 +32,7 @@ def index(request):
                 amount = amount.replace(',','.')
                 amount = float(amount)
                 # Only add tips to database which have a value
-                if amount > 0 amount < 0:
+                if amount > 0 or amount < 0:
                     Tip.objects.create(user=user, amount=amount, date=date)
         return HttpResponse(200)
 
