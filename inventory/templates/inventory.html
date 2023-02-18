@@ -59,7 +59,7 @@
               <div class="d-flex gap-2 w-100 justify-content-between">
                 <div>
                   <input type="number" name="product" value="{{product.id}}" style="display: none;" />
-                  <h6 class="mb-0">
+                  <h6 class="mb-0 wrap">
                     {{ product.name }}
                   </h6>
                   <p class="mb-0 opacity-75">
@@ -176,6 +176,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ".";
+ }
+ .wrap {
+  overflow-wrap: anywhere;
  }
 </style>
 
