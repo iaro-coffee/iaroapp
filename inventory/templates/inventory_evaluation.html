@@ -28,12 +28,14 @@
     </thead>
     <tbody>
       {% for product in products %}
-      <tr {%if product.value_tobuy > 0 %} style="background: #ea868f;"{% endif %} >
+      {%if product.value_tobuy > 0 %}
+      <tr style="background: #ea868f;">
         <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
         <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
         <td><label for="checkbox{{forloop.counter}}">{{ product.category.all|join:", " }}</label></td>
         <td><label for="checkbox{{forloop.counter}}">{{ product.value_tobuy }} {{ product.unit.all|join:", " }}</label></td>
       </tr>
+      {% endif %}
       {% endfor %}
     </tbody>
   </table>
