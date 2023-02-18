@@ -33,7 +33,8 @@ def index(request):
 
         form_data = json.loads(request_data.decode("utf-8"))
         for product, value in form_data.items():
-            Product.objects.filter(id=product).update(value=value)
+            if value >= 0:
+                Product.objects.filter(id=product).update(value=value)
         return HttpResponse(200)
 
     else:
