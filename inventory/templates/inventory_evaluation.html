@@ -23,7 +23,7 @@
         <th scope="col" width="1%"></th>
         <th scope="col">Name</th>
         <th scope="col">Category</th>
-        <th scope="col">To buy</th>
+        <th scope="col" style="white-space: nowrap;">To buy</th>
       </tr>
     </thead>
     <tbody>
@@ -32,7 +32,7 @@
         <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
         <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
         <td><label for="checkbox{{forloop.counter}}">{{ product.category.all|join:", " }}</label></td>
-        <td style="white-space: nowrap;"><label for="checkbox{{forloop.counter}}">{{ product.value_tobuy }} {{ product.unit.all|join:", " }}</label></td>
+        <td><label for="checkbox{{forloop.counter}}">{{ product.value_tobuy }} {{ product.unit.all|join:", " }}</label></td>
       </tr>
       {% endfor %}
     </tbody>
@@ -47,6 +47,7 @@
   }
   td:not(first-child) {
     padding: 0 !important;
+    overflow-wrap: anywhere;
   }
   td:first-child {
     padding: .5rem .5rem !important;
