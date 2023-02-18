@@ -9,6 +9,8 @@ from django.contrib.auth import get_user_model
 from tips.forms import Form
 from django.http import HttpResponseRedirect, HttpResponse
 import json
+import datetime
+from django.forms.models import model_to_dict
 
 def index(request):
 
@@ -36,12 +38,22 @@ def index(request):
 
     else:
 
+        today = datetime.datetime.today().date()
+        isSubmittedToday = False
+        product = Product.objects.filter(id=1)
+
+        if product.exists():
+            modified_date = product.first().modified_date.date()
+            today = datetime.datetime.today().date()
+            if modified_date == today:
+                isSubmittedToday = True
+
         context = {
             'users': users,
             'form': form,
             'products': products,
             'categories': categories,
-            'isSubmittedToday': False
+            'isSubmittedToday': isSubmittedToday
         }
 
         return render(
