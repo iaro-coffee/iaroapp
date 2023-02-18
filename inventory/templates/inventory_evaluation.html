@@ -22,10 +22,7 @@
       <tr>
         <th scope="col">Name</th>
         <th scope="col">Category</th>
-        <th scope="col">Value</th>
-        <th scope="col">Value intented</th>
-        <th scope="col">Amount to buy</th>
-        <th scope="col">Seller</th>
+        <th scope="col">To buy</th>
       </tr>
     </thead>
     <tbody>
@@ -33,10 +30,7 @@
       <tr {%if product.value_tobuy < 0 %} style="background: #ea868f;"{% endif %} >
         <td>{{ product.name }}</td>
         <td>{{ product.category.all|join:", " }}</td>
-        <td>{{ product.value }} {{ product.unit.all|join:", " }}</td>
-        <td>{{ product.value_intended }} {{ product.unit.all|join:", " }}</td>
-        <td>{{ product.value_tobuy }} {{ product.unit.all|join:", " }}</td>
-        <td>{{ product.seller.all|join:", " }}</td>
+        <td style="white-space: nowrap;">{{ product.value_tobuy }} {{ product.unit.all|join:", " }}</td>
       </tr>
       {% endfor %}
     </tbody>
