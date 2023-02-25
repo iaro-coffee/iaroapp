@@ -4,6 +4,7 @@
     
     {% if task_list %}
 
+    {% csrf_token %}
     <div class="list-group w-auto">
     
       {% for task in task_list %}
@@ -36,10 +37,19 @@
     <script>
       document.addEventListener("DOMContentLoaded", function() {
   
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         let allCheckBox = document.querySelectorAll('.form-check-input')
         allCheckBox.forEach((checkbox) => { 
           checkbox.addEventListener('change', (event) => {
-            console.log(event.target.checked)
+            var taskid = event.target.nextSibling.nextSibling.value;
+            var state = event.target.checked;
+            var request = new XMLHttpRequest();
+            request.open('POST', '/tasks/');
+            request.setRequestHeader("X-CSRFToken", csrftoken); 
+            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            request.send(JSON.stringify({
+              [taskid]: state,
+            }));
           })
         })
 

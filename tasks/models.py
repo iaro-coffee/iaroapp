@@ -48,7 +48,7 @@ class TaskInstance(models.Model):
     """Model representing a specific copy of a task (i.e. that can be borrowed from the library)."""
     task = models.ForeignKey('Task', on_delete=models.RESTRICT, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=200, blank=True)
     date_done = models.DateField(null=True, blank=True)
 
     @property
