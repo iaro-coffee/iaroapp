@@ -40,8 +40,6 @@ class TaskInstanceAdmin(admin.ModelAdmin):
         }),
     )
 
-
-
 # Custom admin view added to display groups in user table
 # and hide mail address
 
