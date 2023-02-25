@@ -8,7 +8,8 @@
     
       {% for task in task_list %}
       <label class="list-group-item d-flex gap-3">
-        <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" {% if task.done %}checked{% endif %}>
+        <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" {% if task.done %}checked{% endif %} />
+        <input type="number" name="id" value="{{task.id}}" style="display: none;" />
         <span class="pt-1 form-checked-content">
           {{ task.title }}
           <small class="d-block text-muted" style="margin: 0.1rem 0;">
@@ -31,6 +32,19 @@
       {% endfor %}
 
     </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+  
+        let allCheckBox = document.querySelectorAll('.form-check-input')
+        allCheckBox.forEach((checkbox) => { 
+          checkbox.addEventListener('change', (event) => {
+            console.log(event.target.checked)
+          })
+        })
+
+      })
+    </script>
 
     {% else %}
       <p>There are no tasks available.</p>
