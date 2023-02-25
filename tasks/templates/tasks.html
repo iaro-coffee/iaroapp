@@ -20,7 +20,7 @@
               {{ user }}
               {% endif %}
             {% endfor %}
-            – Groups:
+            • Groups:
             {% for group in task.groups %}
             {{ group }}{% if task.groups|length > 1 and forloop.counter != task.groups|length %},{% endif %}
             {% endfor %}

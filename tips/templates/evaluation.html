@@ -38,9 +38,9 @@
             {{ user.user_name }}
           {% endif %}
         </th>
-        <td>{{ user.amountToday }} €</td>
-        <td>{{ user.amountThisMonth }} €</td>
-        <td>{{ user.amountLastMonth }} €</td>
+        <td>{{ user.amountToday|floatformat:2 }} €</td>
+        <td>{{ user.amountThisMonth|floatformat:2 }} €</td>
+        <td>{{ user.amountLastMonth|floatformat:2 }} €</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -76,7 +76,7 @@
         <td>
           {{ tip.user }}
         </th>
-        <td>{{ tip.amount }} €</td>
+        <td>{{ tip.amount|floatformat:2 }} €</td>
         <td>{{ tip.date }}</td>
       </tr>
       {% endfor %}
