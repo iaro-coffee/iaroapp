@@ -71,3 +71,47 @@ def tasks(request):
             'task_list': myTasks,
         },
     )
+
+from django.contrib.auth.decorators import user_passes_test
+
+def check_admin(user):
+   return user.is_superuser
+
+@user_passes_test(check_admin)
+def tasks_evaluation(request):
+
+    tasks = Task.objects.all()
+    tasks_evaluation = {}
+
+    weekdays = [
+        "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday", "Sunday"
+    ]
+
+    for weekday in weekdays:
+        tasks_evaluation[weekday] = []
+        for task in tasks:
+            task = model_to_dict(task)
+            task['assignees'] = task['users'] + task['groups']
+            for task_weekday in task['weekdays']:
+                if weekday == str(task_weekday):
+                    tasks_evaluation[weekday].append(task)
+
+    task_instances = TaskInstance.objects.all()
+    for task_instance in task_instances:
+
+        print(task_instance)
+        #for task in task_evaluation:
+        #     if task['id'] == task_instance.task.id:
+        #        print(task)
+        #         if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
+        #             task['done'] = True
+
+    return render(
+        request,
+        'tasks_evaluation.html',
+        context={
+            'tasks': tasks_evaluation,
+            'weekdays': weekdays
+        },
+    )

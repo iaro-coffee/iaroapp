@@ -1,0 +1,53 @@
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
+    <h1 class="h2">Tasks Overview</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+        <span data-feather="calendar" class="align-text-bottom"></span>
+        This week
+      </button>
+    </div>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+    {% for weekday in weekdays %}
+    <div class="col">
+      <div class="card mb-4 rounded-3 shadow-sm">
+        <div class="card-header py-3">
+          <h4 class="my-0 fw-normal">{{ weekday }}</h4>
+        </div>
+        <div class="card-body">
+          {% for key, tasks in tasks.items %}
+            {% if key == weekday %}
+              {% for task in tasks %}
+                <div class="alert alert-danger" role="alert">
+                  {{ task.title }}<br>
+                  <span data-feather="user" class="align-text-top" style="color: rgb(167, 153, 153)"></span><span style="color: rgb(167, 153, 153); padding-left: 0.25rem;">{{ task.assignees|join:", " }}</span>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <style>
+    .alert {
+      border: unset !important;
+      color: rgb(49, 46, 46) !important;
+      text-align: left;
+      padding: 0.5rem !important;
+      margin-bottom: 0.2rem !important;
+    }
+  </style>
+  {% endblock %}
