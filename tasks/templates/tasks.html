@@ -2,8 +2,19 @@
 
 {% block content %}
     
-    {% if task_list %}
+  {% if task_list %}
 
+  <h3 style="margin-bottom: 1rem;">Open Tasks</h3>
+
+  <div class="alert alert-danger hidden" role="alert">
+    Submitting tasks failed.
+  </div>
+
+  <div class="alert alert-success hidden" role="alert">
+    Tasks submitted successfully.
+  </div>
+
+  <form id="form" method="post">
     {% csrf_token %}
     <div class="list-group w-auto">
     
@@ -15,41 +26,110 @@
           {{ task.title }}
           <small class="d-block text-muted" style="margin: 0.1rem 0;">
             <span data-feather="user" class="align-text-bottom"></span>
-            {% for user in task.users %}
-              {% if user.first_name and user.last_name %}
-               {{ user.first_name }} {{ user.last_name }}{% if task.users|length > 1 and forloop.counter != task.users|length %},{% endif %}
-              {% else %}
-              {{ user }}
-              {% endif %}
-            {% endfor %}
-            • Groups:
-            {% for group in task.groups %}
-            {{ group }}{% if task.groups|length > 1 and forloop.counter != task.groups|length %},{% endif %}
-            {% endfor %}
+            {{ task.assignees|join:", " }}
           </small>
         </span>
       </label>
-
       {% endfor %}
-
+      <input type="submit" id="submitTasksBtn" class="w-100 btn btn-lg btn-primary" value="Submit tasks" style="margin-top: 1rem; max-width: 200px;" disabled />
     </div>
+  </form>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
+    <div class="modal fade" id="submitTasksModal" tabindex="-1" role="dialog" aria-labelledby="submitTasksModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="submitTasksModalLabel">Warning</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Are you sure all tasks have been completed for today?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="confirmSubmit">Submit tasks</button>
+          </div>
+        </div>
+      </div>
+    </div>
   
+    <script>
+
+      function checkSubmitBtnState() {
+        let allCheckBox = document.querySelectorAll('.form-check-input')
+        let allChecked = true;
+        allCheckBox.forEach((checkbox) => {
+          if (checkbox.checked == false) {
+            allChecked = false;
+          };
+        });
+        let submitTasksBtn = document.getElementById("submitTasksBtn");
+        if (allChecked) {
+          submitTasksBtn.disabled = false;
+        } else {
+          submitTasksBtn.disabled = true;
+        };
+      };
+      function submitForm() {
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var alerts = document.getElementsByClassName("alert");
+        for(var i = 0; i < alerts.length; i++) {
+          var alert = alerts[i];
+          alert.classList.add('hidden');
+        }      var form = document.querySelector('form');
+        var form_data = new FormData(form);
+        console.log(form_data);
+
+        let objSerializedForm = {};
+        for (let [name, value] of form_data) {
+          if (name === "id") {
+            objSerializedForm[value] = true;
+          }
+        }
+
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+          if (request.readyState == 4) {
+            if(request.status == 200) {
+              var element = document.getElementsByClassName("alert-success")[0];
+              element.classList.remove("hidden");
+              isSubmittedToday = true;
+            } else {
+              var element = document.getElementsByClassName("alert-danger")[0];
+              element.classList.remove("hidden");
+            }
+          }
+          window.scrollTo(0, 0);
+        }
+        request.open('POST', '/tasks/');
+        request.setRequestHeader("X-CSRFToken", csrftoken); 
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.send(JSON.stringify(objSerializedForm));
+
+      };
+
+      document.addEventListener("DOMContentLoaded", function() {
+
+        checkSubmitBtnState();
+
+        var submitTasksModal = new bootstrap.Modal(document.getElementById("submitTasksModal"), {});
+  
+        document.getElementById('form').onsubmit = function (evt) {
+          evt.preventDefault();
+          submitTasksModal.show();
+        }
+
+        document.getElementById('confirmSubmit').onclick = function() {
+          submitForm();
+          submitTasksModal.hide();
+        }
+
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         let allCheckBox = document.querySelectorAll('.form-check-input')
-        allCheckBox.forEach((checkbox) => { 
+        allCheckBox.forEach((checkbox) => {
           checkbox.addEventListener('change', (event) => {
-            var taskid = event.target.nextSibling.nextSibling.value;
-            var state = event.target.checked;
-            var request = new XMLHttpRequest();
-            request.open('POST', '/tasks/');
-            request.setRequestHeader("X-CSRFToken", csrftoken); 
-            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            request.send(JSON.stringify({
-              [taskid]: state,
-            }));
+            checkSubmitBtnState();
           })
         })
 

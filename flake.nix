@@ -20,14 +20,15 @@
       in
       {
         devShell = pkgs.mkShell {
-          packages = with pkgs; [
+          packages = with pkgs; with python3Packages; [
             python3
-            python3Packages.django
-            python3Packages.dj-database-url
-            python3Packages.whitenoise
-            python3Packages.django-widget-tweaks
-            python3Packages.setuptools # Required by widget-tweaks
-            python3Packages.django-login-required-middleware
+            django
+            dj-database-url
+            whitenoise
+            django-widget-tweaks
+            setuptools # Required by widget-tweaks
+            django-login-required-middleware
+            requests
           ];
         };
 

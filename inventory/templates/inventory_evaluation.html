@@ -5,10 +5,6 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
   <h1 class="h2">Inventory Overview</h1>
   <div class="btn-toolbar mb-2 mb-md-0">
-    <div class="btn-group me-2">
-      <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-      <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-    </div>
     <button type="button" class="btn btn-sm btn-outline-secondary">
       <span data-feather="calendar" class="align-text-bottom"></span>
       Last updated: {{ modifiedDate }}
@@ -29,7 +25,7 @@
     <tbody>
       {% for product in products %}
       {%if product.value_tobuy > 0 %}
-      <tr style="background: #ea868f;">
+      <tr>
         <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
         <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
         <td><label for="checkbox{{forloop.counter}}">{{ product.category.all|join:", " }}</label></td>
@@ -42,44 +38,60 @@
 </div>
 
 <style>
+  table {
+    font-size: 1rem;
+  }
   label {
     width: 100%;
-    padding: .5rem .5rem;
+    padding: .9rem;
     user-select: none;
+    height: 100%;
+  }
+  tbody tr {
+    background-color: rgb(248, 215, 218);
+    border-bottom-color: rgb(201, 192, 192) !important;
+  }
+  tbody tr.done {
+    background-color: rgb(209, 231, 221);
   }
   td:not(first-child) {
-    padding: 0 !important;
+    padding: 0rem !important;
     overflow-wrap: anywhere;
   }
   td:first-child {
-    padding: .5rem .5rem !important;
+    padding: 0.8rem !important;
   }
 </style>
+
 <script>
 
   window.onload = function() {
-    var i, l,
-        trs = document.getElementsByTagName('tr');
-
+    var i, l, trs = document.getElementsByTagName('tr');
     for (i = 0, l = trs.length; i < l; i++) {
-        attachClickHandler(trs[i]);
+      attachClickHandler(trs[i]);
+      var checkbox = trs[i].querySelector('input');
+      if (checkbox) {
+        if (checkbox.checked) {
+          trs[i].classList.add('done');
+        }
+      }
     }
   };
 
-  function clickHandler()
-  {
-      if (this.isSelected) { // expando properties. sorry, compat again
-          // change color, check checkbox, whatever
-          this.isSelected = false;
-      } else {
-          // opposite of above
-          this.isSelected = true;
-      }
+  function clickHandler() {
+    var checkbox = this.querySelector('input');
+    if (this.classList.contains('done')) {
+      this.classList.remove('done');
+      checkbox.checked = false;
+    } else {
+      this.classList.add('done');
+      checkbox.checked = true;
+    }
   }
 
-  function attachClickHandler(tr)
-  {
+  function attachClickHandler(tr) {
       tr.onclick = function() {
+        event.preventDefault();
         clickHandler.call(tr);
       };
   }

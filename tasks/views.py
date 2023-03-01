@@ -13,22 +13,14 @@ def index(request):
         request_data = request.body
         form_data = json.loads(request_data.decode("utf-8"))
         user_id = request.user.id
-        task_id = list(form_data.keys())[0]
         user = User.objects.get(id=user_id)
+        taskids_completed = list(form_data.keys())
         date = datetime.datetime.now()
-        task = Task.objects.get(id=task_id)
         today_date = datetime.datetime.today().strftime('%Y-%m-%d')
 
-        is_action_add_task = bool(form_data[next(iter(form_data))])
-
-        if is_action_add_task:
+        for task_id in taskids_completed:
+            task = Task.objects.get(id=task_id)
             TaskInstance.objects.create(user=user, date_done=date, task=task, done=True)
-        else:
-            for task_instance in TaskInstance.objects.all():
-                task_date = task_instance.date_done.strftime('%Y-%m-%d')
-                if task_date == today_date:
-                    if int(task_instance.task.id) == int(task_id):
-                        TaskInstance.objects.filter(id=task_instance.id).delete()
     
         return HttpResponse(200)
 
@@ -44,6 +36,7 @@ def tasks(request):
     myTasks = []
     for task in tasks:
         task = model_to_dict(task)
+        task['assignees'] = task['users'] + task['groups']
         for weekday in task['weekdays']:
             if weekdayToday == str(weekday):
                 if request.user in task['users']:
@@ -82,11 +75,11 @@ def tasks_evaluation(request):
 
     tasks = Task.objects.all()
     tasks_evaluation = {}
-
     weekdays = [
         "Monday", "Tuesday", "Wednesday",
         "Thursday", "Friday", "Saturday", "Sunday"
     ]
+    weekdayToday = datetime.datetime.today().strftime('%A')
 
     for weekday in weekdays:
         tasks_evaluation[weekday] = []
@@ -98,7 +91,6 @@ def tasks_evaluation(request):
                     tasks_evaluation[weekday].append(task)
 
     beginning_of_week = datetime.datetime.today() - datetime.timedelta(days=datetime.datetime.today().weekday() % 7)
-    print(beginning_of_week)
     task_instances = TaskInstance.objects.all()
     for task_instance in task_instances:
 
@@ -115,6 +107,7 @@ def tasks_evaluation(request):
         'tasks_evaluation.html',
         context={
             'tasks': tasks_evaluation,
-            'weekdays': weekdays
+            'weekdays': weekdays,
+            'today': weekdayToday
         },
     )

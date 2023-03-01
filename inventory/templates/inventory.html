@@ -80,7 +80,7 @@
 
     {% endfor %}
 
-    <input type="submit" class="w-100 btn btn-lg btn-outline-primary" value="Submit inventory" style="margin-bottom: 1rem; max-width: 250px;" />
+    <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit inventory" style="margin-bottom: 1rem; max-width: 250px;" />
   </form>
 
   <div class="modal fade" id="submitInventoryModal" tabindex="-1" role="dialog" aria-labelledby="submitInventoryModalLabel" aria-hidden="true">
@@ -171,21 +171,24 @@
   </script>
 
 <style>
-.sticky {
-  position: sticky;
-  top: 60px;
-  z-index: 100;
-  background: white;
-}
-.truncate {
-  width: 30px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ".";
- }
- .wrap {
-  overflow-wrap: anywhere;
- }
+  .sticky {
+    position: sticky;
+    top: 48px;
+    z-index: 100;
+    background: white;
+    margin: -1.5rem;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    border-bottom: 1px solid #eef0f2;
+  }
+  .truncate {
+    width: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ".";
+  }
+  .wrap {
+    overflow-wrap: anywhere;
+  }
 </style>
 
 {% endblock %}

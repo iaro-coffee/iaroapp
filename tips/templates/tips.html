@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<h3 style="margin-bottom: 1rem;">Submit Tips</h3>
+
 <div class="list-group w-auto">
 
   <div class="alert alert-danger hidden" role="alert">
@@ -42,7 +44,7 @@
       </a>
       {% endfor %}
     </div>
-    <input type="submit" class="w-100 btn btn-lg btn-outline-primary" value="Submit tips" style="margin-top: 1rem; max-width: 200px;" />
+    <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit tips" style="margin-top: 1rem; max-width: 200px;" />
   </form>
 
   <div class="modal fade" id="submitTipsModal" tabindex="-1" role="dialog" aria-labelledby="submitTipsModalLabel" aria-hidden="true">
@@ -74,7 +76,8 @@
       for(var i = 0; i < alerts.length; i++) {
         var alert = alerts[i];
         alert.classList.add('hidden');
-      }      var form = document.querySelector('form');
+      }
+      var form = document.querySelector('form');
       var form_data = new FormData(form);
 
       let objSerializedForm = {};

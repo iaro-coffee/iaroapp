@@ -4,24 +4,24 @@
 {% block content %}
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
-    <h1 class="h2">Tasks Overview</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-      <div class="btn-group me-2">
-        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-      </div>
-      <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-        <span data-feather="calendar" class="align-text-bottom"></span>
-        This week
-      </button>
+  <h1 class="h2">Tasks Overview</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group me-2">
+      <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
     </div>
+    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+      <span data-feather="calendar" class="align-text-bottom"></span>
+      This week
+    </button>
   </div>
+</div>
 
   <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
     {% for weekday in weekdays %}
     <div class="col">
-      <div class="card mb-4 rounded-3 shadow-sm">
-        <div class="card-header py-3">
+      <div class="card mb-4 rounded-3 shadow-sm {% if weekday == today %}border-primary{% endif %}">
+        <div class="card-header py-3 {% if weekday == today %}text-bg-primary border-primary{% endif %}">
           <h4 class="my-0 fw-normal">{{ weekday }}</h4>
         </div>
         <div class="card-body">
@@ -62,6 +62,8 @@
     .card-body div:last-child {
       margin-bottom: 0 !important;
       border-bottom: 0px !important;
+      border-bottom-left-radius: 8px !important;
+      border-bottom-right-radius: 8px !important;
     }
   </style>
   {% endblock %}
