@@ -97,15 +97,18 @@ def tasks_evaluation(request):
                 if weekday == str(task_weekday):
                     tasks_evaluation[weekday].append(task)
 
+    beginning_of_week = datetime.datetime.today() - datetime.timedelta(days=datetime.datetime.today().weekday() % 7)
+    print(beginning_of_week)
     task_instances = TaskInstance.objects.all()
     for task_instance in task_instances:
 
-        print(task_instance)
-        #for task in task_evaluation:
-        #     if task['id'] == task_instance.task.id:
-        #        print(task)
-        #         if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
-        #             task['done'] = True
+        for weekday in weekdays:
+            for task in tasks_evaluation[weekday]:
+                if task['id'] == task_instance.task.id:
+                    if beginning_of_week.date() < task_instance.date_done:
+                        task['done'] = "True"
+                    else:
+                        task['done'] = "False"
 
     return render(
         request,
