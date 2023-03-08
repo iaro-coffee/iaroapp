@@ -24,7 +24,7 @@
     </thead>
     <tbody>
       {% for product in products %}
-      {%if product.value_tobuy > 0 %}
+      {%if product.value_tobuy >= product.threshold %}
       <tr>
         <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
         <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>

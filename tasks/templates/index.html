@@ -16,6 +16,12 @@
         </div>
       </div>
       <div class="card-body p-0">
+
+        <div class="tasks-status">        
+          <div>test</div>
+          <canvas class="my-4 w-100" id="tipsChart" width="200" height="100"></canvas>
+        </div>
+
         <div class="row g-0 align-items-center py-2 position-relative border-bottom border-200">
           <div class="col ps-x1 py-1 position-static">
             <div class="d-flex align-items-center">
@@ -284,5 +290,42 @@
   .btn-link {
     text-decoration: none;
   }
+  .tasks-status {
+    display: flex;
+    padding: 2rem;
+  }
 </style>
+
+{% load static %}
+<script src="{% static 'js/chartjs-4.2.0.min.js' %}"></script>
+<script language="javascript">
+  (() => {
+    var data = {
+      labels: ["Done", "Open"],
+      datasets: [
+        {
+          label: "TeamA Score",
+          data: [10, 90],
+          backgroundColor: [
+            "#2c7be5",
+            "#d8e2ef",
+          ],
+        }
+      ]
+    };
+    'use strict'
+    const ctx = document.getElementById('tipsChart')
+    const myChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: data,
+      options: {
+        plugins: {
+          legend: {
+              display: false
+          }
+        }
+      }
+    })
+  })()
+</script>
 {% endblock %}
