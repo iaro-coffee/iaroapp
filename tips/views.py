@@ -12,9 +12,21 @@ from django.http.multipartparser import MultiPartParser
 from django.utils import timezone
 import json
 import datetime
+from lib import planday
+
+planday = planday.Planday()
+run_once_day = ""
 
 # Tip input page
 def index(request):
+
+    today = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+    global run_once_day
+
+    if run_once_day != today:
+        planday.authenticate()
+        shift_today_users = planday.get_shifts_today_users()
+        run_once_day = today
 
     User = get_user_model()
     users = User.objects.all()
@@ -40,6 +52,9 @@ def index(request):
 
         today = datetime.datetime.today().date()
         isSubmittedToday = False
+        
+        users = User.objects.filter(
+            email__in=shift_today_users)
 
         for tip in Tip.objects.all():
             tip = model_to_dict(tip)

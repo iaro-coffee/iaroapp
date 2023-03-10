@@ -85,15 +85,15 @@ body {
 }
 
 
-.card {
+.dashboard .card {
   box-shadow: rgba(65, 69, 88, 0.1) 0px 7px 14px 0px, rgba(0, 0, 0, 0.07) 0px 3px 6px 0px;
 }
 
-.card-header {
+.dashboard .card-header {
   background-color: rgb(249, 250, 253) !important;
   border-bottom: unset !important;
 }
 
-.card-header h6 {
+.dashboard .card-header h6 {
   font-size: 0.9rem !important;
 }

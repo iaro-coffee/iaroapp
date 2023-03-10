@@ -7,3 +7,4 @@ whitenoise==6.0.0
 django-widget-tweaks
 setuptools
 django-login-required-middleware
+python-dotenv

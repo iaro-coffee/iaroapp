@@ -29,6 +29,7 @@
             setuptools # Required by widget-tweaks
             django-login-required-middleware
             requests
+            python-dotenv
           ];
         };
 
