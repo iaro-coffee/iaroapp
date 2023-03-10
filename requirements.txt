@@ -8,3 +8,4 @@ django-widget-tweaks
 setuptools
 django-login-required-middleware
 python-dotenv
+requests
