@@ -33,9 +33,7 @@
               {% endif %}
             </h6>
             <p class="mb-0 opacity-75">
-              {% for group in user.groups.all %}
-                {{ group.name }}
-              {% endfor %}
+              {{ user.groups.all|join:", " }}
             </p>
           </div>
           <div style="display: flex; flex-direction: row; gap: 0.5rem;">
