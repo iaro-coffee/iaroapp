@@ -61,6 +61,7 @@ body {
 
 .contentArea {
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .navbar-toggler {
@@ -98,8 +99,4 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
   -moz-appearance: textfield;
-}
-
-.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-  margin-bottom: 0 !important;
 }
