@@ -16,12 +16,14 @@ from lib import planday
 
 planday = planday.Planday()
 run_once_day = ""
+shift_today_users = []
 
 # Tip input page
 def index(request):
 
     today = str(datetime.datetime.now().strftime("%Y-%m-%d"))
     global run_once_day
+    global shift_today_users
 
     if run_once_day != today:
         planday.authenticate()
