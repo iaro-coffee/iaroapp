@@ -91,7 +91,9 @@
 
   function attachClickHandler(tr) {
       tr.onclick = function() {
-        event.preventDefault();
+        if (event.target.tagName != 'INPUT') {
+          event.preventDefault();
+        }
         clickHandler.call(tr);
       };
   }
