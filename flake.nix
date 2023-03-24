@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/master"; # FIXME not yet in stable release
+    nixpkgs.url = "github:onny/nixpkgs/ckeditor"; # FIXME not yet in stable release
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -30,6 +30,7 @@
             django-login-required-middleware
             requests
             python-dotenv
+            django-ckeditor
           ];
         };
 

@@ -11,6 +11,7 @@ class Weekdays(models.Model):
         return self.name
 
 from django.contrib.auth.models import User, Group
+from ckeditor.fields import RichTextField
 
 class Task(models.Model):
     """Model representing a task (but not a specific copy of a task)."""
@@ -18,7 +19,7 @@ class Task(models.Model):
     users = models.ManyToManyField(User, help_text="Select which users should be assigned for the task", blank=True)
     groups = models.ManyToManyField(Group, help_text="Select which groups should be assigned for the task", blank=True)
     weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task")
-    summary = models.TextField(max_length=1000, help_text="Enter a brief description of the task", blank=True)
+    summary = RichTextField(max_length=1000, help_text="Enter a brief description of the task", blank=True)
 
     def display_users(self):
         return ', '.join([users.get_username() for users in self.users.all()[:3]])

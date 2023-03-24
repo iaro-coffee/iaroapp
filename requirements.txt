@@ -9,3 +9,4 @@ setuptools
 django-login-required-middleware
 python-dotenv
 requests
+django-ckeditor
