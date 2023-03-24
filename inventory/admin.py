@@ -14,7 +14,7 @@ class ProductsAdmin(admin.ModelAdmin):
      - fields to be displayed in list view (list_display)
      - adds inline addition of task instances in task view (inlines)
     """
-    list_display = ('name', 'value', 'value_intended', 'threshold', 'display_unit', 'display_category')
+    list_display = ('name', 'value', 'value_intended', 'display_unit', 'display_category')
     readonly_fields = ("modified_date",)
 
 admin.site.register(Product, ProductsAdmin)

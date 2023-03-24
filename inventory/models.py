@@ -41,6 +41,10 @@ class Product(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
 
     @property
+    def tobuy(self):
+        return (((100/self.value_intended)*self.value) < 30)
+
+    @property
     def value_tobuy(self):
         return abs(float(self.value-self.value_intended))
 
