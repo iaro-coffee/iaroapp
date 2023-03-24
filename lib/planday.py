@@ -2,6 +2,7 @@ import requests
 import json
 from dotenv import load_dotenv, find_dotenv
 import os
+import datetime
 
 load_dotenv(find_dotenv())
 
@@ -45,9 +46,10 @@ class Planday:
       'Authorization': 'Bearer ' + self.access_token,
       'X-ClientId': self.client_id
     }
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
     payload = {
-      'from': '2023-03-10',
-      'to': '2023-03-10'
+      'from': today,
+      'to': today
     }
     response = self.session.request("GET", 'https://openapi.planday.com/scheduling/v1/shifts', headers=auth_headers, params=payload)
     response = json.loads(response.text)

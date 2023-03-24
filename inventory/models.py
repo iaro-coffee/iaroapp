@@ -35,7 +35,6 @@ class Product(models.Model):
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
     value = models.FloatField()
     value_intended = models.FloatField()
-    threshold = models.FloatField(default=0)
     category = models.ManyToManyField(Category, help_text="Select category for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
