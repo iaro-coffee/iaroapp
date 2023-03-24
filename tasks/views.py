@@ -55,7 +55,11 @@ def tasks(request):
         for task in myTasks:
             if task['id'] == task_instance.task.id:
                 if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
-                    task['done'] = True
+                    today = datetime.datetime.now().date()
+                    task_day = task_instance.date_done
+                    if ((today-task_day).days < 7):
+                        task['done'] = True
+
 
     return render(
         request,

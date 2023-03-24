@@ -21,9 +21,12 @@
     <div class="list-group w-auto">
     
       {% for task in task_list %}
+      {% if not task.done %}
       <label class="list-group-item d-flex gap-3">
-        <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" {% if task.done %}checked{% endif %} />
-        <input type="number" name="id" value="{{task.id}}" style="display: none;" />
+        <fieldset>
+          <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done" />
+          <input type="number" name="id" value="{{task.id}}" style="display: none;" />
+        </fieldset>
         <span class="pt-1 form-checked-content">
           {{ task.title }}
           <small class="d-block text-muted" style="margin: 0.1rem 0;">
@@ -40,8 +43,9 @@
         </div>
         {% endif %}
       </label>
+      {% endif %}
       {% endfor %}
-      <input type="submit" id="submitTasksBtn" class="w-100 btn btn-lg btn-primary" value="Submit tasks" style="margin-top: 1rem; max-width: 200px;" disabled />
+      <input type="submit" id="submitTasksBtn" class="w-100 btn btn-lg btn-primary" value="Submit tasks" style="margin-top: 1rem; max-width: 200px;" />
     </div>
   </form>
 
@@ -53,7 +57,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            Are you sure all tasks have been completed for today?
+            Are you sure the selected tasks have been completed for today?
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -87,21 +91,6 @@
   
     <script>
 
-      function checkSubmitBtnState() {
-        let allCheckBox = document.querySelectorAll('.form-check-input')
-        let allChecked = true;
-        allCheckBox.forEach((checkbox) => {
-          if (checkbox.checked == false) {
-            allChecked = false;
-          };
-        });
-        let submitTasksBtn = document.getElementById("submitTasksBtn");
-        if (allChecked) {
-          submitTasksBtn.disabled = false;
-        } else {
-          submitTasksBtn.disabled = true;
-        };
-      };
       function submitForm() {
 
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -113,9 +102,15 @@
         var form_data = new FormData(form);
 
         let objSerializedForm = {};
+        let nextIsFinished = false;
         for (let [name, value] of form_data) {
-          if (name === "id") {
+          console.log(name, value)
+          if (name === "done") {
+            nextIsFinished = true;
+          }
+          if (name === "id" && nextIsFinished) {
             objSerializedForm[value] = true;
+            nextIsFinished = false;
           }
         }
 
@@ -142,8 +137,6 @@
 
       document.addEventListener("DOMContentLoaded", function() {
 
-        checkSubmitBtnState();
-
         var submitTasksModal = new bootstrap.Modal(document.getElementById("submitTasksModal"), {});
         var infoModal = new bootstrap.Modal(document.getElementById("infoModal"), {});
 
@@ -166,15 +159,6 @@
             infoModal.show();
           })
         })
-
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        let allCheckBox = document.querySelectorAll('.form-check-input')
-        allCheckBox.forEach((checkbox) => {
-          checkbox.addEventListener('change', (event) => {
-            checkSubmitBtnState();
-          })
-        })
-
       })
     </script>
 
