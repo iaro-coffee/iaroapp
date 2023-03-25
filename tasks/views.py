@@ -5,6 +5,8 @@ from django.forms.models import model_to_dict
 import datetime
 from django.http import HttpResponse
 import json
+from django.contrib.auth import get_user_model
+from tips.models import Tip
 
 def index(request):
 
@@ -24,9 +26,38 @@ def index(request):
     
         return HttpResponse(200)
 
+    User = get_user_model()
+    users = User.objects.all()
+    allTips = Tip.objects.all()
+
+    evalDate = datetime.datetime.now().date()
+    calWeekStart = evalDate.isocalendar().week
+    currentCalWeek = None
+    calWeekChange = 0
+    tipsEval = {}
+
+    while calWeekChange < 6:
+
+        if currentCalWeek != evalDate.isocalendar().week:
+            currentCalWeek = evalDate.isocalendar().week
+            calWeekChange += 1
+            if calWeekChange == 6:
+                break
+            tipsEval[currentCalWeek] = 0
+
+        evalDate = evalDate - datetime.timedelta(days=1)
+
+        for tip in allTips:
+            tip = model_to_dict(tip)
+            if request.user.id == tip['user'] and tip['date'].date() == evalDate:
+                tipsEval[currentCalWeek] += float(tip['amount'])
+
     return render(
         request,
-        'index.html'
+        'index.html',
+        context={
+            'tipsEval': tipsEval,
+        }
     )
 
 def tasks(request):
