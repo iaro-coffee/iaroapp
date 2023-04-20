@@ -41,15 +41,13 @@ def index(request):
 
     else:
 
-        today = datetime.datetime.today().date()
         isSubmittedToday = False
-        product = Product.objects.filter(id=1)
-        modified_date = "Unknown"
-
-        if product.exists():
-            modified_date = product.first().modified_date.date()
+        last_modified_date = "Unknown"
+        product_last_modified = Product.objects.latest('modified_date')
+        if product_last_modified:
+            last_modified_date = product_last_modified.modified_date.date()
             today = datetime.datetime.today().date()
-            if modified_date == today:
+            if last_modified_date == today:
                 isSubmittedToday = True
 
         context = {
@@ -58,7 +56,7 @@ def index(request):
             'products': products,
             'categories': categories,
             'isSubmittedToday': isSubmittedToday,
-            'modifiedDate': modified_date
+            'modifiedDate': last_modified_date
         }
 
         return render(
