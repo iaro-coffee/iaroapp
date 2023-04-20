@@ -7,6 +7,12 @@ from django.http import HttpResponse
 import json
 from django.contrib.auth import get_user_model
 from tips.models import Tip
+from lib import planday
+
+planday = planday.Planday()
+run_once_day = ""
+nextShifts = []
+nextShiftsUser = []
 
 def index(request):
 
@@ -52,11 +58,29 @@ def index(request):
             if request.user.id == tip['user'] and tip['date'].date() == evalDate:
                 tipsEval[currentCalWeek] += float(tip['amount'])
 
+    today = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+    global run_once_day
+    global nextShifts
+    global nextShiftsUser
+
+    if run_once_day != today:
+        planday.authenticate()
+        nextShifts = planday.get_upcoming_shifts()
+        run_once_day = today
+        for shift in nextShifts:
+            if request.user.email == shift['employee']:
+                start = datetime.datetime.fromisoformat(shift["start"]).strftime('%H.%M')
+                end = datetime.datetime.fromisoformat(shift["end"]).strftime('%H.%M')
+                day = datetime.datetime.fromisoformat(shift["end"]).strftime('%d')
+                weekday = datetime.datetime.fromisoformat(shift["end"]).strftime('%a')
+                nextShiftsUser.append({"day": day, "start": start, "end": end, "weekday": weekday})
+
     return render(
         request,
         'index.html',
         context={
             'tipsEval': tipsEval,
+            'nextShifts': nextShiftsUser
         }
     )
 

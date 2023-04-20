@@ -32,6 +32,7 @@
             requests
             python-dotenv
             django-ckeditor
+            dateutil
           ];
         };
 

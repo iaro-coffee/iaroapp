@@ -61,3 +61,8 @@ nix run
 
 Open http://localhost:8000. To access the admin panel go to
 http://localhost:8000/admin.
+
+## Documentation
+
+### Where are the template files stored?
+

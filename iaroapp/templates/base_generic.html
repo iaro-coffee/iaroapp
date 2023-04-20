@@ -29,7 +29,7 @@
         </div>
         {% endif %}
         <div class="nav-item text-nowrap">
-          <a class="nav-link px-3" href="{% url 'logout'%}?next={{request.path}}">Sign out</a>
+          <a class="nav-link px-3" href="{% url 'logout'%}?next={{request.path}}">Sign out <span style="opacity: 0.5;">({{ user }})</span></a>
         </div>
       </div>
       <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">

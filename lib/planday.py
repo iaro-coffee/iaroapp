@@ -3,6 +3,7 @@ import json
 from dotenv import load_dotenv, find_dotenv
 import os
 import datetime
+from dateutil.relativedelta import relativedelta
 
 load_dotenv(find_dotenv())
 
@@ -67,7 +68,7 @@ class Planday:
       'X-ClientId': self.client_id
     }
     today = datetime.datetime.now().strftime("%Y-%m-%d")
-    nextMonth = datetime.datetime.now().strftime("%Y-%m-%d")
+    nextMonth = (datetime.datetime.now() + relativedelta(months=1)).strftime("%Y-%m-%d")
     payload = {
       'from': today,
       'to': nextMonth
@@ -75,8 +76,10 @@ class Planday:
     response = self.session.request("GET", self.base_url + '/scheduling/v1/shifts', headers=auth_headers, params=payload)
     response = json.loads(response.text)
     response = response['data']
-    print(response)
     shifts = []
     for shift in response:
-      shifts.append(employees[shift['employeeId']])
+      employee = employees[shift['employeeId']]
+      start = shift['startDateTime']
+      end = shift['endDateTime']
+      shifts.append({"employee": employee, "start": start, "end": end})
     return shifts
