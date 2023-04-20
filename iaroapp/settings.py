@@ -64,7 +64,10 @@ ROOT_URLCONF = 'iaroapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'iaroapp', 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,7 +129,7 @@ DATABASES['default'].update(db_from_env)
 STATIC_ROOT = BASE_DIR / 'staticfiles'  #. os.path.join(BASE_DIR, 'staticfiles')
 # The URL to use when referring to static files (where they will be served from)
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'iaroapp', 'static') ]
 
 # Static file serving.
 # http://whitenoise.evans.io/en/stable/django.html#django-middleware
