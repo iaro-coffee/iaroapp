@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:onny/nixpkgs/ckeditor"; # FIXME not yet in stable release
+    # FIXME: Switch to 23.05 release when it's ready
+    nixpkgs.url = "github:NixOS/nixpkgs/master";
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
