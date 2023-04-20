@@ -51,6 +51,12 @@ nix develop
 python3 manage.py createsuperuser
 ```
 
+Create `.env` file in the project root folder and add the Planday credentials
+```
+CLIENT_ID=
+REFRESH_TOKEN=
+``` 
+
 ## Run
 
 ```
