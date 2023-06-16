@@ -16,7 +16,18 @@
     Tips submitted successfully.
   </div>
 
+  <form id="automaticTipForm" method="post">
+    <h5>Tip calculator</h5>
+    {% csrf_token %}
+    <div style="display: flex; flex-direction: row; gap: 0.5rem;">
+      <input name="amount" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" required class="form-control" id="tip" value="0.0" style="max-width: 100px;">
+      <small class="opacity-50 text-nowrap">€</small>
+    </div>
+    <input type="submit" class="w-100 btn btn-lg btn-primary" value="calculate tips" style="margin-top: 1rem; max-width: 200px;">
+  </form>
+
   <form id="manualTipForm" method="post">
+    <h5>Manual tip upload</h5>
     {% csrf_token %}
     <div class="list-group w-auto">
     {% for user in users %}
@@ -45,10 +56,6 @@
       {% endfor %}
     </div>
     <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit tips" style="margin-top: 1rem; max-width: 200px;" />
-  </form>
-
-  <form>
-
   </form>
 
   <div class="modal fade" id="submitTipsModal" tabindex="-1" role="dialog" aria-labelledby="submitTipsModalLabel" aria-hidden="true">
