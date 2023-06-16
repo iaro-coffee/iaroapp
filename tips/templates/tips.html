@@ -16,7 +16,7 @@
     Tips submitted successfully.
   </div>
 
-  <form id="form" method="post">
+  <form id="manualTipForm" method="post">
     {% csrf_token %}
     <div class="list-group w-auto">
     {% for user in users %}
@@ -45,6 +45,10 @@
       {% endfor %}
     </div>
     <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit tips" style="margin-top: 1rem; max-width: 200px;" />
+  </form>
+
+  <form>
+
   </form>
 
   <div class="modal fade" id="submitTipsModal" tabindex="-1" role="dialog" aria-labelledby="submitTipsModalLabel" aria-hidden="true">
@@ -77,7 +81,7 @@
         var alert = alerts[i];
         alert.classList.add('hidden');
       }
-      var form = document.querySelector('form');
+      var form = document.querySelector('#manualTipForm');
       var form_data = new FormData(form);
 
       let objSerializedForm = {};
@@ -120,7 +124,7 @@
         submitTipsModal.hide();
       }
 
-      document.getElementById('form').onsubmit = function (evt) {
+      document.getElementById('manualTipForm').onsubmit = function (evt) {
       
         evt.preventDefault();
 
