@@ -58,6 +58,8 @@ class Planday:
     response = response['data']
     users = []
     for shift in response:
+      if 'employeeId' not in shift:
+        continue
       users.append(employees[shift['employeeId']])
     return users
 
