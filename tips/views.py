@@ -37,8 +37,9 @@ def index(request):
         form = Form(request.POST)
 
         request_data = request.body
-
+        print(request_data)
         form_data = json.loads(request_data.decode("utf-8"))
+        print(form_data)
         for user_id, amount in form_data.items():
             user = User.objects.get(id=user_id)
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
