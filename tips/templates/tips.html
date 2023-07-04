@@ -16,14 +16,14 @@
     Tips submitted successfully.
   </div>
 
-  <div id="calculator" style="margin-bottom: 15px">
+  <form id="calculator" style="margin-bottom: 15px" method="get">
     <h5>Tip calculator</h5>
     <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-      <input id="calcTipAmount" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" required class="form-control" id="tip" value="0.0" style="max-width: 100px;">
+      <input id="calcTipAmount" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" required class="form-control" name="tip" value="0.0" style="max-width: 100px;">
       <small class="opacity-50 text-nowrap">€</small>
     </div>
-    <button id="calculateTip" class="w-100 btn btn-lg btn-primary" style="margin-top: 1rem; max-width: 200px;">Calculate Tip</button>
-  </div>
+    <input type="submit" id="calculateTip" class="w-100 btn btn-lg btn-primary" style="margin-top: 1rem; max-width: 200px;" value="Calculate tip">
+  </form>
 
   <form id="manualTipForm" method="post">
     <h5>Manual tip upload</h5>
@@ -47,7 +47,7 @@
             </p>
           </div>
           <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-            <input name="amount" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" required class="form-control" id="tip" value="0.0" style="max-width: 100px;">
+            <input name="amount" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" required class="form-control" id="tip" value="{{user.tip}}" style="max-width: 100px;">
             <small class="opacity-50 text-nowrap">€</small>
           </div>
         </div>
@@ -78,8 +78,6 @@
   <script>
 
     var isSubmittedToday = ('{{ isSubmittedToday | safe }}' === 'True');
-
-    function calcTip(){}
 
     function submitForm() {
 
@@ -141,13 +139,6 @@
         } else {
           submitForm();
         }
-
-      }
-
-      document.getElementById('calculateTip'). = function (evt){
-
-        evt.preventDefault();
-        calcTip();
 
       }
 

@@ -58,12 +58,11 @@ class Planday:
     response = response['data']
     users = []
     for shift in response:
-      if 'employeeId' not in shift:
-        continue
-      users.append(employees[shift['employeeId']])
+      if 'employeeId' in shift:
+        users.append(employees[shift['employeeId']])
     return users
 
-  def get_upcoming_shifts(self):
+  def get_upcoming_shifts(self,starting , until):
     employees = self.get_employees()
     auth_headers = {
       'Authorization': 'Bearer ' + self.access_token,
@@ -72,16 +71,20 @@ class Planday:
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     nextMonth = (datetime.datetime.now() + relativedelta(months=1)).strftime("%Y-%m-%d")
     payload = {
-      'from': today,
-      'to': nextMonth
+      'from': today if starting is None else starting,
+      'to': nextMonth if until is None else until
     }
     response = self.session.request("GET", self.base_url + '/scheduling/v1/shifts', headers=auth_headers, params=payload)
     response = json.loads(response.text)
     response = response['data']
     shifts = []
-    #for shift in response:
-    #  employee = employees[shift['employeeId']]
-    #  start = shift['startDateTime']
-    #  end = shift['endDateTime']
-    #  shifts.append({"employee": employee, "start": start, "end": end})
+    for shift in response:
+      if 'employeeId' in shift:
+        employee = employees[shift['employeeId']]
+        employeeId = shift['employeeId']
+        start = shift['startDateTime']
+        end = shift['endDateTime']
+        departmentId = shift['departmentId']
+        groupId = shift['employeeGroupId']
+        shifts.append({"employee": employee, "employeeId": employeeId, "departmentId":departmentId, "groupId": groupId, "start": start, "end": end})
     return shifts
