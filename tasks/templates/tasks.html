@@ -16,7 +16,7 @@
     Tasks submitted successfully.
   </div>
 
-  <form id="form" method="post">
+  <form id="tasksForm" method="post">
     {% csrf_token %}
     <div class="list-group w-auto">
     
@@ -98,7 +98,7 @@
         for(var i = 0; i < alerts.length; i++) {
           var alert = alerts[i];
           alert.classList.add('hidden');
-        }      var form = document.querySelector('form');
+        }      var form = document.querySelector('#tasksForm');
         var form_data = new FormData(form);
 
         let objSerializedForm = {};
@@ -140,7 +140,7 @@
         var submitTasksModal = new bootstrap.Modal(document.getElementById("submitTasksModal"), {});
         var infoModal = new bootstrap.Modal(document.getElementById("infoModal"), {});
 
-        document.getElementById('form').onsubmit = function (evt) {
+        document.getElementById('tasksForm').onsubmit = function (evt) {
           evt.preventDefault();
           submitTasksModal.show();
         }

@@ -12,7 +12,7 @@
     Inventory submitted successfully.
   </div>
 
-  <form id="form" method="post">
+  <form id="inventoryForm" method="post">
     {% csrf_token %}
 
     {% for category in categories %}
@@ -112,7 +112,7 @@
       for(var i = 0; i < alerts.length; i++) {
         var alert = alerts[i];
         alert.classList.add('hidden');
-      }      var form = document.querySelector('form');
+      }      var form = document.querySelector('#inventoryForm');
       var form_data = new FormData(form);
 
       let objSerializedForm = {};
@@ -155,7 +155,7 @@
         submitInventoryModal.hide();
       }
 
-      document.getElementById('form').onsubmit = function (evt) {
+      document.getElementById('inventoryForm').onsubmit = function (evt) {
       
         evt.preventDefault();
 
