@@ -87,9 +87,8 @@
                 </a>
               </li>
             </ul>
-            
-            {% load is_member%}
-            {% if user.is_superuser or user|is_member:'Barista'  %}
+
+            {% if user.is_superuser %}
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
               <span>Reports</span>
             </h6>
@@ -105,7 +104,6 @@
                   Inventory
                 </a>
               </li>
-              {% if user.is_superuser %}
               <li class="nav-item">
                 {% url 'evaluation' as evaluation_url %}
                 {% if request.path == evaluation_url %}
@@ -128,7 +126,6 @@
                   Tasks
                 </a>
               </li>
-              {% endif %}
             </ul>
             {% endif %}
 

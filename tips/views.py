@@ -37,6 +37,7 @@ def index(request):
         form = Form(request.POST)
 
         request_data = request.body
+
         form_data = json.loads(request_data.decode("utf-8"))
         for user_id, amount in form_data.items():
             user = User.objects.get(id=user_id)
@@ -50,48 +51,13 @@ def index(request):
         return HttpResponse(200)
 
     else:
-            
+
         today = datetime.datetime.today().date()
         isSubmittedToday = False
+        
         users = User.objects.filter(
             email__in=shift_today_users)
-        dt = datetime.datetime.now().strftime("%Y-%m-%d")
-        shifts = planday.get_upcoming_shifts(dt,dt)
-        
-        if 'tip' in request.GET:
-            now = datetime.datetime.today().hour + 2
-            complete_tip = float(request.GET['tip'])
-            kitchen_tip = 0.0
-            if now in range(12, 15, 1):
-                kitchen_tip = round((complete_tip * 0.2), 2)
-                counter_tip = complete_tip - kitchen_tip
-            else:
-                counter_tip = complete_tip
-            
-            kitchenId = 274170
-            baristaId = 272480
-            now = datetime.datetime.now()
-            kitchenStaff = []
-            baristaStaff = []
-            for shift in shifts:
-                start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M')
-                end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M')
-                if start < now and end > now:
-                    if shift['groupId'] == kitchenId:
-                        kitchenStaff.append(shift['employee'])
-                    elif shift['groupId'] == baristaId:
-                        baristaStaff.append(shift['employee'])
-            tipMap = {}
-            for employee in kitchenStaff:
-                tipMap[employee] = kitchen_tip/kitchenStaff.__len__()
-            for employee in baristaStaff:
-                tipMap[employee] = counter_tip/baristaStaff.__len__()
-            for user in users:
-                if user.email in tipMap:
-                    user.tip = tipMap[user.email]
-                else:
-                    user.tip = 0.0
-                    
+
         for tip in Tip.objects.all():
             tip = model_to_dict(tip)
             if tip['date'].date() == today:
