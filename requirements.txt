@@ -10,4 +10,4 @@ django-login-required-middleware
 python-dotenv
 requests
 django-ckeditor
-dateutil
+python-dateutil
