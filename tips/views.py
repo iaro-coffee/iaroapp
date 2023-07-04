@@ -50,7 +50,7 @@ def index(request):
         return HttpResponse(200)
 
     else:
-            
+        tipMap = {}   
         today = datetime.datetime.today().date()
         isSubmittedToday = False
         users = User.objects.filter(
@@ -81,16 +81,16 @@ def index(request):
                         kitchenStaff.append(shift['employee'])
                     elif shift['groupId'] == baristaId:
                         baristaStaff.append(shift['employee'])
-            tipMap = {}
             for employee in kitchenStaff:
                 tipMap[employee] = kitchen_tip/kitchenStaff.__len__()
             for employee in baristaStaff:
                 tipMap[employee] = counter_tip/baristaStaff.__len__()
-            for user in users:
-                if user.email in tipMap:
-                    user.tip = tipMap[user.email]
-                else:
-                    user.tip = 0.0
+
+        for user in users:
+            if user.email in tipMap:
+                user.tip = tipMap[user.email]
+            else:
+                user.tip = 0.0
                     
         for tip in Tip.objects.all():
             tip = model_to_dict(tip)
