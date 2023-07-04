@@ -65,7 +65,7 @@ def index(request):
 
     if run_once_day != today:
         planday.authenticate()
-        nextShifts = planday.get_upcoming_shifts()
+        nextShifts = planday.get_upcoming_shifts(None, None)
         run_once_day = today
         for shift in nextShifts:
             if request.user.email == shift['employee']:
