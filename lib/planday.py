@@ -77,9 +77,9 @@ class Planday:
     response = json.loads(response.text)
     response = response['data']
     shifts = []
-    for shift in response:
-      employee = employees[shift['employeeId']]
-      start = shift['startDateTime']
-      end = shift['endDateTime']
-      shifts.append({"employee": employee, "start": start, "end": end})
+    #for shift in response:
+    #  employee = employees[shift['employeeId']]
+    #  start = shift['startDateTime']
+    #  end = shift['endDateTime']
+    #  shifts.append({"employee": employee, "start": start, "end": end})
     return shifts
