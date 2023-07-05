@@ -63,7 +63,7 @@ def index(request):
         baristaId = 272480
         serviceId = 275780
         
-        now = datetime.datetime.now() + timedelta(hours=5)
+        now = datetime.datetime.now() #+ timedelta(hours=5)
         kitchenStaff = []
         baristaStaff = []
         serviceStaff = []
