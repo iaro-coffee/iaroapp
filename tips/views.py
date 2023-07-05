@@ -13,6 +13,7 @@ from django.utils import timezone
 import json
 import datetime
 from lib import planday
+from datetime import timedelta
 
 planday = planday.Planday()
 run_once_day = ""
@@ -53,38 +54,63 @@ def index(request):
         tipMap = {}   
         today = datetime.datetime.today().date()
         isSubmittedToday = False
-        users = User.objects.filter(
-            email__in=shift_today_users)
+        
         dt = datetime.datetime.now().strftime("%Y-%m-%d")
         shifts = planday.get_upcoming_shifts(dt,dt)
+        #print(shifts)
+        
+        kitchenId = 274170
+        baristaId = 272480
+        serviceId = 275780
+        
+        now = datetime.datetime.now() + timedelta(hours=5)
+        kitchenStaff = []
+        baristaStaff = []
+        serviceStaff = []
+        for shift in shifts:
+            start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M')
+            end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M')
+            if start < now and now < end:
+                if shift['groupId'] == kitchenId:
+                    kitchenStaff.append(shift['employee'])
+                elif shift['groupId'] == baristaId:
+                    baristaStaff.append(shift['employee'])
+                elif shift['groupId'] == serviceId:
+                    serviceStaff.append(shift['employee'])
+        dayStaff = kitchenStaff + baristaStaff + serviceStaff
+        users = User.objects.filter(email__in=dayStaff)
+            #email__in=shift_today_users)
         
         if 'tip' in request.GET:
-            now = datetime.datetime.today().hour + 2
-            complete_tip = float(request.GET['tip'])
-            kitchen_tip = 0.0
-            if now in range(12, 15, 1):
-                kitchen_tip = round((complete_tip * 0.2), 2)
-                counter_tip = complete_tip - kitchen_tip
+            #now = datetime.datetime.today().hour
+            complete_tip = float(request.GET['tip'].replace(",","."))
+            #kitchen_tip = 0.0
+            #if now in range(12, 15, 1):
+            #    kitchen_tip = round((complete_tip * 0.2), 2)
+            #    counter_tip = complete_tip - kitchen_tip
+            #else:
+            #    counter_tip = complete_tip
+            
+                        
+            ksl = kitchenStaff.__len__()
+            bsl = baristaStaff.__len__()
+            ssl = serviceStaff.__len__()
+            
+            if ksl > 0:
+                kitchen_tip = round(complete_tip * 0.2, 2)
+                counter_tip = round(complete_tip - kitchen_tip, 2)
+            elif ssl > 0:
+                service_tip = round((complete_tip * 0.2), 2)
+                counter_tip = round((complete_tip - service_tip), 2)
             else:
                 counter_tip = complete_tip
             
-            kitchenId = 274170
-            baristaId = 272480
-            now = datetime.datetime.now()
-            kitchenStaff = []
-            baristaStaff = []
-            for shift in shifts:
-                start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M')
-                end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M')
-                if start < now and end > now:
-                    if shift['groupId'] == kitchenId:
-                        kitchenStaff.append(shift['employee'])
-                    elif shift['groupId'] == baristaId:
-                        baristaStaff.append(shift['employee'])
             for employee in kitchenStaff:
-                tipMap[employee] = kitchen_tip/kitchenStaff.__len__()
+                tipMap[employee] = round((kitchen_tip/ksl), 2)
             for employee in baristaStaff:
-                tipMap[employee] = counter_tip/baristaStaff.__len__()
+                tipMap[employee] = round((counter_tip/bsl), 2)
+            for employee in serviceStaff:
+                tipMap[employee] = round((service_tip/ssl), 2)
 
         for user in users:
             if user.email in tipMap:
