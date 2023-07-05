@@ -57,3 +57,8 @@ urlpatterns += [
 urlpatterns += [
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
+#Add registration Forms
+urlpatterns += [
+    path('registration/', include('registration.urls')),
+]
