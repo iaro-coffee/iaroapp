@@ -64,9 +64,11 @@ def index(request):
         serviceId = 275780
         
         now = datetime.datetime.now() #+ timedelta(hours=5)
+        
         kitchenStaff = []
         baristaStaff = []
         serviceStaff = []
+        
         for shift in shifts:
             start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M')
             end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M')
@@ -79,18 +81,9 @@ def index(request):
                     serviceStaff.append(shift['employee'])
         dayStaff = kitchenStaff + baristaStaff + serviceStaff
         users = User.objects.filter(email__in=dayStaff)
-            #email__in=shift_today_users)
         
         if 'tip' in request.GET:
-            #now = datetime.datetime.today().hour
             complete_tip = float(request.GET['tip'].replace(",","."))
-            #kitchen_tip = 0.0
-            #if now in range(12, 15, 1):
-            #    kitchen_tip = round((complete_tip * 0.2), 2)
-            #    counter_tip = complete_tip - kitchen_tip
-            #else:
-            #    counter_tip = complete_tip
-            
                         
             ksl = kitchenStaff.__len__()
             bsl = baristaStaff.__len__()
@@ -100,6 +93,7 @@ def index(request):
                 kitchen_tip = round(complete_tip * 0.2, 2)
                 counter_tip = round(complete_tip - kitchen_tip, 2)
             elif ssl > 0:
+                # service shift 1.5 hours, barista shift 6 hors: 1.5 / 7.5 = 0.2
                 service_tip = round((complete_tip * 0.2), 2)
                 counter_tip = round((complete_tip - service_tip), 2)
             else:
