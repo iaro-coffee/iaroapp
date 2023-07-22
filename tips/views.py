@@ -53,86 +53,64 @@ def index(request):
         today = datetime.datetime.today().date()
         isSubmittedToday = False
         
-        #print(shifts)
-        
         kitchenId = 274170
         baristaId = 272480
         serviceId = 275780
         
-        now = datetime.datetime.now() #+ timedelta(hours=5) #datetime.datetime(2023,7,8)
+        now = datetime.datetime.now() + timedelta(hours=0.5) 
         day = now.weekday()
-        print(day)
         dt = now.strftime("%Y-%m-%d")
         shifts = planday.get_upcoming_shifts(dt,dt)
-        
+        dayStaff = []
         kitchenStaff = []
         baristaStaff = []
-        serviceStaff = []
-        
         for shift in shifts:
             start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M')
             end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M')
-            if (start < now and now < end) or day in range(5,7):
-                if shift['groupId'] == kitchenId:
+            gid = shift['groupId']
+            if (start < now and now <= end):# or day in range(5,7):
+                dayStaff.append(shift['employee'])
+                if gid == kitchenId:
                     kitchenStaff.append(shift['employee'])
-                elif shift['groupId'] == baristaId:
+                elif gid == baristaId or gid == serviceId:
                     baristaStaff.append(shift['employee'])
-                elif shift['groupId'] == serviceId:
-                    serviceStaff.append(shift['employee'])
-        dayStaff = kitchenStaff + baristaStaff + serviceStaff
-        print(dayStaff)
+        print(baristaStaff)
+                    
+        ksl = kitchenStaff.__len__()
+        bsl = baristaStaff.__len__()
+        
         users = User.objects.filter(email__in=dayStaff)
+        
         
         if 'tip' in request.GET:
             complete_tip = float(request.GET['tip'].replace(",","."))
-                        
-            ksl = kitchenStaff.__len__()
-            bsl = baristaStaff.__len__()
-            ssl = serviceStaff.__len__()
             
-            
-            if day == 5:
-                kitchen_tip = round((complete_tip * 0.16), 2)
-                bar1_tip = round(((complete_tip - kitchen_tip)* (5/9)), 2)
-                bar2_tip = round((complete_tip - kitchen_tip - bar1_tip), 2)
-                kit1_tip = round(kitchen_tip/2, 2)
-                kit2_tip = round(kitchen_tip/2, 2)
+            if day == 5 or day == 6:
+                if now.hour < 15:
+                    kitchen_tip = round((complete_tip * 0.16) / ksl, 2)
+                    bar1_tip = round(((complete_tip - (kitchen_tip * ksl))* (5/9)), 2)
+                    bar2_tip = round((complete_tip - (kitchen_tip * 2) - bar1_tip), 2)
                 
-                tipMap[kitchenStaff[0]] = kit1_tip
-                tipMap[kitchenStaff[1]] = kit2_tip
+                    for shift in shifts:
+                        if shift['employee'] in baristaStaff:
+                            start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M').hour
+                            end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M').hour
+                            if start < 9:
+                                tipMap[shift['employee']] = bar1_tip
+                            else:
+                                tipMap[shift['employee']] = bar2_tip
+                        elif shift['employee'] in kitchenStaff:
+                            tipMap[shift['employee']] = kitchen_tip
+                else:
+                    bar_tip = round(complete_tip / 2, 2)
+                    for shift in shifts:
+                        if shift['employee'] in baristaStaff:
+                            tipMap[shift['employee']] = bar_tip
                 
-                for shift in shifts:
-                    if shift['employee'] not in baristaStaff:
-                        continue
-                    start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M').hour
-                    end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M').hour
-                    if end - start >= 5:
-                        tipMap[shift['employee']] = bar1_tip
-                    else:
-                        tipMap[shift['employee']] = bar2_tip
-                
-            elif day == 6:
-                kit1_tip = round((complete_tip * 0.2), 2)
-                bar1_tip = round(((complete_tip - kit1_tip) * (5/9)), 2)
-                bar2_tip = round((complete_tip - bar1_tip - kit1_tip), 2)
-                tipMap[kitchenStaff[0]] = kit1_tip
-                for shift in shifts:
-                    if shift['employee'] not in baristaStaff:
-                        continue
-                    start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M').hour
-                    end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M').hour
-                    if end - start >= 5:
-                        tipMap[shift['employee']] = bar1_tip
-                    else:
-                        tipMap[shift['employee']] = bar2_tip
             else:
                 if ksl > 0:
                     kitchen_tip = round(complete_tip * 0.2, 2)
                     counter_tip = round(complete_tip - kitchen_tip, 2)
-                elif ssl > 0:
-                    # service shift 1.5 hours, barista shift 6 hors: 1.5 / 7.5 = 0.2
-                    service_tip = round((complete_tip * 0.2), 2)
-                    counter_tip = round((complete_tip - service_tip), 2)
                 else:
                     counter_tip = complete_tip
                 
@@ -140,15 +118,12 @@ def index(request):
                     tipMap[employee] = round((kitchen_tip/ksl), 2)
                 for employee in baristaStaff:
                     tipMap[employee] = round((counter_tip/bsl), 2)
-                for employee in serviceStaff:
-                    tipMap[employee] = round((service_tip/ssl), 2)
 
         for user in users:
             if user.email in tipMap:
                 user.tip = tipMap[user.email]
             else:
                 user.tip = 0.0
-                    
         for tip in Tip.objects.all():
             tip = model_to_dict(tip)
             if tip['date'].date() == today:

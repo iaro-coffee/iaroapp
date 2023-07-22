@@ -34,7 +34,7 @@
         <span data-feather="user" style="width: 40px; height: 40px; stroke-width: 1;"></span>
         <div class="d-flex gap-2 w-100 justify-content-between">
           <div>
-            <input type="text" name="user" value="{{user.id}}" style="display: none;" />
+            <input type="text" name="user" value="{{user.id}}" style="display: none;" /> 
             <h6 class="mb-0">
               {% if user.first_name and user.last_name %}
                 {{ user.first_name }} {{ user.last_name }}
@@ -134,12 +134,12 @@
       
         evt.preventDefault();
 
-        if (isSubmittedToday) {
+        /*if (isSubmittedToday) {
           submitTipsModal.show();
         } else {
           submitForm();
-        }
-
+        }*/
+        submitForm();
       }
 
     });
