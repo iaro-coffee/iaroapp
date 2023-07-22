@@ -74,7 +74,6 @@ def index(request):
                     kitchenStaff.append(shift['employee'])
                 elif gid == baristaId or gid == serviceId:
                     baristaStaff.append(shift['employee'])
-        print(baristaStaff)
                     
         ksl = kitchenStaff.__len__()
         bsl = baristaStaff.__len__()

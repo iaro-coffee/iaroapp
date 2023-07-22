@@ -19,7 +19,7 @@ def index(request):
     products = Product.objects.all()
     form = Form()
     categories = []
-
+    
     for product in products:
         for category in product.category.all():
             if category not in categories:
@@ -56,7 +56,7 @@ def index(request):
             'products': products,
             'categories': categories,
             'isSubmittedToday': isSubmittedToday,
-            'modifiedDate': last_modified_date
+            'modifiedDate': last_modified_date,
         }
 
         return render(
@@ -70,12 +70,17 @@ from django.contrib.auth.decorators import user_passes_test
 def check_admin(user):
    return user.is_superuser
 
-@user_passes_test(check_admin)
+#@user_passes_test(check_admin)
 def inventory_evaluation(request):
 
     products = Product.objects.all()
     products = products.order_by('category')
     #sorted(products,  key=lambda m: -m.value_tobuy)
+    sellers = []
+    for prod in products:
+        if (prod.display_seller() not in sellers) and prod.tobuy:
+            sellers.append(prod.display_seller())
+    
     product = Product.objects.filter(id=1)
     modified_date = "Unknown"
 
@@ -87,6 +92,7 @@ def inventory_evaluation(request):
         'inventory_evaluation.html',
         context={
             'products': products,
-            'modifiedDate': modified_date
+            'modifiedDate': modified_date,
+            'sellers': sellers
         },
     )

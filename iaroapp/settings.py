@@ -115,6 +115,7 @@ LOGIN_REQUIRED_IGNORE_PATHS = [
     r'/accounts/logout/$',
     r'/accounts/signup/$',
     r'/accounts/login/$',
+    r'/registration/register',
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
