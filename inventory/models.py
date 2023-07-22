@@ -46,6 +46,10 @@ class Product(models.Model):
     @property
     def value_tobuy(self):
         return abs(float(self.value-self.value_intended))
+    
+    def display_seller(self):
+        return self.seller.all()[0].name
+    display_seller.short_description = 'Seller'
 
     def display_category(self):
         return ', '.join([category.name for category in self.category.all()[:3]])
