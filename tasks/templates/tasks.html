@@ -21,29 +21,29 @@
     <div class="list-group w-auto">
     
       {% for task in task_list %}
-      {% if not task.done %}
-      <label class="list-group-item d-flex gap-3">
-        <fieldset>
-          <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done" />
-          <input type="number" name="id" value="{{task.id}}" style="display: none;" />
-        </fieldset>
-        <span class="pt-1 form-checked-content">
-          {{ task.title }}
-          <small class="d-block text-muted" style="margin: 0.1rem 0;">
-            <span data-feather="user" class="align-text-bottom"></span>
-            {{ task.assignees|join:", " }}
-          </small>
-        </span>
-        {% if task.summary %}
-        <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
-          <span data-feather="help-circle" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
-          <span class="hidden">
-            {{ task.summary }}
+        {% if not task.date_done != undefined %}
+        <label class="list-group-item d-flex gap-3">
+          <fieldset>
+            <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done" />
+            <input type="number" name="id" value="{{task.id}}" style="display: none;" />
+          </fieldset>
+          <span class="pt-1 form-checked-content">
+            {{ task.title }}
+            <small class="d-block text-muted" style="margin: 0.1rem 0;">
+              <span data-feather="user" class="align-text-bottom"></span>
+              {{ task.assignees|join:", " }}
+            </small>
           </span>
-        </div>
+          {% if task.summary %}
+          <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
+            <span data-feather="help-circle" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
+            <span class="hidden">
+              {{ task.summary }}
+            </span>
+          </div>
+          {% endif %}
+        </label>
         {% endif %}
-      </label>
-      {% endif %}
       {% endfor %}
       <input type="submit" id="submitTasksBtn" class="w-100 btn btn-lg btn-primary" value="Submit tasks" style="margin-top: 1rem; max-width: 200px;" />
     </div>
@@ -100,6 +100,7 @@
           alert.classList.add('hidden');
         }      var form = document.querySelector('#tasksForm');
         var form_data = new FormData(form);
+        console.log(form_data);
 
         let objSerializedForm = {};
         let nextIsFinished = false;

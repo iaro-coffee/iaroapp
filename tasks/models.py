@@ -50,14 +50,12 @@ class TaskInstance(models.Model):
     task = models.ForeignKey('Task', on_delete=models.RESTRICT, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=200, blank=True)
-    date_done = models.DateField(null=True, blank=True)
+    date_done = models.DateTimeField(null=True, blank=True)
 
     @property
     def is_overdue(self):
         """Determines if the task is overdue based on due date and current date."""
         return bool(self.date_done and date.today() > self.date_done)
-
-    done = models.BooleanField()
 
     class Meta:
         ordering = ['date_done']

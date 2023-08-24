@@ -3,6 +3,7 @@
 {% block content %}
 
 <div class="row g-0">
+
   <div class="col-lg-6 pe-lg-2 mb-3">
     <div class="card h-lg-100 overflow-hidden">
       <div class="card-header bg-light">
@@ -17,7 +18,7 @@
       </div>
       <div class="card-body p-0">
 
-        <div class="tips-status">        
+        <div class="tips-status">
           <canvas class="my-4 w-100" id="tipsChart" width="200" height="100"></canvas>
         </div>
       </div>
@@ -25,6 +26,40 @@
     </div>
   </div>
 
+  <div class="col-lg-6 pe-lg-2 mb-3">
+    <div class="card h-lg-100 overflow-hidden">
+      <div class="card-header bg-light">
+        <div class="row align-items-center">
+          <div class="col">
+            <h6 class="mb-0">My Tasks</h6>
+          </div>
+          <div class="col-auto text-center pe-x1">
+            <br><br>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="list-group w-auto rounded-0">
+          {% for task in task_list %}
+            {% if not task.date_done != undefined %}
+            <label class="list-group-item d-flex gap-3">
+              <span class="pt-1 form-checked-content">
+                {{ task.title }}
+                <small class="d-block text-muted" style="margin: 0.1rem 0;">
+                  <span data-feather="user" class="align-text-bottom"></span>
+                  {{ task.assignees|join:", " }}
+                </small>
+              </span>
+            </label>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="card-footer bg-light p-0"><a class="btn btn-sm btn-link d-block w-100 py-2" href="/tasks/overview">See all tasks<span class="fas fa-chevron-right ms-1 fs--2"></span></a></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-1">
   <div class="col-lg-6 pe-lg-2 mb-3">
     <div class="card h-lg-100 overflow-hidden">
       <div class="card-header bg-light">
@@ -56,6 +91,8 @@
     </div>
   </div>
 </div>
+
+
 
 
 <style>

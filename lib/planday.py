@@ -39,8 +39,18 @@ class Planday:
     response = response['data']
     employees = {}
     for employee in response:
-      employees[employee['id']] = employee['email']
+      employees[employee['id']] = employee
     return employees
+
+  def get_employee_group_name(self, group_id):
+    auth_headers = {
+      'Authorization': 'Bearer ' + self.access_token,
+      'X-ClientId': self.client_id
+    }
+    response = self.session.request("GET", self.base_url + '/hr/v1/employeegroups/' + str(group_id), headers=auth_headers)
+    response = json.loads(response.text)
+    response = response['data']
+    return response['name']
 
   def get_shifts_today_users(self):
     employees = self.get_employees()
@@ -59,7 +69,7 @@ class Planday:
     users = []
     for shift in response:
       if 'employeeId' in shift:
-        users.append(employees[shift['employeeId']])
+        users.append(employees[shift['employeeId']]['email'])
     return users
 
   def get_upcoming_shifts(self,starting , until):
@@ -80,7 +90,7 @@ class Planday:
     shifts = []
     for shift in response:
       if 'employeeId' in shift:
-        employee = employees[shift['employeeId']]
+        employee = employees[shift['employeeId']]['email']
         employeeId = shift['employeeId']
         start = shift['startDateTime']
         end = shift['endDateTime']

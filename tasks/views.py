@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import Task, User, TaskInstance, Weekdays
 from django.forms.models import model_to_dict
-import datetime
+from datetime import datetime, timedelta, time
 from django.http import HttpResponse
 import json
 from django.contrib.auth import get_user_model
@@ -15,35 +15,33 @@ nextShifts = []
 nextShiftsUser = []
 
 def index(request):
+    User = get_user_model()
 
     if request.method == 'POST':
-
         request_data = request.body
         form_data = json.loads(request_data.decode("utf-8"))
         user_id = request.user.id
         user = User.objects.get(id=user_id)
         taskids_completed = list(form_data.keys())
-        date = datetime.datetime.now()
-        today_date = datetime.datetime.today().strftime('%Y-%m-%d')
+        date = datetime.now()
+        today_date = datetime.today().strftime('%Y-%m-%d')
 
         for task_id in taskids_completed:
             task = Task.objects.get(id=task_id)
-            TaskInstance.objects.create(user=user, date_done=date, task=task, done=True)
-    
+            TaskInstance.objects.create(user=user, date_done=date, task=task)
+
         return HttpResponse(200)
 
-    User = get_user_model()
     users = User.objects.all()
     allTips = Tip.objects.all()
 
-    evalDate = datetime.datetime.now().date()
+    evalDate = datetime.now().date()
     calWeekStart = evalDate.isocalendar().week
     currentCalWeek = None
     calWeekChange = 0
     tipsEval = {}
 
     while calWeekChange < 6:
-
         if currentCalWeek != evalDate.isocalendar().week:
             currentCalWeek = evalDate.isocalendar().week
             calWeekChange += 1
@@ -51,14 +49,14 @@ def index(request):
                 break
             tipsEval[currentCalWeek] = 0
 
-        evalDate = evalDate - datetime.timedelta(days=1)
+        evalDate = evalDate - timedelta(days=1)
 
         for tip in allTips:
             tip = model_to_dict(tip)
             if request.user.id == tip['user'] and tip['date'].date() == evalDate:
                 tipsEval[currentCalWeek] += float(tip['amount'])
 
-    today = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+    today = str(datetime.now().strftime("%Y-%m-%d"))
     global run_once_day
     global nextShifts
     global nextShiftsUser
@@ -69,24 +67,26 @@ def index(request):
         run_once_day = today
         for shift in nextShifts:
             if request.user.email == shift['employee']:
-                start = datetime.datetime.fromisoformat(shift["start"]).strftime('%H.%M')
-                end = datetime.datetime.fromisoformat(shift["end"]).strftime('%H.%M')
-                day = datetime.datetime.fromisoformat(shift["end"]).strftime('%d')
-                weekday = datetime.datetime.fromisoformat(shift["end"]).strftime('%a')
+                start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
+                end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
+                day = datetime.fromisoformat(shift["end"]).strftime('%d')
+                weekday = datetime.fromisoformat(shift["end"]).strftime('%a')
                 nextShiftsUser.append({"day": day, "start": start, "end": end, "weekday": weekday})
 
+
+    myTasks = getMyTasks(request)
     return render(
         request,
         'index.html',
         context={
             'tipsEval': tipsEval,
-            'nextShifts': nextShiftsUser
+            'nextShifts': nextShiftsUser,
+            'task_list': myTasks[0:len(myTasks) if len(myTasks) <= 3 else 3]
         }
     )
 
-def tasks(request):
-
-    weekdayToday = datetime.datetime.today().strftime('%A')
+def getMyTasks(request):
+    weekdayToday = datetime.today().strftime('%A')
     tasks = Task.objects.all()
     myTasks = []
     for task in tasks:
@@ -106,21 +106,22 @@ def tasks(request):
 
     task_instances = TaskInstance.objects.all()
     for task_instance in task_instances:
-
         for task in myTasks:
             if task['id'] == task_instance.task.id:
-                if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
-                    today = datetime.datetime.now().date()
-                    task_day = task_instance.date_done
-                    if ((today-task_day).days < 7):
-                        task['done'] = True
+                if task_instance.date_done != None:
+                    if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
+                        today = datetime.now().astimezone()
+                        task_day = task_instance.date_done
+                        if ((today - task_day).days < 7):
+                            task['date_done'] = today
+    return myTasks
 
-
+def tasks(request):
     return render(
         request,
         'tasks.html',
         context={
-            'task_list': myTasks,
+            'task_list': getMyTasks(request),
         },
     )
 
@@ -138,7 +139,7 @@ def tasks_evaluation(request):
         "Monday", "Tuesday", "Wednesday",
         "Thursday", "Friday", "Saturday", "Sunday"
     ]
-    weekdayToday = datetime.datetime.today().strftime('%A')
+    weekdayToday = datetime.today().strftime('%A')
 
     for weekday in weekdays:
         tasks_evaluation[weekday] = []
@@ -149,21 +150,20 @@ def tasks_evaluation(request):
                 if weekday == str(task_weekday):
                     tasks_evaluation[weekday].append(task)
 
-    beginning_of_week = datetime.datetime.today() - datetime.timedelta(days=datetime.datetime.today().weekday() % 7)
+    beginning_of_week = datetime.combine(datetime.today() - timedelta(days=datetime.today().weekday() % 7), time())
     task_instances = TaskInstance.objects.all()
     for task_instance in task_instances:
-
         for weekday in weekdays:
             for task in tasks_evaluation[weekday]:
                 if task['id'] == task_instance.task.id:
-                    if beginning_of_week.date() < task_instance.date_done:
-                        task['done'] = "True"
-                    else:
-                        task['done'] = "False"
+                    if task_instance.date_done != None:
+                        if beginning_of_week.astimezone() < task_instance.date_done:
+                            task['done_datetime'] = task_instance.date_done.strftime("%d.%m, %H:%M")
+                            task['done_persons'] = task_instance.user
 
     return render(
         request,
-        'tasks_evaluation.html',
+        'tasks_list_evaluation.html',
         context={
             'tasks': tasks_evaluation,
             'weekdays': weekdays,

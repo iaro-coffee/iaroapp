@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'tasks.apps.TasksConfig',
     'tips.apps.TipsConfig',
     'inventory.apps.InventoryConfig',
+    'registration.apps.RegistrationConfig',
     'ckeditor',
+    'crispy_forms',
+    'crispy_bootstrap4'
 ]
 
 MIDDLEWARE = [
@@ -137,3 +140,5 @@ STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'iaroapp', 'static') ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
