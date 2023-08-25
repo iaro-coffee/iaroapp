@@ -111,10 +111,7 @@ def getMyTasks(request):
             if task['id'] == task_instance.task.id:
                 if task_instance.date_done != None:
                     if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
-                        today = datetime.now().astimezone()
-                        task_day = task_instance.date_done
-                        if ((today - task_day).days < 7):
-                            task['date_done'] = today
+                        task['date_done'] = task_instance.date_done
     return myTasks
 
 def tasks(request):
