@@ -24,7 +24,6 @@ def index(request):
         user = User.objects.get(id=user_id)
         taskids_completed = list(form_data.keys())
         date = datetime.now()
-        today_date = datetime.today().strftime('%Y-%m-%d')
 
         for task_id in taskids_completed:
             task = Task.objects.get(id=task_id)
@@ -32,11 +31,9 @@ def index(request):
 
         return HttpResponse(200)
 
-    users = User.objects.all()
     allTips = Tip.objects.all()
 
     evalDate = datetime.now().date()
-    calWeekStart = evalDate.isocalendar().week
     currentCalWeek = None
     calWeekChange = 0
     tipsEval = {}
@@ -56,23 +53,18 @@ def index(request):
             if request.user.id == tip['user'] and tip['date'].date() == evalDate:
                 tipsEval[currentCalWeek] += float(tip['amount'])
 
-    today = str(datetime.now().strftime("%Y-%m-%d"))
-    global run_once_day
     global nextShifts
     global nextShiftsUser
 
-    if run_once_day != today:
-        planday.authenticate()
-        nextShifts = planday.get_upcoming_shifts(None, None)
-        run_once_day = today
-        for shift in nextShifts:
-            if request.user.email == shift['employee']:
-                start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
-                end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
-                day = datetime.fromisoformat(shift["end"]).strftime('%d')
-                weekday = datetime.fromisoformat(shift["end"]).strftime('%a')
-                nextShiftsUser.append({"day": day, "start": start, "end": end, "weekday": weekday})
-
+    planday.authenticate()
+    nextShifts = planday.get_upcoming_shifts(None, None)
+    for shift in nextShifts:
+        if request.user.email == shift['employee']:
+            start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
+            end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
+            day = datetime.fromisoformat(shift["end"]).strftime('%d')
+            weekday = datetime.fromisoformat(shift["end"]).strftime('%a')
+            nextShiftsUser.append({"day": day, "start": start, "end": end, "weekday": weekday})
 
     myTasks = getMyTasks(request)
     return render(
