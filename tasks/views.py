@@ -12,7 +12,7 @@ from lib import planday
 planday = planday.Planday()
 run_once_day = {}
 nextShifts = []
-nextShiftsUser = []
+nextShiftsUser = {}
 
 def index(request):
     User = get_user_model()
@@ -62,14 +62,15 @@ def index(request):
         planday.authenticate()
         nextShifts = planday.get_upcoming_shifts(None, None)
         run_once_day[request.user.id] = today
+        userShifts = []
         for shift in nextShifts:
             if request.user.email == shift['employee']:
                 start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
                 end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
                 day = datetime.fromisoformat(shift["end"]).strftime('%d')
                 weekday = datetime.fromisoformat(shift["end"]).strftime('%a')
-                nextShiftsUser.append({"day": day, "start": start, "end": end, "weekday": weekday})
-
+                userShifts.append({"day": day, "start": start, "end": end, "weekday": weekday})
+        nextShiftsUser[request.user.id] = userShifts
 
     myTasks = getMyTasks(request)
     return render(
@@ -77,7 +78,7 @@ def index(request):
         'index.html',
         context={
             'tipsEval': tipsEval,
-            'nextShifts': nextShiftsUser,
+            'nextShifts': nextShiftsUser[request.user.id],
             'task_list': myTasks[0:len(myTasks) if len(myTasks) <= 3 else 3],
             'today': today,
         }
