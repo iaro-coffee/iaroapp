@@ -82,7 +82,8 @@ class Planday:
     nextMonth = (datetime.datetime.now() + relativedelta(months=1)).strftime("%Y-%m-%d")
     payload = {
       'from': today if starting is None else starting,
-      'to': nextMonth if until is None else until
+      'to': nextMonth if until is None else until,
+      'limit': 5000,
     }
     response = self.session.request("GET", self.base_url + '/scheduling/v1/shifts', headers=auth_headers, params=payload)
     response = json.loads(response.text)
