@@ -41,7 +41,7 @@
       <div class="card-body p-0">
         <div class="list-group w-auto rounded-0">
           {% for task in task_list %}
-            {% if not task.date_done != undefined %}
+            {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
             <label class="list-group-item d-flex gap-3">
               <span class="pt-1 form-checked-content">
                 {{ task.title }}

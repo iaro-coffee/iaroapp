@@ -81,7 +81,8 @@ def index(request):
         context={
             'tipsEval': tipsEval,
             'nextShifts': nextShiftsUser,
-            'task_list': myTasks[0:len(myTasks) if len(myTasks) <= 3 else 3]
+            'task_list': myTasks[0:len(myTasks) if len(myTasks) <= 3 else 3],
+            'today': datetime.today().date(),
         }
     )
 
@@ -117,11 +118,13 @@ def getMyTasks(request):
     return myTasks
 
 def tasks(request):
+    print(datetime.today().date())
     return render(
         request,
         'tasks.html',
         context={
             'task_list': getMyTasks(request),
+            'today': datetime.today().date()
         },
     )
 
@@ -155,11 +158,16 @@ def tasks_evaluation(request):
     for task_instance in task_instances:
         for weekday in weekdays:
             for task in tasks_evaluation[weekday]:
+                if 'done' not in task:
+                    task['done'] = {}
                 if task['id'] == task_instance.task.id:
                     if task_instance.date_done != None:
                         if beginning_of_week.astimezone() < task_instance.date_done:
-                            task['done_datetime'] = task_instance.date_done.strftime("%d.%m, %H:%M")
-                            task['done_persons'] = task_instance.user
+                            done = {}
+                            done['done_weekday'] = weekdays[task_instance.date_done.weekday()]
+                            done['done_datetime'] = task_instance.date_done.strftime("%d.%m, %H:%M")
+                            done['done_persons'] = task_instance.user
+                            task['done'][weekdays[task_instance.date_done.weekday()]] = done
 
     return render(
         request,

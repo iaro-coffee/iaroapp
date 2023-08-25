@@ -21,7 +21,7 @@
     <div class="list-group w-auto">
     
       {% for task in task_list %}
-        {% if not task.date_done != undefined %}
+        {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
         <label class="list-group-item d-flex gap-3">
           <fieldset>
             <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done" />

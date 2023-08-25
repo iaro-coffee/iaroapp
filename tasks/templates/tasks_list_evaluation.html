@@ -1,46 +1,49 @@
-
 {% extends "base_generic.html" %}
 
 {% block content %}
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-  <h1 class="h2">Tasks Overview</h1>
-  <div class="btn-toolbar mb-2 mb-md-0">
-    <button type="button" class="btn btn-sm btn-outline-secondary">
-      <span data-feather="calendar" class="align-text-bottom"></span>
-      Last updated: {{ modifiedDate }}
-    </button>
-  </div>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom"
+     xmlns:task.done_datetime xmlns:task.done_datetime xmlns:task.done_datetime xmlns:task.done_datetime>
+    <h1 class="h2">Tasks Overview</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm btn-outline-secondary">
+            <span data-feather="calendar" class="align-text-bottom"></span>
+            Last updated: {{ modifiedDate }}
+        </button>
+    </div>
 </div>
 
 <div style="width: 100%;">
-  {% for weekday in weekdays%}
-  <h4>{{ weekday }}</h4>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col" style="width: 100%;">Summary</th>
-        <th scope="col">Assignee</th>
-        <th scope="col" style="white-space: nowrap;">Done</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for key, tasks in tasks.items %}
+    {% for weekday in weekdays%}
+    <h4>{{ weekday }}</h4>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col" style="width: 100%;">Summary</th>
+            <th scope="col">Assignee</th>
+            <th scope="col" style="white-space: nowrap;">Done</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key, tasks in tasks.items %}
         {% if key == weekday %}
-          {% for task in tasks %}
-            <tr {% if task.done_datetime != undefined %} class="done" {% endif %}>
-              <td><label>{{ task.title }}</label></td>
-              <td><label style="white-space: break-spaces;">{{ task.summary }}</label></td>
-              <td><label>{{ task.assignees|join:", " }}</label></td>
-              <td><label>{% if task.done_datetime != undefined %} {{ task.done_datetime }} by <b>{{ task.done_persons|join:", " }}{% endif %}</b></label></td>
-            </tr>
-          {% endfor %}
+        {% for task in tasks %}
+        <tr {% if weekday in task.done.keys %} class="done" {% endif %}>
+            <td><label>{{ task.title }}</label></td>
+            <td><label style="white-space: break-spaces;">{{ task.summary }}</label></td>
+            <td><label>{{ task.assignees|join:", " }}</label></td>
+            <td><label>{% if weekday in task.done.keys %} {% for key, value in task.done.items %}
+                {% if key == weekday %}
+                {{ value.done_datetime }} by <b>{{ value.done_persons|join:", " }}{% endif %}</b>
+                {% endfor %}{% endif %}</label></td>
+        </tr>
+        {% endfor %}
         {% endif %}
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
 </div>
 
 <style>
@@ -67,6 +70,8 @@
   td:first-child {
     padding: 0.8rem !important;
   }
+
+
 </style>
 
 {% endblock %}
