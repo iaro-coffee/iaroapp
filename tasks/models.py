@@ -1,6 +1,9 @@
 from django.db import models
 from django.urls import reverse
 
+from tasks.task_types import TaskTypes
+
+
 class Weekdays(models.Model):
     name = models.CharField(
         max_length=200,
@@ -19,6 +22,7 @@ class Task(models.Model):
     users = models.ManyToManyField(User, help_text="Select which users should be assigned for the task", blank=True)
     groups = models.ManyToManyField(Group, help_text="Select which groups should be assigned for the task", blank=True)
     weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task")
+    type = models.ManyToManyField(TaskTypes, help_text="Select a type for this task")
     summary = RichTextField(max_length=1000, help_text="Enter a brief description of the task", blank=True)
 
     def display_users(self):

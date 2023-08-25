@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from .models import Task, User, TaskInstance, Weekdays
 from django.forms.models import model_to_dict
 from datetime import datetime, timedelta, time
@@ -8,6 +7,7 @@ import json
 from django.contrib.auth import get_user_model
 from tips.models import Tip
 from lib import planday
+from operator import itemgetter
 
 planday = planday.Planday()
 run_once_day = {}
@@ -110,10 +110,10 @@ def getMyTasks(request):
                 if task_instance.date_done != None:
                     if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
                         task['date_done'] = task_instance.date_done
-    return myTasks
+
+    return sorted(myTasks, key=itemgetter('type'))
 
 def tasks(request):
-    print(datetime.today().date())
     return render(
         request,
         'tasks.html',
