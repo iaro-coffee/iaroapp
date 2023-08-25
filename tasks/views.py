@@ -10,7 +10,7 @@ from tips.models import Tip
 from lib import planday
 
 planday = planday.Planday()
-run_once_day = ""
+run_once_day = {}
 nextShifts = []
 nextShiftsUser = []
 
@@ -53,18 +53,23 @@ def index(request):
             if request.user.id == tip['user'] and tip['date'].date() == evalDate:
                 tipsEval[currentCalWeek] += float(tip['amount'])
 
+    today = datetime.today().date()
+    global run_once_day
     global nextShifts
     global nextShiftsUser
 
-    planday.authenticate()
-    nextShifts = planday.get_upcoming_shifts(None, None)
-    for shift in nextShifts:
-        if request.user.email == shift['employee']:
-            start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
-            end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
-            day = datetime.fromisoformat(shift["end"]).strftime('%d')
-            weekday = datetime.fromisoformat(shift["end"]).strftime('%a')
-            nextShiftsUser.append({"day": day, "start": start, "end": end, "weekday": weekday})
+    if request.user.id not in run_once_day or run_once_day[request.user.id] != today:
+        planday.authenticate()
+        nextShifts = planday.get_upcoming_shifts(None, None)
+        run_once_day[request.user.id] = today
+        for shift in nextShifts:
+            if request.user.email == shift['employee']:
+                start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
+                end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
+                day = datetime.fromisoformat(shift["end"]).strftime('%d')
+                weekday = datetime.fromisoformat(shift["end"]).strftime('%a')
+                nextShiftsUser.append({"day": day, "start": start, "end": end, "weekday": weekday})
+
 
     myTasks = getMyTasks(request)
     return render(
@@ -74,7 +79,7 @@ def index(request):
             'tipsEval': tipsEval,
             'nextShifts': nextShiftsUser,
             'task_list': myTasks[0:len(myTasks) if len(myTasks) <= 3 else 3],
-            'today': datetime.today().date(),
+            'today': today,
         }
     )
 
