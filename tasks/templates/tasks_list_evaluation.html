@@ -15,34 +15,40 @@
 
 <div style="width: 100%;">
     {% for weekday in weekdays%}
-    <h4>{{ weekday }}</h4>
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col" style="width: 100%;">Summary</th>
-            <th scope="col">Assignee</th>
-            <th scope="col" style="white-space: nowrap;">Done</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for key, tasks in tasks.items %}
-        {% if key == weekday %}
-        {% for task in tasks %}
-        <tr {% if weekday in task.done.keys %} class="done" {% endif %}>
-            <td><label>{{ task.title }}</label></td>
-            <td><label style="white-space: break-spaces;">{{ task.summary }}</label></td>
-            <td><label>{{ task.assignees|join:", " }}</label></td>
-            <td><label>{% if weekday in task.done.keys %} {% for key, value in task.done.items %}
-                {% if key == weekday %}
-                {{ value.done_datetime }} by <b>{{ value.done_persons|join:", " }}{% endif %}</b>
-                {% endfor %}{% endif %}</label></td>
-        </tr>
-        {% endfor %}
-        {% endif %}
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="list-group">
+        <h4 data-bs-toggle="collapse" href="#collapse{{ weekday }}" role="button" class="list-group-item" style="margin-bottom: 0px; margin-top: 15px;">{{ weekday }}</h4>
+        <div class="list-group-item collapse {% if weekday == today %}show{% endif %}" id="collapse{{ weekday }}">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <!--<th scope="col">Assignee</th>-->
+                    <th scope="col" style="white-space: nowrap;">Done</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for key, tasks in tasks.items %}
+                    {% if key == weekday %}
+                        {% for task in tasks %}
+                        <tr {% if weekday in task.done.keys %} class="done" {% endif %}>
+                            <td style="vertical-align: middle;"><label>{{ task.title }}</label></td>
+                            <!--<td><label>{{ task.assignees|join:", " }}</label></td>-->
+                            <td style="vertical-align: middle;"><label style="font-size: 12px;">
+                                {% if weekday in task.done.keys %}
+                                    {% for key, value in task.done.items %}
+                                      {% if key == weekday %}
+                                        {{ value.done_datetime }} by <b>{{ value.done_persons|join:", " }}{% endif %}</b>
+                                    {% endfor %}
+                                {% endif %}
+                            </label></td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
     {% endfor %}
 </div>
 
@@ -70,8 +76,15 @@
   td:first-child {
     padding: 0.8rem !important;
   }
-
-
 </style>
+
+<script type="text/javascript">
+  (() => {
+    console.log("collapse{{ today }}");
+    document.getElementById("collapse{{ today }}").scrollIntoView({
+      behavior: 'smooth'
+    });
+  })()
+</script>
 
 {% endblock %}
