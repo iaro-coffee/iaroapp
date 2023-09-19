@@ -51,7 +51,7 @@ from django.contrib.auth.models import User  # Required to assign User as a user
 
 class TaskInstance(models.Model):
     """Model representing a specific copy of a task (i.e. that can be borrowed from the library)."""
-    task = models.ForeignKey('Task', on_delete=models.RESTRICT, null=True)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=200, blank=True)
     date_done = models.DateTimeField(null=True, blank=True)
