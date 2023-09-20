@@ -2,8 +2,77 @@
 
 {% block content %}
 
-<div class="row g-0">
+{% if showOpening or showClosing %}
+    <div class="row g-1">
+{% endif %}
+{% if showOpening %}
+        <div class="col-lg-6 pe-lg-2 mb-3">
+            <div class="card h-lg-100 overflow-hidden">
+                <div class="card-header bg-light">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h6 class="mb-0">Store Opening</h6>
+                        </div>
+                        <div class="col-auto text-center pe-x1">
+                            <br><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group w-auto rounded-0">
+                        <label class="list-group-item d-flex gap-3">
+                              <span class="pt-1 form-checked-content">
+                                  <strong>Reminder:</strong> make sure you completed all the steps.
+                              </span>
+                        </label>
+                    </div>
+                </div>
 
+                <div class="card-footer bg-light p-0">
+                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/procedures/opening">See store opening tasks
+                        <span class="fas fa-chevron-right ms-1 fs--2"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+{% endif %}
+
+{% if showClosing %}
+        <div class="col-lg-6 pe-lg-2 mb-3">
+            <div class="card h-lg-100 overflow-hidden">
+                <div class="card-header bg-light">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h6 class="mb-0">Store Closing</h6>
+                        </div>
+                        <div class="col-auto text-center pe-x1">
+                            <br><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group w-auto rounded-0">
+                        <label class="list-group-item d-flex gap-3">
+                              <span class="pt-1 form-checked-content">
+                                  <strong>Reminder:</strong> make sure you completed all the steps.
+                              </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light p-0">
+                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/procedures/closing">See store closing tasks
+                        <span class="fas fa-chevron-right ms-1 fs--2"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+{% endif %}
+{% if showOpening or showClosing %}
+    </div>
+{% endif %}
+
+<div class="row g-0">
     <div class="col-lg-6 pe-lg-2 mb-3">
         <div class="card h-lg-100 overflow-hidden">
             <div class="card-header bg-light">
@@ -42,24 +111,26 @@
             <div class="card-body p-0">
                 <div class="list-group w-auto rounded-0">
                     {% for task in task_list %}
-                    {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
-                    <label class="list-group-item d-flex gap-3">
-              <span class="pt-1 form-checked-content">
-                {{ task.title }}
-                <small class="d-block text-muted" style="margin: 0.1rem 0;">
-                  <span data-feather="tag" class="align-text-bottom"></span>
-                  {{ task.type|join:", " }},
-                  <span data-feather="user" class="align-text-bottom"></span>
-                  {{ task.assignees|join:", " }}
-                </small>
-              </span>
-                    </label>
-                    {% endif %}
+                        {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
+                            <label class="list-group-item d-flex gap-3">
+                              <span class="pt-1 form-checked-content">
+                                {{ task.title }}
+                                <small class="d-block text-muted" style="margin: 0.1rem 0;">
+                                  <span data-feather="tag" class="align-text-bottom"></span>
+                                  {{ task.type|join:", " }},
+                                  <span data-feather="user" class="align-text-bottom"></span>
+                                  {{ task.assignees|join:", " }}
+                                </small>
+                              </span>
+                            </label>
+                        {% endif %}
                     {% endfor %}
                 </div>
-                <div class="card-footer bg-light p-0"><a class="btn btn-sm btn-link d-block w-100 py-2"
-                                                         href="/tasks/overview">See all tasks<span
-                        class="fas fa-chevron-right ms-1 fs--2"></span></a></div>
+                <div class="card-footer bg-light p-0">
+                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/tasks/overview">See all tasks
+                        <span class="fas fa-chevron-right ms-1 fs--2"></span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

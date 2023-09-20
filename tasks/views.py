@@ -13,6 +13,50 @@ planday = planday.Planday()
 run_once_day = {}
 nextShifts = []
 nextShiftsUser = {}
+showOpening = False
+showClosing = False
+
+def shiftsWereCheckedToday(userId):
+    if userId not in run_once_day or run_once_day[userId] != datetime.today().date():
+        return False
+    return True
+
+def getShowOpening(request):
+    if not shiftsWereCheckedToday(request.user.id):
+        getNextShiftsByUser(request)
+    return showOpening
+
+def getShowClosing(request):
+    if not shiftsWereCheckedToday(request.user.id):
+        getNextShiftsByUser(request)
+    return showClosing
+
+def getNextShiftsByUser(request):
+    global nextShifts
+    global nextShiftsUser
+    global showOpening
+    global showClosing
+    today = datetime.today().date()
+    if not shiftsWereCheckedToday(request.user.id):
+        planday.authenticate()
+        nextShifts = planday.get_upcoming_shifts(None, None)
+        run_once_day[request.user.id] = today
+        userShifts = []
+        for shift in nextShifts:
+            if request.user.email == shift['employee']:
+                start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
+                end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
+                day = datetime.fromisoformat(shift["end"]).strftime('%d')
+                weekday = datetime.fromisoformat(shift["end"]).strftime('%a')
+                userShifts.append({"day": day, "start": start, "end": end, "weekday": weekday})
+                shiftdayString = datetime.fromisoformat(shift["start"]).strftime('%Y-%m-%d')
+                if shiftdayString == str(today) and start == '07.30':
+                    showOpening = True
+                if shiftdayString == str(today) and end == '18.30':
+                    showClosing = True
+        nextShiftsUser[request.user.id] = userShifts
+    return nextShiftsUser[request.user.id]
+
 
 def index(request):
     User = get_user_model()
@@ -55,22 +99,8 @@ def index(request):
 
     today = datetime.today().date()
     global run_once_day
-    global nextShifts
-    global nextShiftsUser
 
-    if request.user.id not in run_once_day or run_once_day[request.user.id] != today:
-        planday.authenticate()
-        nextShifts = planday.get_upcoming_shifts(None, None)
-        run_once_day[request.user.id] = today
-        userShifts = []
-        for shift in nextShifts:
-            if request.user.email == shift['employee']:
-                start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
-                end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
-                day = datetime.fromisoformat(shift["end"]).strftime('%d')
-                weekday = datetime.fromisoformat(shift["end"]).strftime('%a')
-                userShifts.append({"day": day, "start": start, "end": end, "weekday": weekday})
-        nextShiftsUser[request.user.id] = userShifts
+    userShifts = getNextShiftsByUser(request)
 
     myTasks = getMyTasks(request)
     return render(
@@ -78,7 +108,7 @@ def index(request):
         'index.html',
         context={
             'tipsEval': tipsEval,
-            'nextShifts': nextShiftsUser[request.user.id],
+            'nextShifts': userShifts,
             'task_list': myTasks[0:len(myTasks) if len(myTasks) <= 3 else 3],
             'today': today,
         }

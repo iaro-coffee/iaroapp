@@ -30,6 +30,10 @@ urlpatterns += [
 ]
 
 urlpatterns += [
+    path('procedures/', include('procedures.urls')),
+]
+
+urlpatterns += [
     path('tips/', include('tips.urls')),
 ]
 

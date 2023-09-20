@@ -1,0 +1,127 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+  {% if procedures %}
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{% if opening == True %}Opening{% endif %}{% if closing == True %}Closing{% endif %} Tasks</h1>
+  </div>
+
+  <form id="tasksForm" method="post">
+    {% csrf_token %}
+    <div class="list-group w-auto">
+      {% for category in categories %}
+        <br><b>{{ category }}</b><br>
+        {% for procedure in procedures %}
+          {% if procedure.category == category.id %}
+            <label class="list-group-item d-flex gap-3">
+              <fieldset>
+                <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done" {% if procedure.date_done|date:"Y-m-d" == today|date:"Y-m-d" %}checked{% endif %} />
+                <input type="number" name="id" value="{{procedure.id}}" style="display: none;" />
+              </fieldset>
+              <span class="pt-1 form-checked-content">
+                {{ procedure.title }}
+              </span>
+              {% if procedure.summary %}
+              <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
+                <span data-feather="help-circle" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
+                <span class="hidden">
+                  {{ procedure.summary }}
+                </span>
+              </div>
+              {% endif %}
+            </label>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </form>
+
+    <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="infoModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow">
+          <div class="modal-body p-5">
+            <h2 class="fw-bold mb-0">Task description</h2>
+            <br>
+            <span class="infoModalContent"></span>
+            <button type="button" class="btn btn-lg btn-primary mt-5 w-100" data-bs-dismiss="modal">Okay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .form-checked-content {
+        flex-grow: 1;
+      }
+      .d-flex {
+        align-items: center;
+      }
+    </style>
+
+    <script>
+      function submitForm() {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var alerts = document.getElementsByClassName("alert");
+        var form = document.querySelector('#tasksForm');
+        var form_data = new FormData(form);
+
+        let objSerializedForm = {};
+        let nextIsFinished = false;
+        for (let [name, value] of form_data) {
+          if (name === "done") {
+            nextIsFinished = true;
+          }
+          if (name === "id" && nextIsFinished) {
+            objSerializedForm[value] = true;
+            nextIsFinished = false;
+          } else if (name === "id") {
+            objSerializedForm[value] = false;
+          }
+        }
+
+        console.log(objSerializedForm);
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+          if (request.readyState == 4) {
+            if(request.status == 200) {
+              isSubmittedToday = true;
+            }
+          }
+          window.scrollTo(0, 0);
+        }
+        request.open('POST', '/procedures/');
+        request.setRequestHeader("X-CSRFToken", csrftoken);
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.send(JSON.stringify(objSerializedForm));
+      };
+
+      document.addEventListener("DOMContentLoaded", function() {
+        var infoModal = new bootstrap.Modal(document.getElementById("infoModal"), {});
+
+        const items = document.getElementsByClassName('form-check-input');
+
+        for (const item of items) {
+          item.addEventListener('click', function handleClick(event) {
+            submitForm();
+          });
+        }
+
+        let descriptionLinks = document.querySelectorAll('.descriptionLink')
+        descriptionLinks.forEach((link) => {
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
+            var descriptionText = event.target.nextElementSibling.textContent;
+            var infoModalContent = document.querySelector('.infoModalContent').innerHTML = descriptionText;
+            infoModal.show();
+          })
+        })
+      })
+    </script>
+
+    {% else %}
+      <p>There are no tasks available.</p>
+    {% endif %}
+{% endblock %}
+

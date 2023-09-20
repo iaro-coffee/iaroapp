@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -12,158 +12,193 @@
     <link href="{% static 'css/bootstrap-5.3.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/styles.css' %}" rel="stylesheet">
     <link rel="icon" href="{% static 'images/favicon.png' %}">
-    <meta name="theme-color" content="#712cf9">  
+    <meta name="theme-color" content="#712cf9">
     <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    
-    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">iaroapp</a>
-      <div class="navbar-nav">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">iaroapp</a>
+    <div class="navbar-nav">
         {% if user.is_superuser %}
         <div class="nav-item text-nowrap">
-          <a class="nav-link px-3" href="{% url 'admin:index' %}">Admin</a>
+            <a class="nav-link px-3" href="{% url 'admin:index' %}">Admin</a>
         </div>
         {% endif %}
         <div class="nav-item text-nowrap">
-          <a class="nav-link px-3" href="{% url 'logout'%}?next={{request.path}}">Sign out <span style="opacity: 0.5;">({{ user }})</span></a>
+            <a class="nav-link px-3" href="{% url 'logout'%}?next={{request.path}}">Sign out <span
+                    style="opacity: 0.5;">({{ user }})</span></a>
         </div>
-      </div>
-      <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    </div>
+    <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-      </button>
-    </header>
+    </button>
+</header>
 
-    <div class="container-fluid">
-      <div class="row">
+<div class="container-fluid">
+    <div class="row">
+        {% block sidebar %}
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-          <div class="position-sticky pt-3 sidebar-sticky">
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                {% url 'index' as index_url %}
-                {% if request.path == index_url %}
-                <a class="nav-link active" aria-current="page" href="{% url 'index' %}">
-                {% else %}
-                <a class="nav-link" aria-current="page" href="{% url 'index' %}">
-                  {% endif %}
-                  <span data-feather="home" class="align-text-bottom"></span>
-                  Dashboard
-                </a>
-              </li>
-              <li class="nav-item">
-                {% url 'tasks' as tasks_url %}
-                {% if request.path == tasks_url %}
-                <a class="nav-link active" href="{% url 'tasks' %}">
-                {% else %}
-                <a class="nav-link" href="{% url 'tasks' %}">
-                {% endif %}
-                  <span data-feather="check-square" class="align-text-bottom"></span>
-                  Tasks
-                </a>
-              </li>
-              <li class="nav-item">
-                {% url 'inventory' as inventory_url %}
-                {% if request.path == inventory_url %}
-                <a class="nav-link active" href="{% url 'inventory' %}">
-                {% else %}
-                <a class="nav-link" href="{% url 'inventory' %}">
-                {% endif %}
-                  <span data-feather="layers" class="align-text-bottom"></span>
-                  Inventory
-                </a>
-              </li>
-              {% load is_member %}
-              {% if user.is_superuser or user|is_member:'Barista' %}
-              <li class="nav-item">
-                {% url 'tips' as tips_url %}
-                {% if request.path == tips_url %}
-                <a class="nav-link active" href="{% url 'tips' %}">
-                {% else %}
-                <a class="nav-link" href="{% url 'tips' %}">
-                {% endif %}
-                  <span data-feather="heart" class="align-text-bottom"></span>
-                  Tips
-                </a>
-              </li>
-              {% endif %}
-            </ul>
-            
-            {% load is_member%}
-            {% if user.is_superuser or user|is_member:'Barista' or user|is_member:'Service' %}
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-              <span>Reports</span>
-            </h6>
-            <ul class="nav flex-column mb-2">
-              <li class="nav-item">
-                {% url 'inventory_evaluation' as inventory_evaluation_url %}
-                {% if request.path == inventory_evaluation_url %}
-                <a class="nav-link active" href="{% url 'inventory_evaluation' %}">
-                {% else %}
-                <a class="nav-link" href="{% url 'inventory_evaluation' %}">
-                {% endif %}
-                  <span data-feather="file-text" class="align-text-bottom"></span>
-                  Inventory
-                </a>
-              </li>
-              {% if user.is_superuser %}
-              <li class="nav-item">
-                {% url 'evaluation' as evaluation_url %}
-                {% if request.path == evaluation_url %}
-                <a class="nav-link active" href="{% url 'evaluation' %}">
-                {% else %}
-                <a class="nav-link" href="{% url 'evaluation' %}">
-                {% endif %}
-                  <span data-feather="file-text" class="align-text-bottom"></span>
-                  Tips
-                </a>
-              </li>
-              <li class="nav-item">
-                {% url 'tasks_evaluation' as tasks_evaluation_url %}
-                {% if request.path == tasks_evaluation_url %}
-                <a class="nav-link active" href="{% url 'tasks_evaluation' %}">
-                {% else %}
-                <a class="nav-link" href="{% url 'tasks_evaluation' %}">
-                {% endif %}
-                  <span data-feather="file-text" class="align-text-bottom"></span>
-                  Tasks
-                </a>
-              </li>
-              {% endif %}
-            </ul>
-            {% endif %}
+            <div class="position-sticky pt-3 sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        {% url 'index' as index_url %}
+                        {% if request.path == index_url %}
+                        <a class="nav-link active" aria-current="page" href="{% url 'index' %}">
+                            {% else %}
+                            <a class="nav-link" aria-current="page" href="{% url 'index' %}">
+                                {% endif %}
+                                <span data-feather="home" class="align-text-bottom"></span>
+                                Dashboard
+                            </a>
+                    </li>
+                    <li class="nav-item">
+                        {% url 'tasks' as tasks_url %}
+                        {% if request.path == tasks_url %}
+                        <a class="nav-link active" href="{% url 'tasks' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'tasks' %}">
+                                {% endif %}
+                                <span data-feather="check-square" class="align-text-bottom"></span>
+                                Tasks
+                            </a>
+                    </li>
+                    {% if showOpening == True %}
+                    <li class="nav-item">
+                        {% url 'opening' as opening_url %}
+                        {% if request.path == opening_url %}
+                        <a class="nav-link active" href="{% url 'opening' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'opening' %}">
+                                {% endif %}
+                                <span data-feather="sunrise" class="align-text-bottom"></span>
+                                Store Opening
+                            </a>
+                    </li>
+                    {% endif %}
+                    {% if showClosing == True %}
+                    <li class="nav-item">
+                        {% url 'closing' as closing_url %}
+                        {% if request.path == closing_url %}
+                        <a class="nav-link active" href="{% url 'closing' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'closing' %}">
+                                {% endif %}
+                                <span data-feather="sunset" class="align-text-bottom"></span>
+                                Store Closing
+                            </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        {% url 'inventory' as inventory_url %}
+                        {% if request.path == inventory_url %}
+                        <a class="nav-link active" href="{% url 'inventory' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'inventory' %}">
+                                {% endif %}
+                                <span data-feather="layers" class="align-text-bottom"></span>
+                                Inventory
+                            </a>
+                    </li>
+                    {% load is_member %}
+                    {% if user.is_superuser or user|is_member:'Barista' %}
+                    <li class="nav-item">
+                        {% url 'tips' as tips_url %}
+                        {% if request.path == tips_url %}
+                        <a class="nav-link active" href="{% url 'tips' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'tips' %}">
+                                {% endif %}
+                                <span data-feather="heart" class="align-text-bottom"></span>
+                                Tips
+                            </a>
+                    </li>
+                    {% endif %}
+                </ul>
 
-          </div>
+                {% load is_member%}
+                {% if user.is_superuser or user|is_member:'Barista' or user|is_member:'Service' %}
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                    <span>Reports</span>
+                </h6>
+                <ul class="nav flex-column mb-2">
+                    <li class="nav-item">
+                        {% url 'inventory_evaluation' as inventory_evaluation_url %}
+                        {% if request.path == inventory_evaluation_url %}
+                        <a class="nav-link active" href="{% url 'inventory_evaluation' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'inventory_evaluation' %}">
+                                {% endif %}
+                                <span data-feather="file-text" class="align-text-bottom"></span>
+                                Inventory
+                            </a>
+                    </li>
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        {% url 'evaluation' as evaluation_url %}
+                        {% if request.path == evaluation_url %}
+                        <a class="nav-link active" href="{% url 'evaluation' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'evaluation' %}">
+                                {% endif %}
+                                <span data-feather="file-text" class="align-text-bottom"></span>
+                                Tips
+                            </a>
+                    </li>
+                    <li class="nav-item">
+                        {% url 'tasks_evaluation' as tasks_evaluation_url %}
+                        {% if request.path == tasks_evaluation_url %}
+                        <a class="nav-link active" href="{% url 'tasks_evaluation' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'tasks_evaluation' %}">
+                                {% endif %}
+                                <span data-feather="file-text" class="align-text-bottom"></span>
+                                Tasks
+                            </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+
+            </div>
         </nav>
+        {% endblock %}
+
 
         <main class="contentArea col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
-          {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
 
-          {% if messages %}
-          <ul class="messages">
-              {% for message in messages %}
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
                 {% if message.tags == 'error' %}
-                  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                <li
+                {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
                 {% endif %}
-              {% endfor %}
-          </ul>
-          {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
 
         </main>
-      </div>
     </div>
+</div>
 
 
-    <script src="{% static 'js/bootstrap.bundle-5.3.min.js' %}"></script>
-    <script src="{% static 'js/feather-icons-4.29.min.js' %}"></script>
-    <script lang="javascript">
+<script src="{% static 'js/bootstrap.bundle-5.3.min.js' %}"></script>
+<script src="{% static 'js/feather-icons-4.29.min.js' %}"></script>
+<script lang="javascript">
       (() => {
         'use strict'
         feather.replace({ 'aria-hidden': 'true' })
       })()
-    </script>
-  </body>
+
+</script>
+</body>
 </html>
