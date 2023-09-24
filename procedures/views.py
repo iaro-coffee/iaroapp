@@ -52,7 +52,7 @@ def opening(request):
     )
 
 def closing(request):
-    procedureModels = Procedure.objects.filter(type=2, groups__user=request.user)
+    procedureModels = Procedure.objects.filter(type=2, groups__user=request.user).distinct()
     categoriesModels = ProcedureCategory.objects.filter(
         procedure__type=2, procedure__groups__user=request.user
     ).distinct()
