@@ -68,7 +68,7 @@ def closing(request):
         context={
             'procedures': procedures,
             'today': datetime.today().date(),
-            'categories': categoriesModels,
+            'categories': categories,
             'closing': True,
         },
     )

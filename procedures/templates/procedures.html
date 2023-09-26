@@ -12,7 +12,7 @@
     {% csrf_token %}
     <div class="list-group w-auto">
       {% for category in categories %}
-        <br><b>{{ category }}</b><br>
+        <br><b>{{ category.name }}</b><br>
         {% for procedure in procedures %}
           {% if procedure.category == category.id %}
             <label class="list-group-item d-flex gap-3">
