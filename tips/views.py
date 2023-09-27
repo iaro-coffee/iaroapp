@@ -1,6 +1,8 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
+from ratings.models import EmployeeRating
 # Create your views here.
 
 from .models import Tip
@@ -21,124 +23,32 @@ shift_today_users = []
 
 # Tip input page
 def index(request):
-
-    today = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-    global run_once_day
-    global shift_today_users
-    
-    planday.authenticate()
-    shift_today_users = planday.get_shifts_today_users()
-
-    User = get_user_model()
-    users = User.objects.all()
-
     if request.method == 'POST':
-        form = Form(request.POST)
-
         request_data = request.body
         form_data = json.loads(request_data.decode("utf-8"))
-        for user_id, amount in form_data.items():
+        for user_id, value in form_data.items():
+            amount = value['tip']
+            star = value['star']
             user = User.objects.get(id=user_id)
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # add tip
             if amount:
                 amount = amount.replace(',','.')
                 amount = float(amount)
                 # Only add tips to database which have a value
                 if amount > 0 or amount < 0:
                     Tip.objects.create(user=user, amount=amount, date=date)
+
+            # add star
+            EmployeeRating.objects.create(user=user, rating=star, date=date)
         return HttpResponse(200)
 
-    else:
-        tipMap = {}   
-        today = datetime.datetime.today().date()
-        isSubmittedToday = False
-        
-        kitchenId = 274170
-        baristaId = 272480
-        serviceId = 275780
-        
-        now = datetime.datetime.now() + timedelta(hours=0.5) 
-        day = now.weekday()
-        dt = now.strftime("%Y-%m-%d")
-        shifts = planday.get_upcoming_shifts(dt,dt)
-        dayStaff = []
-        kitchenStaff = []
-        baristaStaff = []
-        for shift in shifts:
-            start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M')
-            end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M')
-            gid = shift['groupId']
-            if (start < now and now <= end):# or day in range(5,7):
-                dayStaff.append(shift['employee'])
-                if gid == kitchenId:
-                    kitchenStaff.append(shift['employee'])
-                elif gid == baristaId or gid == serviceId:
-                    baristaStaff.append(shift['employee'])
-                    
-        ksl = kitchenStaff.__len__()
-        bsl = baristaStaff.__len__()
-        
-        users = User.objects.filter(email__in=dayStaff)
-        
-        
-        if 'tip' in request.GET:
-            complete_tip = float(request.GET['tip'].replace(",","."))
-            
-            if day == 5 or day == 6:
-                if now.hour < 15:
-                    kitchen_tip = round((complete_tip * 0.16) / ksl, 2)
-                    bar1_tip = round(((complete_tip - (kitchen_tip * ksl))* (5/9)), 2)
-                    bar2_tip = round((complete_tip - (kitchen_tip * 2) - bar1_tip), 2)
-                
-                    for shift in shifts:
-                        if shift['employee'] in baristaStaff:
-                            start = datetime.datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M').hour
-                            end = datetime.datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M').hour
-                            if start < 9:
-                                tipMap[shift['employee']] = bar1_tip
-                            else:
-                                tipMap[shift['employee']] = bar2_tip
-                        elif shift['employee'] in kitchenStaff:
-                            tipMap[shift['employee']] = kitchen_tip
-                else:
-                    bar_tip = round(complete_tip / 2, 2)
-                    for shift in shifts:
-                        if shift['employee'] in baristaStaff:
-                            tipMap[shift['employee']] = bar_tip
-                
-            else:
-                if ksl > 0:
-                    kitchen_tip = round(complete_tip * 0.2, 2)
-                    counter_tip = round(complete_tip - kitchen_tip, 2)
-                else:
-                    counter_tip = complete_tip
-                
-                for employee in kitchenStaff:
-                    tipMap[employee] = round((kitchen_tip/ksl), 2)
-                for employee in baristaStaff:
-                    tipMap[employee] = round((counter_tip/bsl), 2)
-
-        for user in users:
-            if user.email in tipMap:
-                user.tip = tipMap[user.email]
-            else:
-                user.tip = 0.0
-        for tip in Tip.objects.all():
-            tip = model_to_dict(tip)
-            if tip['date'].date() == today:
-                isSubmittedToday = True
-                break
-
-        form = Form()
-        context = {
-            'isSubmittedToday': isSubmittedToday,
-            'users': users,
-            'form': form,
-        }
     return render(
         request,
         'tips.html',
-        context,
+        context={
+        },
     )
 
 from django.forms.models import model_to_dict

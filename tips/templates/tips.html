@@ -2,59 +2,51 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
-  <h1 class="h2">Submit Tips</h1>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+  <h1 class="h2">Submit Tip</h1>
 </div>
 
 <div class="list-group w-auto">
 
   <div class="alert alert-danger hidden" role="alert">
-    Submitting the tips failed.
+    Submitting the tip and rating failed.
   </div>
 
   <div class="alert alert-success hidden" role="alert">
-    Tips submitted successfully.
+    Tip and rating submitted successfully.
   </div>
 
-  <form id="calculator" style="margin-bottom: 15px" method="get">
-    <h5>Tip calculator</h5>
-    <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-      <input id="calcTipAmount" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" required class="form-control" name="tip" value="0.0" style="max-width: 100px;">
-      <small class="opacity-50 text-nowrap">€</small>
-    </div>
-    <input type="submit" id="calculateTip" class="w-100 btn btn-lg btn-primary" style="margin-top: 1rem; max-width: 200px;" value="Calculate tip">
-  </form>
-
-  <form id="manualTipForm" method="post">
-    <h5>Manual tip upload</h5>
+  <form id="tipForm" method="post">
+    <h5>Tip</h5>
     {% csrf_token %}
     <div class="list-group w-auto">
-    {% for user in users %}
-      <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-        <span data-feather="user" style="width: 40px; height: 40px; stroke-width: 1;"></span>
-        <div class="d-flex gap-2 w-100 justify-content-between">
-          <div>
-            <input type="text" name="user" value="{{user.id}}" style="display: none;" /> 
-            <h6 class="mb-0">
-              {% if user.first_name and user.last_name %}
-                {{ user.first_name }} {{ user.last_name }}
-              {% else %}
-                {{ user.get_username }}
-              {% endif %}
-            </h6>
-            <p class="mb-0 opacity-75">
-              {{ user.groups.all|join:", " }}
-            </p>
-          </div>
-          <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-            <input name="amount" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" required class="form-control" id="tip" value="{{user.tip}}" style="max-width: 100px;">
-            <small class="opacity-50 text-nowrap">€</small>
-          </div>
-        </div>
-      </a>
-      {% endfor %}
+      <div style="display: flex; flex-direction: row; gap: 0.5rem;">
+        <input type="text" name="user" value="{{user.id}}" style="display: none;" />
+        <input id="tip" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" required class="form-control" name="tip" value="0.0" style="max-width: 100px;">
+        <label style="align-items: end;font-size: x-large;display: flex;">€</label>
+      </div>
     </div>
-    <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit tips" style="margin-top: 1rem; max-width: 200px;" />
+    <br>
+    <h5>How was todays shift for you?</h5>
+     <div class="container d-flex">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="stars">
+                    <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
+                    <label class="star star-5" for="star-5"></label>
+                    <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
+                    <label class="star star-4" for="star-4"></label>
+                    <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
+                    <label class="star star-3" for="star-3"></label>
+                    <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
+                    <label class="star star-2" for="star-2"></label>
+                    <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
+                    <label class="star star-1" for="star-1"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit" style="margin-top: 1rem; max-width: 200px;" />
   </form>
 
   <div class="modal fade" id="submitTipsModal" tabindex="-1" role="dialog" aria-labelledby="submitTipsModalLabel" aria-hidden="true">
@@ -69,36 +61,64 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="confirmSubmit">Submit tips</button>
+          <button type="button" class="btn btn-primary" id="confirmSubmit">Submit</button>
         </div>
       </div>
     </div>
   </div>
 
+  <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow">
+          <div class="modal-body p-5">
+            <h2 class="fw-bold mb-0">Submit tip</h2>
+            <br>
+            <span class="submitModalContent"></span>
+            <button id="submitModalButton" type="button" class="btn btn-lg btn-primary mt-5 w-100" data-bs-dismiss="modal">Yes</button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+    <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow">
+          <div class="modal-body p-5">
+            <h2 class="fw-bold mb-0">Error</h2>
+            <br>
+            <span class="errorModalContent">Sorry, you forgot to rate your shift.</span>
+          </div>
+        </div>
+      </div>
+  </div>
+
   <script>
-
-    var isSubmittedToday = ('{{ isSubmittedToday | safe }}' === 'True');
-
     function submitForm() {
-
       const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
       var alerts = document.getElementsByClassName("alert");
       for(var i = 0; i < alerts.length; i++) {
         var alert = alerts[i];
         alert.classList.add('hidden');
       }
-      var form = document.querySelector('#manualTipForm');
+      var form = document.querySelector('#tipForm');
       var form_data = new FormData(form);
 
       let objSerializedForm = {};
+      console.log(form_data);
+      var star;
       for (let [name, value] of form_data) {
         if (name === "user") {
           userid = value;
         }
-        if (name === "amount") {
-          objSerializedForm[userid] = value;
+        if (name === "star") {
+          star = value;
+        }
+        if (name === "tip") {
+          tip = value;
         }
       }
+      objSerializedForm[userid] = {'tip': tip, 'star': star};
+      console.log(objSerializedForm);
 
       var request = new XMLHttpRequest();
       request.onreadystatechange = function() {
@@ -106,7 +126,6 @@
           if(request.status == 200) {
             var element = document.getElementsByClassName("alert-success")[0];
             element.classList.remove("hidden");
-            isSubmittedToday = true;
           } else {
             var element = document.getElementsByClassName("alert-danger")[0];
             element.classList.remove("hidden");
@@ -115,35 +134,79 @@
         window.scrollTo(0, 0);
       }
       request.open('POST', '/tips/');
-      request.setRequestHeader("X-CSRFToken", csrftoken); 
+      request.setRequestHeader("X-CSRFToken", csrftoken);
       request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       request.send(JSON.stringify(objSerializedForm));
-
+      form.reset();
     }
 
     document.addEventListener("DOMContentLoaded", function() {
 
-      var submitTipsModal = new bootstrap.Modal(document.getElementById("submitTipsModal"), {});
-
-      document.getElementById('confirmSubmit').onclick = function() {
+      document.getElementById('submitModalButton').onclick = function (evt) {
         submitForm();
-        submitTipsModal.hide();
       }
 
-      document.getElementById('manualTipForm').onsubmit = function (evt) {
-      
+      document.getElementById('tipForm').onsubmit = function (evt) {
         evt.preventDefault();
-
-        /*if (isSubmittedToday) {
-          submitTipsModal.show();
-        } else {
-          submitForm();
-        }*/
-        submitForm();
+        var submitModal = new bootstrap.Modal(document.getElementById("submitModal"), {});
+        var errorModal = new bootstrap.Modal(document.getElementById("errorModal"), {});
+        var form = document.querySelector('#tipForm');
+        var form_data = new FormData(form);
+        var tip = 0;
+        var star;
+        for (let [name, value] of form_data) {
+          if (name === "tip") {
+            tip = value;
+          }
+          if (name === "star") {
+            star = value;
+          }
+        }
+        if (star == null) {
+            errorModal.show();
+        }
+        else {
+            var submitModalContent = document.querySelector('.submitModalContent').innerHTML = 'Are you sure, you want to submit €' + tip + '?';
+            submitModal.show();
+        }
       }
 
     });
   </script>
+  <style>
+    div.stars {
+      display: inline-block;
+    }
 
+    input.star { display: none; }
+
+    label.star {
+      float: right;
+      padding: 5px;
+      font-size: 36px;
+      color: #000000;
+      transition: all .2s;
+    }
+
+    input.star:checked ~ label.star:before {
+      content: '★';
+      color: #FD4;
+      transition: all .25s;
+    }
+
+    input.star-5:checked ~ label.star:before {
+      color: #FE7;
+      text-shadow: 0 0 5px #952;
+    }
+
+    input.star-1:checked ~ label.star:before { color: #F62; }
+
+    label.star:hover { transform: rotate(-15deg) scale(1.3); }
+
+    label.star:before {
+      content: '☆';
+    }
+  </style>
+</div>
 
 {% endblock %}

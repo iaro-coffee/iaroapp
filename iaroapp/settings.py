@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'tasks.apps.TasksConfig',
     'tips.apps.TipsConfig',
+    'ratings.apps.RatingsConfig',
     'procedures.apps.ProceduresConfig',
     'inventory.apps.InventoryConfig',
     'registration.apps.RegistrationConfig',
