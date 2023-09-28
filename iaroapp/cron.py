@@ -5,7 +5,7 @@ import datetime
 from tips.models import AssignedTip, Tip
 
 def assignTips():
-    # todo run: python manage.py crontab add
+    # run: python manage.py crontab add
     # check them with: python manage.py crontab show
 
     print("assigning tips...")
