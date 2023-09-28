@@ -66,11 +66,11 @@ class Planday:
     response = self.session.request("GET", self.base_url + '/scheduling/v1/shifts', headers=auth_headers, params=payload)
     response = json.loads(response.text)
     response = response['data']
-    users = []
+    user_shifts = {}
     for shift in response:
       if 'employeeId' in shift:
-        users.append(employees[shift['employeeId']]['email'])
-    return users
+        user_shifts[employees[shift['employeeId']]['email']] = shift
+    return user_shifts
 
   def get_upcoming_shifts(self,starting , until):
     employees = self.get_employees()

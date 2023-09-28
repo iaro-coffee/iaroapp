@@ -2,7 +2,8 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Tip
+from .models import Tip, AssignedTip
+
 
 class TipsInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
@@ -17,3 +18,13 @@ class TipsAdmin(admin.ModelAdmin):
     list_display = ('user', 'note', 'date', 'amount')
 
 admin.site.register(Tip, TipsAdmin)
+
+class AssignedTipsAdmin(admin.ModelAdmin):
+    """Administration object for Task models.
+    Defines:
+     - fields to be displayed in list view (list_display)
+     - adds inline addition of task instances in task view (inlines)
+    """
+    list_display = ('user', 'note', 'date', 'amount')
+
+admin.site.register(AssignedTip, AssignedTipsAdmin)

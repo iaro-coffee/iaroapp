@@ -1,21 +1,17 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 
+from iaroapp.cron import assignTips
 from ratings.models import EmployeeRating
 # Create your views here.
 
 from .models import Tip
 
 from django.contrib.auth import get_user_model
-from tips.forms import Form
-from django.http import HttpResponseRedirect, HttpResponse
-from django.http.multipartparser import MultiPartParser
-from django.utils import timezone
+from django.http import HttpResponse
 import json
 import datetime
 from lib import planday
-from datetime import timedelta
 
 planday = planday.Planday()
 run_once_day = ""

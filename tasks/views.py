@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from .models import Task, User, TaskInstance, Weekdays
+from .models import Task, TaskInstance
 from django.forms.models import model_to_dict
 from datetime import datetime, timedelta, time
 from django.http import HttpResponse
 import json
 from django.contrib.auth import get_user_model
-from tips.models import Tip
+from tips.models import AssignedTip
 from lib import planday
 from operator import itemgetter
 
@@ -75,7 +75,7 @@ def index(request):
 
         return HttpResponse(200)
 
-    allTips = Tip.objects.all()
+    allTips = AssignedTip.objects.filter(user=request.user)
 
     evalDate = datetime.now().date()
     currentCalWeek = None
@@ -98,8 +98,6 @@ def index(request):
                 tipsEval[currentCalWeek] += float(tip['amount'])
 
     today = datetime.today().date()
-    global run_once_day
-
     userShifts = getNextShiftsByUser(request)
 
     myTasks = getMyTasks(request)

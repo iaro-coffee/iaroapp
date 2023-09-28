@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'registration.apps.RegistrationConfig',
     'ckeditor',
     'crispy_forms',
-    'crispy_bootstrap4'
+    'crispy_bootstrap4',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'login_required.middleware.LoginRequiredMiddleware',
+]
+
+CRONJOBS = [
+    ('0 18 * * *', 'iaroapp.cron.assignTips') # server is 2h ahead
 ]
 
 ROOT_URLCONF = 'iaroapp.urls'

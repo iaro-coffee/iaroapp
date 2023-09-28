@@ -3,21 +3,21 @@
 {% block content %}
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-  <h1 class="h2">Submit Tip</h1>
+  <h1 class="h2">Submit tips and rating</h1>
 </div>
 
 <div class="list-group w-auto">
 
   <div class="alert alert-danger hidden" role="alert">
-    Submitting the tip and rating failed.
+    Submitting the tips and rating failed.
   </div>
 
   <div class="alert alert-success hidden" role="alert">
-    Tip and rating submitted successfully.
+    Tips and rating submitted successfully.
   </div>
 
   <form id="tipForm" method="post">
-    <h5>Tip</h5>
+    <h5>Tips</h5>
     {% csrf_token %}
     <div class="list-group w-auto">
       <div style="display: flex; flex-direction: row; gap: 0.5rem;">
@@ -26,7 +26,7 @@
         <label style="align-items: end;font-size: x-large;display: flex;">€</label>
       </div>
     </div>
-    <br>
+    <div class="mb-4 mt-4 border-bottom"></div>
     <h5>How was todays shift for you?</h5>
      <div class="container d-flex">
         <div class="row">
@@ -71,7 +71,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content rounded-4 shadow">
           <div class="modal-body p-5">
-            <h2 class="fw-bold mb-0">Submit tip</h2>
+            <h2 class="fw-bold mb-0">Submit tips</h2>
             <br>
             <span class="submitModalContent"></span>
             <button id="submitModalButton" type="button" class="btn btn-lg btn-primary mt-5 w-100" data-bs-dismiss="modal">Yes</button>
