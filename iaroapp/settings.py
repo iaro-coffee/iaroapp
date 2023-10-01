@@ -66,7 +66,7 @@ MIDDLEWARE = [
 ]
 
 CRONJOBS = [
-    ('0 18 * * *', 'iaroapp.cron.assignTips') # server is 2h ahead
+    ('0 22 * * *', 'iaroapp.cron.assignTips') # server is 2h behind
 ]
 
 ROOT_URLCONF = 'iaroapp.urls'
