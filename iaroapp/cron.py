@@ -25,6 +25,10 @@ def assignTips():
             user = user_obj[0]
             start = datetime.datetime.strptime(shift['startDateTime'], '%Y-%m-%dT%H:%M:%S.%f')
             end = datetime.datetime.strptime(shift['endDateTime'], '%Y-%m-%dT%H:%M:%S.%f')
+            # if end is later than 18:30, cap it
+            chop = datetime.datetime.now().replace(hour=18, minute=30)
+            if end > chop:
+                end = chop
             minutes = floor((end - start).total_seconds() / 60)
             groups = planday.get_user_groups(shift['employeeId'])
             print(groups)
