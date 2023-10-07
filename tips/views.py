@@ -61,7 +61,6 @@ def check_admin(user):
 @user_passes_test(check_admin)
 def evaluation(request):
     assignedTips = AssignedTip.objects.filter(date__month__gte=datetime.datetime.now().strftime("%m"))
-    # {date: date, assignedTips: [{name, minutes, amount}], sumHours: sumHours, sumAmount: sumAmount}
     items = []
     for i in range(1, 32):
         tips = []
@@ -69,11 +68,11 @@ def evaluation(request):
         sumAmount = 0
         for tip in assignedTips:
             if tip.date.date() == datetime.datetime.now().replace(day=i).date():
-                tips.append({'name': tip.user.username, 'hours': tip.minutes / 60, 'amount': tip.amount})
+                tips.append({'name': tip.user.username, 'hours': floor((tip.minutes / 60)*100)/100.0, 'amount': tip.amount})
                 sumHours += tip.minutes/60
                 sumAmount += tip.amount
         if tips:
-            items.insert(0,{'id': i, 'date': datetime.datetime.now().replace(day=i).date(), 'assignedTips': tips, 'sumHours': sumHours, 'sumAmount': floor(sumAmount*100)/100.0})
+            items.insert(0,{'id': i, 'date': datetime.datetime.now().replace(day=i).date(), 'assignedTips': tips, 'sumHours': floor(sumHours*100)/100.0, 'sumAmount': floor(sumAmount*100)/100.0})
     print(items)
 
     return render(
