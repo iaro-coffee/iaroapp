@@ -86,12 +86,48 @@
                 </div>
             </div>
             <div class="card-body p-0">
-                <div class="tips-status">
-                    <canvas class="my-4 w-100" id="tipsChart" width="200" height="100"></canvas>
+                <div class="list-group w-auto rounded-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col" style="white-space: nowrap;">Amount</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tip in tips %}
+                                        <tr>
+                                            <td>
+                                                <label class="list-group-item">
+                                                  <span class="pt-1 form-checked-content">
+                                                    {{ tip.date }}
+                                                  </span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <label class="list-group-item">
+                                                  <span class="pt-1 form-checked-content">
+                                                    €{{ tip.amount }}
+                                                  </span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-auto text-center">
+                            <div class="container">
+                                <h1>€{{ tipsSum }}</h1>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card-footer bg-light p-0"><a class="btn btn-sm btn-link d-block w-100 py-2" href="/tips">Submit
-                Tips<span class="fas fa-chevron-right ms-1 fs--2"></span></a></div>
+            <!--<div class="card-footer bg-light p-0"><a class="btn btn-sm btn-link d-block w-100 py-2" href="/tips">Submit
+                Tips<span class="fas fa-chevron-right ms-1 fs--2"></span></a></div>-->
         </div>
     </div>
 
@@ -220,47 +256,4 @@
 </style>
 
 {% load static %}
-<script src="{% static 'js/chartjs-4.2.0.min.js' %}"></script>
-<script language="javascript">
-  (() => {
-    'use strict'
-    // Graphs
-    const ctx = document.getElementById('tipsChart')
-    // eslint-disable-next-line no-unused-vars
-    const myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        datasets: [{
-          data: {{ tipsEval | safe }},
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            ticks: {
-              stepSize: 5,
-              beginAtZero:true,
-              callback: function(value, index, values) {
-                      return value + ' €';
-              }
-            },
-          },
-          x: {
-            ticks: {
-              callback: function(value, index, values) {
-                      return this.getLabelForValue (value) + ' KW';
-              }
-            },
-          }
-        },
-        plugins: {
-          legend: {
-              display: false
-          }
-        }
-      }
-    })
-  })()
-
-</script>
 {% endblock %}

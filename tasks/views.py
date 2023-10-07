@@ -77,27 +77,17 @@ def index(request):
 
         return HttpResponse(200)
 
-    allTips = AssignedTip.objects.filter(user=request.user)
+    allTips = AssignedTip.objects.filter(user=request.user, date__month__gte=datetime.now().strftime("%m"))
+    tips = []
 
-    evalDate = datetime.now().date()
-    currentCalWeek = None
-    calWeekChange = 0
-    tipsEval = {}
+    for tip in allTips:
+        tips.append(model_to_dict(tip))
 
-    while calWeekChange < 6:
-        if currentCalWeek != evalDate.isocalendar().week:
-            currentCalWeek = evalDate.isocalendar().week
-            calWeekChange += 1
-            if calWeekChange == 6:
-                break
-            tipsEval[currentCalWeek] = 0
+    print(tips)
 
-        evalDate = evalDate - timedelta(days=1)
-
-        for tip in allTips:
-            tip = model_to_dict(tip)
-            if request.user.id == tip['user'] and tip['date'].date() == evalDate:
-                tipsEval[currentCalWeek] += float(tip['amount'])
+    tipsSum = 0
+    for tip in tips:
+        tipsSum += tip['amount']
 
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
@@ -107,7 +97,8 @@ def index(request):
         request,
         'index.html',
         context={
-            'tipsEval': tipsEval,
+            'tipsSum': tipsSum,
+            'tips': tips,
             'nextShifts': userShifts,
             'task_list': myTasks[0:len(myTasks) if len(myTasks) <= 3 else 3],
             'today': today,
