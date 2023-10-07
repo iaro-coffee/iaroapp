@@ -1,3 +1,5 @@
+from math import floor
+
 from django.contrib.auth.models import User
 from django.shortcuts import render
 
@@ -69,7 +71,7 @@ def evaluation(request):
             if tip.date.date() == datetime.datetime.now().replace(day=i).date():
                 tips.append({'name': tip.user.username, 'hours': tip.minutes / 60, 'amount': tip.amount})
                 sumHours += tip.minutes/60
-                sumAmount += tip.amount
+                sumAmount += floor(tip.amount*100)/100.0
         if tips:
             items.insert(0,{'id': i, 'date': datetime.datetime.now().replace(day=i).date(), 'assignedTips': tips, 'sumHours': sumHours, 'sumAmount': sumAmount})
     print(items)
