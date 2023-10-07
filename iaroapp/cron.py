@@ -22,9 +22,16 @@ def assignTips():
     for user, shift in today_shifts.items():
         user_obj = User.objects.filter(email=user).distinct().values('id', 'email')
         try:
+            if 'startDateTime' in shift and 'endDateTime' in shift:
+                startDateTime = shift['startDateTime']
+                endDateTime = shift['endDateTime']
+            else:
+                startDateTime = shift['shiftStartDateTime']
+                endDateTime = shift['shiftEndDateTime']
+
             user = user_obj[0]
-            start = datetime.datetime.strptime(shift['startDateTime'], '%Y-%m-%dT%H:%M:%S.%f')
-            end = datetime.datetime.strptime(shift['endDateTime'], '%Y-%m-%dT%H:%M:%S.%f')
+            start = datetime.datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%f')
+            end = datetime.datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%f')
             # if end is later than 18:30, cap it
             chop = datetime.datetime.now().replace(hour=18, minute=30)
             if end > chop:
