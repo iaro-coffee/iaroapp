@@ -8,6 +8,7 @@ class AssignedTip(models.Model):
     date = models.DateTimeField()
     note = models.CharField(max_length=50, default="Tip")
     amount = models.FloatField()
+    minutes = models.FloatField(default=0)
 
     def get_absolute_url(self):
         """Returns the url to access a particular tip instance."""

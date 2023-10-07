@@ -59,9 +59,9 @@ def assignTips():
 
     for user, minutes in bar_times.items():
         user_amount = floor((bar_tips_sum / bar_times_sum * minutes) * 100)/100.0
-        AssignedTip.objects.create(user=User.objects.get(id=user), amount=user_amount, date=datetime.datetime.now())
+        AssignedTip.objects.create(user=User.objects.get(id=user), amount=user_amount, date=datetime.datetime.now(), minutes=minutes)
 
     for user, minutes in kitchen_times.items():
         user_amount = floor((kitchen_tips_sum / kitchen_times_sum * minutes) * 100)/100.0
-        AssignedTip.objects.create(user=User.objects.get(id=user), amount=user_amount, date=datetime.datetime.now())
+        AssignedTip.objects.create(user=User.objects.get(id=user), amount=user_amount, date=datetime.datetime.now(), minutes=minutes)
 
