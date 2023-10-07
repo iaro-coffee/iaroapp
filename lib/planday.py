@@ -52,19 +52,33 @@ class Planday:
     response = response['data']
     return response['name']
 
+  def get_user_groups(self, employeeId):
+    auth_headers = {
+      'Authorization': 'Bearer ' + self.access_token,
+      'X-ClientId': self.client_id
+    }
+    response = self.session.request("GET", self.base_url + '/hr/v1/employees/' + str(employeeId), headers=auth_headers)
+    response = json.loads(response.text)
+    return response['data']['employeeGroups']
+
+
   def get_shifts_today_users(self):
     employees = self.get_employees()
     auth_headers = {
       'Authorization': 'Bearer ' + self.access_token,
       'X-ClientId': self.client_id
     }
-    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    todayStart = datetime.datetime.now().strftime("%Y-%m-%dT00:00")
+    todayEnd = datetime.datetime.now().strftime("%Y-%m-%dT23:59")
+
     payload = {
-      'from': today,
-      'to': today
+      'from': todayStart,
+      'to': todayEnd,
     }
-    response = self.session.request("GET", self.base_url + '/scheduling/v1/shifts', headers=auth_headers, params=payload)
+
+    response = self.session.request("GET", self.base_url + '/punchclock/v1/punchclockshifts', headers=auth_headers, params=payload)
     response = json.loads(response.text)
+    print(response)
     response = response['data']
     user_shifts = {}
     for shift in response:

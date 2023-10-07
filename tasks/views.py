@@ -1,4 +1,6 @@
 from django.shortcuts import render
+
+from iaroapp.cron import assignTips
 from .models import Task, TaskInstance
 from django.forms.models import model_to_dict
 from datetime import datetime, timedelta, time
