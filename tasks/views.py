@@ -83,6 +83,8 @@ def index(request):
     for tip in allTips:
         tips.append(model_to_dict(tip))
 
+    assignTips()
+
     tipsSum = 0
     for tip in tips:
         tipsSum += tip['amount']

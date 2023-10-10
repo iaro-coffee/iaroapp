@@ -5,10 +5,13 @@ from django.contrib.auth.models import User
 class AssignedTip(models.Model):
     """Model representing a tip (but not a specific copy of a tip)."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateTimeField()
+    date = models.DateField(null=True)
     note = models.CharField(max_length=50, default="Tip")
     amount = models.FloatField()
     minutes = models.FloatField(default=0)
+
+    class Meta:
+        unique_together = ('user', 'date',)
 
     def get_absolute_url(self):
         """Returns the url to access a particular tip instance."""
