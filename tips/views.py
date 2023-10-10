@@ -3,13 +3,9 @@ from math import floor
 from django.contrib.auth.models import User
 from django.shortcuts import render
 
-from iaroapp.cron import assignTips
 from ratings.models import EmployeeRating
-# Create your views here.
-
 from .models import Tip, AssignedTip
 
-from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 import json
 import datetime
@@ -26,7 +22,6 @@ def index(request):
         form_data = json.loads(request_data.decode("utf-8"))
         for user_id, value in form_data.items():
             amount = value['tip']
-            star = value['star']
             user = User.objects.get(id=user_id)
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -38,8 +33,6 @@ def index(request):
                 if amount > 0 or amount < 0:
                     Tip.objects.create(user=user, amount=amount, date=date)
 
-            # add star
-            EmployeeRating.objects.create(user=user, rating=star, date=date)
         return HttpResponse(200)
 
     return render(

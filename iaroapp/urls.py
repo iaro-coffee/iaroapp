@@ -38,6 +38,10 @@ urlpatterns += [
 ]
 
 urlpatterns += [
+    path('ratings/', include('ratings.urls')),
+]
+
+urlpatterns += [
     path('inventory/', include('inventory.urls')),
 ]
 
