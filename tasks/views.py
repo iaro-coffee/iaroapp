@@ -34,6 +34,8 @@ def getShowClosing(request):
     return showClosing
 
 def getNextShiftsByUser(request):
+    if not request.user.is_authenticated:
+        return {}
     global nextShifts
     global nextShiftsUser
     global showOpening
