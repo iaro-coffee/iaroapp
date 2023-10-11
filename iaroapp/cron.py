@@ -32,11 +32,13 @@ def assignTips():
                 if 'startDateTime' in shift and 'endDateTime' in shift:
                     startDateTime = shift['startDateTime']
                     endDateTime = shift['endDateTime']
+                    start = datetime.datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%f')
+                    end = datetime.datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%f')
                 else:
                     startDateTime = shift['shiftStartDateTime']
                     endDateTime = shift['shiftEndDateTime']
-                start = datetime.datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M:%S.%f')
-                end = datetime.datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M:%S.%f')
+                    start = datetime.datetime.strptime(startDateTime, '%Y-%m-%dT%H:%M')
+                    end = datetime.datetime.strptime(endDateTime, '%Y-%m-%dT%H:%M')
                 print('shift: ' + str(start) + ' - ' + str(end))
 
                 # if end is later than 18:30, cap it
