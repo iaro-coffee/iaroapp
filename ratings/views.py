@@ -39,7 +39,7 @@ def ratings_evaluation(request):
     for user in users:
         rating = EmployeeRating.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg']
         if (rating):
-            rating = floor(rating * 100) / 100.0
+            rating = floor(rating * 10) / 10.0
         userDicts.append({'user': model_to_dict(user), 'avg_rating': rating})
     return render(
         request,
