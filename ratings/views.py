@@ -1,3 +1,5 @@
+from math import floor
+
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Sum, Avg
@@ -36,7 +38,7 @@ def ratings_evaluation(request):
     userDicts = []
     for user in users:
         rating = EmployeeRating.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg']
-        userDicts.append({'user': model_to_dict(user), 'avg_rating': rating})
+        userDicts.append({'user': model_to_dict(user), 'avg_rating': floor(rating*100)/100.0})
     return render(
         request,
         'ratings_evaluation.html',
