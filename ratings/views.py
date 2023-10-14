@@ -1,8 +1,13 @@
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
+from django.db.models import Sum, Avg
+from django.forms import model_to_dict
+
 from ratings.models import EmployeeRating
 from django.http import HttpResponse
 import json
 import datetime
+from django.shortcuts import render
 
 
 # Tip input page
@@ -19,3 +24,23 @@ def index(request):
             EmployeeRating.objects.create(user=user, rating=star, date=date)
         return HttpResponse(200)
     return
+
+
+def check_admin(user):
+    return user.is_superuser
+
+
+@user_passes_test(check_admin)
+def ratings_evaluation(request):
+    users = User.objects.all()
+    userDicts = []
+    for user in users:
+        rating = EmployeeRating.objects.filter(user=user).aggregate(Avg('rating'))['rating__avg']
+        userDicts.append({'user': model_to_dict(user), 'avg_rating': rating})
+    return render(
+        request,
+        'ratings_evaluation.html',
+        context={
+            'list': userDicts,
+        },
+    )

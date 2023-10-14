@@ -16,7 +16,6 @@
                 <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <!--<th scope="col">Assignee</th>-->
                     <th scope="col" style="white-space: nowrap;">Done</th>
                 </tr>
                 </thead>
@@ -26,15 +25,16 @@
                         {% for task in tasks %}
                         <tr {% if weekday in task.done.keys %} class="done" {% endif %}>
                             <td style="vertical-align: middle;"><label>{{ task.title }}</label></td>
-                            <!--<td><label>{{ task.assignees|join:", " }}</label></td>-->
-                            <td style="vertical-align: middle;"><label style="font-size: 12px;">
+                            <td style="vertical-align: middle;">
+                                <label style="font-size: 12px;">
                                 {% if weekday in task.done.keys %}
                                     {% for key, value in task.done.items %}
                                       {% if key == weekday %}
                                         {{ value.done_datetime }} by <b>{{ value.done_persons|join:", " }}{% endif %}</b>
                                     {% endfor %}
                                 {% endif %}
-                            </label></td>
+                              </label>
+                            </td>
                         </tr>
                         {% endfor %}
                     {% endif %}
