@@ -54,6 +54,8 @@ def user_ratings_evaluation(request, id):
     userName = User.objects.filter(id=id).distinct().values('username')[0]['username']
     userRatings = []
     avgRating = EmployeeRating.objects.filter(user=id).aggregate(Avg('rating'))['rating__avg']
+    if avgRating:
+        avgRating = floor(avgRating*10)/10.0
     ratings = EmployeeRating.objects.filter(user=id).order_by('date').reverse()
     for rating in ratings:
         userRatings.append(model_to_dict(rating))
@@ -63,7 +65,7 @@ def user_ratings_evaluation(request, id):
         'user_ratings_evaluation.html',
         context={
             'ratings': userRatings,
-            'avgRating': floor(avgRating*10)/10.0,
+            'avgRating': avgRating,
             'userName': userName,
         },
     )
