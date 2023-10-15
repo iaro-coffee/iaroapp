@@ -14,29 +14,31 @@
         {% for item in list %}
           <div class="col-lg-4 py-3">
             <div class="card" style="border-radius: 15px; border-color: {% if item.avg_rating <= 2 %} #dc3545   {% elif item.avg_rating <= 3.5 %} #ffc107   {% elif not item.avg_rating %} grey {% else %} #28a745 {% endif %} ;">
-                <div class="card-body p-4">
-                    <div class="d-flex text-black">
-                        <div class="flex-shrink-0">
-                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                 alt="Generic placeholder image" class="img-fluid"
-                                 style="width: 120px; border-radius: 10px;">
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.username }}</h5>
-                            <p class="mb-2 pb-1" style="color: #2b2a2a;">
-                              <span data-feather="user" class="align-text-bottom"></span>
-                              {{ item.user.groups|join:", " }}</p>
-                            <div class="d-flex justify-content-start rounded-3 p-2 mb-2"
-                                 style="background-color: {% if item.avg_rating < 2 %} #dc3545   {% elif item.avg_rating < 3.5 %} #ffc107  {% elif not item.avg_rating %} grey {% else %} #28a745 {% endif %} ;">
-                              <strong>Rating: {{ item.avg_rating }} </strong>
+                <a href="/ratings/evaluation/{{ item.user.id }}"  class="text-decoration-none">
+                    <div class="card-body p-4">
+                        <div class="d-flex text-black">
+                            <div class="flex-shrink-0">
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
+                                     alt="Generic placeholder image" class="img-fluid"
+                                     style="width: 120px; border-radius: 10px;">
                             </div>
-                            <!--<div class="d-flex pt-1">
-                              <button type="button" class="btn btn-outline-primary me-1 flex-grow-1">Chat</button>
-                              <button type="button" class="btn btn-primary flex-grow-1">Follow</button>
-                            </div>-->
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.username }}</h5>
+                                <p class="mb-2 pb-1" style="color: #2b2a2a;">
+                                  <span data-feather="user" class="align-text-bottom"></span>
+                                  {{ item.user.groups|join:", " }}</p>
+                                <div class="d-flex justify-content-start rounded-3 p-2 mb-2"
+                                     style="background-color: {% if item.avg_rating <= 2 %} #dc3545   {% elif item.avg_rating <= 3.5 %} #ffc107  {% elif not item.avg_rating %} grey {% else %} #28a745 {% endif %} ;">
+                                  <strong>Rating: {{ item.avg_rating }} </strong>
+                                </div>
+                                <!--<div class="d-flex pt-1">
+                                  <button type="button" class="btn btn-outline-primary me-1 flex-grow-1">Chat</button>
+                                  <button type="button" class="btn btn-primary flex-grow-1">Follow</button>
+                                </div>-->
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
         {% endfor %}

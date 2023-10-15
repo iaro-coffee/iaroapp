@@ -48,3 +48,22 @@ def ratings_evaluation(request):
             'list': userDicts,
         },
     )
+
+@user_passes_test(check_admin)
+def user_ratings_evaluation(request, id):
+    userName = User.objects.filter(id=id).distinct().values('username')[0]['username']
+    userRatings = []
+    avgRating = EmployeeRating.objects.filter(user=id).aggregate(Avg('rating'))['rating__avg']
+    ratings = EmployeeRating.objects.filter(user=id).order_by('date').reverse()
+    for rating in ratings:
+        userRatings.append(model_to_dict(rating))
+
+    return render(
+        request,
+        'user_ratings_evaluation.html',
+        context={
+            'ratings': userRatings,
+            'avgRating': avgRating,
+            'userName': userName,
+        },
+    )

@@ -10,7 +10,7 @@
 <div style="width: 100%;">
     {% for entry in items%}
     <div class="list-group">
-        <h4 data-bs-toggle="collapse" href="#collapse{{ entry.id }}" role="button" class="list-group-item" style="margin-bottom: 0px; margin-top: 15px;">{{ entry.date }}</h4>
+        <h4 data-bs-toggle="collapse" href="#collapse{{ entry.id }}" role="button" class="list-group-item" style="margin-bottom: 0px; margin-top: 15px;">{{ entry.date|date:"d.M, Y (l)" }}</h4>
         <div class="list-group-item collapse {% if entry.date == today %}show{% endif %}" id="collapse{{ entry.id }}">
             <table class="table table-hover">
                 <thead>
