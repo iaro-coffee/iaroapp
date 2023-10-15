@@ -63,7 +63,7 @@ def user_ratings_evaluation(request, id):
         'user_ratings_evaluation.html',
         context={
             'ratings': userRatings,
-            'avgRating': avgRating,
+            'avgRating': floor(avgRating*10)/10.0,
             'userName': userName,
         },
     )
