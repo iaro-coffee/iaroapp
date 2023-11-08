@@ -2,6 +2,14 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
+class Storage(models.Model):
+    """Model representing a storage location."""
+    name = models.CharField(max_length=500)
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
+
 class Units(models.Model):
     name = models.CharField(
         max_length=200,
@@ -30,7 +38,7 @@ class Category(models.Model):
         return self.name
 
 class Product(models.Model):
-    """Model representing a tip (but not a specific copy of a tip)."""
+    """Model representing a product."""
     name = models.CharField(max_length=500)
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
     value = models.FloatField()
@@ -38,6 +46,7 @@ class Product(models.Model):
     category = models.ManyToManyField(Category, help_text="Select category for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
+    storage = models.ForeignKey(Storage, on_delete=models.CASCADE, default=1)
 
     @property
     def tobuy(self):
@@ -59,6 +68,10 @@ class Product(models.Model):
         return ', '.join([unit.name for unit in self.unit.all()[:3]])
     display_unit.short_description = 'Unit'
 
+    def display_storage(self):
+        return self.storage.name
+    display_storage.short_description = 'Storage'
+
     def get_absolute_url(self):
         """Returns the url to access a particular tip instance."""
         return reverse('product-detail', args=[str(self.id)])
@@ -66,11 +79,3 @@ class Product(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return self.name
-
-class Storage(models.Model):
-    """Model representing a storage location."""
-    name = models.CharField(max_length=500)
-
-    def __str__(self):
-        """String for representing the Model object."""
-        return 'name'
