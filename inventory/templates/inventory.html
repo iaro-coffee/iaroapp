@@ -12,6 +12,26 @@
     Inventory submitted successfully.
   </div>
 
+  <div class="page-header">
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <button type="button" class="btn btn-sm btn-outline-secondary">
+        <span data-feather="calendar" class="align-text-bottom"></span>
+        Last updated: {{ modifiedDate }}
+      </button>
+    </div>
+
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Iaro West
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="#">Iaro Ost</a>
+        <a class="dropdown-item" href="#">Iaro Space</a>
+        <a class="dropdown-item" href="#">All</a>
+      </div>
+    </div>
+  </div>
+
   <form id="form" method="post">
     {% csrf_token %}
 
@@ -19,14 +39,6 @@
     
       <div class="sticky d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">        
         <h1 class="h2">{{ category }}</h1>
-        {% if forloop.counter == 1 %}
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <button type="button" class="btn btn-sm btn-outline-secondary">
-            <span data-feather="calendar" class="align-text-bottom"></span>
-            Last updated: {{ modifiedDate }}
-          </button>
-        </div>
-        {% endif %}
       </div>
 
       <div class="list-group w-auto">
@@ -188,6 +200,14 @@
   }
   .wrap {
     overflow-wrap: anywhere;
+  }
+
+  .page-header {
+    width: 100%;
+    display: flex;
+    margin-bottom: 2rem;
+    column-gap: 0.5rem;
+    flex-direction: row-reverse;
   }
 </style>
 
