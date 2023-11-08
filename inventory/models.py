@@ -66,3 +66,11 @@ class Product(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return self.name
+
+class Storage(models.Model):
+    """Model representing a storage location."""
+    name = models.CharField(max_length=500)
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return 'name'
