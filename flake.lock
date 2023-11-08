@@ -5,11 +5,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1681202837,
-        "narHash": "sha256-H+Rh19JDwRtpVPAWp64F+rlEtxUWBAQW28eAi3SRSzg=",
+        "lastModified": 1694529238,
+        "narHash": "sha256-zsNZZGTGnMOf9YpHKJqMSsa0dXbfmxeoJ7xHlrt+xmY=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "cfacdce06f30d2b68473a46042957675eebb3401",
+        "rev": "ff7b65b44d01cf9ba6a71320833626af21126384",
         "type": "github"
       },
       "original": {
@@ -20,16 +20,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1681984642,
-        "narHash": "sha256-L3TXbi2xUpnlQg5reju/oxvNC6qrbAHKTW0OCspwWzw=",
-        "owner": "NixOS",
+        "lastModified": 1699437876,
+        "narHash": "sha256-sqoJj2QhUn8fhg/NZlVtsPaA9FUJ2LwB444riWZuMvQ=",
+        "owner": "onny",
         "repo": "nixpkgs",
-        "rev": "1dac98952eb49a8eba0f1db26d4fa1d8107587e5",
+        "rev": "f93090a11ee80cfd623f15b4eb55c470648d0e26",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "master",
+        "owner": "onny",
+        "ref": "django-crontab",
         "repo": "nixpkgs",
         "type": "github"
       }

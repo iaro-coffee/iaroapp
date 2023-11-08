@@ -1,7 +1,7 @@
 {
   inputs = {
-    # FIXME: Switch to 23.05 release when it's ready
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
+    # FIXME: Switch to 23.11 release when it's ready
+    nixpkgs.url = "github:onny/nixpkgs/django-crontab";
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -29,6 +29,9 @@
             django-widget-tweaks
             setuptools # Required by widget-tweaks
             django-login-required-middleware
+            django-crispy-forms
+            django-crispy-bootstrap4
+            django-crontab
             requests
             python-dotenv
             django-ckeditor
