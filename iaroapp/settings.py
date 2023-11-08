@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
     'django_crontab',
+    'iaroapp.apps.IaroappConfig',
 ]
 
 MIDDLEWARE = [
