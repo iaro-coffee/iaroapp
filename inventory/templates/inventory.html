@@ -21,77 +21,75 @@
     </div>
 
     <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Iaro West
+      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ branch }}
       </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="#">Iaro Ost</a>
-        <a class="dropdown-item" href="#">Iaro Space</a>
-        <a class="dropdown-item" href="#">All</a>
-      </div>
+      <ul class="dropdown-menu">
+        {% for branch in branches %}
+        <li><a class="dropdown-item" href="#">{{ branch }}</a></li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 
   <form id="form" method="post">
     {% csrf_token %}
 
+    <div class="list-group" id="inventoryList">
     {% for category in categories %}
-    
-      <div class="sticky d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">        
-        <h1 class="h2">{{ category }}</h1>
-      </div>
-
-      <div class="list-group w-auto">
-        {% for product in products %}
-          {% if category in product.category.all %}
-            <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-              <span style="font-size: 2rem">
-                {% if category|stringformat:"s" == "Obst und Gemüse" %}
-                🍊
-                {% elif category|stringformat:"s" == "Flüssig" %}
-                💧
-                {% elif category|stringformat:"s" == "Putzmittel" %}
-                🪣
-                {% elif category|stringformat:"s" == "Nüsse und Trockenfrüchte" %}
-                🥜
-                {% elif category|stringformat:"s" == "Backzutaten" %}
-                🧁
-                {% elif category|stringformat:"s" == "Milchprodukte" %}
-                🥛
-                {% elif category|stringformat:"s" == "Getränke" %}
-                🍹
-                {% elif category|stringformat:"s" == "Tiefkühler" %}
-                🧊
-                {% elif category|stringformat:"s" == "Gewürze" %}
-                🌶️
-                {% elif category|stringformat:"s" == "Trocken" %}
-                🌾
+        <h4 data-bs-toggle="collapse" href="#collapse{{ category.name_encoded }}" role="button" class="list-group-item">{{ category.name }}</h4>
+        <div class="list-group-item collapse" id="collapse{{ category.name_encoded}}" data-bs-parent="#inventoryList">
+          <div class="list-group w-auto">
+            {% for product in products %}
+              {% if category.name in product.category.all %}
+                <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                  <span style="font-size: 2rem">
+                    {% if category.name|stringformat:"s" == "Obst und Gemüse" %}
+                    🍊
+                    {% elif category.name|stringformat:"s" == "Flüssig" %}
+                    💧
+                    {% elif category.name|stringformat:"s" == "Putzmittel" %}
+                    🪣
+                    {% elif category.name|stringformat:"s" == "Nüsse und Trockenfrüchte" %}
+                    🥜
+                    {% elif category.name|stringformat:"s" == "Backzutaten" %}
+                    🧁
+                    {% elif category.name|stringformat:"s" == "Milchprodukte" %}
+                    🥛
+                    {% elif category.name|stringformat:"s" == "Getränke" %}
+                    🍹
+                    {% elif category.name|stringformat:"s" == "Tiefkühler" %}
+                    🧊
+                    {% elif category.name|stringformat:"s" == "Gewürze" %}
+                    🌶️
+                    {% elif category.name|stringformat:"s" == "Trocken" %}
+                    🌾
+                    {% endif %}
+                  </span>
+                  <div class="d-flex gap-2 w-100 justify-content-between">
+                    <div>
+                      <input type="number" name="product" value="{{product.id}}" style="display: none;" />
+                      <h6 class="mb-0 wrap">
+                        {{ product.name }}
+                      </h6>
+                      <p class="mb-0 opacity-75">
+                      </p>
+                    </div>
+                    <div style="display: flex; flex-direction: row; gap: 0.5rem;">
+                      <input name="value" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" class="form-control" id="value" value="" style="width: 100px;">
+                      <small class="opacity-50 text-nowrap truncate">
+                        {{ product.unit.all | join:", " }}
+                      </small>
+                    </div>
+                  </div>
+                </a>
                 {% endif %}
-              </span>
-              <div class="d-flex gap-2 w-100 justify-content-between">
-                <div>
-                  <input type="number" name="product" value="{{product.id}}" style="display: none;" />
-                  <h6 class="mb-0 wrap">
-                    {{ product.name }}
-                  </h6>
-                  <p class="mb-0 opacity-75">
-                  </p>
-                </div>
-                <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-                  <input name="value" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" class="form-control" id="value" value="" style="width: 100px;">
-                  <small class="opacity-50 text-nowrap truncate">
-                    {{ product.unit.all | join:", " }}
-                  </small>
-                </div>
-              </div>
-            </a>
-            {% endif %}
-          {% endfor %}
+              {% endfor %}
+            </div>
+            <br><br>
         </div>
-        <br><br>
-
     {% endfor %}
-
+    </div>
     <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit inventory" style="margin-bottom: 1rem; max-width: 250px;" />
   </form>
 
@@ -179,6 +177,17 @@
 
       }
 
+      // Click event handler for dropdown menu selecting branches
+      const dropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
+      for (const dropdownItem of dropdownItems) {
+        dropdownItem.addEventListener('click', (event) => {
+          const selectedBranchName = event.target.textContent;
+          const url = `/inventory/${selectedBranchName}`;
+          window.location.href = url;
+        });
+      }
+
+
     });
   </script>
 
@@ -205,9 +214,17 @@
   .page-header {
     width: 100%;
     display: flex;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     column-gap: 0.5rem;
     flex-direction: row-reverse;
+  }
+
+  .mb-2 {
+    margin-bottom: 0rem !important;
+  }
+
+  div.list-group-item {
+    padding: 0 !important;
   }
 </style>
 

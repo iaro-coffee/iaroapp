@@ -78,7 +78,6 @@ class Planday:
 
     response = self.session.request("GET", self.base_url + '/punchclock/v1/punchclockshifts', headers=auth_headers, params=payload)
     response = json.loads(response.text)
-    #print(response)
     response = response['data']
     user_shifts = {}
     for shift in response:

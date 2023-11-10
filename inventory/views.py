@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 from .models import Product
+from iaroapp.models import Branch
 
 from django.contrib.auth import get_user_model
 from tips.forms import Form
@@ -11,19 +12,46 @@ from django.http import HttpResponseRedirect, HttpResponse
 import json
 import datetime
 from django.forms.models import model_to_dict
+import re
 
-def index(request):
+def sanitize_string(string):
+  string = re.sub(r"[äöüß]", lambda x: x.group(0).encode("utf-8").hex(), string)
+  string = re.sub(r"[^a-zA-Z0-9_]", "_", string)
+  return string
+
+def index(request, branch='All'):
 
     User = get_user_model()
     users = User.objects.all()
     products = Product.objects.all()
+    branches = Branch.objects.all()
     form = Form()
     categories = []
-    
+
+    if (branch != 'All'):
+
+        # Get storages for selected branch
+        branch = branches.filter(name=branch)[0]
+        storages = branch.storages.all()
+        storages = list(storages)
+
+        # Filter products only available in specific storage of branch
+        products = products.filter(storage__name__in=storages)
+
+    # Filter selected branch from available branches
+    branches = branches.exclude(name=branch)
+
+    # Add 'All' option to branche selection
+    branches = list(branches)
+    if (branch != 'All'):
+        branches.append('All')
+
+    # Populate available categories
     for product in products:
         for category in product.category.all():
-            if category not in categories:
-                categories.append(category)
+            if not categories or not [x for x in categories if x["name"] == category]:
+                category_encoded = sanitize_string(str(category))
+                categories.append({ "name": category, "name_encoded": category_encoded })
 
     if request.method == 'POST':
 
@@ -57,6 +85,8 @@ def index(request):
             'categories': categories,
             'isSubmittedToday': isSubmittedToday,
             'modifiedDate': last_modified_date,
+            'branches': branches,
+            'branch': branch,
         }
 
         return render(

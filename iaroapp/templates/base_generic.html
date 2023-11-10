@@ -96,15 +96,14 @@
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        {% url 'inventory' as inventory_url %}
-                        {% if request.path == inventory_url %}
-                        <a class="nav-link active" href="{% url 'inventory' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'inventory' %}">
-                                {% endif %}
-                                <span data-feather="layers" class="align-text-bottom"></span>
-                                Inventory
-                            </a>
+                        {% if '/inventory/' in request.path %}
+                        <a class="nav-link active" href="{% url 'inventory' 'All' %}">
+                        {% else %}
+                        <a class="nav-link" href="{% url 'inventory' 'All' %}">
+                        {% endif %}
+                            <span data-feather="layers" class="align-text-bottom"></span>
+                            Inventory
+                        </a>
                     </li>
                     {% load is_member %}
                     {% if user.is_superuser or user|is_member:'Barista' %}
@@ -213,7 +212,6 @@
         'use strict'
         feather.replace({ 'aria-hidden': 'true' })
       })()
-
 </script>
 </body>
 </html>
