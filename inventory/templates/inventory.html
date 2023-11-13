@@ -76,7 +76,7 @@
                       </p>
                     </div>
                     <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-                      <input name="value" type="text" pattern="[+-]?([0-9]*[.,])?[0-9]+" inputmode="decimal" class="form-control" id="value" value="" style="width: 100px;">
+                      <input name="value" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control" id="value" value="" style="width: 100px;">
                       <small class="opacity-50 text-nowrap truncate">
                         {{ product.unit.all | join:", " }}
                       </small>
@@ -187,6 +187,18 @@
         });
       }
 
+      // Colorize fields as "done" for which a value is supplied
+      let items = document.querySelectorAll("a.list-group-item");
+      items.forEach(item => {
+        let input = item.querySelector("input[name='value']");
+        input.addEventListener("input", function() {
+          if (input.value && input.checkValidity()) {
+            item.classList.add('done');
+          } else {
+            item.classList.remove('done');
+          }
+        });
+      });
 
     });
   </script>
@@ -225,6 +237,20 @@
 
   div.list-group-item {
     padding: 0 !important;
+  }
+
+  .form-control:invalid {
+    color: navy;
+    outline: none; 
+    border-color: #ff1050;
+    box-shadow: 0 0 10px #ff0000;
+  }
+  .done {
+    background-color: rgb(209, 231, 221);
+  }
+
+  .list-group-item-action:focus, .list-group-item-action:hover {
+    background-color: lightblue !important;
   }
 </style>
 

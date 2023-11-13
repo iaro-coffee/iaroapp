@@ -31,7 +31,7 @@ class Seller(models.Model):
 class Category(models.Model):
     name = models.CharField(
         max_length=200,
-        help_text="Enter seller for product."
+        help_text="Enter category for product."
         )
 
     class Meta:
