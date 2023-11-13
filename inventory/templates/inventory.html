@@ -37,7 +37,10 @@
 
     <div class="list-group" id="inventoryList">
     {% for category in categories %}
-        <h4 data-bs-toggle="collapse" href="#collapse{{ category.name_encoded }}" role="button" class="list-group-item">{{ category.name }}</h4>
+        <h4 data-bs-toggle="collapse" href="#collapse{{ category.name_encoded }}" role="button" class="list-group-item">
+          <span class="category_color" style="background-color:{{ category.color }};"></span>
+          {{ category.name }}
+        </h4>
         <div class="list-group-item collapse" id="collapse{{ category.name_encoded}}" data-bs-parent="#inventoryList">
           <div class="list-group w-auto">
             {% for product in products %}
@@ -232,6 +235,24 @@
   .list-group-item-action:focus, .list-group-item-action:hover {
     background-color: lightblue !important;
   }
+
+  .category_color {
+    display: block;
+    width: 30px;
+    height: 50px;
+    top: -8px;
+    position: relative;
+    margin-bottom: -17px;
+    left: -16px;
+    margin-right: -20px;
+    border-radius: 5px 0px;
+  }
+
+  h4.list-group-item {
+    display: flex;
+    gap: 1rem;
+  }
+
 </style>
 
 {% endblock %}

@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from colorful.fields import RGBColorField
+from django.utils.html import format_html
 import re
 
 def sanitize_string(string):
@@ -42,6 +44,7 @@ class Category(models.Model):
     emoji = models.CharField(
         max_length=10,
         default="☕")
+    color = RGBColorField(default='')
 
     class Meta:
          verbose_name_plural = 'Categories'
@@ -54,6 +57,10 @@ class Category(models.Model):
     def name_encoded(self):
         # Use the sanitize function to encode the name
         return sanitize_string(self.name)
+
+    def display_color(self):
+        return format_html('<span style="width:15px;height:15px;display:block;background-color:{}"></span>', self.color)
+    display_color.short_description = 'Color'
 
 class Product(models.Model):
     """Model representing a product."""

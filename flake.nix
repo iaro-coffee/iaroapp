@@ -29,6 +29,7 @@
             django-widget-tweaks
             setuptools # Required by widget-tweaks
             django-login-required-middleware
+            django_colorful
             django-crispy-forms
             django-crispy-bootstrap4
             django-crontab

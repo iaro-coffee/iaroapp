@@ -36,4 +36,4 @@ admin.site.register(Storage, StoragesAdmin)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'emoji', 'display_color')
