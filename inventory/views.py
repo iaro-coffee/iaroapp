@@ -12,12 +12,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 import json
 import datetime
 from django.forms.models import model_to_dict
-import re
-
-def sanitize_string(string):
-  string = re.sub(r"[äöüß]", lambda x: x.group(0).encode("utf-8").hex(), string)
-  string = re.sub(r"[^a-zA-Z0-9_]", "_", string)
-  return string
 
 def index(request, branch='All'):
 
@@ -49,9 +43,8 @@ def index(request, branch='All'):
     # Populate available categories
     for product in products:
         for category in product.category.all():
-            if not categories or not [x for x in categories if x["name"] == category]:
-                category_encoded = sanitize_string(str(category))
-                categories.append({ "name": category, "name_encoded": category_encoded, "emoji": category.emoji })
+            if category not in categories:
+                categories.append(category)
 
     if request.method == 'POST':
 

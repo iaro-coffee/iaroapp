@@ -1,6 +1,12 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+import re
+
+def sanitize_string(string):
+  string = re.sub(r"[äöüß]", lambda x: x.group(0).encode("utf-8").hex(), string)
+  string = re.sub(r"[^a-zA-Z0-9_]", "_", string)
+  return string
 
 class Storage(models.Model):
     """Model representing a storage location."""
@@ -42,6 +48,12 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    # Add a calculated field called name_encoded
+    @property
+    def name_encoded(self):
+        # Use the sanitize function to encode the name
+        return sanitize_string(self.name)
 
 class Product(models.Model):
     """Model representing a product."""

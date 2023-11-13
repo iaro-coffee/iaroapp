@@ -41,7 +41,7 @@
         <div class="list-group-item collapse" id="collapse{{ category.name_encoded}}" data-bs-parent="#inventoryList">
           <div class="list-group w-auto">
             {% for product in products %}
-              {% if category.name in product.category.all %}
+              {% if category in product.category.all %}
                 <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
                   <span style="font-size: 2rem">
                     {{ category.emoji }}
