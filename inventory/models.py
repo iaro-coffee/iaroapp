@@ -32,7 +32,10 @@ class Category(models.Model):
     name = models.CharField(
         max_length=200,
         help_text="Enter category for product."
-        )
+    )
+    emoji = models.CharField(
+        max_length=10,
+        default="☕")
 
     class Meta:
          verbose_name_plural = 'Categories'

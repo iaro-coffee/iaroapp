@@ -51,7 +51,7 @@ def index(request, branch='All'):
         for category in product.category.all():
             if not categories or not [x for x in categories if x["name"] == category]:
                 category_encoded = sanitize_string(str(category))
-                categories.append({ "name": category, "name_encoded": category_encoded })
+                categories.append({ "name": category, "name_encoded": category_encoded, "emoji": category.emoji })
 
     if request.method == 'POST':
 
