@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Product, Storage
+from .models import Product, Storage, Category
 
 class ProductsInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
@@ -15,6 +15,7 @@ class ProductsAdmin(admin.ModelAdmin):
      - adds inline addition of task instances in task view (inlines)
     """
     list_display = ('name', 'value', 'value_intended', 'display_unit', 'display_category', 'display_storage')
+    list_filter = ('storage', 'category')
     readonly_fields = ("modified_date",)
 
 admin.site.register(Product, ProductsAdmin)
@@ -32,3 +33,7 @@ class StoragesAdmin(admin.ModelAdmin):
     list_display = ('name',)
 
 admin.site.register(Storage, StoragesAdmin)
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    pass
