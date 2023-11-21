@@ -68,12 +68,11 @@
                 </a>
                 {% endif %}
               {% endfor %}
+              <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit inventory" />
             </div>
-            <br><br>
         </div>
     {% endfor %}
     </div>
-    <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit inventory" style="margin-bottom: 1rem; max-width: 250px;" />
   </form>
 
   <div class="modal fade" id="submitInventoryModal" tabindex="-1" role="dialog" aria-labelledby="submitInventoryModalLabel" aria-hidden="true">
@@ -251,6 +250,12 @@
   h4.list-group-item {
     display: flex;
     gap: 1rem;
+  }
+
+  input[type=submit] {
+    margin: 0.75rem;
+    max-width: 250px;
+    align-self: end;
   }
 
 </style>
