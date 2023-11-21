@@ -57,7 +57,9 @@ def index(request, branch='All'):
             if value:
                 value = value.replace(',','.')
                 if float(value) >= 0:
-                    Product.objects.filter(id=product).update(value=value)
+                    product_instance = Product.objects.get(id=product)
+                    product_instance.value = value
+                    product_instance.save()
         return HttpResponse(200)
 
     else:

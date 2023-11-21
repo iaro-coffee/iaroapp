@@ -112,17 +112,12 @@ def getMyTasks(request):
     for task in tasks:
         task = model_to_dict(task)
         task['assignees'] = task['users'] + task['groups']
-        for weekday in task['weekdays']:
-            if weekdayToday == str(weekday):
-                if request.user in task['users']:
-                    task['done'] = False
-                    myTasks.append(task)
-                else:
-                    for group in request.user.groups.all():
-                        if group in task['groups']:
-                            task['done'] = False
-                            myTasks.append(task)
-                            break
+        userMatch = request.user in task['users']
+        groupMatch = any(group in request.user.groups.all() for group in task['groups'])
+        weekdayMatch = weekdayToday in [str(weekday) for weekday in task['weekdays']]
+        if (userMatch or groupMatch) and (weekdayMatch or not task['weekdays']):
+            task['done'] = False
+            myTasks.append(task)
 
     task_instances = TaskInstance.objects.all()
     for task_instance in task_instances:

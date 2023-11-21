@@ -93,10 +93,6 @@ class Product(models.Model):
         return ', '.join([unit.name for unit in self.unit.all()[:3]])
     display_unit.short_description = 'Unit'
 
-    def display_storage(self):
-        return self.storage.name
-    display_storage.short_description = 'Storage'
-
     def get_absolute_url(self):
         """Returns the url to access a particular tip instance."""
         return reverse('product-detail', args=[str(self.id)])
@@ -104,3 +100,22 @@ class Product(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return self.name
+
+# Generated ToDos from inventory updates
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from tasks.models import Task, User, Group, Weekdays, TaskTypes
+
+@receiver(post_save, sender=Product)
+def product_post_save(sender, instance, created, **kwargs):
+    if instance.seller.filter(name='Iaro').exists():
+        product_name = instance.name
+        product_storage = instance.storage
+        if float(instance.value) < float(instance.value_intended):
+            order_text = "%s for %s" % (instance.name, instance.storage)
+            task = Task(title=order_text)
+            task.save()
+            group = Group.objects.get(name='Kitchen')
+            tasktype = TaskTypes.objects.get(name='Baking')
+            task.groups.add(group)
+            task.type.add(tasktype)
