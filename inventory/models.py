@@ -108,7 +108,7 @@ from tasks.models import Task, User, Group, Weekdays, TaskTypes
 
 @receiver(post_save, sender=Product)
 def product_post_save(sender, instance, created, **kwargs):
-    if instance.seller.filter(name='Iaro').exists():
+    if instance.seller.filter(name='Iaro Kitchen').exists():
         product_name = instance.name
         product_storage = instance.storage
         if float(instance.value) < float(instance.value_intended):

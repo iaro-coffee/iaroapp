@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Product, Storage, Category
+from .models import Product, Storage, Category, Seller
 
 class ProductsInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
@@ -38,3 +38,7 @@ admin.site.register(Storage, StoragesAdmin)
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'emoji', 'display_color')
+
+@admin.register(Seller)
+class SellerAdmin(admin.ModelAdmin):
+    list_display = ('name',)
