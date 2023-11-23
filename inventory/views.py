@@ -7,7 +7,7 @@ from .models import Product
 from iaroapp.models import Branch
 
 from django.contrib.auth import get_user_model
-from tips.forms import Form
+from django.forms import Form
 from django.http import HttpResponseRedirect, HttpResponse
 import json
 import datetime

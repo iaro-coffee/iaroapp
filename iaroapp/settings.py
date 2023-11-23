@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'tasks.apps.TasksConfig',
-    'tips.apps.TipsConfig',
     'ratings.apps.RatingsConfig',
     'procedures.apps.ProceduresConfig',
     'inventory.apps.InventoryConfig',
@@ -50,7 +49,6 @@ INSTALLED_APPS = [
     'ckeditor',
     'crispy_forms',
     'crispy_bootstrap4',
-    'django_crontab',
     'iaroapp.apps.IaroappConfig',
     'colorful',
 ]
@@ -65,10 +63,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'login_required.middleware.LoginRequiredMiddleware',
-]
-
-CRONJOBS = [
-    ('0 22 * * *', 'iaroapp.cron.assignTips') # server is 2h behind
 ]
 
 ROOT_URLCONF = 'iaroapp.urls'

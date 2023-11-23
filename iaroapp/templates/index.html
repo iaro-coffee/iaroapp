@@ -125,62 +125,6 @@
         </div>
     </div>
 
-    <div class="col-lg-6 pe-lg-2 mb-3">
-        <div class="card h-lg-100 overflow-hidden">
-            <div class="card-header bg-light">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h6 class="mb-0">My Tips</h6>
-                    </div>
-                    <div class="col-auto text-center pe-x1">
-                        <br><br>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body p-0">
-                <div class="list-group w-auto rounded-0">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Date</th>
-                                    <th scope="col" style="white-space: nowrap;">Amount</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    {% for tip in tips %}
-                                        <tr>
-                                            <td>
-                                                <label class="list-group-item">
-                                                  <span class="pt-1 form-checked-content">
-                                                    {{ tip.date }}
-                                                  </span>
-                                                </label>
-                                            </td>
-                                            <td>
-                                                <label class="list-group-item">
-                                                  <span class="pt-1 form-checked-content">
-                                                    € {{ tip.amount }}
-                                                  </span>
-                                                </label>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-md-auto text-center">
-                            <div class="container">
-                                <h1>€ {{ tipsSum }}</h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 <div class="row g-0">
@@ -256,19 +200,6 @@
     </div>
 </div>
 
-<div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content rounded-4 shadow">
-          <div class="modal-body p-5">
-            <h2 class="fw-bold mb-0">Submit tips</h2>
-            <br>
-            <span class="submitModalContent"></span>
-            <button id="submitModalButton" type="button" class="btn btn-lg btn-primary mt-5 w-100" data-bs-dismiss="modal">Yes</button>
-          </div>
-        </div>
-      </div>
-  </div>
-
     <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
       <div class="modal-dialog" role="document">
         <div class="modal-content rounded-4 shadow">
@@ -284,10 +215,6 @@
 <style>
   .btn-link {
     text-decoration: none;
-  }
-  .tips-status {
-    display: flex;
-    padding: 0rem 1rem;
   }
   ul.shifts {
     list-style: none;

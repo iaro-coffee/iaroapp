@@ -1,13 +1,11 @@
 from django.shortcuts import render
 
-from iaroapp.cron import assignTips
 from .models import Task, TaskInstance
 from django.forms.models import model_to_dict
 from datetime import datetime, timedelta, time
 from django.http import HttpResponse
 import json
 from django.contrib.auth import get_user_model
-from tips.models import AssignedTip
 from lib import planday
 from operator import itemgetter
 
@@ -79,16 +77,6 @@ def index(request):
 
         return HttpResponse(200)
 
-    allTips = AssignedTip.objects.filter(user=request.user, date__month__gte=datetime.now().strftime("%m"))
-    tips = []
-
-    for tip in allTips:
-        tips.append(model_to_dict(tip))
-
-    tipsSum = 0
-    for tip in tips:
-        tipsSum += tip['amount']
-
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
 
@@ -97,8 +85,6 @@ def index(request):
         request,
         'index.html',
         context={
-            'tipsSum': tipsSum,
-            'tips': tips,
             'nextShifts': userShifts,
             'task_list': myTasks[0:len(myTasks) if len(myTasks) <= 3 else 3],
             'today': today,

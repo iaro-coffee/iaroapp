@@ -34,10 +34,6 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('tips/', include('tips.urls')),
-]
-
-urlpatterns += [
     path('ratings/', include('ratings.urls')),
 ]
 
