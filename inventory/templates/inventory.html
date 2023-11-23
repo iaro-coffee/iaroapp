@@ -36,18 +36,18 @@
     {% csrf_token %}
 
     <div class="list-group" id="inventoryList">
-    {% for category in categories %}
-        <h4 data-bs-toggle="collapse" href="#collapse{{ category.name_encoded }}" role="button" class="list-group-item">
-          <span class="category_color" style="background-color:{{ category.color }};"></span>
-          {{ category.name }}
+    {% for storage in storages %}
+        <h4 data-bs-toggle="collapse" href="#collapse{{ storage.name_encoded }}" role="button" class="list-group-item">
+          <span class="storage_color" style="background-color:{{ storage.color }};"></span>
+          {{ storage.name }}
         </h4>
-        <div class="list-group-item collapse" id="collapse{{ category.name_encoded}}" data-bs-parent="#inventoryList">
+        <div class="list-group-item collapse" id="collapse{{ storage.name_encoded}}" data-bs-parent="#inventoryList">
           <div class="list-group w-auto">
             {% for product in products %}
-              {% if category in product.category.all %}
+              {% if storage.name in product.storages %}
                 <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
                   <span style="font-size: 2rem">
-                    {{ category.emoji }}
+                    📦
                   </span>
                   <div class="d-flex gap-2 w-100 justify-content-between">
                     <div>
@@ -235,7 +235,7 @@
     background-color: lightblue !important;
   }
 
-  .category_color {
+  .storage_color {
     display: block;
     width: 30px;
     height: 50px;

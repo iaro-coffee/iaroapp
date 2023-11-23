@@ -1,7 +1,7 @@
 {
   inputs = {
     # FIXME: Switch to 23.11 release when it's ready
-    nixpkgs.url = "github:onny/nixpkgs/django-crontab";
+    nixpkgs.url = "nixpkgs/23.11-beta";
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -32,7 +32,6 @@
             django_colorful
             django-crispy-forms
             django-crispy-bootstrap4
-            django-crontab
             requests
             python-dotenv
             django-ckeditor

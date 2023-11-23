@@ -1,17 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-
-# Create your views here.
-
-from .models import Product
-from iaroapp.models import Branch
-
 from django.contrib.auth import get_user_model
 from django.forms import Form
 from django.http import HttpResponseRedirect, HttpResponse
 import json
 import datetime
 from django.forms.models import model_to_dict
+from .models import Product, ProductStorage, Branch, Storage
 
 def index(request, branch='All'):
 
@@ -20,31 +15,42 @@ def index(request, branch='All'):
     products = Product.objects.all()
     branches = Branch.objects.all()
     form = Form()
-    categories = []
+    storages = []
 
     if (branch != 'All'):
 
         # Get storages for selected branch
         branch = branches.filter(name=branch)[0]
+        selected_branch = branch
         storages = branch.storages.all()
         storages = list(storages)
 
         # Filter products only available in specific storage of branch
-        products = products.filter(storage__name__in=storages)
+        products = products.filter(product_storages__storage__name__in=storages)
 
     # Filter selected branch from available branches
     branches = branches.exclude(name=branch)
-
     # Add 'All' option to branche selection
     branches = list(branches)
     if (branch != 'All'):
         branches.append('All')
 
-    # Populate available categories
-    for product in products:
-        for category in product.category.all():
-            if category not in categories:
-                categories.append(category)
+    # Populate available storages
+    filtered_storages = []
+    product_ids = products.values_list('id', flat=True)
+    product_storages = ProductStorage.objects.filter(product__id__in=product_ids)
+    if branch != 'All':
+        for storage in product_storages:
+            if storage.storage in storages:
+                filtered_storages.append(storage.storage)
+    else:
+        filtered_storages = [storage.storage for storage in product_storages]
+    storages = filtered_storages
+
+    # Sort storages by name
+    storages_queryset = Storage.objects.filter(id__in=[storage.id for storage in storages])
+    storages_sorted = storages_queryset.order_by('name')
+    storages = [storage for storage in storages_sorted]
 
     if request.method == 'POST':
 
@@ -77,7 +83,7 @@ def index(request, branch='All'):
             'users': users,
             'form': form,
             'products': products,
-            'categories': categories,
+            'storages': storages,
             'isSubmittedToday': isSubmittedToday,
             'modifiedDate': last_modified_date,
             'branches': branches,
@@ -95,12 +101,9 @@ from django.contrib.auth.decorators import user_passes_test
 def check_admin(user):
    return user.is_superuser
 
-#@user_passes_test(check_admin)
 def inventory_evaluation(request):
 
     products = Product.objects.all()
-    products = products.order_by('category')
-    #sorted(products,  key=lambda m: -m.value_tobuy)
     sellers = []
     for prod in products:
         if (prod.display_seller() not in sellers) and prod.tobuy:

@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'ckeditor',
     'crispy_forms',
     'crispy_bootstrap4',
-    'iaroapp.apps.IaroappConfig',
     'colorful',
 ]
 

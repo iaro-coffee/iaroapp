@@ -16,9 +16,31 @@ class Storage(models.Model):
     name = models.CharField(max_length=500)
     color = RGBColorField(default='')
 
+    # Add a calculated field called name_encoded
+    @property
+    def name_encoded(self):
+        # Use the sanitize function to encode the name
+        return sanitize_string(self.name)
+
     def display_color(self):
         return format_html('<span style="width:15px;height:15px;display:block;background-color:{}"></span>', self.color)
     display_color.short_description = 'Color'
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
+
+class Branch(models.Model):
+    """Model representing a storage location."""
+    name = models.CharField(max_length=500)
+    storages = models.ManyToManyField(Storage)
+
+    class Meta:
+         verbose_name_plural = 'Branches'
+
+    def display_storages(self):
+        return ", ".join([storage.name for storage in self.storages.all()])
+    display_storages.short_description = 'Storages'
 
     def __str__(self):
         """String for representing the Model object."""
@@ -45,37 +67,10 @@ class Seller(models.Model):
     def __str__(self):
         return self.name
 
-class Category(models.Model):
-    name = models.CharField(
-        max_length=200,
-        help_text="Enter category for product."
-    )
-    emoji = models.CharField(
-        max_length=10,
-        default="☕")
-    color = RGBColorField(default='')
-
-    class Meta:
-         verbose_name_plural = 'Categories'
-
-    def __str__(self):
-        return self.name
-
-    # Add a calculated field called name_encoded
-    @property
-    def name_encoded(self):
-        # Use the sanitize function to encode the name
-        return sanitize_string(self.name)
-
-    def display_color(self):
-        return format_html('<span style="width:15px;height:15px;display:block;background-color:{}"></span>', self.color)
-    display_color.short_description = 'Color'
-
 class Product(models.Model):
     """Model representing a product."""
     name = models.CharField(max_length=500)
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
-    category = models.ManyToManyField(Category, help_text="Select category for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
 
@@ -102,10 +97,6 @@ class Product(models.Model):
     def display_seller(self):
         return self.seller.all()[0].name
     display_seller.short_description = 'Seller'
-
-    def display_category(self):
-        return ', '.join([category.name for category in self.category.all()[:3]])
-    display_category.short_description = 'Categories'
 
     def display_unit(self):
         return ', '.join([unit.name for unit in self.unit.all()[:3]])
