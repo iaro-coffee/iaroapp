@@ -52,6 +52,7 @@
                   <div class="d-flex gap-2 w-100 justify-content-between">
                     <div>
                       <input type="number" name="product" value="{{product.id}}" style="display: none;" />
+                      <input type="number" name="storage" value="{{storage.id}}" style="display: none;" />
                       <h6 class="mb-0 wrap">
                         {{ product.name }}
                       </h6>
@@ -112,8 +113,14 @@
         if (name === "product") {
           product = value;
         }
+        if (name === "storage") {
+          storage = value;
+        }
         if (name === "value") {
-          objSerializedForm[product] = value;
+          objSerializedForm[product] = {
+            storage: storage,
+            value: value
+          };
         }
       }
 

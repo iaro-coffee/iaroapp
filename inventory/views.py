@@ -60,12 +60,11 @@ def index(request, branch='All'):
 
         form_data = json.loads(request_data.decode("utf-8"))
         for product, value in form_data.items():
-            if value:
-                value = value.replace(',','.')
-                if float(value) >= 0:
-                    product_instance = Product.objects.get(id=product)
-                    product_instance.value = value
-                    product_instance.save()
+            if value['value'] and float(value['value']) >= 0:
+                product_instance = Product.objects.get(id=product)
+                product_storage_instance = ProductStorage.objects.get(product=product_instance, storage_id=value['storage'])
+                product_storage_instance.value = value['value'].replace(',','.')
+                product_storage_instance.save()
         return HttpResponse(200)
 
     else:
