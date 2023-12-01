@@ -103,6 +103,32 @@ def check_admin(user):
 def inventory_evaluation(request):
 
     products = Product.objects.all()
+    storages = []
+    branches = Branch.objects.all()
+    for prod in products:
+        if (prod.display_seller() not in storages) and prod.tobuy:
+            storages.append(prod.display_seller())
+    
+    product = Product.objects.filter(id=1)
+    modified_date = "Unknown"
+
+    if product.exists():
+        modified_date = product.first().modified_date.date()
+
+    return render(
+        request,
+        'inventory_evaluation.html',
+        context={
+            'products': products,
+            'modifiedDate': modified_date,
+            'storages': storages,
+            'branches': branches,
+        },
+    )
+
+def inventory_shopping(request):
+
+    products = Product.objects.all()
     sellers = []
     for prod in products:
         if (prod.display_seller() not in sellers) and prod.tobuy:
@@ -116,7 +142,7 @@ def inventory_evaluation(request):
 
     return render(
         request,
-        'inventory_evaluation.html',
+        'inventory_shopping.html',
         context={
             'products': products,
             'modifiedDate': modified_date,

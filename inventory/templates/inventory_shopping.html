@@ -1,0 +1,105 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
+  <h1 class="h2">Shopping list</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <button type="button" class="btn btn-sm btn-outline-secondary">
+      <span data-feather="calendar" class="align-text-bottom"></span>
+      Last updated: {{ modifiedDate }}
+    </button>
+  </div>
+</div>
+
+<div style="width: 100%;">
+  {% for seller in sellers%}
+  <h4>{{ seller }}</h4>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col" width="1%"></th>
+        <th scope="col">Name</th>
+        <th scope="col">Storages</th>
+        <th scope="col" style="white-space: nowrap;">To buy</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+        {%if product.tobuy and product.display_seller == seller %}
+        <tr>
+          <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
+          <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
+          <td><label for="checkbox{{forloop.counter}}">{{ product.storages|join:", " }}</label></td>
+          <td><label for="checkbox{{forloop.counter}}">{{ product.value_tobuy|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endfor %}
+</div>
+
+<style>
+  table {
+    font-size: 1rem;
+  }
+  label {
+    width: 100%;
+    padding: .9rem;
+    user-select: none;
+    height: 100%;
+  }
+  tbody tr {
+    background-color: rgb(248, 215, 218);
+    border-bottom-color: rgb(201, 192, 192) !important;
+  }
+  tbody tr.done {
+    background-color: rgb(209, 231, 221);
+  }
+  td:not(first-child) {
+    padding: 0rem !important;
+    overflow-wrap: anywhere;
+  }
+  td:first-child {
+    padding: 0.8rem !important;
+  }
+</style>
+
+<script>
+
+  window.onload = function() {
+    var i, l, trs = document.getElementsByTagName('tr');
+    for (i = 0, l = trs.length; i < l; i++) {
+      attachClickHandler(trs[i]);
+      var checkbox = trs[i].querySelector('input');
+      if (checkbox) {
+        if (checkbox.checked) {
+          trs[i].classList.add('done');
+        }
+      }
+    }
+  };
+
+  function clickHandler() {
+    var checkbox = this.querySelector('input');
+    if (this.classList.contains('done')) {
+      this.classList.remove('done');
+      checkbox.checked = false;
+    } else {
+      this.classList.add('done');
+      checkbox.checked = true;
+    }
+  }
+
+  function attachClickHandler(tr) {
+      tr.onclick = function() {
+        if (event.target.tagName != 'INPUT') {
+          event.preventDefault();
+        }
+        clickHandler.call(tr);
+      };
+  }
+
+</script>
+{% endblock %}

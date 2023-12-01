@@ -38,6 +38,10 @@ class Branch(models.Model):
     class Meta:
          verbose_name_plural = 'Branches'
 
+    @property
+    def get_storages(self):
+        return [storage.name for storage in self.storages.all()]
+
     def display_storages(self):
         return ", ".join([storage.name for storage in self.storages.all()])
     display_storages.short_description = 'Storages'

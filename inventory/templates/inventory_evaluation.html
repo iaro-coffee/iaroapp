@@ -13,27 +13,27 @@
 </div>
 
 <div style="width: 100%;">
-  {% for seller in sellers%}
-  <h4>{{ seller }}</h4>
+  {% for branch in branches%}
+  <h4>{{ branch }}</h4>
   <table class="table table-hover">
     <thead>
       <tr>
-        <th scope="col" width="1%"></th>
         <th scope="col">Name</th>
-        <th scope="col">Storages</th>
-        <th scope="col" style="white-space: nowrap;">To buy</th>
+        <th scope="col">Storage</th>
+        <th scope="col" style="white-space: nowrap;">Availability</th>
       </tr>
     </thead>
     <tbody>
       {% for product in products %}
-        {%if product.tobuy and product.display_seller == seller %}
-        <tr>
-          <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
-          <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
-          <td><label for="checkbox{{forloop.counter}}">{{ product.storages|join:", " }}</label></td>
-          <td><label for="checkbox{{forloop.counter}}">{{ product.value_tobuy|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
-        </tr>
-        {% endif %}
+        {% for storage in product.storages %}
+          {% if storage in branch.get_storages %}
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.storages|join:", " }}</td>
+            <td>{{ product.value_tobuy|floatformat:2 }} {{ product.unit.all|join:", " }}</td>
+          </tr>
+          {% endif %}
+        {% endfor %}
       {% endfor %}
     </tbody>
   </table>
@@ -41,65 +41,16 @@
 </div>
 
 <style>
-  table {
+  .table {
+    margin-bottom: 2rem !important;
     font-size: 1rem;
   }
-  label {
-    width: 100%;
+  td {
+    padding: 0.8rem !important;
+    overflow-wrap: anywhere;
     padding: .9rem;
     user-select: none;
     height: 100%;
   }
-  tbody tr {
-    background-color: rgb(248, 215, 218);
-    border-bottom-color: rgb(201, 192, 192) !important;
-  }
-  tbody tr.done {
-    background-color: rgb(209, 231, 221);
-  }
-  td:not(first-child) {
-    padding: 0rem !important;
-    overflow-wrap: anywhere;
-  }
-  td:first-child {
-    padding: 0.8rem !important;
-  }
 </style>
-
-<script>
-
-  window.onload = function() {
-    var i, l, trs = document.getElementsByTagName('tr');
-    for (i = 0, l = trs.length; i < l; i++) {
-      attachClickHandler(trs[i]);
-      var checkbox = trs[i].querySelector('input');
-      if (checkbox) {
-        if (checkbox.checked) {
-          trs[i].classList.add('done');
-        }
-      }
-    }
-  };
-
-  function clickHandler() {
-    var checkbox = this.querySelector('input');
-    if (this.classList.contains('done')) {
-      this.classList.remove('done');
-      checkbox.checked = false;
-    } else {
-      this.classList.add('done');
-      checkbox.checked = true;
-    }
-  }
-
-  function attachClickHandler(tr) {
-      tr.onclick = function() {
-        if (event.target.tagName != 'INPUT') {
-          event.preventDefault();
-        }
-        clickHandler.call(tr);
-      };
-  }
-
-</script>
 {% endblock %}

@@ -114,6 +114,19 @@
                 </h6>
                 <ul class="nav flex-column mb-2">
                     <li class="nav-item">
+                        {% url 'inventory_shopping' as inventory_shopping_url %}
+                        {% if request.path == inventory_shopping_url %}
+                        <a class="nav-link active" href="{% url 'inventory_shopping' %}">
+                            {% else %}
+                            <a class="nav-link" href="{% url 'inventory_shopping' %}">
+                                {% endif %}
+                                <span data-feather="file-text" class="align-text-bottom"></span>
+                                Shopping list
+                            </a>
+                        </a>
+                    </li>
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
                         {% url 'inventory_evaluation' as inventory_evaluation_url %}
                         {% if request.path == inventory_evaluation_url %}
                         <a class="nav-link active" href="{% url 'inventory_evaluation' %}">
@@ -125,7 +138,6 @@
                             </a>
                         </a>
                     </li>
-                    {% if user.is_superuser %}
                     <li class="nav-item">
                         {% url 'tasks_evaluation' as tasks_evaluation_url %}
                         {% if request.path == tasks_evaluation_url %}
