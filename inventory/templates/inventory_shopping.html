@@ -16,7 +16,7 @@
   <table class="table table-hover">
     <tbody>
     {% for seller in sellers%}
-        <tr class="header title">
+        <tr class="title">
           <th colspan="4">{{ seller }}</th>
         </tr>
         <tr class="header">
@@ -51,7 +51,7 @@
     height: 100%;
     background: none;
   }
-  tbody tr.header:hover {
+  tbody tr.header:hover, tbody tr.title:hover {
     background-color: white !important;
     box-shadow: none !important;
   }
@@ -60,6 +60,13 @@
   }
   tbody tr.title th {
     padding-top: 3rem !important;
+    font-size: 1.5rem !important;
+    font-weight: 200 !important;
+  }
+  tr.header th {
+    color: #495057 !important;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
   }
   tbody tr.title:first-child th{
     padding-top: 1rem !important;

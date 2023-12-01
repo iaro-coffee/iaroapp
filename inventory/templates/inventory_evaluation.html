@@ -13,13 +13,13 @@
 </div>
 
 <div style="width: 100%;">
-  <table class="table table-hover">
+  <table class="table table-striped table-hover">
     <tbody>
       {% for branch in branches%}
         <tr class="title">
           <th colspan="3">{{ branch }}</th>
         </tr>
-        <tr class="header">
+        <tr class="header thead-dark">
           <th scope="col">Name</th>
           <th scope="col">Storage</th>
           <th scope="col" style="white-space: nowrap;">Availability</th>
@@ -49,11 +49,17 @@
     padding: 0.8rem !important;
     overflow-wrap: anywhere;
     padding: .9rem;
-    user-select: none;
     height: 100%;
   }
   tr.title th {
     padding-top: 3rem !important;
+    font-size: 1.5rem !important;
+    font-weight: 200 !important;
+  }
+  tr.header th {
+    color: #495057 !important;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
   }
   tr.title:first-child th {
     padding-top: 1rem !important;
