@@ -13,31 +13,31 @@
 </div>
 
 <div style="width: 100%;">
-  {% for seller in sellers%}
-  <h4>{{ seller }}</h4>
   <table class="table table-hover">
-    <thead>
-      <tr>
-        <th scope="col" width="1%"></th>
-        <th scope="col">Name</th>
-        <th scope="col">Storages</th>
-        <th scope="col" style="white-space: nowrap;">To buy</th>
-      </tr>
-    </thead>
     <tbody>
-      {% for product in products %}
-        {%if product.tobuy and product.display_seller == seller %}
-        <tr>
-          <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
-          <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
-          <td><label for="checkbox{{forloop.counter}}">{{ product.storages|join:", " }}</label></td>
-          <td><label for="checkbox{{forloop.counter}}">{{ product.value_tobuy|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
+    {% for seller in sellers%}
+        <tr class="header title">
+          <th colspan="4">{{ seller }}</th>
         </tr>
-        {% endif %}
-      {% endfor %}
+        <tr class="header">
+          <th scope="col" width="1%"></th>
+          <th scope="col">Name</th>
+          <th scope="col">Storages</th>
+          <th scope="col" style="white-space: nowrap;">To buy</th>
+        </tr>
+        {% for product in products %}
+          {%if product.tobuy and product.display_seller == seller %}
+          <tr class="entry">
+            <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
+            <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
+            <td><label for="checkbox{{forloop.counter}}">{{ product.storages|join:", " }}</label></td>
+            <td><label for="checkbox{{forloop.counter}}">{{ product.value_tobuy|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+    {% endfor %}
     </tbody>
   </table>
-  {% endfor %}
 </div>
 
 <style>
@@ -49,13 +49,27 @@
     padding: .9rem;
     user-select: none;
     height: 100%;
+    background: none;
   }
-  tbody tr {
-    background-color: rgb(248, 215, 218);
+  tbody tr.header:hover {
+    background-color: white !important;
+    box-shadow: none !important;
+  }
+  .table > :not(caption) > * > * {
+    box-shadow: none !important;
+  }
+  tbody tr.title th {
+    padding-top: 3rem !important;
+  }
+  tbody tr.title:first-child th{
+    padding-top: 1rem !important;
+  }
+  tbody tr td {
+    background-color: rgb(248, 215, 218) !important;
     border-bottom-color: rgb(201, 192, 192) !important;
   }
-  tbody tr.done {
-    background-color: rgb(209, 231, 221);
+  tbody tr.done td {
+    background-color: rgb(209, 231, 221) !important;
   }
   td:not(first-child) {
     padding: 0rem !important;
@@ -69,7 +83,7 @@
 <script>
 
   window.onload = function() {
-    var i, l, trs = document.getElementsByTagName('tr');
+    var i, l, trs = document.getElementsByClassName('entry');
     for (i = 0, l = trs.length; i < l; i++) {
       attachClickHandler(trs[i]);
       var checkbox = trs[i].querySelector('input');

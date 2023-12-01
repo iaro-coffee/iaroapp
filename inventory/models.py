@@ -80,11 +80,10 @@ class Product(models.Model):
 
     @property
     def tobuy(self):
-        total_value = self.product_storages.aggregate(total_value=Sum('value'))['total_value']
-        total_value_intended = self.product_storages.aggregate(total_value_intended=Sum('value_intended'))['total_value_intended']
-        if total_value is None or total_value_intended is None:
-            return False
-        return (((100/total_value_intended)*total_value) < 30)
+        for product_storage in self.product_storages.all():
+            if product_storage.tobuy:
+                return True
+        return False
 
     @property
     def value_tobuy(self):
@@ -133,21 +132,27 @@ class ProductStorage(models.Model):
     value = models.FloatField()
     value_intended = models.FloatField()
 
+    @property
+    def tobuy(self):
+        if self.value is None or self.value_intended is None:
+            return False
+        return (((100/self.value_intended)*self.value) < 30)
+
 # Generated ToDos from inventory updates
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from tasks.models import Task, User, Group, Weekdays, TaskTypes
 
-@receiver(post_save, sender=Product)
-def product_post_save(sender, instance, created, **kwargs):
-    if instance.seller.filter(name='Iaro Kitchen').exists():
-        product_name = instance.name
-        product_storages = instance.storages
-        if float(instance.value) < float(instance.value_intended):
-            order_text = "%s for %s" % (instance.name, instance.storages)
-            task = Task(title=order_text)
-            task.save()
-            group = Group.objects.get(name='Kitchen')
-            tasktype = TaskTypes.objects.get(name='Baking')
-            task.groups.add(group)
-            task.type.add(tasktype)
+# @receiver(post_save, sender=Product)
+# def product_post_save(sender, instance, created, **kwargs):
+#     if instance.seller.filter(name='Iaro Kitchen').exists():
+#         product_name = instance.name
+#         product_storages = instance.storages
+#         if float(instance.value) < float(instance.value_intended):
+#             order_text = "%s for %s" % (instance.name, instance.storages)
+#             task = Task(title=order_text)
+#             task.save()
+#             group = Group.objects.get(name='Kitchen')
+#             tasktype = TaskTypes.objects.get(name='Baking')
+#             task.groups.add(group)
+#             task.type.add(tasktype)
