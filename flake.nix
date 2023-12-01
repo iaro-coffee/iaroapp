@@ -1,7 +1,6 @@
 {
   inputs = {
-    # FIXME: Switch to 23.11 release when it's ready
-    nixpkgs.url = "nixpkgs/23.11-beta";
+    nixpkgs.url = "nixpkgs/nixos-23.11";
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
