@@ -30,7 +30,22 @@
           <tr class="entry">
             <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
             <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
-            <td><label for="checkbox{{forloop.counter}}">{{ product.storages|join:", " }}</label></td>
+            <td>
+              <label for="checkbox{{forloop.counter}}" style="display: flex; gap: 0.2rem;">
+              {% for storage in product.storages %}
+              <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
+                <svg class="bi ms-1" width="16" height="16" style="color: {{ storage.color }};">
+                  <use xlink:href="#x-circle-fill">
+                    <symbol id="x-circle-fill" viewBox="0 0 16 16">
+                      <circle cx="8" cy="8" r="7" />
+                    </symbol>
+                  </use>
+                  </svg>
+                {{ storage }}
+              </span>
+              {% endfor %}
+              </label>
+            </td>
             <td><label for="checkbox{{forloop.counter}}">{{ product.value_tobuy|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
           </tr>
           {% endif %}
@@ -84,6 +99,15 @@
   }
   td:first-child {
     padding: 0.8rem !important;
+  }
+  .badge {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    font-size: 0.85rem;
+    padding-right: 0.7rem;
+    font-weight: 500;
   }
 </style>
 

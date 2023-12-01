@@ -40,7 +40,8 @@ class Branch(models.Model):
 
     @property
     def get_storages(self):
-        return [storage.name for storage in self.storages.all()]
+        return self.storages.all()
+        #return [storage.name for storage in self.storages.all()]
 
     def display_storages(self):
         return ", ".join([storage.name for storage in self.storages.all()])
@@ -95,7 +96,7 @@ class Product(models.Model):
 
     @property
     def storages(self):
-        return [product_storage.storage.name for product_storage in self.product_storages.all()]
+        return [product_storage.storage for product_storage in self.product_storages.all()]
     
     def display_seller(self):
         return self.seller.all()[0].name

@@ -29,7 +29,22 @@
             {% if storage in branch.get_storages %}
             <tr>
               <td>{{ product.name }}</td>
-              <td>{{ product.storages|join:", " }}</td>
+              {% for storage in product.storages %}
+                {% if storage in branch.get_storages %}
+                <td style="display: flex;">
+                  <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
+                    <svg class="bi ms-1" width="16" height="16" style="color: {{ storage.color }};">
+                      <use xlink:href="#x-circle-fill">
+                        <symbol id="x-circle-fill" viewBox="0 0 16 16">
+                          <circle cx="8" cy="8" r="7" />
+                        </symbol>
+                      </use>
+                     </svg>
+                    {{ storage }}
+                  </span>
+                </td>
+                {% endif %}
+              {% endfor %}
               <td>{{ product.value_tobuy|floatformat:2 }} {{ product.unit.all|join:", " }}</td>
             </tr>
             {% endif %}
@@ -70,6 +85,15 @@
   }
   .table > :not(caption) > * > * {
     box-shadow: none !important;
+  }
+  .badge {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    font-size: 0.85rem;
+    padding-right: 0.7rem;
+    font-weight: 500;
   }
 </style>
 {% endblock %}

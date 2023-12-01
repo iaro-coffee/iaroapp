@@ -7,6 +7,7 @@ import json
 import datetime
 from django.forms.models import model_to_dict
 from .models import Product, ProductStorage, Branch, Storage
+from django.db.models import Count
 
 def index(request, branch='All'):
 
@@ -103,15 +104,16 @@ def check_admin(user):
 def inventory_evaluation(request):
 
     products = Product.objects.all()
-    storages = []
-    branches = Branch.objects.all()
-    for prod in products:
-        if (prod.display_seller() not in storages) and prod.tobuy:
-            storages.append(prod.display_seller())
-    
+    storages = Storage.objects.all()
+
+    # Sort branches by name, filter out empty ones
+    branches = Branch.objects.annotate(num_products=Count('storages__productstorage__product'))
+    branches = branches.filter(num_products__gt=0)
+    branches = branches.order_by('name')
+
+    # Get last product modification date    
     product = Product.objects.filter(id=1)
     modified_date = "Unknown"
-
     if product.exists():
         modified_date = product.first().modified_date.date()
 
