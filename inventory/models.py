@@ -122,6 +122,16 @@ class Product(models.Model):
         """Returns the url to access a particular tip instance."""
         return reverse('product-detail', args=[str(self.id)])
 
+    def get_product_storage(self):
+        product_storage_dict = {}
+        for storage in self.product_storages.all():
+            product_storage_dict[storage.storage] = {
+                'value': storage.value,
+                'value_intended': storage.value_intended,
+                'tobuy': (((100/storage.value_intended)*storage.value) < 30)
+            }
+        return product_storage_dict
+
     def __str__(self):
         """String for representing the Model object."""
         return self.name

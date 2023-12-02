@@ -45,7 +45,19 @@
                 </td>
                 {% endif %}
               {% endfor %}
-              <td>{{ product.value_tobuy|floatformat:2 }} {{ product.unit.all|join:", " }}</td>
+              <td>
+                {% for product_storage, data in product.get_product_storage.items %}
+                  {% if product_storage in branch.get_storages %}
+                    {% if data.tobuy %}
+                    <span class="warning">
+                    {% else %}
+                    <span>
+                    {% endif %}
+                    {{ data.value|floatformat:2 }}/{{ data.value_intended|floatformat:2 }} {{ product.unit.all|join:", " }}
+                    </span>
+                  {% endif %}
+                {% endfor %}
+              </td>
             </tr>
             {% endif %}
           {% endfor %}
@@ -94,6 +106,9 @@
     font-size: 0.85rem;
     padding-right: 0.7rem;
     font-weight: 500;
+  }
+  .warning {
+    color: rgb(235, 68, 81);
   }
 </style>
 {% endblock %}
