@@ -81,8 +81,7 @@
                                 Store Opening
                             </a>
                     </li>
-                    {% endif %}
-                    {% if showClosing == True %}
+                    {% else %}
                     <li class="nav-item">
                         {% url 'closing' as closing_url %}
                         {% if request.path == closing_url %}

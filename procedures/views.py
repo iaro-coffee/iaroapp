@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 
 from .procedure_category import ProcedureCategory
-
+from inventory.models import Branch
 
 def index(request):
     if request.method == 'POST':
@@ -40,6 +40,14 @@ def opening(request):
     procedures = []
     for procedure in procedureModels:
         procedures.append(model_to_dict(procedure))
+
+    branches = Branch.objects.all()
+    branches = branches.order_by('name')
+
+    branch = request.GET.get('branch')
+    if not branch:
+        branch = Branch.objects.first().name
+
     return render(
         request,
         'procedures.html',
@@ -48,6 +56,8 @@ def opening(request):
             'today': datetime.today().date(),
             'categories': categories,
             'opening': True,
+            'branches': branches,
+            'branch': branch,
         },
     )
 
@@ -62,6 +72,14 @@ def closing(request):
     procedures = []
     for procedure in procedureModels:
         procedures.append(model_to_dict(procedure))
+
+    branches = Branch.objects.all()
+    branches = branches.order_by('name')
+
+    branch = request.GET.get('branch')
+    if not branch:
+        branch = Branch.objects.first().name
+
     return render(
         request,
         'procedures.html',
@@ -70,6 +88,8 @@ def closing(request):
             'today': datetime.today().date(),
             'categories': categories,
             'closing': True,
+            'branches': branches,
+            'branch': branch,
         },
     )
 

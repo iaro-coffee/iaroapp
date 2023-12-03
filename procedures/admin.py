@@ -6,7 +6,7 @@ class ProcedureAdmin(admin.ModelAdmin):
     Defines:
      - fields to be displayed in list view (list_display)
     """
-    list_display = ('title', 'summary')
+    list_display = ('title', 'summary', 'category', 'display_branch')
 
 admin.site.register(Procedure, ProcedureAdmin)
 class ProcedureCategoryAdmin(admin.ModelAdmin):
