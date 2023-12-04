@@ -12,23 +12,23 @@
     Inventory submitted successfully.
   </div>
 
-  <div class="page-header">
+  <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
+    <h1 class="h2">Update Inventory</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-      <button type="button" class="btn btn-sm btn-outline-secondary">
+      <button type="button" class="btn btn-sm">
         <span data-feather="calendar" class="align-text-bottom"></span>
         Last updated: {{ modifiedDate }}
       </button>
-    </div>
-
-    <div class="dropdown">
-      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ branch }}
-      </button>
-      <ul class="dropdown-menu">
-        {% for branch in branches %}
-        <li><a class="dropdown-item" href="#">{{ branch }}</a></li>
-        {% endfor %}
-      </ul>
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          {{ branch }}
+        </button>
+        <ul class="dropdown-menu">
+          {% for branch in branches %}
+          <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -166,16 +166,6 @@
 
       }
 
-      // Click event handler for dropdown menu selecting branches
-      const dropdownItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
-      for (const dropdownItem of dropdownItems) {
-        dropdownItem.addEventListener('click', (event) => {
-          const selectedBranchName = event.target.textContent;
-          const url = `/inventory/${selectedBranchName}`;
-          window.location.href = url;
-        });
-      }
-
       // Colorize fields as "done" for which a value is supplied
       let items = document.querySelectorAll("a.list-group-item");
       items.forEach(item => {
@@ -263,6 +253,10 @@
     margin: 0.75rem;
     max-width: 250px;
     align-self: end;
+  }
+
+  .title {
+    margin-bottom: 2rem !important;
   }
 
 </style>

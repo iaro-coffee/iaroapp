@@ -9,7 +9,7 @@ from django.forms.models import model_to_dict
 from .models import Product, ProductStorage, Branch, Storage
 from django.db.models import Count
 
-def index(request, branch='All'):
+def inventory_populate(request):
 
     User = get_user_model()
     users = User.objects.all()
@@ -17,6 +17,10 @@ def index(request, branch='All'):
     branches = Branch.objects.all()
     form = Form()
     storages = []
+
+    branch = request.GET.get('branch')
+    if not branch:
+        branch = Branch.objects.first().name
 
     if (branch != 'All'):
 
