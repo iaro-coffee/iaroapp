@@ -34,6 +34,7 @@ class Branch(models.Model):
     """Model representing a storage location."""
     name = models.CharField(max_length=500)
     storages = models.ManyToManyField(Storage)
+    departmentId = models.CharField(max_length=500, default="")
 
     class Meta:
          verbose_name_plural = 'Branches'

@@ -85,7 +85,7 @@ class Planday:
         user_shifts[employees[shift['employeeId']]['email']] = shift
     return user_shifts
 
-  def get_upcoming_shifts(self,starting , until):
+  def get_upcoming_shifts(self, starting, until):
     employees = self.get_employees()
     auth_headers = {
       'Authorization': 'Bearer ' + self.access_token,
@@ -103,6 +103,7 @@ class Planday:
     response = response['data']
     shifts = []
     for shift in response:
+      print(shift)
       if 'employeeId' in shift:
         employee = employees[shift['employeeId']]['email']
         employeeId = shift['employeeId']
