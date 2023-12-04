@@ -5,7 +5,7 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
   <h1 class="h2">Inventory Overview</h1>
   <div class="btn-toolbar mb-2 mb-md-0">
-    <button type="button" class="btn btn-sm">
+    <button type="button" class="modified-date btn btn-sm">
       <span data-feather="calendar" class="align-text-bottom"></span>
       Last updated: {{ modifiedDate }}
     </button>
@@ -20,8 +20,8 @@
           <th colspan="3">{{ branch }}</th>
         </tr>
         <tr class="header thead-dark">
-          <th scope="col">Name</th>
-          <th scope="col">Storage</th>
+          <th scope="col" class="name-column">Name</th>
+          <th scope="col" class="storages-column">Storage</th>
           <th scope="col" style="white-space: nowrap;">Availability</th>
         </tr>
         {% for product in products %}
@@ -31,7 +31,7 @@
               <td>{{ product.name }}</td>
               {% for storage in product.storages %}
                 {% if storage in branch.get_storages %}
-                <td style="display: flex;">
+                <td class="storages-column">
                   <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
                     <svg class="bi ms-1" width="16" height="16" style="color: {{ storage.color }};">
                       <use xlink:href="#x-circle-fill">
@@ -82,6 +82,7 @@
     padding-top: 3rem !important;
     font-size: 1.5rem !important;
     font-weight: 200 !important;
+    padding-left: 0 !important;
   }
   tr.header th {
     color: #495057 !important;
@@ -109,6 +110,23 @@
   }
   .warning {
     color: rgb(235, 68, 81);
+  }
+  .modified-date {
+    padding: 0 !important;
+  }
+  .storages-column {
+    display: flex;
+  }
+  @media (max-width: 767px) {
+    .storages-column {
+      display: none !important;
+    }
+    .name-column {
+      width: 50%;
+    }
+  }
+  label {
+    padding: .9rem .6rem !important;
   }
 </style>
 {% endblock %}

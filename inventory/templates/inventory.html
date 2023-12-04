@@ -15,7 +15,7 @@
   <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
     <h1 class="h2">Update Inventory</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-      <button type="button" class="btn btn-sm">
+      <button type="button" class="btn btn-sm modified-date">
         <span data-feather="calendar" class="align-text-bottom"></span>
         Last updated: {{ modifiedDate }}
       </button>
@@ -35,10 +35,16 @@
   <form id="form" method="post">
     {% csrf_token %}
 
-    <div class="list-group" id="inventoryList">
     {% for storage in storages %}
+    <div class="list-group" id="inventoryList">
         <h4 data-bs-toggle="collapse" href="#collapse{{ storage.name_encoded }}" role="button" class="list-group-item">
-          <span class="storage_color" style="background-color:{{ storage.color }};"></span>
+          <svg class="bi ms-1" width="24" height="24" style="color: {{ storage.color }};">
+            <use xlink:href="#x-circle-fill">
+              <symbol id="x-circle-fill" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8" />
+              </symbol>
+            </use>
+          </svg>
           {{ storage.name }}
         </h4>
         <div class="list-group-item collapse" id="collapse{{ storage.name_encoded}}" data-bs-parent="#inventoryList">
@@ -69,11 +75,11 @@
                 </a>
                 {% endif %}
               {% endfor %}
-              <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit inventory" />
+              <input type="submit" class="btn btn-primary" value="Submit inventory" />
             </div>
         </div>
-    {% endfor %}
     </div>
+    {% endfor %}
   </form>
 
   <div class="modal fade" id="submitInventoryModal" tabindex="-1" role="dialog" aria-labelledby="submitInventoryModalLabel" aria-hidden="true">
@@ -183,15 +189,7 @@
   </script>
 
 <style>
-  .sticky {
-    position: sticky;
-    top: 48px;
-    z-index: 10;
-    background: white;
-    margin: -1.5rem;
-    padding: 1.5rem 1.5rem 0 1.5rem;
-    border-bottom: 1px solid #eef0f2;
-  }
+
   .truncate {
     width: 30px;
     white-space: nowrap;
@@ -202,28 +200,13 @@
     overflow-wrap: anywhere;
   }
 
-  .page-header {
-    width: 100%;
-    display: flex;
-    margin-bottom: 1rem;
-    column-gap: 0.5rem;
-    flex-direction: row-reverse;
-  }
-
-  .mb-2 {
-    margin-bottom: 0rem !important;
-  }
-
-  div.list-group-item {
-    padding: 0 !important;
-  }
-
   .form-control:invalid {
     color: navy;
     outline: none; 
     border-color: #ff1050;
     box-shadow: 0 0 10px #ff0000;
   }
+
   .done {
     background-color: rgb(209, 231, 221);
   }
@@ -232,31 +215,45 @@
     background-color: lightblue !important;
   }
 
-  .storage_color {
-    display: block;
-    width: 30px;
-    height: 50px;
-    top: -8px;
-    position: relative;
-    margin-bottom: -17px;
-    left: -16px;
-    margin-right: -20px;
-    border-radius: 5px 0px;
-  }
-
-  h4.list-group-item {
-    display: flex;
-    gap: 1rem;
-  }
-
   input[type=submit] {
-    margin: 0.75rem;
-    max-width: 250px;
+    margin: .75rem;
     align-self: end;
+    
   }
 
   .title {
     margin-bottom: 2rem !important;
+  }
+
+  .modified-date {
+    padding: 0 !important;
+    padding-right: 1rem !important;
+  }
+
+  #inventoryList {
+    margin-top: 0.5rem !important;
+  }
+  h4 {
+    padding-left: 0.5rem !important;
+    margin-bottom: 0rem !important;
+    color: #495057 !important;
+    background-color: #e9ecef !important;
+    border-color: #dee2e6 !important;
+  }
+
+  div.list-group-item div.list-group {
+    background-color: #e9ecef !important;
+  }
+  div.list-group-item {
+    padding: 0 !important;
+  }
+
+  a.list-group-item {
+    border-radius: 0 !important;
+  }
+
+  svg {
+    margin-right: .3rem;
   }
 
 </style>
