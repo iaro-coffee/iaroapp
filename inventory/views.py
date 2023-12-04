@@ -20,7 +20,15 @@ def inventory_populate(request):
 
     branch = request.GET.get('branch')
     if not branch:
-        branch = Branch.objects.first().name
+        departmentId = request.session.get('departmentId', None)
+        if departmentId is not None:
+            branch = Branch.objects.filter(departmentId=departmentId).first()
+            if branch is not None:
+                branch_name = branch.name
+            else:
+                branch_name = Branch.objects.first().name
+        else:
+            branch_name = Branch.objects.first().name
 
     if (branch != 'All'):
 

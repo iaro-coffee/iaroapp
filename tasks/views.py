@@ -46,6 +46,8 @@ def getNextShiftsByUser(request):
         userShifts = []
         for shift in nextShifts:
             if request.user.email == shift['employee']:
+                if not "departmentId" in request.session:
+                    request.session['departmentId'] = shift["departmentId"]
                 start = datetime.fromisoformat(shift["start"]).strftime('%H.%M')
                 end = datetime.fromisoformat(shift["end"]).strftime('%H.%M')
                 day = datetime.fromisoformat(shift["end"]).strftime('%d')
@@ -79,8 +81,8 @@ def index(request):
 
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
-
     myTasks = getMyTasks(request)
+
     return render(
         request,
         'index.html',

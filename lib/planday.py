@@ -103,7 +103,6 @@ class Planday:
     response = response['data']
     shifts = []
     for shift in response:
-      print(shift)
       if 'employeeId' in shift:
         employee = employees[shift['employeeId']]['email']
         employeeId = shift['employeeId']
