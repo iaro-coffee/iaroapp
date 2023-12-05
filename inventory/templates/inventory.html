@@ -34,21 +34,23 @@
 
   <form id="form" method="post">
     {% csrf_token %}
-
+    <div id="accordion">
     {% for storage in storages %}
-    <div class="list-group" id="inventoryList">
-        <h4 data-bs-toggle="collapse" href="#collapse{{ storage.name_encoded }}" role="button" class="list-group-item bg-light">
-          <svg class="bi ms-1" width="24" height="24" style="color: {{ storage.color }};">
-            <use xlink:href="#x-circle-fill">
-              <symbol id="x-circle-fill" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="8" />
-              </symbol>
-            </use>
-          </svg>
-          {{ storage.name }}
-        </h4>
-        <div class="list-group-item collapse" id="collapse{{ storage.name_encoded}}" data-bs-parent="#inventoryList">
-          <div class="list-group w-auto bg-light">
+      <div class="card">
+        <div class="card-header">
+          <a class="btn" data-bs-toggle="collapse" href="#inventoryList{{ storage.name_encoded }}">
+            <svg class="bi ms-1" width="24" height="24" style="color: {{ storage.color }};">
+              <use xlink:href="#x-circle-fill">
+                <symbol id="x-circle-fill" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="8" />
+                </symbol>
+              </use>
+            </svg>
+            {{ storage.name }}
+          </a>
+        </div>
+        <div id="inventoryList{{ storage.name_encoded }}" class="collapse" data-bs-parent="#accordion">
+          <div class="card-body">
             {% for product in products %}
               {% if storage in product.storages %}
                 <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
@@ -76,10 +78,11 @@
                 {% endif %}
               {% endfor %}
               <input type="submit" class="btn btn-primary" value="Submit inventory" />
-            </div>
+          </div>
         </div>
-    </div>
+      </div>
     {% endfor %}
+    </div> 
   </form>
 
   <div class="modal fade" id="submitInventoryModal" tabindex="-1" role="dialog" aria-labelledby="submitInventoryModalLabel" aria-hidden="true">
@@ -199,14 +202,12 @@
   .wrap {
     overflow-wrap: anywhere;
   }
-
   .form-control:invalid {
     color: navy;
     outline: none; 
     border-color: #ff1050;
     box-shadow: 0 0 10px #ff0000;
   }
-
   .done {
     background-color: rgb(209, 231, 221);
   }
@@ -229,24 +230,20 @@
     padding: 0 !important;
     padding-right: 1rem !important;
   }
-
-  #inventoryList {
-    margin-top: 0.5rem !important;
-  }
-  h4 {
-    padding-left: 0.5rem !important;
-    margin-bottom: 0rem !important;
-  }
-  div.list-group-item {
-    padding: 0 !important;
-  }
-
-  a.list-group-item {
-    border-radius: 0 !important;
-  }
-
   svg {
     margin-right: .3rem;
+  }
+  a.btn {
+    display: flex;
+    padding-left: 0px;
+  }
+  .card {
+    margin: .5rem 0;
+  }
+  .card-body {
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
   }
 
 </style>
