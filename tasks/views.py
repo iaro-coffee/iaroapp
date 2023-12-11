@@ -8,6 +8,7 @@ import json
 from django.contrib.auth import get_user_model
 from lib import planday
 from operator import itemgetter
+from inventory.models import Product
 
 planday = planday.Planday()
 run_once_day = {}
@@ -175,5 +176,18 @@ def tasks_evaluation(request):
             'tasks': tasks_evaluation,
             'weekdays': weekdays,
             'today': weekdayToday
+        },
+    )
+
+@user_passes_test(check_admin)
+def tasks_baking(request):
+
+    products = Product.objects.filter(seller__name='Iaro Kitchen')
+
+    return render(
+        request,
+        'tasks_baking.html',
+        context={
+            'products': products,
         },
     )
