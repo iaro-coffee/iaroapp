@@ -41,12 +41,12 @@
                             <circle cx="8" cy="8" r="7" />
                           </symbol>
                         </use>
-                        </svg>
-                      FIXME {{ product_storage.storage.name }}
+                      </svg>
+                      {{ product_storage.storage.name }}
                     </span>
                     </label>
                 </td>
-                <td><label for="checkbox{{forloop.counter}}">FIXME {{ product.value_oos|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
+                <td><label for="checkbox{{forloop.counter}}">{{ product_storage.value_needed|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
               </tr>
               {% endif %}
             {% endfor %}

@@ -153,6 +153,10 @@ class ProductStorage(models.Model):
     main_storage = models.BooleanField(default=False)
 
     @property
+    def value_needed(self):
+        return self.value_intended - self.value
+
+    @property
     def oos(self):
         if self.value is None or self.value_intended is None:
             return False
