@@ -29,6 +29,7 @@ def inventory_populate(request):
                 branch_name = Branch.objects.first().name
         else:
             branch_name = Branch.objects.first().name
+        branch = branch_name
 
     if (branch != 'All'):
 
@@ -145,7 +146,7 @@ def inventory_shopping(request):
     products = Product.objects.all()
     sellers = []
     for prod in products:
-        if (prod.display_seller() not in sellers) and prod.tobuy:
+        if (prod.display_seller() not in sellers) and prod.oos:
             sellers.append(prod.display_seller())
     
     product = Product.objects.filter(id=1)
@@ -161,5 +162,37 @@ def inventory_shopping(request):
             'products': products,
             'modifiedDate': modified_date,
             'sellers': sellers
+        },
+    )
+
+def inventory_packaging(request):
+
+    branches = Branch.objects.all()
+    product_storages_set = set()
+    for product_storage in ProductStorage.objects.all():
+        if product_storage.oos == True and product_storage.main_storage == False:
+            product_storages_set.add(product_storage)
+    branches_set = set()
+    for product_storage in product_storages_set:
+        branches_set.add(product_storage.branch)
+    branches = list(branches_set)
+
+    products = Product.objects.all()
+
+    # Estimate last DB update    
+    product = Product.objects.filter(id=1)
+    product_storages = ProductStorage.objects.filter(product__in=products)
+    modified_date = "Unknown"
+    if product.exists():
+        modified_date = product.first().modified_date.date()
+
+    return render(
+        request,
+        'inventory_packaging.html',
+        context={
+            'products': products,
+            'product_storages': product_storages,
+            'modifiedDate': modified_date,
+            'branches': branches,
         },
     )

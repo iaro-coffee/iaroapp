@@ -81,14 +81,21 @@ class Product(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
 
     @property
-    def tobuy(self):
+    def has_main_storage(self):
         for product_storage in self.product_storages.all():
-            if product_storage.tobuy:
+            if product_storage.main_storage:
+                return True
+        return False
+       
+    @property
+    def oos(self):
+        for product_storage in self.product_storages.all():
+            if product_storage.oos:
                 return True
         return False
 
     @property
-    def value_tobuy(self):
+    def value_oos(self):
         total_value = self.product_storages.aggregate(total_value=Sum('value'))['total_value']
         total_value_intended = self.product_storages.aggregate(total_value_intended=Sum('value_intended'))['total_value_intended']
         if total_value is None or total_value_intended is None:
@@ -112,7 +119,7 @@ class Product(models.Model):
         total_value_intended = self.product_storages.aggregate(total_value_intended=Sum('value_intended'))['total_value_intended']
         if total_value is None or total_value_intended is None:
             return ''
-        if self.tobuy:
+        if self.oos:
             color = "red"
         else:
             color = ""
@@ -129,7 +136,7 @@ class Product(models.Model):
             product_storage_dict[storage.storage] = {
                 'value': storage.value,
                 'value_intended': storage.value_intended,
-                'tobuy': (((100/storage.value_intended)*storage.value) < 30)
+                'oos': (((100/storage.value_intended)*storage.value) < 30)
             }
         return product_storage_dict
 
@@ -143,13 +150,22 @@ class ProductStorage(models.Model):
     storage = models.ForeignKey(Storage, on_delete=models.CASCADE)
     value = models.FloatField()
     value_intended = models.FloatField()
+    main_storage = models.BooleanField(default=False)
 
     @property
-    def tobuy(self):
+    def oos(self):
         if self.value is None or self.value_intended is None:
             return False
         return (((100/self.value_intended)*self.value) < 30)
-
+    
+    @property
+    def branch(self):
+        branches = Branch.objects.all()
+        for branch in branches:
+            if self.storage in branch.storages.all():
+                return branch
+        return None
+    
 # Generated ToDos from inventory updates
 from django.db.models.signals import post_save
 from django.dispatch import receiver

@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
-  <h1 class="h2">Shopping list</h1>
+  <h1 class="h2">Packaging</h1>
   <div class="btn-toolbar mb-2 mb-md-0">
     <button type="button" class="btn btn-sm modified-date">
       <span data-feather="calendar" class="align-text-bottom"></span>
@@ -15,39 +15,41 @@
 <div style="width: 100%;">
   <table class="table table-hover">
     <tbody>
-    {% for seller in sellers %}
+    {% for branch in branches %}
         <tr class="title">
-          <th colspan="4">{{ seller }}</th>
+          <th colspan="4">{{ branch }}</th>
         </tr>
         <tr class="header">
           <th scope="col" width="1%"></th>
           <th scope="col">Name</th>
           <th scope="col" class="storages-column">Storages</th>
-          <th scope="col" style="white-space: nowrap;">To buy</th>
+          <th scope="col" style="white-space: nowrap;">Needed</th>
         </tr>
         {% for product in products %}
-          {%if product.oos and product.display_seller == seller %}
-          <tr class="entry">
-            <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
-            <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
-            <td class="storages-column">
-              <label for="checkbox{{forloop.counter}}" style="display: flex; gap: 0.2rem;">
-              {% for storage in product.storages %}
-              <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
-                <svg class="bi ms-1" width="16" height="16" style="color: {{ storage.color }};">
-                  <use xlink:href="#x-circle-fill">
-                    <symbol id="x-circle-fill" viewBox="0 0 16 16">
-                      <circle cx="8" cy="8" r="7" />
-                    </symbol>
-                  </use>
-                  </svg>
-                {{ storage }}
-              </span>
-              {% endfor %}
-              </label>
-            </td>
-            <td><label for="checkbox{{forloop.counter}}">{{ product.value_oos|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
-          </tr>
+          {% if product.has_main_storage and product.oos %}
+            {% for product_storage in product.product_storages.all %}
+              {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == branch %}
+              <tr class="entry">
+                <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
+                <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
+                <td class="storages-column">
+                  <label for="checkbox{{forloop.counter}}" style="display: flex; gap: 0.2rem;">
+                    <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
+                      <svg class="bi ms-1" width="16" height="16" style="color: {{ product_storage.storage.color }};">
+                        <use xlink:href="#x-circle-fill">
+                          <symbol id="x-circle-fill" viewBox="0 0 16 16">
+                            <circle cx="8" cy="8" r="7" />
+                          </symbol>
+                        </use>
+                        </svg>
+                      FIXME {{ product_storage.storage.name }}
+                    </span>
+                    </label>
+                </td>
+                <td><label for="checkbox{{forloop.counter}}">FIXME {{ product.value_oos|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
+              </tr>
+              {% endif %}
+            {% endfor %}
           {% endif %}
         {% endfor %}
     {% endfor %}
