@@ -22,7 +22,7 @@
         devShell = pkgs.mkShell {
           packages = with pkgs; with python3Packages; [
             python3
-            django
+            django_5
             dj-database-url
             whitenoise
             django-widget-tweaks
