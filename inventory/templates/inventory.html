@@ -156,6 +156,20 @@
 
   document.addEventListener("DOMContentLoaded", function() {
 
+    var elements = document.querySelectorAll('.collapse');
+    elements.forEach(function(element) {
+      element.addEventListener('shown.bs.collapse', function (event) {
+        var triggeredElement = event.currentTarget;
+        var parentElement = triggeredElement.parentNode;
+        var rect = parentElement.getBoundingClientRect();
+        var scrollPosition = window.pageYOffset + rect.top - 55;
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'smooth'
+        });
+      });
+    });
+
     var submitInventoryModal = new bootstrap.Modal(document.getElementById("submitInventoryModal"), {});
 
     document.getElementById('confirmSubmit').onclick = function() {
