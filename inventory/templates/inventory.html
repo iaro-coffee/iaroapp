@@ -4,23 +4,25 @@
 
 <div class="list-group w-auto">
 
-  <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
-    <h1 class="h2">Update Inventory</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-      <button type="button" class="btn btn-sm modified-date">
-        <span data-feather="calendar" class="align-text-bottom"></span>
-        Last updated: {{ modifiedDate }}
-      </button>
-      <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          {{ branch }}
+  <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <div>
+      <h1 class="h2">Update Inventory</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm modified-date">
+          <span data-feather="calendar" class="align-text-bottom"></span>
+          Last updated: {{ modifiedDate }}
         </button>
-        <ul class="dropdown-menu">
-          {% for branch in branches %}
-          <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
-          {% endfor %}
-        </ul>
       </div>
+    </div>
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ branch }}
+      </button>
+      <ul class="dropdown-menu">
+        {% for branch in branches %}
+        <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 
@@ -234,10 +236,6 @@
     margin: .75rem;
     align-self: end;
     
-  }
-
-  .title {
-    margin-bottom: 2rem !important;
   }
 
   .modified-date {
