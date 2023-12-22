@@ -169,14 +169,21 @@ def inventory_shopping(request):
 
 def inventory_packaging(request):
 
+    # Get only branches which require packaging for
     branches = Branch.objects.all()
     product_storages_set = set()
     for product_storage in ProductStorage.objects.all():
         if product_storage.oos == True and product_storage.main_storage == False:
             product_storages_set.add(product_storage)
-    branches_set = set()
+    branch_counts = {}
     for product_storage in product_storages_set:
-        branches_set.add(product_storage.branch)
+        if product_storage.branch not in branch_counts:
+            branch_counts[product_storage.branch] = []
+        branch_counts[product_storage.branch].append(product_storage)
+    branches_set = set()
+    for branch, product_storages in branch_counts.items():
+        if len(product_storages) > 1:
+            branches_set.add(branch)
     branches = list(branches_set)
 
     products = Product.objects.all()
