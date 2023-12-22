@@ -41,14 +41,14 @@
       <div class="card">
         <div class="card-header">
           <a class="btn" data-bs-toggle="collapse" href="#inventoryList{{ storage.name_encoded }}">
-            <svg class="bi ms-1" width="24" height="24" style="color: {{ storage.color }};">
+            <svg class="bi" width="24" height="24" style="color: {{ storage.color }};">
               <use xlink:href="#x-circle-fill">
                 <symbol id="x-circle-fill" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="8" />
                 </symbol>
               </use>
             </svg>
-            {{ storage.name }}
+            <span>{{ storage.name }}</span>
           </a>
         </div>
         <div id="inventoryList{{ storage.name_encoded }}" class="collapse" data-bs-parent="#accordion">
@@ -164,7 +164,9 @@
         var triggeredElement = event.currentTarget;
         var parentElement = triggeredElement.parentNode;
         var rect = parentElement.getBoundingClientRect();
-        var scrollPosition = window.pageYOffset + rect.top - 55;
+        var header = document.querySelector('header');
+        var headerHeight = header.offsetHeight;
+        var scrollPosition = window.pageYOffset + rect.top - headerHeight - 5;
         window.scrollTo({
           top: scrollPosition,
           behavior: 'smooth'
@@ -244,10 +246,12 @@
   }
   svg {
     margin-right: .3rem;
+    min-width: 24px;
   }
   a.btn {
     display: flex;
     padding-left: 0px;
+    text-align: left;
   }
   .card {
     margin: .5rem 0;
