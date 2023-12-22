@@ -40,7 +40,9 @@ def inventory_populate(request):
         storages = list(storages)
 
         # Filter products only available in specific storage of branch
-        products = products.filter(product_storages__storage__name__in=storages)
+        product_storages = ProductStorage.objects.filter(storage__name__in=storages)
+        product_ids = product_storages.values_list('product_id', flat=True)
+        products = Product.objects.filter(id__in=product_ids)
 
     # Filter selected branch from available branches
     branches = branches.exclude(name=branch)
