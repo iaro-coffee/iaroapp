@@ -9,6 +9,43 @@ from django.forms.models import model_to_dict
 from .models import Product, ProductStorage, Branch, Storage
 from django.db.models import Count
 
+def getCurrentBranch(request):
+    branch = request.GET.get('branch')
+    if branch == "All":
+        return branch
+    if not branch:
+        departmentId = request.session.get('departmentId', None)
+        if departmentId:
+            branch = Branch.objects.filter(departmentId=departmentId).first()
+            if branch:
+                return branch
+    else:
+        branch = Branch.objects.filter(name=branch).first()
+        if branch:
+            return branch
+    return Branch.objects.first()
+
+def getAvailableBranchesFiltered(branch):
+    branches = Branch.objects.all()
+    # Filter selected branch from available branches
+    branches = branches.exclude(name=branch)
+    # Sort branches by name, filter out empty ones
+    branches = branches.annotate(num_products=Count('storages__productstorage__product'))
+    branches = branches.filter(num_products__gt=0)
+    branches = branches.order_by('name')
+    # Add 'All' option to branche selection
+    branches = list(branches)
+    if (branch != 'All'):
+        branches.append('All')
+    return branches
+
+def getInventoryModifiedDate():
+    product = Product.objects.filter(id=1)
+    modified_date = "Unknown"
+    if product.exists():
+        modified_date = product.first().modified_date.date()
+    return modified_date
+
 def inventory_populate(request):
 
     User = get_user_model()
@@ -18,18 +55,8 @@ def inventory_populate(request):
     form = Form()
     storages = []
 
-    branch = request.GET.get('branch')
-    if not branch:
-        departmentId = request.session.get('departmentId', None)
-        if departmentId is not None:
-            branch = Branch.objects.filter(departmentId=departmentId).first()
-            if branch is not None:
-                branch_name = branch.name
-            else:
-                branch_name = Branch.objects.first().name
-        else:
-            branch_name = Branch.objects.first().name
-        branch = branch_name
+    # Get current branch by GET parameter or Planday query
+    branch = getCurrentBranch(request)
 
     if (branch != 'All'):
 
@@ -44,12 +71,8 @@ def inventory_populate(request):
         product_ids = product_storages.values_list('product_id', flat=True)
         products = Product.objects.filter(id__in=product_ids)
 
-    # Filter selected branch from available branches
-    branches = branches.exclude(name=branch)
-    # Add 'All' option to branche selection
-    branches = list(branches)
-    if (branch != 'All'):
-        branches.append('All')
+    # Get list of branches which are not selected
+    branches = getAvailableBranchesFiltered(branch)
 
     # Populate available storages
     filtered_storages = []
@@ -85,14 +108,14 @@ def inventory_populate(request):
 
     else:
 
+        # Get last product modification date
+        modified_date = getInventoryModifiedDate()
+
+        # Check if inventory already submitted for today
         isSubmittedToday = False
-        last_modified_date = "Unknown"
-        product_last_modified = Product.objects.latest('modified_date')
-        if product_last_modified:
-            last_modified_date = product_last_modified.modified_date.date()
-            today = datetime.datetime.today().date()
-            if last_modified_date == today:
-                isSubmittedToday = True
+        today = datetime.datetime.today().date()
+        if modified_date == today:
+            isSubmittedToday = True        
 
         context = {
             'users': users,
@@ -100,7 +123,7 @@ def inventory_populate(request):
             'products': products,
             'storages': storages,
             'isSubmittedToday': isSubmittedToday,
-            'modifiedDate': last_modified_date,
+            'modifiedDate': modified_date,
             'branches': branches,
             'branch': branch,
         }
@@ -121,16 +144,25 @@ def inventory_evaluation(request):
     products = Product.objects.all()
     storages = Storage.objects.all()
 
-    # Sort branches by name, filter out empty ones
-    branches = Branch.objects.annotate(num_products=Count('storages__productstorage__product'))
-    branches = branches.filter(num_products__gt=0)
-    branches = branches.order_by('name')
+    # Get current branch by GET parameter or Planday query
+    branch = getCurrentBranch(request)
 
-    # Get last product modification date    
-    product = Product.objects.filter(id=1)
-    modified_date = "Unknown"
-    if product.exists():
-        modified_date = product.first().modified_date.date()
+    # Get list of branches which are not selected
+    branches = getAvailableBranchesFiltered(branch)
+
+    if (branch != 'All'):
+
+        # Get storages for selected branch
+        storages = branch.storages.all()
+        storages = list(storages)
+
+        # Filter products only available in specific storage of branch
+        product_storages = ProductStorage.objects.filter(storage__name__in=storages)
+        product_ids = product_storages.values_list('product_id', flat=True)
+        products = Product.objects.filter(id__in=product_ids)
+
+    # Get last product modification date
+    modified_date = getInventoryModifiedDate()
 
     return render(
         request,
@@ -140,6 +172,7 @@ def inventory_evaluation(request):
             'modifiedDate': modified_date,
             'storages': storages,
             'branches': branches,
+            'branch': branch,
         },
     )
 
@@ -151,11 +184,8 @@ def inventory_shopping(request):
         if (prod.display_seller() not in sellers) and prod.oos:
             sellers.append(prod.display_seller())
     
-    product = Product.objects.filter(id=1)
-    modified_date = "Unknown"
-
-    if product.exists():
-        modified_date = product.first().modified_date.date()
+    # Get last product modification date
+    modified_date = getInventoryModifiedDate()
 
     return render(
         request,
@@ -187,13 +217,10 @@ def inventory_packaging(request):
     branches = list(branches_set)
 
     products = Product.objects.all()
-
-    # Estimate last DB update    
-    product = Product.objects.filter(id=1)
     product_storages = ProductStorage.objects.filter(product__in=products)
-    modified_date = "Unknown"
-    if product.exists():
-        modified_date = product.first().modified_date.date()
+
+    # Get last product modification date
+    modified_date = getInventoryModifiedDate()
 
     return render(
         request,
