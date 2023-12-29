@@ -1,4 +1,4 @@
-from tasks import views
+from . import views
 
 def getShowOpening(request):
     return {'showOpening': views.getShowOpening(request)}

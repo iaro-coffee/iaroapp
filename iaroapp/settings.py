@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap4',
     'colorful',
     'import_export',
+    'iaroapp.apps.IaroappConfig',
 ]
 
 MIDDLEWARE = [
