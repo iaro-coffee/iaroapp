@@ -74,7 +74,7 @@ def inventory_populate(request):
     # Get list of branches which are not selected
     branches = getAvailableBranchesFiltered(branch)
 
-    # Populate available storages
+    # Populate available non-empty storages of selected branch
     filtered_storages = []
     product_ids = products.values_list('id', flat=True)
     product_storages = ProductStorage.objects.filter(product__id__in=product_ids)
@@ -163,6 +163,23 @@ def inventory_evaluation(request):
 
     # Get last product modification date
     modified_date = getInventoryModifiedDate()
+
+    # Populate available non-empty storages of selected branch
+    filtered_storages = []
+    product_ids = products.values_list('id', flat=True)
+    product_storages = ProductStorage.objects.filter(product__id__in=product_ids)
+    if branch != 'All':
+        for storage in product_storages:
+            if storage.storage in storages:
+                filtered_storages.append(storage.storage)
+    else:
+        filtered_storages = [storage.storage for storage in product_storages]
+    storages = filtered_storages
+
+    # Sort storages by name
+    storages_queryset = Storage.objects.filter(id__in=[storage.id for storage in storages])
+    storages_sorted = storages_queryset.order_by('name')
+    storages = [storage for storage in storages_sorted]
 
     return render(
         request,

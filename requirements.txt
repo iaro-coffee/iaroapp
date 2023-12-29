@@ -11,3 +11,4 @@ python-dotenv
 requests
 django-ckeditor
 python-dateutil
+django-import-export

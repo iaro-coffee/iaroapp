@@ -1,4 +1,5 @@
 from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
 
 # Register your models here.
 
@@ -26,7 +27,7 @@ class ProductsInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
     model = Product
 
-class ProductsAdmin(admin.ModelAdmin):
+class ProductsAdmin(ImportExportModelAdmin):
     """Administration object for Task models.
     Defines:
      - fields to be displayed in list view (list_display)
@@ -35,6 +36,7 @@ class ProductsAdmin(admin.ModelAdmin):
     list_display = ('name', 'display_availability', 'display_unit', 'storages')
     readonly_fields = ("modified_date",)
     inlines = [ProductStorageInline]
+    #resource_classes = [BookResource]
 
 admin.site.register(Product, ProductsAdmin)
 

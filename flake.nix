@@ -31,6 +31,7 @@
             django_colorful
             django-crispy-forms
             django-crispy-bootstrap4
+            django-import-export
             requests
             python-dotenv
             django-ckeditor
