@@ -44,6 +44,7 @@ urlpatterns += [
 
 urlpatterns += [
     path('', views.index, name='index'),
+    path('/', views.index, name='index'),
 ]
 
 # Use static() to add url mapping to serve static files during development (only)

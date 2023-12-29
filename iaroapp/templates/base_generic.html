@@ -30,8 +30,10 @@
         </div>
         {% endif %}
         <div class="nav-item text-nowrap">
-            <a class="nav-link px-3" href="{% url 'logout'%}?next={{request.path}}">Sign out <span
-                    style="opacity: 0.5;">({{ user }})</span></a>
+            <form id="logout_form" method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+            </form>
+            <a class="nav-link px-3" href="#" onclick="document.getElementById('logout_form').submit(); return false;">Sign out <span style="opacity: 0.5;">({{ user }})</span></a>
         </div>
     </div>
     <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse"
