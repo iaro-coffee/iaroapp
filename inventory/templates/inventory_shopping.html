@@ -38,7 +38,7 @@
               {% endfor %}
               </label>
             </td>
-            <td><label for="checkbox{{forloop.counter}}">{{ product.value_oos|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
+            <td class="buy-column"><label for="checkbox{{forloop.counter}}">{{ product.value_oos|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
           </tr>
           {% endif %}
         {% endfor %}
@@ -57,6 +57,7 @@
     user-select: none;
     height: 100%;
     background: none;
+    flex-wrap: wrap;
   }
   tbody tr.header:hover, tbody tr.title:hover {
     background-color: white !important;
@@ -112,6 +113,9 @@
   }
   label {
     padding: .9rem .6rem !important;
+  }
+  .buy-column label {
+    margin-right: 1rem;
   }
 </style>
 
