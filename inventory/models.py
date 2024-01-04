@@ -165,9 +165,9 @@ class ProductStorage(models.Model):
 
     @property
     def oos(self):
-        if self.value is None or self.value_intended is None:
-            return False
-        return (((100/self.value_intended)*self.value) < 30)
+        if self.value  and self.value_intended:
+            return (((100/self.value_intended)*self.value) < 30)
+        return True
     
     @property
     def branch(self):
