@@ -133,11 +133,18 @@ class Product(models.Model):
     def get_product_storage(self):
         product_storage_dict = {}
         for storage in self.product_storages.all():
-            product_storage_dict[storage.storage] = {
-                'value': storage.value,
-                'value_intended': storage.value_intended,
-                'oos': (((100/storage.value_intended)*storage.value) < 30)
-            }
+            if storage.value_intended and storage.value:
+                product_storage_dict[storage.storage] = {
+                    'value': storage.value,
+                    'value_intended': storage.value_intended,
+                    'oos': (((100/storage.value_intended)*storage.value) < 30)
+                }
+            else:
+                product_storage_dict[storage.storage] = {
+                    'value': storage.value,
+                    'value_intended': storage.value_intended,
+                    'oos': True
+                }                
         return product_storage_dict
 
     def __str__(self):
