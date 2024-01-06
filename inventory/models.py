@@ -42,7 +42,6 @@ class Branch(models.Model):
     @property
     def get_storages(self):
         return self.storages.all()
-        #return [storage.name for storage in self.storages.all()]
 
     def display_storages(self):
         return ", ".join([storage.name for storage in self.storages.all()])
