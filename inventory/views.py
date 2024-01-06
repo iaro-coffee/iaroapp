@@ -244,6 +244,8 @@ def inventory_packaging(request):
                 main_storage_branches.add(product_storage.branch)
     branches = list(main_storage_branches)
     branches = list(set(branches) - {branch})
+    if (branch != 'All'):
+        branches.append('All')
 
     # Get storages which require packaging
     products = Product.objects.all()

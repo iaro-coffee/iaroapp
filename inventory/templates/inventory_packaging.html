@@ -21,7 +21,8 @@
         {% for product in products %}
           {% if product.has_main_storage and product.oos %}
             {% for product_storage in product.product_storages.all %}
-              {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch and product.get_main_storage in branch.get_storages %}
+              {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
+              {% if branch == "All" or product.get_main_storage in branch.get_storages %}
               <tr class="entry">
                 <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
                 <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
@@ -41,6 +42,7 @@
                 </td>
                 <td><label for="checkbox{{forloop.counter}}">{{ product_storage.value_needed|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
               </tr>
+              {% endif %}
               {% endif %}
             {% endfor %}
           {% endif %}
