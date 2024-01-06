@@ -99,7 +99,7 @@ def inventory_populate(request):
 
         form_data = json.loads(request_data.decode("utf-8"))
         for product, value in form_data.items():
-            if value['value'] and float(value['value']) >= 0:
+            if value['value'] and float(value['value'].replace(',','.')) >= 0:
                 product_instance = Product.objects.get(id=product)
                 product_storage_instance = ProductStorage.objects.get(product=product_instance, storage_id=value['storage'])
                 product_storage_instance.value = value['value'].replace(',','.')
