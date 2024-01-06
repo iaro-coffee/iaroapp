@@ -216,8 +216,11 @@ def inventory_shopping(request):
 
 def inventory_packaging(request):
 
-    # Get only branches which require packaging for
-    branches = Branch.objects.all()
+    # Get current branch by GET parameter or Planday query
+    branch = getCurrentBranch(request)
+
+    # Get target branches
+    target_branches = Branch.objects.all()
     product_storages_set = set()
     for product_storage in ProductStorage.objects.all():
         if product_storage.oos == True and product_storage.main_storage == False:
@@ -227,12 +230,22 @@ def inventory_packaging(request):
         if product_storage.branch not in branch_counts:
             branch_counts[product_storage.branch] = []
         branch_counts[product_storage.branch].append(product_storage)
-    branches_set = set()
-    for branch, product_storages in branch_counts.items():
+    target_branches_set = set()
+    for product_branch, product_storages in branch_counts.items():
         if len(product_storages) > 1:
-            branches_set.add(branch)
-    branches = list(branches_set)
+            target_branches_set.add(product_branch)
+    target_branches = list(target_branches_set)
 
+    # Get source branches
+    main_storage_branches = set()
+    for product in Product.objects.all():
+        for product_storage in product.product_storages.all():
+            if product_storage.main_storage and product_storage.oos:
+                main_storage_branches.add(product_storage.branch)
+    branches = list(main_storage_branches)
+    branches = list(set(branches) - {branch})
+
+    # Get storages which require packaging
     products = Product.objects.all()
     product_storages = ProductStorage.objects.filter(product__in=products)
 
@@ -247,5 +260,7 @@ def inventory_packaging(request):
             'product_storages': product_storages,
             'modifiedDate': modified_date,
             'branches': branches,
+            'branch': branch,
+            'target_branches': target_branches,
         },
     )

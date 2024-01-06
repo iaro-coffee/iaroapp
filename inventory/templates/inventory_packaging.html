@@ -2,14 +2,15 @@
 
 {% block content %}
 
+
 {% include "template_title.html" with title="Packaging" %}
 
 <div style="width: 100%;">
   <table class="table table-hover">
     <tbody>
-    {% for branch in branches %}
+    {% for target_branch in target_branches %}
         <tr class="title">
-          <th colspan="4">{{ branch }}</th>
+          <th colspan="4">{{ target_branch }}</th>
         </tr>
         <tr class="header">
           <th scope="col" width="1%"></th>
@@ -20,7 +21,7 @@
         {% for product in products %}
           {% if product.has_main_storage and product.oos %}
             {% for product_storage in product.product_storages.all %}
-              {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == branch %}
+              {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch and product.get_main_storage in branch.get_storages %}
               <tr class="entry">
                 <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
                 <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>

@@ -86,7 +86,13 @@ class Product(models.Model):
             if product_storage.main_storage:
                 return True
         return False
-       
+
+    def get_main_storage(self):
+        for product_storage in self.product_storages.all():
+            if product_storage.main_storage:
+                return product_storage.storage
+        return False
+
     @property
     def oos(self):
         for product_storage in self.product_storages.all():
