@@ -4,6 +4,9 @@ from django.forms.models import model_to_dict
 from datetime import datetime, timedelta, time
 from operator import itemgetter
 from inventory.models import Product
+from django.contrib.auth import get_user_model
+import json
+from django.http import HttpResponse
 
 def getMyTasks(request):
     weekdayToday = datetime.today().strftime('%A')
@@ -30,6 +33,25 @@ def getMyTasks(request):
     return sorted(myTasks, key=itemgetter('type'))
 
 def tasks(request):
+
+    User = get_user_model()
+
+    if request.method == 'POST':
+
+        print("were into post")
+        request_data = request.body
+        form_data = json.loads(request_data.decode("utf-8"))
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+        taskids_completed = list(form_data.keys())
+        date = datetime.now()
+
+        for task_id in taskids_completed:
+            task = Task.objects.get(id=task_id)
+            TaskInstance.objects.create(user=user, date_done=date, task=task)
+
+        return HttpResponse(200)
+
     return render(
         request,
         'tasks.html',

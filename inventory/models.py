@@ -72,6 +72,9 @@ class Seller(models.Model):
     def __str__(self):
         return self.name
 
+from django.template import Library
+register = Library()
+
 class Product(models.Model):
     """Model representing a product."""
     name = models.CharField(max_length=500)
@@ -92,6 +95,13 @@ class Product(models.Model):
                 return product_storage.storage
         return False
 
+    def needs_packaging(self):
+        if self.has_main_storage and self.oos:
+            for product_storage in self.product_storages.all():
+                if not product_storage.main_storage and product_storage.oos:
+                    return True
+        return False
+
     @property
     def oos(self):
         for product_storage in self.product_storages.all():
@@ -107,9 +117,26 @@ class Product(models.Model):
             return 0
         return abs(float(total_value_intended - total_value))
 
+    def get_oos_value_shipping(self):
+        product_storage_dict = {}
+        for branch in self.get_storage_branches:  
+            value_needed = 0       
+            for product_storage in self.product_storages.all():
+                if not product_storage.main_storage and product_storage.oos:
+                    if branch == product_storage.branch:
+                        value_needed = value_needed + product_storage.value_needed
+            product_storage_dict[branch] = {
+                'value_needed': value_needed,
+            }
+        return product_storage_dict
+
     @property
     def storages(self):
         return [product_storage.storage for product_storage in self.product_storages.all()]
+    
+    @property
+    def get_storage_branches(self):
+        return [product_storage.branch for product_storage in self.product_storages.all()]
     
     def display_seller(self):
         return self.seller.all()[0].name

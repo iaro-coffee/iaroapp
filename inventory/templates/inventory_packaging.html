@@ -19,12 +19,9 @@
           <th scope="col" style="white-space: nowrap;">Needed</th>
         </tr>
         {% for product in products %}
-          {% if product.has_main_storage and product.oos %}
           {% if branch == "All" or product.get_main_storage in branch.get_storages %}
 
-            {% for product_storage in product.product_storages.all %}
-
-              {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
+              {% if product.needs_packaging and target_branch in product.get_storage_branches %}
          
               <tr class="entry">
                 <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
@@ -47,13 +44,20 @@
                     {% endfor %}
                     </label>
                 </td>
-                <td><label for="checkbox{{forloop.counter}}">{{ product_storage.value_needed|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
+                <td>
+                  <label for="checkbox{{forloop.counter}}">
+                    {% for product_storage, data in product.get_oos_value_shipping.items %}
+                    {% if product_storage == target_branch %}
+                      {{ data.value_needed|floatformat:2 }}
+                    {% endif %}
+                    {% endfor %}
+                    {{ product.unit.all|join:", " }}
+                  </label>
+                </td>
               </tr>
 
               {% endif %}
-            {% endfor %}
 
-          {% endif %}
           {% endif %}
         {% endfor %}
     {% endfor %}

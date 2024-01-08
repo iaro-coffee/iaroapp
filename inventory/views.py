@@ -246,6 +246,7 @@ def inventory_packaging(request):
     target_branches = list(set(target_branches) - {branch})
 
     # Get storages which require packaging
+    filtered_products = set()
     products = Product.objects.all()
     product_storages = ProductStorage.objects.filter(product__in=products)
 
