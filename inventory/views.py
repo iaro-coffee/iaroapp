@@ -40,11 +40,8 @@ def getAvailableBranchesFiltered(branch):
     return branches
 
 def getInventoryModifiedDate():
-    product = Product.objects.filter(id=1)
-    modified_date = "Unknown"
-    if product.exists():
-        modified_date = product.first().modified_date.date()
-    return modified_date
+   modified_date = Product.objects.order_by('-modified_date').first().modified_date.date() if Product.objects.exists() else None
+   return modified_date if modified_date else "Unknown"
 
 def inventory_populate(request):
 

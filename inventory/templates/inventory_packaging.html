@@ -20,14 +20,19 @@
         </tr>
         {% for product in products %}
           {% if product.has_main_storage and product.oos %}
+          {% if branch == "All" or product.get_main_storage in branch.get_storages %}
+
             {% for product_storage in product.product_storages.all %}
+
               {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
-              {% if branch == "All" or product.get_main_storage in branch.get_storages %}
+         
               <tr class="entry">
                 <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
                 <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
                 <td class="storages-column">
                   <label for="checkbox{{forloop.counter}}" style="display: flex; gap: 0.2rem;">
+                    {% for product_storage in product.product_storages.all %}
+                    {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
                     <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
                       <svg class="bi ms-1" width="16" height="16" style="color: {{ product_storage.storage.color }};">
                         <use xlink:href="#x-circle-fill">
@@ -38,13 +43,17 @@
                       </svg>
                       {{ product_storage.storage.name }}
                     </span>
+                    {% endif %}
+                    {% endfor %}
                     </label>
                 </td>
                 <td><label for="checkbox{{forloop.counter}}">{{ product_storage.value_needed|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
               </tr>
-              {% endif %}
+
               {% endif %}
             {% endfor %}
+
+          {% endif %}
           {% endif %}
         {% endfor %}
     {% endfor %}

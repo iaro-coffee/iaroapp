@@ -156,6 +156,8 @@ class Product(models.Model):
         """String for representing the Model object."""
         return self.name
 
+from django.utils import timezone
+
 class ProductStorage(models.Model):
     """Model representing the relationship between a product and a storage."""
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_storages')
@@ -181,6 +183,11 @@ class ProductStorage(models.Model):
             if self.storage in branch.storages.all():
                 return branch
         return None
+
+    # Update the product item to refresh the modified_date attribute
+    def save(self, *args, **kwargs):
+        self.product.save()
+        super().save(*args, **kwargs)
     
 # Generated ToDos from inventory updates
 from django.db.models.signals import post_save
