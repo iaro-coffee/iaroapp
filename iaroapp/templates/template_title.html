@@ -21,3 +21,22 @@
     </div>
     {% endif %}
 </div>
+
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == "success" %}
+<div class="alert alert-success" role="alert">
+{% else %}
+<div class="alert alert-danger" role="alert">     
+{% endif %}
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<style>
+  .modified-date {
+    padding: 0 !important;
+    padding-right: 1rem !important;
+  }
+</style>

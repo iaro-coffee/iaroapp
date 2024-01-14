@@ -139,7 +139,8 @@ class Product(models.Model):
         return [product_storage.branch for product_storage in self.product_storages.all()]
     
     def display_seller(self):
-        return self.seller.all()[0].name
+        seller = next((s for s in self.seller.all()), None)
+        return seller.name if seller else None
     display_seller.short_description = 'Seller'
 
     def display_unit(self):

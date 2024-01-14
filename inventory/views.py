@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.forms import Form
 from django.http import HttpResponseRedirect, HttpResponse
 import json
 import datetime
@@ -49,7 +48,6 @@ def inventory_populate(request):
     users = User.objects.all()
     products = Product.objects.all()
     branches = Branch.objects.all()
-    form = Form()
     storages = []
 
     # Get current branch by GET parameter or Planday query
@@ -90,8 +88,6 @@ def inventory_populate(request):
 
     if request.method == 'POST':
 
-        form = Form(request.POST)
-
         request_data = request.body
 
         form_data = json.loads(request_data.decode("utf-8"))
@@ -116,7 +112,6 @@ def inventory_populate(request):
 
         context = {
             'users': users,
-            'form': form,
             'products': products,
             'storages': storages,
             'isSubmittedToday': isSubmittedToday,

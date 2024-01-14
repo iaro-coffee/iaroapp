@@ -112,15 +112,31 @@ def tasks_evaluation(request):
         },
     )
 
+from .forms import BakingPlanForm
+from django.forms import modelformset_factory
+from django.contrib import messages
+from django.shortcuts import redirect
+
 @user_passes_test(check_admin)
 def tasks_baking(request):
 
-    products = Product.objects.filter(seller__name='Iaro Kitchen')
-
+    if request.method == 'POST':
+        form = BakingPlanForm(request.POST)
+        print(form.is_valid())
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Baking plan successfully updated!')
+            return redirect('tasks_baking')
+        else:
+            messages.success(request, 'Updating baking plan failed!')
+            return redirect('tasks_baking')           
+    else:
+        products = Product.objects.filter(seller__name='iaro bakery')
+        ProductFormSet = modelformset_factory(Product, form=BakingPlanForm, extra=0)
+        formset = ProductFormSet(queryset=products)
     return render(
         request,
         'tasks_baking.html',
         context={
-            'products': products,
-        },
-    )
+            'formset': formset,
+        })

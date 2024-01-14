@@ -156,3 +156,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 from import_export.formats.base_formats import XLSX, CSV
 
 IMPORT_EXPORT_FORMATS = [XLSX, CSV]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": "127.0.0.1:11211",
+    }
+}

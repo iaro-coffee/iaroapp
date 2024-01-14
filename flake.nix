@@ -36,6 +36,7 @@
             python-dotenv
             django-ckeditor
             dateutil
+            pymemcache
           ];
         };
 

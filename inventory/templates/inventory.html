@@ -104,7 +104,6 @@
     /* Get form data */
     var form = document.querySelector('#product_form');
     var form_data = new FormData(form);
-    console.log(form_data);
     let objSerializedForm = {};
     for (let [name, value] of form_data) {
       if (name === "product") {
@@ -227,11 +226,6 @@
     margin: .75rem;
     align-self: end;
     
-  }
-
-  .modified-date {
-    padding: 0 !important;
-    padding-right: 1rem !important;
   }
   svg {
     margin-right: .3rem;
