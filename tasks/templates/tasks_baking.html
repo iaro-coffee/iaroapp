@@ -23,7 +23,7 @@
             {% for product_storage in form.instance.product_storages.all %}
             <div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem; margin-bottom: 0.5rem;">
               <span style="flex-grow: 1;">{{ product_storage.storage }}</span>
-              <input name="{{ product_storage.pk }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control" id="value" value="" placeholder="{{ product_storage.value_needed }}" style="width: 100px;">
+              <input name="storage_{{ product_storage.pk }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control" id="value" value="" placeholder="{{ product_storage.value_needed }}" style="width: 100px;">
               {% for unit in form.instance.unit.all %}
                 <small class="opacity-50 text-nowrap truncate">
                     {{ unit.name }}

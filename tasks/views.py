@@ -116,15 +116,21 @@ from .forms import BakingPlanForm
 from django.forms import modelformset_factory
 from django.contrib import messages
 from django.shortcuts import redirect
+from inventory.models import ProductStorage
 
 @user_passes_test(check_admin)
 def tasks_baking(request):
 
     if request.method == 'POST':
         form = BakingPlanForm(request.POST)
-        print(form.is_valid())
         if form.is_valid():
             form.save()
+            for key, value in request.POST.items():
+                if 'storage_' in key and value:
+                    pk = key.split('_')[1]
+                    product_storage = ProductStorage.objects.get(pk=pk)
+                    product_storage.value_intended = value
+                    product_storage.save()
             messages.success(request, 'Baking plan successfully updated!')
             return redirect('tasks_baking')
         else:
@@ -134,9 +140,14 @@ def tasks_baking(request):
         products = Product.objects.filter(seller__name='iaro bakery')
         ProductFormSet = modelformset_factory(Product, form=BakingPlanForm, extra=0)
         formset = ProductFormSet(queryset=products)
+
+        modified_date = products.order_by('-modified_date').first().modified_date.date() if Product.objects.exists() else None
+        modified_date = modified_date if modified_date else "Unknown"
+
     return render(
         request,
         'tasks_baking.html',
         context={
             'formset': formset,
+            'modifiedDate': modified_date,
         })

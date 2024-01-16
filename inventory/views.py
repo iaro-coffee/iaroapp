@@ -42,64 +42,81 @@ def getInventoryModifiedDate():
    modified_date = Product.objects.order_by('-modified_date').first().modified_date.date() if Product.objects.exists() else None
    return modified_date if modified_date else "Unknown"
 
+from django.contrib import messages
+from django.shortcuts import redirect
+
 def inventory_populate(request):
-
-    User = get_user_model()
-    users = User.objects.all()
-    products = Product.objects.all()
-    branches = Branch.objects.all()
-    storages = []
-
-    # Get current branch by GET parameter or Planday query
-    branch = getCurrentBranch(request)
-
-    if (branch != 'All'):
-
-        # Get storages for selected branch
-        branch = branches.filter(name=branch)[0]
-        selected_branch = branch
-        storages = branch.storages.all()
-        storages = list(storages)
-
-        # Filter products only available in specific storage of branch
-        product_storages = ProductStorage.objects.filter(storage__name__in=storages)
-        product_ids = product_storages.values_list('product_id', flat=True)
-        products = Product.objects.filter(id__in=product_ids)
-
-    # Get list of branches which are not selected
-    branches = getAvailableBranchesFiltered(branch)
-
-    # Populate available non-empty storages of selected branch
-    filtered_storages = []
-    product_ids = products.values_list('id', flat=True)
-    product_storages = ProductStorage.objects.filter(product__id__in=product_ids)
-    if branch != 'All':
-        for storage in product_storages:
-            if storage.storage in storages:
-                filtered_storages.append(storage.storage)
-    else:
-        filtered_storages = [storage.storage for storage in product_storages]
-    storages = filtered_storages
-
-    # Sort storages by name
-    storages_queryset = Storage.objects.filter(id__in=[storage.id for storage in storages])
-    storages_sorted = storages_queryset.order_by('name')
-    storages = [storage for storage in storages_sorted]
 
     if request.method == 'POST':
 
         request_data = request.body
 
-        form_data = json.loads(request_data.decode("utf-8"))
-        for product, value in form_data.items():
-            if value['value'] and float(value['value'].replace(',','.')) >= 0:
-                product_instance = Product.objects.get(id=product)
-                product_storage_instance = ProductStorage.objects.get(product=product_instance, storage_id=value['storage'])
-                product_storage_instance.value = value['value'].replace(',','.')
-                product_storage_instance.save()
-        return HttpResponse(200)
+        products = request.POST.getlist('product')
+        storages = request.POST.getlist('storage')
+        values = request.POST.getlist('value')
+
+        if (len(products) == len(storages) == len(values)):
+            for i in range(len(products)):
+                product_id = products[i]
+                storage_id = storages[i]
+                value = values[i]
+                if value and float(value.replace(',','.')) >= 0:
+                    product_instance = Product.objects.get(id=product_id)
+                    product_storage_instance = ProductStorage.objects.get(product=product_instance, storage_id=storage_id)
+                    product_storage_instance.value = value.replace(',','.')
+                    product_storage_instance.save()
+            messages.success(request, 'Inventory successfully updated.')
+            return redirect('inventory_populate')
+        else:
+            messages.error(request, 'Update inventory failed.')
+            return redirect('inventory_populate')
+
+        messages.success(request, 'Inventory successfully updated.')
+        return redirect('inventory_populate')
 
     else:
+
+        User = get_user_model()
+        users = User.objects.all()
+        products = Product.objects.all()
+        branches = Branch.objects.all()
+        storages = []
+
+        # Get current branch by GET parameter or Planday query
+        branch = getCurrentBranch(request)
+
+        if (branch != 'All'):
+
+            # Get storages for selected branch
+            branch = branches.filter(name=branch)[0]
+            selected_branch = branch
+            storages = branch.storages.all()
+            storages = list(storages)
+
+            # Filter products only available in specific storage of branch
+            product_storages = ProductStorage.objects.filter(storage__name__in=storages)
+            product_ids = product_storages.values_list('product_id', flat=True)
+            products = Product.objects.filter(id__in=product_ids)
+
+        # Get list of branches which are not selected
+        branches = getAvailableBranchesFiltered(branch)
+
+        # Populate available non-empty storages of selected branch
+        filtered_storages = []
+        product_ids = products.values_list('id', flat=True)
+        product_storages = ProductStorage.objects.filter(product__id__in=product_ids)
+        if branch != 'All':
+            for storage in product_storages:
+                if storage.storage in storages:
+                    filtered_storages.append(storage.storage)
+        else:
+            filtered_storages = [storage.storage for storage in product_storages]
+        storages = filtered_storages
+
+        # Sort storages by name
+        storages_queryset = Storage.objects.filter(id__in=[storage.id for storage in storages])
+        storages_sorted = storages_queryset.order_by('name')
+        storages = [storage for storage in storages_sorted]
 
         # Get last product modification date
         modified_date = getInventoryModifiedDate()
