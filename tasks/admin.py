@@ -19,7 +19,6 @@ class TaskAdmin(admin.ModelAdmin):
     list_filter = ('groups',)
     inlines = [TasksInstanceInline]
 
-
 admin.site.register(Task, TaskAdmin)
 
 class TaskInstanceAdmin(admin.ModelAdmin):
@@ -93,3 +92,14 @@ admin.site.unregister(User)
 admin.site.unregister(Group)
 admin.site.register(User, UserAdmin)
 admin.site.register(Group, GroupAdmin)
+
+from .models import BakingPlanInstance
+
+class BakingPlanInstanceAdmin(admin.ModelAdmin):
+    list_display = ['product', 'value', 'display_weekdays', 'branch']
+
+    def display_weekdays(self, obj):
+        return ', '.join([weekday.name for weekday in obj.weekday.all()])
+    display_weekdays.short_description = 'Weekday'
+
+admin.site.register(BakingPlanInstance, BakingPlanInstanceAdmin)

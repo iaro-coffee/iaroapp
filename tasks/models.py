@@ -3,7 +3,6 @@ from django.urls import reverse
 
 from tasks.task_types import TaskTypes
 
-
 class Weekdays(models.Model):
     name = models.CharField(
         max_length=200,
@@ -68,3 +67,12 @@ class TaskInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return '{0} ({1})'.format(self.id, self.task.title)
+
+from inventory.models import Product, Branch
+
+class BakingPlanInstance(models.Model):
+    """Model representing the relationship between a product and a storage."""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_bakingplan')
+    value = models.FloatField()
+    weekday = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task")
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=True)

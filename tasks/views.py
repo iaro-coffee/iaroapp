@@ -116,7 +116,8 @@ from .forms import BakingPlanForm
 from django.forms import modelformset_factory
 from django.contrib import messages
 from django.shortcuts import redirect
-from inventory.models import ProductStorage
+from inventory.models import Branch, Product, Weekdays
+from .models import BakingPlanInstance
 
 @user_passes_test(check_admin)
 def tasks_baking(request):
@@ -124,13 +125,25 @@ def tasks_baking(request):
     if request.method == 'POST':
         form = BakingPlanForm(request.POST)
         if form.is_valid():
-            form.save()
             for key, value in request.POST.items():
-                if 'storage_' in key and value:
-                    pk = key.split('_')[1]
-                    product_storage = ProductStorage.objects.get(pk=pk)
-                    product_storage.value_intended = value
-                    product_storage.save()
+                if "weekday" in key:
+                    weekday = value
+                    weekday = Weekdays.objects.get(name=weekday)
+                if ("value_ost" in key or "value_west" in key) and value and float(value) > 0:
+                    value = float(value)
+                    product_id = key.split("-")[0]
+                    product = Product.objects.get(id=product_id)
+                    if "value_ost" in key:
+                        branch = "Iaro Ost"
+                    else:
+                        branch = "Iaro West"
+                    branch = Branch.objects.get(name=branch)
+                    instance, created = BakingPlanInstance.objects.update_or_create(
+                        product=product,
+                        branch=branch,
+                        defaults={'value': float(value)}
+                    )
+                    instance.weekday.set([weekday])
             messages.success(request, 'Baking plan successfully updated!')
             return redirect('tasks_baking')
         else:
@@ -138,8 +151,10 @@ def tasks_baking(request):
             return redirect('tasks_baking')           
     else:
         products = Product.objects.filter(seller__name='iaro bakery')
-        ProductFormSet = modelformset_factory(Product, form=BakingPlanForm, extra=0)
-        formset = ProductFormSet(queryset=products)
+        formset = []
+        for product in products:
+            form = BakingPlanForm(prefix=str(product.id), instance=product)
+            formset.append(form)
 
         modified_date = products.order_by('-modified_date').first().modified_date.date() if Product.objects.exists() else None
         modified_date = modified_date if modified_date else "Unknown"
@@ -150,4 +165,5 @@ def tasks_baking(request):
         context={
             'formset': formset,
             'modifiedDate': modified_date,
+            'weekdays': ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         })
