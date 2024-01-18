@@ -22,9 +22,9 @@
     {% endif %}
     {% if weekdays %}
     <div style="width: auto;">
-    <select class="form-select btn btn-primary" name="weekday">
-      {% for weekday in weekdays %}
-      <option value="{{ weekday }}">{{ weekday }}</option>
+    <select id="weekday" class="form-select btn btn-primary" name="weekday">
+      {% for weekday_selection in weekdays %}
+      <option value="{{ weekday_selection }}" {% if weekday == weekday_selection %}selected{% endif %}>{{ weekday_selection }}</option>
       {% endfor %}
     </select>
     </div>
@@ -53,3 +53,13 @@
     padding-right: 2rem !important;
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var selectElement = document.getElementById('weekday');
+    selectElement.addEventListener('change', function() {
+      var selectedOption = this.value;
+      window.location.href = '?weekday=' + encodeURIComponent(selectedOption);
+    });
+  });
+</script>

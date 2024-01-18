@@ -115,13 +115,20 @@ def tasks_evaluation(request):
 from .forms import BakingPlanForm
 from django.forms import modelformset_factory
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from inventory.models import Branch, Product, Weekdays
 from .models import BakingPlanInstance
+from django.core.exceptions import ObjectDoesNotExist
 
 @user_passes_test(check_admin)
 def tasks_baking(request):
 
+    weekday = request.GET.get('weekday')
+    weekdays = Weekdays.objects.all()
+    if weekday:
+        weekday = weekdays.get(name=weekday)
+    else:
+        weekday = weekdays.first()
     if request.method == 'POST':
         form = BakingPlanForm(request.POST)
         if form.is_valid():
@@ -129,6 +136,7 @@ def tasks_baking(request):
                 if "weekday" in key:
                     weekday = value
                     weekday = Weekdays.objects.get(name=weekday)
+                value = value.replace(',','.')
                 if ("value_ost" in key or "value_west" in key) and value and float(value) > 0:
                     value = float(value)
                     product_id = key.split("-")[0]
@@ -138,22 +146,35 @@ def tasks_baking(request):
                     else:
                         branch = "Iaro West"
                     branch = Branch.objects.get(name=branch)
-                    instance, created = BakingPlanInstance.objects.update_or_create(
-                        product=product,
-                        branch=branch,
-                        defaults={'value': float(value)}
-                    )
-                    instance.weekday.set([weekday])
+                    for weekday_test in weekdays:
+                        if weekday_test == weekday:
+                            try:
+                                instance = BakingPlanInstance.objects.get(product=product, branch=branch, weekday=weekday)
+                            except BakingPlanInstance.DoesNotExist:
+                                instance = BakingPlanInstance.objects.create(product=product, branch=branch, value=float(value))
+                            instance.value = float(value)
+                            instance.weekday.set([weekday])
+                            instance.save()
             messages.success(request, 'Baking plan successfully updated!')
-            return redirect('tasks_baking')
+            return redirect(reverse('tasks_baking') + '?weekday='+str(weekday))
         else:
             messages.success(request, 'Updating baking plan failed!')
-            return redirect('tasks_baking')           
+            return redirect(reverse('tasks_baking') + '?weekday='+str(weekday))
     else:
         products = Product.objects.filter(seller__name='iaro bakery')
         formset = []
         for product in products:
             form = BakingPlanForm(prefix=str(product.id), instance=product)
+            try:
+                baking_plan_instance = BakingPlanInstance.objects.filter(product=product,weekday=weekday)
+                value_ost = baking_plan_instance.filter(branch__name="Iaro Ost").values_list('value', flat=True).first()
+                value_west = baking_plan_instance.filter(branch__name="Iaro West").values_list('value', flat=True).first()
+                if value_ost:
+                    form.fields['value_ost'].widget.attrs['placeholder'] = value_ost
+                if value_west:
+                    form.fields['value_west'].widget.attrs['placeholder'] = value_west
+            except ObjectDoesNotExist:
+                placeholder_value = ''
             formset.append(form)
 
         modified_date = products.order_by('-modified_date').first().modified_date.date() if Product.objects.exists() else None
@@ -165,5 +186,6 @@ def tasks_baking(request):
         context={
             'formset': formset,
             'modifiedDate': modified_date,
-            'weekdays': ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            'weekdays': weekdays,
+            'weekday': weekday,
         })

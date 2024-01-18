@@ -14,5 +14,17 @@ class BakingPlanForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['value_ost'].widget = forms.NumberInput(attrs={'name': f"{self.instance.id}_value_ost", 'class': 'form-control'})
-        self.fields['value_west'].widget = forms.NumberInput(attrs={'name': f"{self.instance.id}_value_west", 'class': 'form-control'})
+        self.fields['value_ost'].widget = forms.TextInput(
+            attrs={
+                'name': f"{self.instance.id}_value_ost",
+                'class': 'form-control',
+                'pattern': '[0-9]+([.,][0-9]+)?',
+                'inputmode': 'decimal'
+            })
+        self.fields['value_west'].widget = forms.TextInput(
+            attrs={
+                'name': f"{self.instance.id}_value_west",
+                'class': 'form-control',
+                'pattern': '[0-9]+([.,][0-9]+)?',
+                'inputmode': 'decimal'
+            })
