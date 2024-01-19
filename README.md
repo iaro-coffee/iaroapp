@@ -33,8 +33,8 @@ cd /usr/share
 sudo git clone https://git.project-insanity.org/onny/iaroapp.git
 chown -R http:http iaroapp
 cd iaroapp
-sudo -u http python3 -m ensurepip
-sudo -u http python3 -m pip install -r requirements.txt
+sudo -u http python3 -m venv .venv
+sudo -u http .venv/bin/pip3 install -r requirements.txt
 cp dist/iaroapp.service /etc/systemd/system/
 cp dist/app.iaro.co.conf /etc/nginx/sites-enabled/
 systemctl enable iaroapp
