@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from inventory.models import Product, Branch
-from .models import BakingPlanInstance
+from .models import BakingPlanInstance, Recipe
 
 class BakingPlanForm(ModelForm):
     name = forms.CharField(required=False)
@@ -9,7 +9,7 @@ class BakingPlanForm(ModelForm):
     value_west = forms.FloatField(widget=forms.NumberInput(attrs={'class': 'form-control'}),required=False)
 
     class Meta:
-        model = Product
+        model = Recipe
         fields = ['name', 'value_ost', 'value_west']
 
     def __init__(self, *args, **kwargs):
@@ -28,3 +28,15 @@ class BakingPlanForm(ModelForm):
                 'pattern': '[0-9]+([.,][0-9]+)?',
                 'inputmode': 'decimal'
             })
+
+from django import forms
+from .models import Recipe, Product
+
+class RecipeForm(forms.ModelForm):
+    class Meta:
+        model = Recipe
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(RecipeForm, self).__init__(*args, **kwargs)
+        self.fields['product'].queryset = Product.objects.filter(seller__name='iaro bakery').order_by('name')

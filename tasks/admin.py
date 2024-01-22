@@ -96,10 +96,31 @@ admin.site.register(Group, GroupAdmin)
 from .models import BakingPlanInstance
 
 class BakingPlanInstanceAdmin(admin.ModelAdmin):
-    list_display = ['product', 'value', 'display_weekdays', 'branch']
+    list_display = ['recipe', 'value', 'display_weekdays', 'branch']
 
     def display_weekdays(self, obj):
         return ', '.join([weekday.name for weekday in obj.weekday.all()])
     display_weekdays.short_description = 'Weekday'
 
 admin.site.register(BakingPlanInstance, BakingPlanInstanceAdmin)
+
+from .models import Recipe, RecipeInstance
+from .forms import RecipeForm
+from inventory.models import Product
+
+class RecipeInstanceInline(admin.TabularInline):
+    """Defines format of inline recipe instance insertion (used in RecipeAdmin)"""
+    model = RecipeInstance
+    list_display = ('incredient', 'quantity', 'product_unit', 'preparation',)
+    readonly_fields = ('product_unit',)
+
+    def product_unit(self, obj):
+        return obj.product_unit
+    product_unit.short_description = 'Unit'
+
+class RecipeAdmin(admin.ModelAdmin):
+    form = RecipeForm
+    list_display = ['name', 'product']
+    inlines = [RecipeInstanceInline]
+
+admin.site.register(Recipe, RecipeAdmin)

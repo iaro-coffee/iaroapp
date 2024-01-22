@@ -117,7 +117,7 @@ from django.forms import modelformset_factory
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
 from inventory.models import Branch, Product, Weekdays
-from .models import BakingPlanInstance
+from .models import BakingPlanInstance, Recipe
 from django.core.exceptions import ObjectDoesNotExist
 
 @user_passes_test(check_admin)
@@ -139,8 +139,8 @@ def tasks_baking(request):
                 value = value.replace(',','.')
                 if ("value_ost" in key or "value_west" in key) and value and float(value) > 0:
                     value = float(value)
-                    product_id = key.split("-")[0]
-                    product = Product.objects.get(id=product_id)
+                    recipe_id = key.split("-")[0]
+                    recipe = Recipe.objects.get(id=recipe_id)
                     if "value_ost" in key:
                         branch = "Iaro Ost"
                     else:
@@ -149,24 +149,25 @@ def tasks_baking(request):
                     for weekday_test in weekdays:
                         if weekday_test == weekday:
                             try:
-                                instance = BakingPlanInstance.objects.get(product=product, branch=branch, weekday=weekday)
+                                instance = BakingPlanInstance.objects.get(recipe=recipe, branch=branch, weekday=weekday)
                             except BakingPlanInstance.DoesNotExist:
-                                instance = BakingPlanInstance.objects.create(product=product, branch=branch, value=float(value))
+                                instance = BakingPlanInstance.objects.create(recipe=recipe, branch=branch, value=float(value))
                             instance.value = float(value)
                             instance.weekday.set([weekday])
                             instance.save()
+
             messages.success(request, 'Baking plan successfully updated!')
             return redirect(reverse('tasks_baking') + '?weekday='+str(weekday))
         else:
             messages.success(request, 'Updating baking plan failed!')
             return redirect(reverse('tasks_baking') + '?weekday='+str(weekday))
     else:
-        products = Product.objects.filter(seller__name='iaro bakery')
+        recipes = Recipe.objects.all()
         formset = []
-        for product in products:
-            form = BakingPlanForm(prefix=str(product.id), instance=product)
+        for recipe in recipes:
+            form = BakingPlanForm(prefix=str(recipe.id), instance=recipe)
             try:
-                baking_plan_instance = BakingPlanInstance.objects.filter(product=product,weekday=weekday)
+                baking_plan_instance = BakingPlanInstance.objects.filter(recipe=recipe,weekday=weekday)
                 value_ost = baking_plan_instance.filter(branch__name="Iaro Ost").values_list('value', flat=True).first()
                 value_west = baking_plan_instance.filter(branch__name="Iaro West").values_list('value', flat=True).first()
                 if value_ost:
@@ -177,8 +178,12 @@ def tasks_baking(request):
                 placeholder_value = ''
             formset.append(form)
 
-        modified_date = products.order_by('-modified_date').first().modified_date.date() if Product.objects.exists() else None
-        modified_date = modified_date if modified_date else "Unknown"
+        bakingplans = BakingPlanInstance.objects.all()
+        if bakingplans.exists():
+            modified_date = bakingplans.order_by('-modified_date').first().modified_date.date()
+            modified_date = modified_date if modified_date else "Unknown"
+        else:
+            modified_date = "Unknown"
 
     return render(
         request,
