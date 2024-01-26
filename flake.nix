@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:onny/nixpkgs/django-crispy5";
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -30,7 +30,7 @@
             django-login-required-middleware
             django_colorful
             django-crispy-forms
-            django-crispy-bootstrap4
+            django-crispy-bootstrap5
             django-import-export
             requests
             python-dotenv

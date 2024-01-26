@@ -13,6 +13,6 @@ django-ckeditor
 python-dateutil
 django-import-export
 django-crispy-forms
-crispy-bootstrap4
+crispy-bootstrap5
 django-colorful
 pymemcache

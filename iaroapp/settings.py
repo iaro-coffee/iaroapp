@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'registration.apps.RegistrationConfig',
     'ckeditor',
     'crispy_forms',
-    'crispy_bootstrap4',
+    'crispy_bootstrap5',
     'colorful',
     'import_export',
     'iaroapp.apps.IaroappConfig',
@@ -148,7 +148,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # Configuration for import-export
 # Allow only XLSX and CSV formats

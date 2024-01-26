@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% include "template_title.html" with title="Add task" %}
+
+{% load crispy_forms_tags %}         
+<form method="post">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <button class="w-100 btn btn-primary" type="submit">Add task</button>
+</form>
+
+<style>
+    form {
+        max-width: 600px;
+    }
+    button {
+        max-width: 150px;
+    }
+</style>
+{% endblock %}

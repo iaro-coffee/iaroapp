@@ -194,3 +194,25 @@ def tasks_baking(request):
             'weekdays': weekdays,
             'weekday': weekday,
         })
+
+
+from .forms import TaskForm
+
+# FIXME check_staff
+@user_passes_test(check_admin)
+def tasks_add(request):
+
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Task was added successfully.')
+            return redirect('tasks_add')
+    else:
+        form = TaskForm()
+
+    return render(
+        request,
+        'tasks_add.html',
+        context={'form': form},
+    )
