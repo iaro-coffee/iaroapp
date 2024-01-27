@@ -37,6 +37,7 @@
             django-ckeditor
             dateutil
             pymemcache
+            nodejs
           ];
         };
 

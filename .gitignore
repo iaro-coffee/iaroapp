@@ -3,3 +3,5 @@ test
 .env
 .vscode
 __pycache__
+node_modules
+staticfiles
