@@ -4,8 +4,15 @@
     
   {% if task_list %}
 
-  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
-    <h1 class="h2">Open Tasks</h1>
+  <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+      <div>
+        <h1 class="h2">Open Tasks</h1>
+      </div>
+      {% if user.is_superuser %}
+      <a class="btn btn-primary" href="/tasks/add">
+        Add task
+      </a>
+      {% endif %}
   </div>
 
   <div class="alert alert-danger hidden" role="alert">

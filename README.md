@@ -57,6 +57,14 @@ CLIENT_ID=
 REFRESH_TOKEN=
 ``` 
 
+## Build
+
+```
+cd iaroapp
+nix develop
+make
+```
+
 ## Run
 
 ```
