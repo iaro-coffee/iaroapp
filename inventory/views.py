@@ -62,9 +62,11 @@ def inventory_populate(request):
                 value = values[i]
                 if value and float(value.replace(',','.')) >= 0:
                     product_instance = Product.objects.get(id=product_id)
-                    product_storage_instance = ProductStorage.objects.get(product=product_instance, storage_id=storage_id)
-                    product_storage_instance.value = value.replace(',','.')
-                    product_storage_instance.save()
+                    product_storage_instances = ProductStorage.objects.filter(product=product_instance, storage_id=storage_id)
+                    if product_storage_instances.exists():
+                        product_storage_instance = product_storage_instances.first()
+                        product_storage_instance.value = value.replace(',','.')
+                        product_storage_instance.save()
             messages.success(request, 'Inventory successfully updated.')
             return redirect('inventory_populate')
         else:

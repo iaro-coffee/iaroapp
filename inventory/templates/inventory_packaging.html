@@ -26,7 +26,7 @@
                 <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
                 <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
                 <td class="storages-column">
-                  <label for="checkbox{{forloop.counter}}" style="display: flex; gap: 0.2rem;">
+                  <label for="checkbox{{forloop.counter}}">
                     {% for product_storage in product.product_storages.all %}
                     {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
                     <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
@@ -44,7 +44,7 @@
                     </label>
                 </td>
                 <td>
-                  <label for="checkbox{{forloop.counter}}">
+                  <label for="checkbox{{forloop.counter}}" style="margin-right: 1rem;">
                     {% for product_storage, data in product.get_oos_value_shipping.items %}
                     {% if product_storage == target_branch %}
                       {{ data.value_needed|floatformat:2 }}
@@ -74,6 +74,9 @@
     user-select: none;
     height: 100%;
     background: none;
+    display: flex;
+    gap: 0.2rem;
+    flex-wrap: wrap;
   }
   tbody tr.header:hover, tbody tr.title:hover {
     background-color: white !important;
