@@ -33,6 +33,12 @@ def getMyTasks(request):
 
     return sorted(myTasks, key=itemgetter('type'))
 
+def check_admin(user):
+   return user.is_superuser
+
+def check_staff(user):
+   return user.is_superuser or user.is_staff
+
 def tasks(request):
 
     User = get_user_model()
@@ -65,9 +71,6 @@ def tasks(request):
     )
 
 from django.contrib.auth.decorators import user_passes_test
-
-def check_admin(user):
-   return user.is_superuser
 
 @user_passes_test(check_admin)
 def tasks_evaluation(request):
@@ -203,8 +206,7 @@ def tasks_baking(request):
 
 from .forms import TaskForm
 
-# FIXME check_staff
-@user_passes_test(check_admin)
+@user_passes_test(check_staff)
 def tasks_add(request):
 
     if request.method == 'POST':
