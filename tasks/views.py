@@ -17,8 +17,9 @@ def getMyTasks(request):
         task['assignees'] = task['users'] + task['groups']
         userMatch = request.user in task['users']
         groupMatch = any(group in request.user.groups.all() for group in task['groups'])
-        weekdayMatch = weekdayToday in [str(weekday) for weekday in task['weekdays']]
-        if (userMatch or groupMatch) and (weekdayMatch or not task['weekdays']):
+        noUserOrGroup = not task['groups'] and not task['users']
+        weekdayMatch = weekdayToday in [str(weekday) for weekday in task['weekdays']] or not task['weekdays']
+        if (userMatch or groupMatch or noUserOrGroup) and weekdayMatch:
             task['done'] = False
             myTasks.append(task)
 
@@ -38,7 +39,6 @@ def tasks(request):
 
     if request.method == 'POST':
 
-        print("were into post")
         request_data = request.body
         form_data = json.loads(request_data.decode("utf-8"))
         user_id = request.user.id
@@ -52,12 +52,15 @@ def tasks(request):
 
         return HttpResponse(200)
 
+    tasks = getMyTasks(request)
+    today = datetime.today().date()
+
     return render(
         request,
         'tasks.html',
         context={
-            'task_list': getMyTasks(request),
-            'today': datetime.today().date()
+            'task_list': tasks,
+            'today': today
         },
     )
 
@@ -82,6 +85,8 @@ def tasks_evaluation(request):
         for task in tasks:
             task = model_to_dict(task)
             task['assignees'] = task['users'] + task['groups']
+            if not task['weekdays']:
+                tasks_evaluation[weekday].append(task)
             for task_weekday in task['weekdays']:
                 if weekday == str(task_weekday):
                     tasks_evaluation[weekday].append(task)

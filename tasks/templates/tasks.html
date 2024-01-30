@@ -1,8 +1,6 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-    
-  {% if task_list %}
 
   <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
       <div>
@@ -23,6 +21,8 @@
     Tasks submitted successfully.
   </div>
 
+  {% if task_list %}
+
   <form id="tasksForm" method="post">
     {% csrf_token %}
     <div class="list-group w-auto">
@@ -38,9 +38,11 @@
             {{ task.title }}
             <small class="d-block text-muted" style="margin: 0.1rem 0;">
               <span data-feather="tag" class="align-text-bottom"></span>
-              {{ task.type|join:", " }},
+              {{ task.type|join:", " }}
+              {% if task.assignees %},
               <span data-feather="user" class="align-text-bottom"></span>
               {{ task.assignees|join:", " }}
+              {% endif %}
             </small>
           </span>
           {% if task.summary %}
@@ -201,6 +203,6 @@
 
     {% else %}
       <p>There are no tasks available.</p>
-    {% endif %}       
+    {% endif %}
+     
 {% endblock %}
-
