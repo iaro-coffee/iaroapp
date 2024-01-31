@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Task, TaskInstance
+from .models import Task, TaskInstance, Weekdays
 from django.forms.models import model_to_dict
 from datetime import datetime, timedelta, time
 from operator import itemgetter
@@ -10,28 +10,21 @@ from django.http import HttpResponse
 
 def getMyTasks(request):
     weekdayToday = datetime.today().strftime('%A')
+    weekdayToday = Weekdays.objects.get(name=weekdayToday)
+    print(weekdayToday)
+
     tasks = Task.objects.all()
     myTasks = []
     for task in tasks:
-        task = model_to_dict(task)
-        task['assignees'] = task['users'] + task['groups']
-        userMatch = request.user in task['users']
-        groupMatch = any(group in request.user.groups.all() for group in task['groups'])
-        noUserOrGroup = not task['groups'] and not task['users']
-        weekdayMatch = weekdayToday in [str(weekday) for weekday in task['weekdays']] or not task['weekdays']
-        if (userMatch or groupMatch or noUserOrGroup) and weekdayMatch:
-            task['done'] = False
+        userMatch = request.user in task.users.all()
+        groupMatch = any(group in request.user.groups.all() for group in task.groups.all())
+        noUserOrGroup = not task.groups.all() and not task.users.all()
+        weekdayMatch = weekdayToday in list(task.weekdays.all())
+        if (userMatch or groupMatch or noUserOrGroup) and (weekdayMatch or not task.weekdays):
             myTasks.append(task)
 
-    task_instances = TaskInstance.objects.all()
-    for task_instance in task_instances:
-        for task in myTasks:
-            if task['id'] == task_instance.task.id:
-                if task_instance.date_done != None:
-                    if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
-                        task['date_done'] = task_instance.date_done
-
-    return sorted(myTasks, key=itemgetter('type'))
+    # FIXME sorted by type
+    return myTasks
 
 def check_admin(user):
    return user.is_superuser

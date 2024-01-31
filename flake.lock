@@ -20,18 +20,17 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1706300905,
-        "narHash": "sha256-6mcoyolt6mbSCOW+VvI7jZDKq9lVzSAiYM4u4tOlcKY=",
-        "owner": "onny",
+        "lastModified": 1706708355,
+        "narHash": "sha256-zEZJlPOCi9Gg6izpECRdebKdcYllKwOVRbXJ5tCGtmk=",
+        "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "4e316b85b86b1431ffcc49ab5e7a25c8d2fa1565",
+        "rev": "1e245aad3d8a454b549d114f97ff0b50b941551a",
         "type": "github"
       },
       "original": {
-        "owner": "onny",
-        "ref": "django-crispy5",
-        "repo": "nixpkgs",
-        "type": "github"
+        "id": "nixpkgs",
+        "ref": "master",
+        "type": "indirect"
       }
     },
     "root": {

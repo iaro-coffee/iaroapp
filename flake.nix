@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:onny/nixpkgs/django-crispy5";
+    # Update to NixOS 24.05 as soon it is released
+    nixpkgs.url = "nixpkgs/master";
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };

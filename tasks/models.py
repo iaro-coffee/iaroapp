@@ -1,6 +1,5 @@
 from django.db import models
 from django.urls import reverse
-
 from tasks.task_types import TaskTypes
 
 class Weekdays(models.Model):
@@ -14,6 +13,7 @@ class Weekdays(models.Model):
 
 from django.contrib.auth.models import User, Group
 from ckeditor.fields import RichTextField
+from django.utils import timezone
 
 class Task(models.Model):
     """Model representing a task (but not a specific copy of a task)."""
@@ -21,8 +21,25 @@ class Task(models.Model):
     users = models.ManyToManyField(User, help_text="Select which users should be assigned for the task", blank=True)
     groups = models.ManyToManyField(Group, help_text="Select which groups should be assigned for the task", blank=True)
     weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task", blank=True)
-    type = models.ManyToManyField(TaskTypes, help_text="Select a type for this task")
+    types = models.ManyToManyField(TaskTypes, help_text="Select a type for this task")
     summary = RichTextField(max_length=1000, help_text="Enter a brief description of the task", blank=True)
+    parent_task = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subtasks')
+
+    @property
+    def done(self):
+        today = timezone.now().date()
+        return self.taskinstance_set.filter(date_done__date=today).exists()
+
+    @property
+    def get_types(self):
+        return self.types.all()
+
+    @property
+    def assignees(self):
+        return ', '.join(
+            [groups.name for groups in self.groups.all()] +
+            [users.get_username() for users in self.users.all()]
+            )
 
     def display_users(self):
         return ', '.join([users.get_username() for users in self.users.all()[:3]])
@@ -113,8 +130,6 @@ def create_or_update_baking_plan(preparation, weekday, items):
     else:
         title = 'Backplan'
 
-    print(preparation, title)
-
     weekday_names = [day.name for day in weekday]
     existing_task = Task.objects.filter(
         title = title,
@@ -187,7 +202,6 @@ def baking_plan_instance_post_save(sender, instance, created, **kwargs):
             items = []
             items_preparation = []
             weekday = instance.weekday.all()    
-            print(weekday)    
             baking_plan_instances = BakingPlanInstance.objects.filter(weekday__in=weekday)
             for baking_plan_instance in baking_plan_instances:
                 multiplier = baking_plan_instance.value
