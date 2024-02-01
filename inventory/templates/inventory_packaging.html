@@ -1,8 +1,23 @@
 {% extends "base_generic.html" %}
 
-{% block content %}
+{% block title %}Packaging{% endblock %}
 
-{% include "template_title.html" with title="Packaging" %}
+{% block widgets %}
+{% if user.is_superuser or user.is_staff %}
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ branch }}
+  </button>
+  <ul class="dropdown-menu">
+    {% for branch in branches %}
+    <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}  
+{% endblock %}
+
+{% block content %}
 
 <div style="width: 100%;">
   <table class="table table-hover">

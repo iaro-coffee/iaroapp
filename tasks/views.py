@@ -22,8 +22,10 @@ def getMyTasks(request):
         if (userMatch or groupMatch or noUserOrGroup) and (weekdayMatch or not task.weekdays):
             myTasks.append(task)
 
-    # FIXME sorted by type
-    return myTasks
+    # Convert the list of tasks to a QuerySet and order by type
+    myTasksQuerySet = Task.objects.filter(id__in=[task.id for task in myTasks]).order_by('types')
+
+    return myTasksQuerySet
 
 def check_admin(user):
    return user.is_superuser
@@ -31,34 +33,41 @@ def check_admin(user):
 def check_staff(user):
    return user.is_superuser or user.is_staff
 
+from .forms import TaskFormset
+from django.contrib import messages
+
 def tasks(request):
 
     User = get_user_model()
 
     if request.method == 'POST':
 
-        request_data = request.body
-        form_data = json.loads(request_data.decode("utf-8"))
+        form = TaskFormset(request.POST)
         user_id = request.user.id
         user = User.objects.get(id=user_id)
-        taskids_completed = list(form_data.keys())
         date = datetime.now()
 
-        for task_id in taskids_completed:
-            task = Task.objects.get(id=task_id)
-            TaskInstance.objects.create(user=user, date_done=date, task=task)
+        for key, value in request.POST.items():
+            if "done" in key:
+                task_id_done = key.split("_")[1]
+                task = Task.objects.get(id=task_id_done)
+                TaskInstance.objects.create(user=user, date_done=date, task=task)
 
-        return HttpResponse(200)
+        messages.success(request, 'Tasks submitted successfully.')
+        return redirect(reverse('tasks'))
 
     tasks = getMyTasks(request)
     today = datetime.today().date()
+
+    formset = TaskFormset(queryset=tasks)
 
     return render(
         request,
         'tasks.html',
         context={
             'task_list': tasks,
-            'today': today
+            'today': today,
+            'formset': formset
         },
     )
 
@@ -159,7 +168,7 @@ def tasks_baking(request):
             messages.success(request, 'Baking plan successfully updated!')
             return redirect(reverse('tasks_baking') + '?weekday='+str(weekday))
         else:
-            messages.success(request, 'Updating baking plan failed!')
+            messages.error(request, 'Updating baking plan failed!')
             return redirect(reverse('tasks_baking') + '?weekday='+str(weekday))
     else:
         recipes = Recipe.objects.all()

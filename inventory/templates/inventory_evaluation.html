@@ -1,8 +1,21 @@
 {% extends "base_generic.html" %}
 
-{% block content %}
+{% block title %}Inventory Overview{% endblock %}
 
-{% include "template_title.html" with title="Inventory" %}
+{% block widgets %}
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ branch }}
+  </button>
+  <ul class="dropdown-menu">
+    {% for branch in branches %}
+    <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block content %}
 
 <div style="width: 100%;">
   <table class="table table-striped table-hover">

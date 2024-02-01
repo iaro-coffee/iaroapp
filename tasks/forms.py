@@ -47,3 +47,16 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = '__all__'
+
+from django.forms import modelformset_factory
+
+TaskFormset = modelformset_factory(
+    Task,
+    fields=('title', ),
+    extra=1,
+    widgets={'title': forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter Book title here'
+        })
+    }
+)
