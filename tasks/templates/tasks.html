@@ -2,65 +2,57 @@
 
 {% block content %}
 
-  <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-      <div>
-        <h1 class="h2">Open Tasks</h1>
-      </div>
-      {% if user.is_superuser or user.is_staff %}
-      <a class="btn btn-primary" href="/tasks/add">
-        Add task
-      </a>
-      {% endif %}
-  </div>
+  {% include "template_title.html" with title="Open Tasks" %}
 
-  <div class="alert alert-danger hidden" role="alert">
-    Submitting tasks failed.
-  </div>
-
-  <div class="alert alert-success hidden" role="alert">
-    Tasks submitted successfully.
-  </div>
+  {% if user.is_superuser or user.is_staff %}
+  <a class="btn btn-primary" href="/tasks/add">
+    Add task
+  </a>
+  {% endif %}
 
   {% if task_list %}
 
   <form id="tasksForm" method="post">
     {% csrf_token %}
+    {{ formset.management_form }}
     <div class="list-group w-auto">
     
-      {% for task in task_list %}
-        <label class="list-group-item d-flex gap-3 {% if task.done %}done{% endif %}">
+      {% for form in formset %}
+        {% if form.instance.id %}
+        <label class="list-group-item d-flex gap-3 {% if form.instance.done %}done{% endif %}">
           <fieldset>
-            <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done" {% if task.done %}checked disabled{% endif %} />
-            <input type="number" name="id" value="{{task.id}}" style="display: none;" />
+            <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done" {% if form.instance.done %}checked disabled{% endif %} />
+            <input type="number" name="id" value="{{form.instance.id}}" style="display: none;" />
           </fieldset>
           <span class="pt-1 form-checked-content">
-            {{ task.title }}<br>
+            {{ form.instance.title }}<br>
             <small class="d-block text-muted" style="margin: 0.1rem 0;">
               <span data-feather="tag" class="align-text-bottom"></span>
-              {{ task.get_types|join:", " }}
-              {% if task.assignees %}
+              {{ form.instance.get_types|join:", " }}
+              {% if form.instance.assignees %}
               <span data-feather="user" class="align-text-bottom" style="margin-left: 0.2rem"></span>
-              {{ task.assignees }}
+              {{ form.instance.assignees }}
               {% endif %}
             </small>
           </span>
-          {% if task.summary %}
+          {% if form.instance.summary %}
           <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
             <span data-feather="help-circle" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
             <span class="hidden">
-              {{ task.summary }}
+              {{ form.instance.summary }}
             </span>
           </div>
           {% endif %}
-          {% if task.subtasks.all %}
+          {% if form.instance.subtasks.all %}
           <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
             <span data-feather="arrow-right-circle" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
           </div>
           {% endif %}
         </label>
+        {% endif %}
       {% endfor %}
-      <input type="submit" id="submitTasksBtn" class="w-100 btn btn-lg btn-primary" value="Submit tasks" style="margin-top: 1rem; max-width: 200px;" />
     </div>
+    <input type="submit" id="submitTasksBtn" class="w-100 btn btn-primary" value="Submit tasks" style="margin-top: 1rem; float: right; max-width: 200px;" />
   </form>
 
     <div class="modal fade" id="submitTasksModal" tabindex="-1" role="dialog" aria-labelledby="submitTasksModalLabel" aria-hidden="true">
@@ -113,54 +105,9 @@
     <script>
       function submitForm() {
 
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        var alerts = document.getElementsByClassName("alert");
-        for(var i = 0; i < alerts.length; i++) {
-          var alert = alerts[i];
-          alert.classList.add('hidden');
-        } 
         var form = document.querySelector('#tasksForm');
-        var form_data = new FormData(form);
-
-        let objSerializedForm = {};
-        let nextIsFinished = false;
-        for (let [name, value] of form_data) {
-          if (name === "done") {
-            nextIsFinished = true;
-          }
-          if (name === "id" && nextIsFinished) {
-            objSerializedForm[value] = true;
-            nextIsFinished = false;
-          }
-        }
-
-        var request = new XMLHttpRequest();
-        request.onreadystatechange = function() {
-          if (request.readyState == 4) {
-            if(request.status == 200) {
-
-              var element = document.getElementsByClassName("alert-success")[0];
-              element.classList.remove("hidden");
-              isSubmittedToday = true;
-
-              // Change all 'checked' classes to 'done'
-              var checkedItems = document.querySelectorAll('.checked');
-              for (var i = 0; i < checkedItems.length; i++) {
-                checkedItems[i].classList.remove('checked');
-                checkedItems[i].classList.add('done');
-              }
-
-            } else {
-              var element = document.getElementsByClassName("alert-danger")[0];
-              element.classList.remove("hidden");
-            }
-          }
-          window.scrollTo(0, 0);
-        }
-        request.open('POST', '/tasks/');
-        request.setRequestHeader("X-CSRFToken", csrftoken);
-        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        request.send(JSON.stringify(objSerializedForm));
+        form.submit()
+        window.scrollTo(0, 0);
 
       };
 
