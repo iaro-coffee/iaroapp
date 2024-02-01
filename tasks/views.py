@@ -42,27 +42,19 @@ def tasks(request):
 
     if request.method == 'POST':
 
-        print("inside post")
-
         form = TaskFormset(request.POST)
-        if form.is_valid():
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+        date = datetime.now()
 
-            # request_data = request.body
-            # form_data = json.loads(request_data.decode("utf-8"))
-            # user_id = request.user.id
-            # user = User.objects.get(id=user_id)
-            # taskids_completed = list(form_data.keys())
-            # date = datetime.now()
+        for key, value in request.POST.items():
+            if "done" in key:
+                task_id_done = key.split("_")[1]
+                task = Task.objects.get(id=task_id_done)
+                TaskInstance.objects.create(user=user, date_done=date, task=task)
 
-            # for task_id in taskids_completed:
-            #     task = Task.objects.get(id=task_id)
-            #     TaskInstance.objects.create(user=user, date_done=date, task=task)
-
-            messages.success(request, 'Tasks submitted successfully.')
-            return redirect(reverse('tasks'))
-        else:
-            messages.error(request, 'Submitting tasks failed.')
-            return redirect(reverse('tasks'))
+        messages.success(request, 'Tasks submitted successfully.')
+        return redirect(reverse('tasks'))
 
     tasks = getMyTasks(request)
     today = datetime.today().date()

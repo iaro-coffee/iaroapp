@@ -23,7 +23,7 @@
         {% if form.instance.id %}
         <label class="list-group-item d-flex gap-3 {% if form.instance.done %}done{% endif %}">
           <fieldset>
-            <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done" {% if form.instance.done %}checked disabled{% endif %} />
+            <input class="form-check-input flex-shrink-0" type="checkbox" style="font-size: 1.375em;" name="done_{{form.instance.id}}" {% if form.instance.done %}checked disabled{% endif %} />
             <input type="number" name="id" value="{{form.instance.id}}" style="display: none;" />
           </fieldset>
           <span class="pt-1 form-checked-content">
@@ -139,7 +139,7 @@
         })
 
         // Colorize checked tasks
-        var checkboxes = document.querySelectorAll('input[name="done"]');
+        var checkboxes = document.querySelectorAll('input');
         for (var i = 0; i < checkboxes.length; i++) {
         checkboxes[i].addEventListener('change', function() {
           if (this.checked) {
