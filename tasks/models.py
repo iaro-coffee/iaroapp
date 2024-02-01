@@ -166,7 +166,7 @@ def create_or_update_baking_plan(preparation, weekday, items):
         task.save()
         task.groups.add(kitchen_group)
         task.weekdays.set(weekday)
-        task.type.add(baking_type)
+        task.types.add(baking_type)
 
 def merge_list(items):
     merged_items = {}

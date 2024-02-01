@@ -98,4 +98,15 @@ def getMyTasks(request):
                     if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
                         task['date_done'] = task_instance.date_done
 
-    return sorted(myTasks, key=itemgetter('type'))
+    return sorted(myTasks, key=itemgetter('types'))
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.contrib.auth import views as auth_views
+
+def login(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('index'))
+    else:
+        return auth_views.LoginView.as_view()(request, *args, **kwargs)

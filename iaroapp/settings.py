@@ -30,7 +30,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://app.iaro.co',
     'https://proxy.iaro.co',
     'http://192.168.178.253',
-    'https://*.127.0.0.1'
+    'https://*.127.0.0.1',
+    'https://iaroapp.project-insanity.org'
 ]
 
 INSTALLED_APPS = [
@@ -119,7 +120,7 @@ USE_I18N = True
 USE_TZ = True
 
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login'
+LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_REQUIRED_IGNORE_PATHS = [
     r'/accounts/logout/$',

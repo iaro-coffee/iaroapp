@@ -150,7 +150,7 @@
                                 {{ task.title }}
                                 <small class="d-block text-muted" style="margin: 0.1rem 0;">
                                   <span data-feather="tag" class="align-text-bottom"></span>
-                                  {{ task.type|join:", " }},
+                                  {{ task.get_types|join:", " }},
                                   <span data-feather="user" class="align-text-bottom"></span>
                                   {{ task.assignees|join:", " }}
                                 </small>

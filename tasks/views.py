@@ -11,7 +11,6 @@ from django.http import HttpResponse
 def getMyTasks(request):
     weekdayToday = datetime.today().strftime('%A')
     weekdayToday = Weekdays.objects.get(name=weekdayToday)
-    print(weekdayToday)
 
     tasks = Task.objects.all()
     myTasks = []
