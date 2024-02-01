@@ -6,9 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="theme-color" content="#712cf9">
-    {% block title %}
     <title>iaroapp</title>
-    {% endblock %}
     <link rel="canonical" href="https://app.iaro.co">
     {% load static %}
     <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -194,6 +192,33 @@
 
         <main class="contentArea col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
+            <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                <div>
+                  <h1 class="h2">{% block title %}{% endblock %}</h1>
+                  {% if modifiedDate %}
+                  <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm modified-date">
+                      <span data-feather="calendar" class="align-text-bottom"></span>
+                      Last updated: {{ modifiedDate }}
+                    </button>
+                  </div>
+                  {% endif %}
+                </div>
+                {% block widgets %}{% endblock %}
+            </div>
+
+            {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "success" %}
+                <div class="alert alert-success" role="alert">
+                {% else %}
+                <div class="alert alert-danger" role="alert">     
+                {% endif %}
+                {{ message }}
+                </div>
+            {% endfor %}
+            {% endif %}
+
             {% block content %}{% endblock %}
 
             {% if messages %}
@@ -211,6 +236,17 @@
     </div>
 </div>
 
+<style>
+    .modified-date {
+        padding: 0 !important;
+        padding-right: 1rem !important;
+    }
+    .form-select {
+        --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        padding-right: 2rem !important;
+    }
+</style>
+
 <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'feather-icons/dist/feather.min.js' %}"></script>
 
@@ -219,6 +255,14 @@
         'use strict'
         feather.replace({ 'aria-hidden': 'true' })
       })()
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var selectElement = document.getElementById('weekday');
+        selectElement.addEventListener('change', function() {
+            var selectedOption = this.value;
+            window.location.href = '?weekday=' + encodeURIComponent(selectedOption);
+        });
+    });
 </script>
 </body>
 </html>

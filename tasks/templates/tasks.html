@@ -1,14 +1,16 @@
 {% extends "base_generic.html" %}
 
-{% block content %}
+  {% block title %}Open Tasks{% endblock %}
 
-  {% include "template_title.html" with title="Open Tasks" %}
-
+  {% block widgets %}
   {% if user.is_superuser or user.is_staff %}
   <a class="btn btn-primary" href="/tasks/add">
     Add task
   </a>
-  {% endif %}
+  {% endif %}  
+  {% endblock %}
+
+  {% block content %}
 
   {% if task_list %}
 

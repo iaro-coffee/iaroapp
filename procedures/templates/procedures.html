@@ -1,24 +1,25 @@
 {% extends "base_generic.html" %}
 
+{% block title %}
+  {% if opening == True %}Opening{% endif %}{% if closing == True %}Closing{% endif %} Tasks
+{% endblock %}
+
+{% block widgets %}
+<div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {{ branch }}
+  </button>
+  <ul class="dropdown-menu">
+    {% for branch in branches %}
+    <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
 {% block content %}
 
   {% if procedures %}
-
-  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">        
-    <h1 class="h2">{% if opening == True %}Opening{% endif %}{% if closing == True %}Closing{% endif %} Tasks</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-      <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          {{ branch }}
-        </button>
-        <ul class="dropdown-menu">
-          {% for branch in branches %}
-          <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-  </div>
 
   <form id="tasksForm" method="post">
     {% csrf_token %}
