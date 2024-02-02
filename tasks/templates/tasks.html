@@ -7,7 +7,17 @@
   <a class="btn btn-primary" href="/tasks/add">
     Add task
   </a>
-  {% endif %}  
+  {% endif %}
+  <div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      {{ branch }}
+    </button>
+    <ul class="dropdown-menu">
+      {% for branch in branches %}
+      <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
   {% endblock %}
 
   {% block content %}
@@ -101,6 +111,9 @@
       .done {
         background-color: rgb(209, 231, 221);
         border: 1px solid #e0cbcd;
+      }
+      .descriptionLink {
+        cursor: pointer;
       }
     </style>
   

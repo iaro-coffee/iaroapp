@@ -19,7 +19,7 @@ def getMyTasks(request):
         groupMatch = any(group in request.user.groups.all() for group in task.groups.all())
         noUserOrGroup = not task.groups.all() and not task.users.all()
         weekdayMatch = weekdayToday in list(task.weekdays.all())
-        if (userMatch or groupMatch or noUserOrGroup) and (weekdayMatch or not task.weekdays):
+        if (userMatch or groupMatch or noUserOrGroup) and (weekdayMatch or not task.weekdays.exists()):
             myTasks.append(task)
 
     # Convert the list of tasks to a QuerySet and order by type
@@ -35,6 +35,7 @@ def check_staff(user):
 
 from .forms import TaskFormset
 from django.contrib import messages
+from inventory.views import getCurrentBranch
 
 def tasks(request):
 
@@ -59,6 +60,17 @@ def tasks(request):
     tasks = getMyTasks(request)
     today = datetime.today().date()
 
+    # Get current branch by GET parameter or Planday query
+    branch = getCurrentBranch(request)
+    branches = Branch.objects.all()
+    # Filter selected branch from available branches
+    branches = branches.exclude(name=branch)
+    branches = branches.order_by('name')
+    branches = list(branches)
+    if (branch != 'All'):
+        branches.append('All')
+        tasks = tasks.filter(branch=branch)
+
     formset = TaskFormset(queryset=tasks)
 
     return render(
@@ -67,7 +79,9 @@ def tasks(request):
         context={
             'task_list': tasks,
             'today': today,
-            'formset': formset
+            'formset': formset,
+            'branches': branches,
+            'branch': branch
         },
     )
 
@@ -222,5 +236,8 @@ def tasks_add(request):
     return render(
         request,
         'tasks_add.html',
-        context={'form': form},
+        context={
+            'form': form,
+            'subpage_of': '/tasks'
+        },
     )

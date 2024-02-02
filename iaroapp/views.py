@@ -59,6 +59,7 @@ def getNextShiftsByUser(request):
         nextShiftsUser[request.user.id] = userShifts
     return nextShiftsUser[request.user.id]
 
+from tasks.views import getMyTasks
 
 def index(request):
 
@@ -75,30 +76,6 @@ def index(request):
             'today': today,
         }
     )
-
-def getMyTasks(request):
-    weekdayToday = datetime.today().strftime('%A')
-    tasks = Task.objects.all()
-    myTasks = []
-    for task in tasks:
-        task = model_to_dict(task)
-        task['assignees'] = task['users'] + task['groups']
-        userMatch = request.user in task['users']
-        groupMatch = any(group in request.user.groups.all() for group in task['groups'])
-        weekdayMatch = weekdayToday in [str(weekday) for weekday in task['weekdays']]
-        if (userMatch or groupMatch) and (weekdayMatch or not task['weekdays']):
-            task['done'] = False
-            myTasks.append(task)
-
-    task_instances = TaskInstance.objects.all()
-    for task_instance in task_instances:
-        for task in myTasks:
-            if task['id'] == task_instance.task.id:
-                if task_instance.date_done != None:
-                    if [task_instance.date_done.strftime('%A') == weekday for weekday in task['weekdays']]:
-                        task['date_done'] = task_instance.date_done
-
-    return sorted(myTasks, key=itemgetter('types'))
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect

@@ -23,6 +23,7 @@ class Task(models.Model):
     weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task", blank=True)
     types = models.ManyToManyField(TaskTypes, help_text="Select a type for this task")
     summary = RichTextField(max_length=1000, help_text="Enter a brief description of the task", blank=True)
+    branch = models.ForeignKey('inventory.Branch', on_delete=models.CASCADE, null=True)
     parent_task = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subtasks')
 
     @property

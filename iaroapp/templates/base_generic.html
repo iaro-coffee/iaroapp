@@ -193,8 +193,15 @@
         <main class="contentArea col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
             <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <div>
-                  <h1 class="h2">{% block title %}{% endblock %}</h1>
+                <div class="leftTitle">
+                  <h1 class="h2">
+                    {% if subpage_of %}
+                    <a href="{{ subpage_of }}">
+                    <span data-feather="arrow-left-circle" class="align-text-center"></span>
+                    </a>
+                    {% endif %}
+                    {% block title %}{% endblock %}
+                  </h1>
                   {% if modifiedDate %}
                   <div class="btn-toolbar mb-2 mb-md-0">
                     <button type="button" class="btn btn-sm modified-date">
@@ -233,6 +240,23 @@
     .form-select {
         --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
         padding-right: 2rem !important;
+    }
+    h1 .feather {
+        width: 28px;
+        height: 28px;
+        stroke-width: 1;
+        margin-bottom: 0.25rem;
+        margin-right: 0.25rem;
+    }
+    h1 a {
+        text-decoration: none;
+        color: initial;
+    }
+    .leftTitle {
+        flex-grow: 1;
+    }
+    .title {
+        gap: 0.5rem;
     }
 </style>
 
