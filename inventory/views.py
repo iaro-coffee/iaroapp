@@ -43,38 +43,30 @@ def getInventoryModifiedDate():
    return modified_date if modified_date else "Unknown"
 
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
+from .forms import ProductFormset
 
 def inventory_populate(request):
 
     if request.method == 'POST':
 
-        request_data = request.body
+        form = ProductFormset(request.POST)
 
-        products = request.POST.getlist('product')
-        storages = request.POST.getlist('storage')
-        values = request.POST.getlist('value')
+        for key, value in request.POST.items():
+            if "value" in key and value:
+                value = float(value.replace(',','.'))
+                product_id = key.split("_")[1]
+                storage_id = key.split("_")[2]
 
-        if (len(products) == len(storages) == len(values)):
-            for i in range(len(products)):
-                product_id = products[i]
-                storage_id = storages[i]
-                value = values[i]
-                if value and float(value.replace(',','.')) >= 0:
-                    product_instance = Product.objects.get(id=product_id)
-                    product_storage_instances = ProductStorage.objects.filter(product=product_instance, storage_id=storage_id)
-                    if product_storage_instances.exists():
-                        product_storage_instance = product_storage_instances.first()
-                        product_storage_instance.value = value.replace(',','.')
-                        product_storage_instance.save()
-            messages.success(request, 'Inventory successfully updated.')
-            return redirect('inventory_populate')
-        else:
-            messages.error(request, 'Update inventory failed.')
-            return redirect('inventory_populate')
+                product_instance = Product.objects.get(id=product_id)
+                product_storage_instances = ProductStorage.objects.filter(product=product_instance, storage_id=storage_id)
+                if product_storage_instances.exists():
+                    product_storage_instance = product_storage_instances.first()
+                    product_storage_instance.value = value
+                    product_storage_instance.save()
 
-        messages.success(request, 'Inventory successfully updated.')
-        return redirect('inventory_populate')
+        messages.success(request, 'Inventory submitted successfully.')
+        return redirect(reverse('inventory_populate'))
 
     else:
 
@@ -127,22 +119,22 @@ def inventory_populate(request):
         isSubmittedToday = False
         today = datetime.datetime.today().date()
         if modified_date == today:
-            isSubmittedToday = True        
+            isSubmittedToday = True       
 
-        context = {
-            'users': users,
-            'products': products,
-            'storages': storages,
-            'isSubmittedToday': isSubmittedToday,
-            'modifiedDate': modified_date,
-            'branches': branches,
-            'branch': branch,
-        }
+        formset = ProductFormset(queryset=products) 
 
         return render(
             request,
             'inventory.html',
-            context,
+            context = {
+                'users': users,
+                'storages': storages,
+                'isSubmittedToday': isSubmittedToday,
+                'modifiedDate': modified_date,
+                'branches': branches,
+                'branch': branch,
+                'formset': formset
+            }
         )
 
 from django.contrib.auth.decorators import user_passes_test

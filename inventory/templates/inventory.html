@@ -18,17 +18,9 @@
 {% block content %}
 
 <div class="list-group w-auto">
-
-  <div class="alert alert-danger hidden" role="alert">
-    Submitting the inventory failed.
-  </div>
-
-  <div class="alert alert-success hidden" role="alert">
-    Inventory submitted successfully.
-  </div>
-
   <form id="product_form" method="post">
     {% csrf_token %}
+    {{ formset.management_form }}
     <div id="accordion">
     {% for storage in storages %}
       <div class="card">
@@ -46,26 +38,26 @@
         </div>
         <div id="inventoryList_{{ storage.id }}" class="collapse" data-bs-parent="#accordion">
           <div class="card-body">
-            {% for product in products %}
-              {% if storage in product.storages %}
+            {% for form in formset %}
+              {% if storage in form.instance.storages %}
                 <a class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
                   <span style="font-size: 2rem">
                     📦
                   </span>
                   <div class="d-flex gap-2 w-100 justify-content-between">
                     <div>
-                      <input type="number" name="product" value="{{product.id}}" style="display: none;" />
-                      <input type="number" name="storage" value="{{storage.id}}" style="display: none;" />
+                      <input type="number" name="product_{{ form.instance.id }}" value="{{ form.instance.id }}" style="display: none;" />
+                      <input type="number" name="storage_{{ storage.id }}" value="{{ storage.id }}" style="display: none;" />
                       <h6 class="mb-0 wrap">
-                        {{ product.name }}
+                        {{ form.name.value }}
                       </h6>
                       <p class="mb-0 opacity-75">
                       </p>
                     </div>
                     <div style="display: flex; flex-direction: row; gap: 0.5rem;">
-                      <input name="value" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control" id="value" value="" style="width: 100px;">
+                      <input name="value_{{ form.instance.id }}_{{ storage.id }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control" id="value" value="" style="width: 100px;">
                       <small class="opacity-50 text-nowrap truncate">
-                        {{ product.unit.all | join:", " }}
+                        {{ form.instance.unit.all | join:", " }}
                       </small>
                     </div>
                   </div>
