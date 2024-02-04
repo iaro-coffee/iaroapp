@@ -33,7 +33,7 @@
     {% for storage in storages %}
       <div class="card">
         <div class="card-header">
-          <a class="btn" data-bs-toggle="collapse" href="#inventoryList{{ storage.name_encoded }}">
+          <a class="btn" data-bs-toggle="collapse" href="#inventoryList_{{ storage.id }}">
             <svg class="bi" width="24" height="24" style="color: {{ storage.color }};">
               <use xlink:href="#x-circle-fill">
                 <symbol id="x-circle-fill" viewBox="0 0 24 24">
@@ -44,7 +44,7 @@
             <span>{{ storage.name }}</span>
           </a>
         </div>
-        <div id="inventoryList{{ storage.name_encoded }}" class="collapse" data-bs-parent="#accordion">
+        <div id="inventoryList_{{ storage.id }}" class="collapse" data-bs-parent="#accordion">
           <div class="card-body">
             {% for product in products %}
               {% if storage in product.storages %}

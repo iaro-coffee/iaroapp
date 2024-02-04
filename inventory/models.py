@@ -4,23 +4,11 @@ from django.contrib.auth.models import User
 from colorful.fields import RGBColorField
 from django.utils.html import format_html
 from django.db.models import Sum
-import re
-
-def sanitize_string(string):
-  string = re.sub(r"[äöüß]", lambda x: x.group(0).encode("utf-8").hex(), string)
-  string = re.sub(r"[^a-zA-Z0-9_]", "_", string)
-  return string
 
 class Storage(models.Model):
     """Model representing a storage location."""
     name = models.CharField(max_length=500)
     color = RGBColorField(default='')
-
-    # Add a calculated field called name_encoded
-    @property
-    def name_encoded(self):
-        # Use the sanitize function to encode the name
-        return sanitize_string(self.name)
 
     def display_color(self):
         return format_html('<span style="width:15px;height:15px;display:block;background-color:{}"></span>', self.color)
@@ -170,7 +158,7 @@ class Product(models.Model):
                 product_storage_dict[storage.storage] = {
                     'value': storage.value,
                     'value_intended': storage.value_intended,
-                    'oos': (((100/storage.value_intended)*storage.value) < 30)
+                    'oos': (((100/storage.value_intended)*storage.value) < storage.threshold)
                 }
             else:
                 product_storage_dict[storage.storage] = {
@@ -185,13 +173,26 @@ class Product(models.Model):
         return self.name
 
 from django.utils import timezone
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class ProductStorage(models.Model):
     """Model representing the relationship between a product and a storage."""
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_storages')
-    storage = models.ForeignKey(Storage, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='product_storages'
+    )
+    storage = models.ForeignKey(
+        Storage,
+        on_delete=models.CASCADE
+    )
     value = models.FloatField()
     value_intended = models.FloatField()
+    threshold = models.IntegerField(
+        default=30,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Enter the threshold in percent when an item needs to get bought."
+    )
     main_storage = models.BooleanField(default=False)
 
     @property
@@ -201,7 +202,7 @@ class ProductStorage(models.Model):
     @property
     def oos(self):
         if self.value  and self.value_intended:
-            return (((100/self.value_intended)*self.value) < 30)
+            return (((100/self.value_intended)*self.value) < self.threshold)
         return True
     
     @property
