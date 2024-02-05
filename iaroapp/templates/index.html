@@ -154,7 +154,7 @@
                                   <span data-feather="tag" class="align-text-bottom"></span>
                                   {{ task.get_types|join:", " }},
                                   <span data-feather="user" class="align-text-bottom"></span>
-                                  {{ task.assignees|join:", " }}
+                                  {{ task.assignees }}
                                 </small>
                               </span>
                             </label>
@@ -162,7 +162,7 @@
                     {% endfor %}
                 </div>
                 <div class="card-footer bg-light p-0">
-                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/tasks/overview">See all tasks
+                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/tasks">See all tasks
                         <span class="fas fa-chevron-right ms-1 fs--2"></span>
                     </a>
                 </div>
