@@ -7,6 +7,6 @@ class EmployeeRatingAdmin(admin.ModelAdmin):
     Defines:
      - fields to be displayed in list view (list_display)
     """
-    list_display = ('user', 'date', 'rating')
+    list_display = ('id', 'user', 'date', 'rating')
 
 admin.site.register(EmployeeRating, EmployeeRatingAdmin)

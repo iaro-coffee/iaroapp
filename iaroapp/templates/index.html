@@ -9,7 +9,32 @@
 </div>
 
 <div class="alert alert-danger hidden" role="alert">
-    Submitting rating failed.
+    Punching in/out failed.
+</div>
+
+<div class="row g-1">
+    <div class="col-lg-6 pe-lg-2 mb-3">
+        <div class="card h-lg-100 overflow-hidden">
+            <div class="card-header bg-light">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h6 class="mb-0">{% if ongoingShift %} Punch out {% else %} Punch in {% endif %}</h6>
+                    </div>
+                    <div class="col-auto text-center pe-x1">
+                        <br><br>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group w-auto rounded-0">
+                    <div class="row align-items-center" style="padding:15px; text-align: center;">
+                        {% if ongoingShift %} <span id="clock" style="font-size:2.5rem"></span> {% endif %}
+                        <button id="punchShiftButton" type="button" class="btn btn-lg btn-primary">{% if ongoingShift %} Punch out {% else %} Punch in {% endif %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% if showOpening or showClosing %}
@@ -82,53 +107,6 @@
     </div>
 {% endif %}
 
-
-<div class="row g-1">
-    <div class="col-lg-6 pe-lg-2 mb-3">
-        <div class="card h-lg-100 overflow-hidden">
-            <div class="card-header bg-light">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h6 class="mb-0">Shift Rating</h6>
-                    </div>
-                    <div class="col-auto text-center pe-x1">
-                        <br><br>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body p-0">
-                <div class="list-group w-auto rounded-0">
-                    <div class="row align-items-center" style="padding:15px;">
-                      <form id="ratingForm" method="post">
-                        {% csrf_token %}
-                        <h5>How was todays shift for you?</h5>
-                        <input type="text" name="user" value="{{user.id}}" style="display: none;" />
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="stars">
-                                    <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
-                                    <label class="star star-5" for="star-5"></label>
-                                    <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
-                                    <label class="star star-4" for="star-4"></label>
-                                    <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
-                                    <label class="star star-3" for="star-3"></label>
-                                    <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
-                                    <label class="star star-2" for="star-2"></label>
-                                    <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
-                                    <label class="star star-1" for="star-1"></label>
-                                </div>
-                            </div>
-                        </div>
-                        <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit" style="margin-top: 1rem; max-width: 200px;" />
-                      </form>
-                  </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
 <div class="row g-0">
 
     <div class="col-lg-6 pe-lg-2 mb-3">
@@ -162,7 +140,7 @@
                     {% endfor %}
                 </div>
                 <div class="card-footer bg-light p-0">
-                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/tasks/overview">See all tasks
+                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/tasks">See all tasks
                         <span class="fas fa-chevron-right ms-1 fs--2"></span>
                     </a>
                 </div>
@@ -218,10 +196,32 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content rounded-4 shadow">
           <div class="modal-body p-5">
-            <h2 class="fw-bold mb-0">Submit tips</h2>
+            <h2 class="fw-bold mb-0">{% if ongoingShift %} Submit rating and punch out {% else %} Punch in {% endif %}</h2>
             <br>
-            <span class="submitModalContent"></span>
-            <button id="submitModalButton" type="button" class="btn btn-lg btn-primary mt-5 w-100" data-bs-dismiss="modal">Yes</button>
+              <form id="ratingForm" method="post">
+                  {% csrf_token %}
+                  <input type="text" name="user" value="{{user.id}}" style="display: none;" />
+                  {% if ongoingShift %}
+                    <h5>How was todays shift for you?</h5>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="stars">
+                                <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
+                                <label class="star star-5" for="star-5"></label>
+                                <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
+                                <label class="star star-4" for="star-4"></label>
+                                <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
+                                <label class="star star-3" for="star-3"></label>
+                                <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
+                                <label class="star star-2" for="star-2"></label>
+                                <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
+                                <label class="star star-1" for="star-1"></label>
+                            </div>
+                        </div>
+                    </div>
+                  {% endif %}
+                <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit" style="margin-top: 1rem; max-width: 200px;"  data-bs-dismiss="modal"/>
+              </form>
           </div>
         </div>
       </div>
@@ -306,75 +306,91 @@
     }
   </style>
 <script>
-    function submitForm() {
-      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-      var alerts = document.getElementsByClassName("alert");
-      for(var i = 0; i < alerts.length; i++) {
-        var alert = alerts[i];
-        alert.classList.add('hidden');
-      }
-      var form = document.querySelector('#ratingForm');
-      var form_data = new FormData(form);
 
-      let objSerializedForm = {};
-      console.log(form_data);
-      var star;
-      for (let [name, value] of form_data) {
-        if (name === "user") {
-          userid = value;
-        }
-        if (name === "star") {
-          star = value;
-        }
-      }
-      objSerializedForm[userid] = {'star': star};
-      console.log(objSerializedForm);
-
-      var request = new XMLHttpRequest();
-      request.onreadystatechange = function() {
-        if (request.readyState == 4) {
-          if(request.status == 200) {
-            var element = document.getElementsByClassName("alert-success")[0];
-            element.classList.remove("hidden");
-          } else {
-            var element = document.getElementsByClassName("alert-danger")[0];
-            element.classList.remove("hidden");
-          }
-        }
-        window.scrollTo(0, 0);
-      }
-      request.open('POST', '/ratings/');
-      request.setRequestHeader("X-CSRFToken", csrftoken);
-      request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      request.send(JSON.stringify(objSerializedForm));
-      form.reset();
+    function shiftTime() {
+        var shiftStart = '{{shiftStart}}';
+        var span = document.getElementById('clock');
+        var now = new Date();
+        var shiftStartDate = new Date(parseFloat(shiftStart)*1000);
+        var millis = now - shiftStartDate;
+        let h,m,s;
+        h = Math.floor(millis/1000/60/60);
+        m = Math.floor((millis/1000/60/60 - h)*60);
+        s = Math.floor(((millis/1000/60/60 - h)*60 - m)*60);
+        s < 10 ? s = '0' + s: s = s
+        m < 10 ? m = '0' + m: m = m
+        h < 10 ? h = '0' + h: h = h
+        span.textContent = h + ":" + m + ":" + s;
     }
 
     document.addEventListener("DOMContentLoaded", function() {
 
-      document.getElementById('submitModalButton').onclick = function (evt) {
-        submitForm();
+      var ongoingShift = '{{ongoingShift}}';
+      var ongoingShift = (ongoingShift.toLowerCase() === "true");
+      if (ongoingShift) {
+          shiftTime();
+          setInterval(shiftTime, 1000);
       }
 
       document.getElementById('ratingForm').onsubmit = function (evt) {
         evt.preventDefault();
-        var submitModal = new bootstrap.Modal(document.getElementById("submitModal"), {});
-        var errorModal = new bootstrap.Modal(document.getElementById("errorModal"), {});
-        var form = document.querySelector('#ratingForm');
-        var form_data = new FormData(form);
-        var star;
-        for (let [name, value] of form_data) {
-          if (name === "star") {
-            star = value;
+        var ongoingShift = '{{ongoingShift}}';
+        var ongoingShift = (ongoingShift.toLowerCase() === "true");
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+          var errorModal = new bootstrap.Modal(document.getElementById("errorModal"), {});
+          var submitModal = new bootstrap.Modal(document.getElementById("submitModal"), {});
+          var alerts = document.getElementsByClassName("alert");
+          for(var i = 0; i < alerts.length; i++) {
+            var alert = alerts[i];
+            alert.classList.add('hidden');
           }
-        }
-        if (star == null) {
+          var form = document.querySelector('#ratingForm');
+          var form_data = new FormData(form);
+
+          let objSerializedForm = {};
+          console.log(form_data);
+          var star;
+          for (let [name, value] of form_data) {
+            if (name === "user") {
+              userid = value;
+            }
+            if (name === "star") {
+              star = value;
+            }
+          }
+          if (star == null && ongoingShift) {
+            submitModal.hide();
             errorModal.show();
-        }
-        else {
-            var submitModalContent = document.querySelector('.submitModalContent').innerHTML = 'Are you sure, you want to submit ' + star + ' stars?';
-            submitModal.show();
-        }
+            return;
+          }
+          objSerializedForm[userid] = {'star': star};
+          console.log(objSerializedForm);
+
+          var request = new XMLHttpRequest();
+          request.onreadystatechange = function() {
+            if (request.readyState == XMLHttpRequest.DONE) {
+              if(request.status == 200) {
+                var element = document.getElementsByClassName("alert-success")[0];
+                element.classList.remove("hidden");
+                location.reload(); // todo improve
+              } else {
+                var element = document.getElementsByClassName("alert-danger")[0];
+                element.classList.remove("hidden");
+              }
+            }
+            window.scrollTo(0, 0);
+          }
+
+          request.open('POST', '/shifts/');
+          request.setRequestHeader("X-CSRFToken", csrftoken);
+          request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          request.send(JSON.stringify(objSerializedForm));
+          form.reset();
+      }
+
+      document.getElementById('punchShiftButton').onclick = function (evt) {
+        var submitModal = new bootstrap.Modal(document.getElementById("submitModal"), {});
+        submitModal.show();
       }
 
     });

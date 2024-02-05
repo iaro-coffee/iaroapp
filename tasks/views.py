@@ -2,11 +2,7 @@ from django.shortcuts import render
 from .models import Task, TaskInstance, Weekdays
 from django.forms.models import model_to_dict
 from datetime import datetime, timedelta, time
-from operator import itemgetter
-from inventory.models import Product
 from django.contrib.auth import get_user_model
-import json
-from django.http import HttpResponse
 
 def getMyTasks(request):
     weekdayToday = datetime.today().strftime('%A')

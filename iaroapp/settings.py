@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'tasks.apps.TasksConfig',
+    'shifts.apps.ShiftsConfig',
     'ratings.apps.RatingsConfig',
     'procedures.apps.ProceduresConfig',
     'inventory.apps.InventoryConfig',

@@ -39,6 +39,10 @@ urlpatterns += [
 ]
 
 urlpatterns += [
+    path('shifts/', include('shifts.urls')),
+]
+
+urlpatterns += [
     path('inventory/', include('inventory.urls')),
 ]
 

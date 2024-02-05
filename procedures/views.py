@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.forms import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -10,6 +10,7 @@ from datetime import datetime
 from .procedure_category import ProcedureCategory
 from inventory.models import Branch
 
+@login_required
 def index(request):
     if request.method == 'POST':
         request_data = request.body

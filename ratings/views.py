@@ -1,6 +1,6 @@
 from math import floor
 
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import User
 from django.db.models import Sum, Avg
 from django.forms import model_to_dict
@@ -12,7 +12,7 @@ import datetime
 from django.shortcuts import render
 
 
-# Tip input page
+@login_required
 def index(request):
     if request.method == 'POST':
         request_data = request.body
