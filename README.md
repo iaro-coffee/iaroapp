@@ -51,7 +51,7 @@ Create `.env` file in the project root folder and add the Planday credentials
 ```
 CLIENT_ID=
 REFRESH_TOKEN=
-``` 
+```
 
 ## Build
 
@@ -75,4 +75,3 @@ http://localhost:8000/admin.
 ## Documentation
 
 ### Where are the template files stored?
-

@@ -176,7 +176,7 @@ def merge_list(items):
         name = item["name"]
         value_ost = item["value_ost"]
         value_west = item["value_west"]
-        
+
         if name in merged_items:
             # If the name is already in merged_items, add the values
             merged_item = merged_items[name]
@@ -202,7 +202,7 @@ def baking_plan_instance_post_save(sender, instance, created, **kwargs):
 
             items = []
             items_preparation = []
-            weekday = instance.weekday.all()    
+            weekday = instance.weekday.all()
             baking_plan_instances = BakingPlanInstance.objects.filter(weekday__in=weekday)
             for baking_plan_instance in baking_plan_instances:
                 multiplier = baking_plan_instance.value

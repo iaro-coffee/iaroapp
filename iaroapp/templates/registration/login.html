@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  
+
     {% block title %}<title>iaroapp</title>{% endblock %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -68,7 +68,7 @@
         <form method="post" action="{% url 'login' %}">
         {% load static %}
 
-        {% csrf_token %}    
+        {% csrf_token %}
         <img class="mb-4" src="{% static 'images/logo.png' %}" alt="" width="250px">
 
         {% if form.errors %}
@@ -82,7 +82,7 @@
         {% if message.tags == "success" %}
         <div class="alert alert-success" role="alert">
         {% else %}
-        <div class="alert alert-danger" role="alert">     
+        <div class="alert alert-danger" role="alert">
         {% endif %}
           {{ message }}
         </div>

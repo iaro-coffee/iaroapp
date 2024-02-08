@@ -101,4 +101,3 @@ def closing(request):
             'branch': branch,
         },
     )
-

@@ -119,9 +119,9 @@ def inventory_populate(request):
         isSubmittedToday = False
         today = datetime.datetime.today().date()
         if modified_date == today:
-            isSubmittedToday = True       
+            isSubmittedToday = True
 
-        formset = ProductFormset(queryset=products) 
+        formset = ProductFormset(queryset=products)
 
         return render(
             request,
@@ -203,7 +203,7 @@ def inventory_shopping(request):
     for prod in products:
         if (prod.display_seller() not in sellers) and prod.oos:
             sellers.append(prod.display_seller())
-    
+
     # Get last product modification date
     modified_date = getInventoryModifiedDate()
 

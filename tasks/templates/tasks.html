@@ -28,7 +28,7 @@
     {% csrf_token %}
     {{ formset.management_form }}
     <div class="list-group w-auto">
-    
+
       {% for form in formset %}
         {% if form.instance.id %}
         <label class="list-group-item d-flex gap-3 {% if form.instance.done %}done{% endif %}">
@@ -97,7 +97,7 @@
         </div>
       </div>
     </div>
-    
+
     <style>
       .form-checked-content {
         flex-grow: 1;
@@ -116,7 +116,7 @@
         cursor: pointer;
       }
     </style>
-  
+
     <script>
       function submitForm() {
 
@@ -142,7 +142,7 @@
         }
 
         let descriptionLinks = document.querySelectorAll('.descriptionLink')
-        descriptionLinks.forEach((link) => { 
+        descriptionLinks.forEach((link) => {
           link.addEventListener('click', (event) => {
             event.preventDefault();
             var descriptionText = event.target.nextElementSibling.textContent;
@@ -169,5 +169,5 @@
     {% else %}
       <p>There are no tasks available.</p>
     {% endif %}
-     
+
 {% endblock %}

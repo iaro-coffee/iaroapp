@@ -13,5 +13,3 @@ class Migration(migrations.Migration):
        migrations.RunSQL("DROP TABLE IF EXISTS tips_assignedtip"),
        migrations.RunSQL("DROP TABLE IF EXISTS tips_tip"),
     ]
-
-

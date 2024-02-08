@@ -107,8 +107,8 @@ class Product(models.Model):
 
     def get_oos_value_shipping(self):
         product_storage_dict = {}
-        for branch in self.get_storage_branches:  
-            value_needed = 0       
+        for branch in self.get_storage_branches:
+            value_needed = 0
             for product_storage in self.product_storages.all():
                 if not product_storage.main_storage and product_storage.oos:
                     if branch == product_storage.branch:
@@ -121,11 +121,11 @@ class Product(models.Model):
     @property
     def storages(self):
         return [product_storage.storage for product_storage in self.product_storages.all()]
-    
+
     @property
     def get_storage_branches(self):
         return [product_storage.branch for product_storage in self.product_storages.all()]
-    
+
     def display_seller(self):
         seller = next((s for s in self.seller.all()), None)
         return seller.name if seller else None
@@ -165,7 +165,7 @@ class Product(models.Model):
                     'value': storage.value,
                     'value_intended': storage.value_intended,
                     'oos': True
-                }                
+                }
         return product_storage_dict
 
     def __str__(self):
@@ -204,7 +204,7 @@ class ProductStorage(models.Model):
         if self.value  and self.value_intended:
             return (((100/self.value_intended)*self.value) < self.threshold)
         return True
-    
+
     @property
     def branch(self):
         branches = Branch.objects.all()
@@ -217,7 +217,7 @@ class ProductStorage(models.Model):
     def save(self, *args, **kwargs):
         self.product.save()
         super().save(*args, **kwargs)
-    
+
 # Generated ToDos from inventory updates
 from django.db.models.signals import post_save
 from django.dispatch import receiver

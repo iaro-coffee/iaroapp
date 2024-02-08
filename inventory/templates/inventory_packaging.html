@@ -14,7 +14,7 @@
     {% endfor %}
   </ul>
 </div>
-{% endif %}  
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -36,7 +36,7 @@
           {% if branch == "All" or product.get_main_storage in branch.get_storages %}
 
               {% if product.needs_packaging and target_branch in product.get_storage_branches %}
-         
+
               <tr class="entry">
                 <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
                 <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
