@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
-from .forms import NewUserForm
-from django.contrib.auth import login
 from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.models import Group
+from django.shortcuts import redirect, render
 
+from .forms import NewUserForm
 from .no_planday_email_exception import NoPlandayEmailException
 
 

@@ -164,7 +164,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Configuration for import-export
 # Allow only XLSX and CSV formats
 
-from import_export.formats.base_formats import XLSX, CSV
+from import_export.formats.base_formats import CSV, XLSX
 
 IMPORT_EXPORT_FORMATS = [XLSX, CSV]
 

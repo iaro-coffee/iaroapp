@@ -1,12 +1,12 @@
+import datetime
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-
-from ratings.models import EmployeeRating
 from django.http import HttpResponse
-import json
-import datetime
-from lib import planday
 
+from lib import planday
+from ratings.models import EmployeeRating
 from shifts.models import Shift
 
 planday = planday.Planday()

@@ -1,9 +1,9 @@
-from django.db import models
-from django.urls import reverse
-from django.contrib.auth.models import User
 from colorful.fields import RGBColorField
-from django.utils.html import format_html
+from django.contrib.auth.models import User
+from django.db import models
 from django.db.models import Sum
+from django.urls import reverse
+from django.utils.html import format_html
 
 
 class Storage(models.Model):
@@ -203,8 +203,8 @@ class Product(models.Model):
         return self.name
 
 
-from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
 
 
 class ProductStorage(models.Model):
@@ -250,7 +250,8 @@ class ProductStorage(models.Model):
 # Generated ToDos from inventory updates
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from tasks.models import Task, User, Group, Weekdays, TaskTypes
+
+from tasks.models import Group, Task, TaskTypes, User, Weekdays
 
 # @receiver(post_save, sender=Product)
 # def product_post_save(sender, instance, created, **kwargs):

@@ -2,8 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from registration.no_planday_email_exception import NoPlandayEmailException
 from lib import planday
+from registration.no_planday_email_exception import NoPlandayEmailException
 
 # Create your forms here.
 

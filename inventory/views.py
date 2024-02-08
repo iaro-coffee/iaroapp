@@ -1,12 +1,14 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
-from django.http import HttpResponseRedirect, HttpResponse
-import json
 import datetime
-from django.forms.models import model_to_dict
-from .models import Product, ProductStorage, Branch, Storage
+import json
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+from django.forms.models import model_to_dict
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+
+from .models import Branch, Product, ProductStorage, Storage
 
 
 def getCurrentBranch(request):
@@ -54,6 +56,7 @@ def getInventoryModifiedDate():
 
 from django.contrib import messages
 from django.shortcuts import redirect, reverse
+
 from .forms import ProductFormset
 
 

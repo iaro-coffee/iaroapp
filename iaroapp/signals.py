@@ -1,5 +1,5 @@
-from django.contrib.auth.signals import user_logged_out
 from django.contrib import messages
+from django.contrib.auth.signals import user_logged_out
 
 
 def show_message(sender, user, request, **kwargs):

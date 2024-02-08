@@ -1,15 +1,15 @@
+import datetime
+import json
 from math import floor
 
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.db.models import Sum, Avg
+from django.db.models import Avg, Sum
 from django.forms import model_to_dict
+from django.http import HttpResponse
+from django.shortcuts import render
 
 from ratings.models import EmployeeRating
-from django.http import HttpResponse
-import json
-import datetime
-from django.shortcuts import render
 
 
 @login_required

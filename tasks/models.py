@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+
 from tasks.task_types import TaskTypes
 
 
@@ -10,8 +11,8 @@ class Weekdays(models.Model):
         return self.name
 
 
-from django.contrib.auth.models import User, Group
 from ckeditor.fields import RichTextField
+from django.contrib.auth.models import Group, User
 from django.utils import timezone
 
 
@@ -84,6 +85,7 @@ class Task(models.Model):
 
 
 from datetime import date
+
 from django.contrib.auth.models import User  # Required to assign User as a user
 
 
@@ -108,7 +110,7 @@ class TaskInstance(models.Model):
         return "{0} ({1})".format(self.id, self.task.title)
 
 
-from inventory.models import Product, Branch
+from inventory.models import Branch, Product
 
 
 class Recipe(models.Model):
@@ -156,9 +158,9 @@ class BakingPlanInstance(models.Model):
 
 # Create baking plan tasks
 
+from django.db import transaction
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from django.db import transaction
 
 
 def create_or_update_baking_plan(preparation, weekday, items):

@@ -1,6 +1,6 @@
 from ckeditor.fields import RichTextField
-from django.db import models
 from django.contrib.auth.models import Group, User
+from django.db import models
 
 from ratings.models import EmployeeRating
 

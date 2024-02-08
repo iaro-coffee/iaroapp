@@ -1,11 +1,12 @@
+from datetime import datetime, time, timedelta
+from operator import itemgetter
+
+from django.forms.models import model_to_dict
 from django.shortcuts import render
 
-from tasks.models import Task, TaskInstance
-from django.forms.models import model_to_dict
-from datetime import datetime, timedelta, time
-from lib import planday
-from operator import itemgetter
 from inventory.models import Product
+from lib import planday
+from tasks.models import Task, TaskInstance
 
 planday = planday.Planday()
 run_once_day = {}
@@ -87,9 +88,9 @@ def index(request):
     )
 
 
+from django.contrib.auth import views as auth_views
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth import views as auth_views
 
 
 def login(request, *args, **kwargs):

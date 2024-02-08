@@ -1,9 +1,9 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
-# Register your models here.
+from .models import Branch, Product, ProductStorage, Seller, Storage
 
-from .models import Product, Storage, Seller, ProductStorage, Branch
+# Register your models here.
 
 
 class BranchesInline(admin.TabularInline):

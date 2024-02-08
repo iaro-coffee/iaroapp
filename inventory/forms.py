@@ -1,5 +1,6 @@
-from .models import Product
 from django import forms
+
+from .models import Product
 
 ProductFormset = forms.modelformset_factory(
     Product,

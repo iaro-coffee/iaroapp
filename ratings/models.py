@@ -1,8 +1,9 @@
 from ckeditor.fields import RichTextField
-from django.db import models
-from procedures.procedure_type import ProcedureType
-from procedures.procedure_category import ProcedureCategory
 from django.contrib.auth.models import Group, User
+from django.db import models
+
+from procedures.procedure_category import ProcedureCategory
+from procedures.procedure_type import ProcedureType
 
 
 class EmployeeRating(models.Model):

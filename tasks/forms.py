@@ -1,6 +1,8 @@
-from django.forms import ModelForm
 from django import forms
-from inventory.models import Product, Branch
+from django.forms import ModelForm
+
+from inventory.models import Branch, Product
+
 from .models import BakingPlanInstance, Recipe
 
 
@@ -38,7 +40,8 @@ class BakingPlanForm(ModelForm):
 
 
 from django import forms
-from .models import Recipe, Product
+
+from .models import Product, Recipe
 
 
 class RecipeForm(forms.ModelForm):

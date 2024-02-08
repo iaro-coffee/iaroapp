@@ -1,14 +1,15 @@
+import json
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.forms import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from .models import Procedure
-import json
-from datetime import datetime
-
-from .procedure_category import ProcedureCategory
 from inventory.models import Branch
+
+from .models import Procedure
+from .procedure_category import ProcedureCategory
 
 
 @login_required

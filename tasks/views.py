@@ -1,8 +1,10 @@
-from django.shortcuts import render
-from .models import Task, TaskInstance, Weekdays
-from django.forms.models import model_to_dict
-from datetime import datetime, timedelta, time
+from datetime import datetime, time, timedelta
+
 from django.contrib.auth import get_user_model
+from django.forms.models import model_to_dict
+from django.shortcuts import render
+
+from .models import Task, TaskInstance, Weekdays
 
 
 def getMyTasks(request):
@@ -39,9 +41,11 @@ def check_staff(user):
     return user.is_superuser or user.is_staff
 
 
-from .forms import TaskFormset
 from django.contrib import messages
+
 from inventory.views import getCurrentBranch
+
+from .forms import TaskFormset
 
 
 def tasks(request):
@@ -155,13 +159,15 @@ def tasks_evaluation(request):
     )
 
 
-from .forms import BakingPlanForm
-from django.forms import modelformset_factory
 from django.contrib import messages
-from django.shortcuts import redirect, reverse
-from inventory.models import Branch, Product, Weekdays
-from .models import BakingPlanInstance, Recipe
 from django.core.exceptions import ObjectDoesNotExist
+from django.forms import modelformset_factory
+from django.shortcuts import redirect, reverse
+
+from inventory.models import Branch, Product, Weekdays
+
+from .forms import BakingPlanForm
+from .models import BakingPlanInstance, Recipe
 
 
 @user_passes_test(check_admin)

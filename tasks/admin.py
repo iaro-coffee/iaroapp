@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import User, Weekdays, Task, TaskInstance
+
+from .models import Task, TaskInstance, User, Weekdays
 
 
 class TasksInline(admin.TabularInline):
@@ -49,10 +50,10 @@ class TaskInstanceAdmin(admin.ModelAdmin):
 # Custom admin view added to display groups in user table
 # and hide mail address
 
-from django.utils.safestring import mark_safe
-from django.contrib.auth.models import User, Group
-from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib import admin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group, User
+from django.utils.safestring import mark_safe
 
 
 def roles(self):
@@ -131,9 +132,10 @@ class BakingPlanInstanceAdmin(admin.ModelAdmin):
 
 admin.site.register(BakingPlanInstance, BakingPlanInstanceAdmin)
 
-from .models import Recipe, RecipeInstance
-from .forms import RecipeForm
 from inventory.models import Product
+
+from .forms import RecipeForm
+from .models import Recipe, RecipeInstance
 
 
 class RecipeInstanceInline(admin.TabularInline):
