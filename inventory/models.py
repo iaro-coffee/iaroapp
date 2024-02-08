@@ -5,27 +5,35 @@ from colorful.fields import RGBColorField
 from django.utils.html import format_html
 from django.db.models import Sum
 
+
 class Storage(models.Model):
     """Model representing a storage location."""
+
     name = models.CharField(max_length=500)
-    color = RGBColorField(default='')
+    color = RGBColorField(default="")
 
     def display_color(self):
-        return format_html('<span style="width:15px;height:15px;display:block;background-color:{}"></span>', self.color)
-    display_color.short_description = 'Color'
+        return format_html(
+            '<span style="width:15px;height:15px;display:block;background-color:{}"></span>',
+            self.color,
+        )
+
+    display_color.short_description = "Color"
 
     def __str__(self):
         """String for representing the Model object."""
         return self.name
 
+
 class Branch(models.Model):
     """Model representing a storage location."""
+
     name = models.CharField(max_length=500)
     storages = models.ManyToManyField(Storage)
     departmentId = models.CharField(max_length=500, default="")
 
     class Meta:
-         verbose_name_plural = 'Branches'
+        verbose_name_plural = "Branches"
 
     @property
     def get_storages(self):
@@ -33,38 +41,39 @@ class Branch(models.Model):
 
     def display_storages(self):
         return ", ".join([storage.name for storage in self.storages.all()])
-    display_storages.short_description = 'Storages'
+
+    display_storages.short_description = "Storages"
 
     def __str__(self):
         """String for representing the Model object."""
         return self.name
 
+
 class Units(models.Model):
-    name = models.CharField(
-        max_length=200,
-        help_text="Enter unit for product."
-        )
+    name = models.CharField(max_length=200, help_text="Enter unit for product.")
 
     def __str__(self):
         return self.name
+
 
 class Seller(models.Model):
-    name = models.CharField(
-        max_length=200,
-        help_text="Enter seller for product."
-        )
+    name = models.CharField(max_length=200, help_text="Enter seller for product.")
 
     class Meta:
-         verbose_name_plural = 'Seller'
+        verbose_name_plural = "Seller"
 
     def __str__(self):
         return self.name
 
+
 from django.template import Library
+
 register = Library()
+
 
 class Product(models.Model):
     """Model representing a product."""
+
     name = models.CharField(max_length=500)
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
@@ -99,8 +108,12 @@ class Product(models.Model):
 
     @property
     def value_oos(self):
-        total_value = self.product_storages.aggregate(total_value=Sum('value'))['total_value']
-        total_value_intended = self.product_storages.aggregate(total_value_intended=Sum('value_intended'))['total_value_intended']
+        total_value = self.product_storages.aggregate(total_value=Sum("value"))[
+            "total_value"
+        ]
+        total_value_intended = self.product_storages.aggregate(
+            total_value_intended=Sum("value_intended")
+        )["total_value_intended"]
         if total_value is None or total_value_intended is None:
             return 0
         return abs(float(total_value_intended - total_value))
@@ -114,57 +127,74 @@ class Product(models.Model):
                     if branch == product_storage.branch:
                         value_needed = value_needed + product_storage.value_needed
             product_storage_dict[branch] = {
-                'value_needed': value_needed,
+                "value_needed": value_needed,
             }
         return product_storage_dict
 
     @property
     def storages(self):
-        return [product_storage.storage for product_storage in self.product_storages.all()]
+        return [
+            product_storage.storage for product_storage in self.product_storages.all()
+        ]
 
     @property
     def get_storage_branches(self):
-        return [product_storage.branch for product_storage in self.product_storages.all()]
+        return [
+            product_storage.branch for product_storage in self.product_storages.all()
+        ]
 
     def display_seller(self):
         seller = next((s for s in self.seller.all()), None)
         return seller.name if seller else None
-    display_seller.short_description = 'Seller'
+
+    display_seller.short_description = "Seller"
 
     def display_unit(self):
-        return ', '.join([unit.name for unit in self.unit.all()[:3]])
-    display_unit.short_description = 'Unit'
+        return ", ".join([unit.name for unit in self.unit.all()[:3]])
+
+    display_unit.short_description = "Unit"
 
     def display_availability(self):
-        total_value = self.product_storages.aggregate(total_value=Sum('value'))['total_value']
-        total_value_intended = self.product_storages.aggregate(total_value_intended=Sum('value_intended'))['total_value_intended']
+        total_value = self.product_storages.aggregate(total_value=Sum("value"))[
+            "total_value"
+        ]
+        total_value_intended = self.product_storages.aggregate(
+            total_value_intended=Sum("value_intended")
+        )["total_value_intended"]
         if total_value is None or total_value_intended is None:
-            return ''
+            return ""
         if self.oos:
             color = "red"
         else:
             color = ""
-        return format_html('<span style="color:{}">{}/{}</span>', *(color, round(total_value), round(total_value_intended)))
-    display_availability.short_description = 'Availability'
+        return format_html(
+            '<span style="color:{}">{}/{}</span>',
+            *(color, round(total_value), round(total_value_intended))
+        )
+
+    display_availability.short_description = "Availability"
 
     def get_absolute_url(self):
         """Returns the url to access a particular tip instance."""
-        return reverse('product-detail', args=[str(self.id)])
+        return reverse("product-detail", args=[str(self.id)])
 
     def get_product_storage(self):
         product_storage_dict = {}
         for storage in self.product_storages.all():
             if storage.value_intended and storage.value:
                 product_storage_dict[storage.storage] = {
-                    'value': storage.value,
-                    'value_intended': storage.value_intended,
-                    'oos': (((100/storage.value_intended)*storage.value) < storage.threshold)
+                    "value": storage.value,
+                    "value_intended": storage.value_intended,
+                    "oos": (
+                        ((100 / storage.value_intended) * storage.value)
+                        < storage.threshold
+                    ),
                 }
             else:
                 product_storage_dict[storage.storage] = {
-                    'value': storage.value,
-                    'value_intended': storage.value_intended,
-                    'oos': True
+                    "value": storage.value,
+                    "value_intended": storage.value_intended,
+                    "oos": True,
                 }
         return product_storage_dict
 
@@ -172,26 +202,24 @@ class Product(models.Model):
         """String for representing the Model object."""
         return self.name
 
+
 from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+
 class ProductStorage(models.Model):
     """Model representing the relationship between a product and a storage."""
+
     product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name='product_storages'
+        Product, on_delete=models.CASCADE, related_name="product_storages"
     )
-    storage = models.ForeignKey(
-        Storage,
-        on_delete=models.CASCADE
-    )
+    storage = models.ForeignKey(Storage, on_delete=models.CASCADE)
     value = models.FloatField()
     value_intended = models.FloatField()
     threshold = models.IntegerField(
         default=30,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Enter the threshold in percent when an item needs to get bought."
+        help_text="Enter the threshold in percent when an item needs to get bought.",
     )
     main_storage = models.BooleanField(default=False)
 
@@ -201,8 +229,8 @@ class ProductStorage(models.Model):
 
     @property
     def oos(self):
-        if self.value  and self.value_intended:
-            return (((100/self.value_intended)*self.value) < self.threshold)
+        if self.value and self.value_intended:
+            return ((100 / self.value_intended) * self.value) < self.threshold
         return True
 
     @property
@@ -217,6 +245,7 @@ class ProductStorage(models.Model):
     def save(self, *args, **kwargs):
         self.product.save()
         super().save(*args, **kwargs)
+
 
 # Generated ToDos from inventory updates
 from django.db.models.signals import post_save

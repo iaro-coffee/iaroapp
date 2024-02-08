@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0012_product_storage'),
-        ('iaroapp', '0004_branch_storages'),
+        ("inventory", "0012_product_storage"),
+        ("iaroapp", "0004_branch_storages"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='branch',
-            name='storages',
+            model_name="branch",
+            name="storages",
         ),
         migrations.AddField(
-            model_name='branch',
-            name='storages',
-            field=models.ManyToManyField(default=1, to='inventory.storage'),
+            model_name="branch",
+            name="storages",
+            field=models.ManyToManyField(default=1, to="inventory.storage"),
         ),
     ]

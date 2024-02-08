@@ -5,15 +5,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0024_productstorage_main_storage'),
+        ("inventory", "0024_productstorage_main_storage"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='productstorage',
-            name='threshold',
-            field=models.IntegerField(default=30, help_text='Enter the threshold in percent when an item needs to get bought.', validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(100)]),
+            model_name="productstorage",
+            name="threshold",
+            field=models.IntegerField(
+                default=30,
+                help_text="Enter the threshold in percent when an item needs to get bought.",
+                validators=[
+                    django.core.validators.MinValueValidator(0),
+                    django.core.validators.MaxValueValidator(100),
+                ],
+            ),
         ),
     ]

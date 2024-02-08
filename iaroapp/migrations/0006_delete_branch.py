@@ -4,13 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('iaroapp', '0005_remove_branch_storages_branch_storages'),
+        ("iaroapp", "0005_remove_branch_storages_branch_storages"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='Branch',
+            name="Branch",
         ),
     ]

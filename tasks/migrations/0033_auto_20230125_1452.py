@@ -3,17 +3,17 @@
 from django.db import migrations
 from django.contrib.auth.models import Group
 
-def generate_groups(apps, schema_editor):
 
+def generate_groups(apps, schema_editor):
     Group.objects.get_or_create(name="Director")
     Group.objects.get_or_create(name="Barista")
     Group.objects.get_or_create(name="Service")
     Group.objects.get_or_create(name="Kitchen")
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('tasks', '0032_auto_20230125_1321'),
+        ("tasks", "0032_auto_20230125_1321"),
     ]
 
     operations = [

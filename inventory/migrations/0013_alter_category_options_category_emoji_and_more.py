@@ -4,24 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0012_product_storage'),
+        ("inventory", "0012_product_storage"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='category',
-            options={'verbose_name_plural': 'Categories'},
+            name="category",
+            options={"verbose_name_plural": "Categories"},
         ),
         migrations.AddField(
-            model_name='category',
-            name='emoji',
-            field=models.CharField(default='☕', max_length=1),
+            model_name="category",
+            name="emoji",
+            field=models.CharField(default="☕", max_length=1),
         ),
         migrations.AlterField(
-            model_name='category',
-            name='name',
-            field=models.CharField(help_text='Enter category for product.', max_length=200),
+            model_name="category",
+            name="name",
+            field=models.CharField(
+                help_text="Enter category for product.", max_length=200
+            ),
         ),
     ]

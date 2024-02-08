@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0017_subject'),
+        ("tasks", "0017_subject"),
     ]

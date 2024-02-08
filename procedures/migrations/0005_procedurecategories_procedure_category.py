@@ -4,22 +4,36 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('procedures', '0004_procedure_groups'),
+        ("procedures", "0004_procedure_groups"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProcedureCategories',
+            name="ProcedureCategories",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Enter category name.', max_length=200)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(help_text="Enter category name.", max_length=200),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='procedure',
-            name='category',
-            field=models.ManyToManyField(blank=True, help_text='Select which category should be assigned for the task', to='procedures.procedurecategories'),
+            model_name="procedure",
+            name="category",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Select which category should be assigned for the task",
+                to="procedures.procedurecategories",
+            ),
         ),
     ]

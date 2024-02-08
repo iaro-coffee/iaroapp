@@ -6,20 +6,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0014_remove_taskinstance_date_acquired'),
+        ("tasks", "0014_remove_taskinstance_date_acquired"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='subject',
-            name='subject_name',
+            model_name="subject",
+            name="subject_name",
         ),
         migrations.AddField(
-            model_name='subject',
-            name='name',
-            field=models.CharField(default='Fantasy', help_text='Enter a task subject - e.g. Science Fiction, French Poetry etc.', max_length=200),
+            model_name="subject",
+            name="name",
+            field=models.CharField(
+                default="Fantasy",
+                help_text="Enter a task subject - e.g. Science Fiction, French Poetry etc.",
+                max_length=200,
+            ),
             preserve_default=False,
         ),
     ]

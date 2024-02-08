@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0007_unitsaddition'),
+        ("inventory", "0007_unitsaddition"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='threshold',
+            model_name="product",
+            name="threshold",
             field=models.FloatField(default=0),
         ),
     ]

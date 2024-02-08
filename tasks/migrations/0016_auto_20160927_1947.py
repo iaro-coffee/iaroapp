@@ -6,29 +6,41 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0015_auto_20160927_1808'),
+        ("tasks", "0015_auto_20160927_1808"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Weekdays',
+            name="Weekdays",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Enter task weekdays', max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(help_text="Enter task weekdays", max_length=200),
+                ),
             ],
         ),
         migrations.RemoveField(
-            model_name='task',
-            name='subject',
+            model_name="task",
+            name="subject",
         ),
         migrations.DeleteModel(
-            name='Subject',
+            name="Subject",
         ),
         migrations.AddField(
-            model_name='task',
-            name='weekdays',
-            field=models.ManyToManyField(help_text='Select a weekdays for this task', to='tasks.Weekdays'),
+            model_name="task",
+            name="weekdays",
+            field=models.ManyToManyField(
+                help_text="Select a weekdays for this task", to="tasks.Weekdays"
+            ),
         ),
     ]

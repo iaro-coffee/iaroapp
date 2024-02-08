@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0045_alter_taskinstance_date_done'),
+        ("tasks", "0045_alter_taskinstance_date_done"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='taskinstance',
-            name='done',
+            model_name="taskinstance",
+            name="done",
         ),
     ]

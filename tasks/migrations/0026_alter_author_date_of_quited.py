@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0025_auto_20220222_0623'),
+        ("tasks", "0025_auto_20220222_0623"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='author',
-            name='date_of_quited',
-            field=models.DateField(blank=True, null=True, verbose_name='quited'),
+            model_name="author",
+            name="date_of_quited",
+            field=models.DateField(blank=True, null=True, verbose_name="quited"),
         ),
     ]

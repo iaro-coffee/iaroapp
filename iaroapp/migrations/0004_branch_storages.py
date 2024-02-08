@@ -5,16 +5,19 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0012_product_storage'),
-        ('iaroapp', '0003_addbranches'),
+        ("inventory", "0012_product_storage"),
+        ("iaroapp", "0003_addbranches"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='branch',
-            name='storages',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='inventory.storage'),
+            model_name="branch",
+            name="storages",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="inventory.storage",
+            ),
         ),
     ]

@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0037_auto_20230201_1442'),
+        ("tasks", "0037_auto_20230201_1442"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='taskinstance',
-            name='status',
+            model_name="taskinstance",
+            name="status",
         ),
         migrations.AddField(
-            model_name='taskinstance',
-            name='done',
+            model_name="taskinstance",
+            name="done",
             field=models.BooleanField(default=False),
             preserve_default=False,
         ),

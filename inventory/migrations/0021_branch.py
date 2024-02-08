@@ -4,21 +4,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0020_remove_product_category_delete_category'),
+        ("inventory", "0020_remove_product_category_delete_category"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Branch',
+            name="Branch",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('storages', models.ManyToManyField(default=1, to='inventory.storage')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                ("storages", models.ManyToManyField(default=1, to="inventory.storage")),
             ],
             options={
-                'verbose_name_plural': 'Branches',
+                "verbose_name_plural": "Branches",
             },
         ),
     ]

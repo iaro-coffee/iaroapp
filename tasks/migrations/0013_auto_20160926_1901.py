@@ -7,15 +7,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0012_taskinstance_date_acquired'),
+        ("tasks", "0012_taskinstance_date_acquired"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='taskinstance',
-            name='date_acquired',
+            model_name="taskinstance",
+            name="date_acquired",
             field=models.DateField(default=datetime.date.today),
         ),
     ]

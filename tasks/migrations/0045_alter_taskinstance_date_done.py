@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0044_alter_task_summary'),
+        ("tasks", "0044_alter_task_summary"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='taskinstance',
-            name='date_done',
+            model_name="taskinstance",
+            name="date_done",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

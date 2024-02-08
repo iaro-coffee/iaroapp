@@ -5,15 +5,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('procedures', '0007_remove_procedure_category_procedure_category'),
+        ("procedures", "0007_remove_procedure_category_procedure_category"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='procedure',
-            name='category',
-            field=models.ForeignKey(blank=True, help_text='Select which category should be assigned for the task', null=True, on_delete=django.db.models.deletion.PROTECT, to='procedures.procedurecategories'),
+            model_name="procedure",
+            name="category",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Select which category should be assigned for the task",
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="procedures.procedurecategories",
+            ),
         ),
     ]

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0058_remove_bakingplaninstance_product_and_more'),
+        ("tasks", "0058_remove_bakingplaninstance_product_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='bakingplaninstance',
-            name='modified_date',
+            model_name="bakingplaninstance",
+            name="modified_date",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

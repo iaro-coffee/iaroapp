@@ -7,6 +7,7 @@ from lib import planday
 
 # Create your forms here.
 
+
 class NewUserForm(UserCreationForm):
     email = forms.EmailField(required=True)
     planday = planday.Planday()
@@ -17,12 +18,12 @@ class NewUserForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super(NewUserForm, self).save(commit=False)
-        user.email = self.cleaned_data['email']
+        user.email = self.cleaned_data["email"]
         self.planday.authenticate()
         employees = self.planday.get_employees()
         for employee in employees.values():
-            if user.email == employee['email']:
+            if user.email == employee["email"]:
                 if commit:
                     user.save()
-                return user, employee['employeeGroups']
+                return user, employee["employeeGroups"]
         raise NoPlandayEmailException

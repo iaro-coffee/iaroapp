@@ -8,34 +8,64 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0007_auto_20160921_1444'),
+        ("tasks", "0007_auto_20160921_1444"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TaskInstance',
+            name="TaskInstance",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, help_text='Unique ID for this particular task across whole library', primary_key=True, serialize=False)),
-                ('summary', models.TextField(help_text='Enter a brief description of the task', max_length=1000)),
-                ('description', models.CharField(max_length=200)),
-                ('due_done', models.DateField(blank=True, null=True)),
-                ('status', models.CharField(blank=True, choices=[('d', 'maintenance'), ('o', 'on loan'), ('a', 'available'), ('r', 'reserved')], default='d', help_text='Task availability', max_length=1)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        help_text="Unique ID for this particular task across whole library",
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "summary",
+                    models.TextField(
+                        help_text="Enter a brief description of the task",
+                        max_length=1000,
+                    ),
+                ),
+                ("description", models.CharField(max_length=200)),
+                ("due_done", models.DateField(blank=True, null=True)),
+                (
+                    "status",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("d", "maintenance"),
+                            ("o", "on loan"),
+                            ("a", "available"),
+                            ("r", "reserved"),
+                        ],
+                        default="d",
+                        help_text="Task availability",
+                        max_length=1,
+                    ),
+                ),
             ],
         ),
         migrations.RemoveField(
-            model_name='task',
-            name='description',
+            model_name="task",
+            name="description",
         ),
         migrations.AlterField(
-            model_name='author',
-            name='date_of_joined',
+            model_name="author",
+            name="date_of_joined",
             field=models.DateField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='taskinstance',
-            name='task',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='tasks.Task'),
+            model_name="taskinstance",
+            name="task",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.SET_NULL, to="tasks.Task"
+            ),
         ),
     ]

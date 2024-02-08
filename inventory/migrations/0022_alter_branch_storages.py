@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0021_branch'),
+        ("inventory", "0021_branch"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='branch',
-            name='storages',
-            field=models.ManyToManyField(to='inventory.storage'),
+            model_name="branch",
+            name="storages",
+            field=models.ManyToManyField(to="inventory.storage"),
         ),
     ]

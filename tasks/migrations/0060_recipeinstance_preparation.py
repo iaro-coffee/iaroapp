@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0059_bakingplaninstance_modified_date'),
+        ("tasks", "0059_bakingplaninstance_modified_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='recipeinstance',
-            name='preparation',
+            model_name="recipeinstance",
+            name="preparation",
             field=models.BooleanField(default=False),
         ),
     ]

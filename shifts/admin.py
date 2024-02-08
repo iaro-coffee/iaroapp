@@ -7,6 +7,8 @@ class ShiftAdmin(admin.ModelAdmin):
     Defines:
      - fields to be displayed in list view (list_display)
     """
-    list_display = ('user', 'start_date', 'end_date', 'rating')
+
+    list_display = ("user", "start_date", "end_date", "rating")
+
 
 admin.site.register(Shift, ShiftAdmin)

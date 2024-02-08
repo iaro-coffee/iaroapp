@@ -5,15 +5,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0061_alter_task_weekdays'),
+        ("tasks", "0061_alter_task_weekdays"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='task',
-            name='parent_task',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='subtasks', to='tasks.task'),
+            model_name="task",
+            name="parent_task",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="subtasks",
+                to="tasks.task",
+            ),
         ),
     ]

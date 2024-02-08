@@ -5,16 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0024_productstorage_main_storage'),
-        ('tasks', '0063_rename_type_task_types'),
+        ("inventory", "0024_productstorage_main_storage"),
+        ("tasks", "0063_rename_type_task_types"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='task',
-            name='branch',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='inventory.branch'),
+            model_name="task",
+            name="branch",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="inventory.branch",
+            ),
         ),
     ]

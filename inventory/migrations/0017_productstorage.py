@@ -5,20 +5,39 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0016_addseller iaro'),
+        ("inventory", "0016_addseller iaro"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ProductStorage',
+            name="ProductStorage",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.FloatField()),
-                ('value_intended', models.FloatField()),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='inventory.product')),
-                ('storage', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='inventory.storage')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.FloatField()),
+                ("value_intended", models.FloatField()),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="inventory.product",
+                    ),
+                ),
+                (
+                    "storage",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="inventory.storage",
+                    ),
+                ),
             ],
         ),
     ]

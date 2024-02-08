@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0029_auto_20230125_1253'),
+        ("tasks", "0029_auto_20230125_1253"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='weekdays',
-            field=models.CharField(choices=[('S', 'Small'), ('M', 'Medium'), ('L', 'Large')], max_length=3),
+            model_name="task",
+            name="weekdays",
+            field=models.CharField(
+                choices=[("S", "Small"), ("M", "Medium"), ("L", "Large")], max_length=3
+            ),
         ),
     ]

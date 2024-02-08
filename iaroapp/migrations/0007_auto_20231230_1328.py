@@ -4,12 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('iaroapp', '0006_delete_branch'),
+        ("iaroapp", "0006_delete_branch"),
     ]
 
     operations = [
-       migrations.RunSQL("DROP TABLE IF EXISTS tips_assignedtip"),
-       migrations.RunSQL("DROP TABLE IF EXISTS tips_tip"),
+        migrations.RunSQL("DROP TABLE IF EXISTS tips_assignedtip"),
+        migrations.RunSQL("DROP TABLE IF EXISTS tips_tip"),
     ]

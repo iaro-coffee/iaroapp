@@ -6,28 +6,31 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0018_remove_product_value_remove_product_value_intended'),
+        ("inventory", "0018_remove_product_value_remove_product_value_intended"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='seller',
-            options={'verbose_name_plural': 'Seller'},
+            name="seller",
+            options={"verbose_name_plural": "Seller"},
         ),
         migrations.RemoveField(
-            model_name='product',
-            name='storage',
+            model_name="product",
+            name="storage",
         ),
         migrations.AddField(
-            model_name='storage',
-            name='color',
-            field=colorful.fields.RGBColorField(default=''),
+            model_name="storage",
+            name="color",
+            field=colorful.fields.RGBColorField(default=""),
         ),
         migrations.AlterField(
-            model_name='productstorage',
-            name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='product_storages', to='inventory.product'),
+            model_name="productstorage",
+            name="product",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="product_storages",
+                to="inventory.product",
+            ),
         ),
     ]

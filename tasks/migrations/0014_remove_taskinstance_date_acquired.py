@@ -6,14 +6,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0013_auto_20160926_1901'),
+        ("tasks", "0013_auto_20160926_1901"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='taskinstance',
-            name='date_acquired',
+            model_name="taskinstance",
+            name="date_acquired",
         ),
     ]

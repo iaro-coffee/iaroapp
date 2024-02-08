@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('iaroapp', '0001_initial'),
+        ("iaroapp", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='branch',
-            options={'verbose_name_plural': 'Branches'},
+            name="branch",
+            options={"verbose_name_plural": "Branches"},
         ),
     ]

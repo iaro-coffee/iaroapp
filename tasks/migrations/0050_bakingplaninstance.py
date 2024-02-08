@@ -5,20 +5,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0024_productstorage_main_storage'),
-        ('tasks', '0049_alter_taskinstance_task'),
+        ("inventory", "0024_productstorage_main_storage"),
+        ("tasks", "0049_alter_taskinstance_task"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BakingPlanInstance',
+            name="BakingPlanInstance",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.FloatField()),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='product_bakingplan', to='inventory.product')),
-                ('weekdays', models.ManyToManyField(help_text='Select weekdays for this task', to='tasks.weekdays')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.FloatField()),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="product_bakingplan",
+                        to="inventory.product",
+                    ),
+                ),
+                (
+                    "weekdays",
+                    models.ManyToManyField(
+                        help_text="Select weekdays for this task", to="tasks.weekdays"
+                    ),
+                ),
             ],
         ),
     ]

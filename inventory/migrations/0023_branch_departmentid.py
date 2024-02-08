@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0022_alter_branch_storages'),
+        ("inventory", "0022_alter_branch_storages"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='branch',
-            name='departmentId',
-            field=models.CharField(default='', max_length=500),
+            model_name="branch",
+            name="departmentId",
+            field=models.CharField(default="", max_length=500),
         ),
     ]

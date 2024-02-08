@@ -6,20 +6,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0002_auto_20160921_1401'),
+        ("tasks", "0002_auto_20160921_1401"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='summary',
-            field=models.TextField(help_text='Enter a brief description of the task', max_length=200),
+            model_name="task",
+            name="summary",
+            field=models.TextField(
+                help_text="Enter a brief description of the task", max_length=200
+            ),
         ),
         migrations.AlterField(
-            model_name='subject',
-            name='subject_name',
-            field=models.CharField(help_text='Enter a task subject', max_length=200),
+            model_name="subject",
+            name="subject_name",
+            field=models.CharField(help_text="Enter a task subject", max_length=200),
         ),
     ]

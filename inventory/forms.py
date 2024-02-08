@@ -3,6 +3,6 @@ from django import forms
 
 ProductFormset = forms.modelformset_factory(
     Product,
-    fields=('name', ),
+    fields=("name",),
     extra=1,
 )

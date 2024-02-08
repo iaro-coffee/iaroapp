@@ -5,16 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ratings', '0001_initial'),
-        ('shifts', '0003_alter_shift_end_date_alter_shift_start_date'),
+        ("ratings", "0001_initial"),
+        ("shifts", "0003_alter_shift_end_date_alter_shift_start_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='shift',
-            name='rating',
-            field=models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, to='ratings.employeerating'),
+            model_name="shift",
+            name="rating",
+            field=models.ForeignKey(
+                blank=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="ratings.employeerating",
+            ),
         ),
     ]

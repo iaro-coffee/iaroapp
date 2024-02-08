@@ -4,21 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     def create_weekdays(apps, schema_editor):
-        Weekdays = apps.get_model('tasks', 'Weekdays')
-        Weekdays.objects.create(name='Monday')
-        Weekdays.objects.create(name='Tuesday')
-        Weekdays.objects.create(name='Wednesday')
-        Weekdays.objects.create(name='Thursday')
-        Weekdays.objects.create(name='Friday')
-        Weekdays.objects.create(name='Saturday')
-        Weekdays.objects.create(name='Sunday')
+        Weekdays = apps.get_model("tasks", "Weekdays")
+        Weekdays.objects.create(name="Monday")
+        Weekdays.objects.create(name="Tuesday")
+        Weekdays.objects.create(name="Wednesday")
+        Weekdays.objects.create(name="Thursday")
+        Weekdays.objects.create(name="Friday")
+        Weekdays.objects.create(name="Saturday")
+        Weekdays.objects.create(name="Sunday")
 
     dependencies = [
-        ('tasks', '0030_alter_task_weekdays'),
+        ("tasks", "0030_alter_task_weekdays"),
     ]
 
-    operations = [
-        migrations.RunPython(create_weekdays)
-    ]
+    operations = [migrations.RunPython(create_weekdays)]

@@ -4,19 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0031_auto_20230125_1319'),
+        ("tasks", "0031_auto_20230125_1319"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='task',
-            name='weekdays',
+            model_name="task",
+            name="weekdays",
         ),
         migrations.AddField(
-            model_name='task',
-            name='weekdays',
-            field=models.ManyToManyField(help_text='Select weekdays for this task', to='tasks.Weekdays'),
+            model_name="task",
+            name="weekdays",
+            field=models.ManyToManyField(
+                help_text="Select weekdays for this task", to="tasks.Weekdays"
+            ),
         ),
     ]

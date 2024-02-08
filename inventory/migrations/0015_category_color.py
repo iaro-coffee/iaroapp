@@ -5,15 +5,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0014_alter_category_emoji'),
+        ("inventory", "0014_alter_category_emoji"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='category',
-            name='color',
-            field=colorful.fields.RGBColorField(default=''),
+            model_name="category",
+            name="color",
+            field=colorful.fields.RGBColorField(default=""),
         ),
     ]

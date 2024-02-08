@@ -5,19 +5,25 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('procedures', '0006_addcategories'),
+        ("procedures", "0006_addcategories"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='procedure',
-            name='category',
+            model_name="procedure",
+            name="category",
         ),
         migrations.AddField(
-            model_name='procedure',
-            name='category',
-            field=models.ForeignKey(blank=True, default=1, help_text='Select which category should be assigned for the task', null=True, on_delete=django.db.models.deletion.PROTECT, to='procedures.procedurecategories'),
+            model_name="procedure",
+            name="category",
+            field=models.ForeignKey(
+                blank=True,
+                default=1,
+                help_text="Select which category should be assigned for the task",
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="procedures.procedurecategories",
+            ),
         ),
     ]

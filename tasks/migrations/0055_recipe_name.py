@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0054_alter_bakingplaninstance_options_recipe'),
+        ("tasks", "0054_alter_bakingplaninstance_options_recipe"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='recipe',
-            name='name',
+            model_name="recipe",
+            name="name",
             field=models.CharField(blank=True, max_length=200),
         ),
     ]

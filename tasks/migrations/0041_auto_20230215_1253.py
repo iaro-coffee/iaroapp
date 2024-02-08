@@ -6,21 +6,22 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('tasks', '0040_auto_20230215_1249'),
+        ("tasks", "0040_auto_20230215_1249"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='taskinstance',
-            name='borrower',
+            model_name="taskinstance",
+            name="borrower",
         ),
         migrations.AddField(
-            model_name='taskinstance',
-            name='user',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='auth.user'),
+            model_name="taskinstance",
+            name="user",
+            field=models.ForeignKey(
+                default=1, on_delete=django.db.models.deletion.CASCADE, to="auth.user"
+            ),
             preserve_default=False,
         ),
     ]

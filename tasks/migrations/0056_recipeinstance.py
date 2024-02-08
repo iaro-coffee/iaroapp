@@ -5,20 +5,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0024_productstorage_main_storage'),
-        ('tasks', '0055_recipe_name'),
+        ("inventory", "0024_productstorage_main_storage"),
+        ("tasks", "0055_recipe_name"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RecipeInstance',
+            name="RecipeInstance",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity', models.FloatField()),
-                ('incredient', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='inventory.product')),
-                ('product', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='base_product', to='inventory.product')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("quantity", models.FloatField()),
+                (
+                    "incredient",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="inventory.product",
+                    ),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="base_product",
+                        to="inventory.product",
+                    ),
+                ),
             ],
         ),
     ]

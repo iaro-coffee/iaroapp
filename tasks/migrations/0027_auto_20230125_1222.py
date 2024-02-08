@@ -4,20 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0026_alter_author_date_of_quited'),
+        ("tasks", "0026_alter_author_date_of_quited"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='weekdays',
-            field=models.ManyToManyField(help_text='Select weekdays for this task', to='tasks.Weekdays'),
+            model_name="task",
+            name="weekdays",
+            field=models.ManyToManyField(
+                help_text="Select weekdays for this task", to="tasks.Weekdays"
+            ),
         ),
         migrations.AlterField(
-            model_name='weekdays',
-            name='name',
-            field=models.CharField(help_text='Enter task weekfays.', max_length=200),
+            model_name="weekdays",
+            name="name",
+            field=models.CharField(help_text="Enter task weekfays.", max_length=200),
         ),
     ]

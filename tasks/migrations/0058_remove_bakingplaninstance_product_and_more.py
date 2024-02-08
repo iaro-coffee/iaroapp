@@ -5,19 +5,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0057_remove_recipeinstance_product_recipeinstance_recipe'),
+        ("tasks", "0057_remove_recipeinstance_product_recipeinstance_recipe"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='bakingplaninstance',
-            name='product',
+            model_name="bakingplaninstance",
+            name="product",
         ),
         migrations.AddField(
-            model_name='bakingplaninstance',
-            name='recipe',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='recipe_bakingplan', to='tasks.recipe'),
+            model_name="bakingplaninstance",
+            name="recipe",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="recipe_bakingplan",
+                to="tasks.recipe",
+            ),
         ),
     ]

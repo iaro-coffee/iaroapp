@@ -5,20 +5,23 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0028_alter_weekdays_name'),
+        ("tasks", "0028_alter_weekdays_name"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='task',
-            name='weekdays',
+            model_name="task",
+            name="weekdays",
         ),
         migrations.AddField(
-            model_name='task',
-            name='weekdays',
-            field=models.CharField(choices=[('S', 'Small'), ('M', 'Medium'), ('L', 'Large')], default=django.utils.timezone.now, max_length=1),
+            model_name="task",
+            name="weekdays",
+            field=models.CharField(
+                choices=[("S", "Small"), ("M", "Medium"), ("L", "Large")],
+                default=django.utils.timezone.now,
+                max_length=1,
+            ),
             preserve_default=False,
         ),
     ]

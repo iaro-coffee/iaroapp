@@ -6,31 +6,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0004_auto_20160921_1422'),
+        ("tasks", "0004_auto_20160921_1422"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='author',
-            name='name',
+            model_name="author",
+            name="name",
         ),
         migrations.AddField(
-            model_name='author',
-            name='first_name',
-            field=models.CharField(default='Ben', max_length=100),
+            model_name="author",
+            name="first_name",
+            field=models.CharField(default="Ben", max_length=100),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='author',
-            name='last_name',
-            field=models.CharField(default='Bova', max_length=100),
+            model_name="author",
+            name="last_name",
+            field=models.CharField(default="Bova", max_length=100),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='task',
-            name='subject',
-            field=models.ManyToManyField(help_text='Select a grouping subject for this task', to='tasks.Subject', verbose_name='Subject'),
+            model_name="task",
+            name="subject",
+            field=models.ManyToManyField(
+                help_text="Select a grouping subject for this task",
+                to="tasks.Subject",
+                verbose_name="Subject",
+            ),
         ),
     ]

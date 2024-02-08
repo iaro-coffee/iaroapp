@@ -22,47 +22,47 @@ from django.urls import include
 from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 ]
 
 
 urlpatterns += [
-    path('tasks/', include('tasks.urls')),
+    path("tasks/", include("tasks.urls")),
 ]
 
 urlpatterns += [
-    path('procedures/', include('procedures.urls')),
+    path("procedures/", include("procedures.urls")),
 ]
 
 urlpatterns += [
-    path('ratings/', include('ratings.urls')),
+    path("ratings/", include("ratings.urls")),
 ]
 
 urlpatterns += [
-    path('shifts/', include('shifts.urls')),
+    path("shifts/", include("shifts.urls")),
 ]
 
 urlpatterns += [
-    path('inventory/', include('inventory.urls')),
+    path("inventory/", include("inventory.urls")),
 ]
 
 urlpatterns += [
-    path('', views.index, name='index'),
+    path("", views.index, name="index"),
 ]
 
 # Use static() to add url mapping to serve static files during development (only)
 from django.conf import settings
 from django.conf.urls.static import static
 
-urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-#Add Django site authentication urls (for login, logout, password management)
+# Add Django site authentication urls (for login, logout, password management)
 urlpatterns += [
-    path('accounts/login/', views.login),
-    path('accounts/', include('django.contrib.auth.urls'))
+    path("accounts/login/", views.login),
+    path("accounts/", include("django.contrib.auth.urls")),
 ]
 
-#Add registration Forms
+# Add registration Forms
 urlpatterns += [
-    path('registration/', include('registration.urls')),
+    path("registration/", include("registration.urls")),
 ]

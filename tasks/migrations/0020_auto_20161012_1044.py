@@ -6,14 +6,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0019_taskinstance_borrower'),
+        ("tasks", "0019_taskinstance_borrower"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='taskinstance',
-            options={'ordering': ['due_done'], 'permissions': (('can_mark_returned', 'Set task as returned'),)},
+            name="taskinstance",
+            options={
+                "ordering": ["due_done"],
+                "permissions": (("can_mark_returned", "Set task as returned"),),
+            },
         ),
     ]

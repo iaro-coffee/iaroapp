@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0060_recipeinstance_preparation'),
+        ("tasks", "0060_recipeinstance_preparation"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='weekdays',
-            field=models.ManyToManyField(blank=True, help_text='Select weekdays for this task', to='tasks.weekdays'),
+            model_name="task",
+            name="weekdays",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Select weekdays for this task",
+                to="tasks.weekdays",
+            ),
         ),
     ]
