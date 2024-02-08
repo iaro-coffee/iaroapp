@@ -66,7 +66,7 @@ def roles(self):
     if self.user_permissions.count():
         p += ["+"]
     value = ", ".join(p)
-    return mark_safe("<nobr>%s</nobr>" % value)
+    return mark_safe("<nobr>%s</nobr>" % value)  # nosec
 
 
 roles.allow_tags = True
@@ -80,7 +80,7 @@ def last(self):
         value = self.last_login.strftime(fmt)
     else:
         value = "Never"
-    return mark_safe("<nobr>%s</nobr>" % value)
+    return mark_safe("<nobr>%s</nobr>" % value)  # nosec
 
 
 last.allow_tags = True

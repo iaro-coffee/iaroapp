@@ -14,7 +14,7 @@ class Planday:
     base_url = "https://openapi.planday.com"
     client_id = os.environ["CLIENT_ID"]
     refresh_token = os.environ["REFRESH_TOKEN"]
-    access_token = ""
+    access_token = None
     session = requests.session()
     session.trust_env = False
 
