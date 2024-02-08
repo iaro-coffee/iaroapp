@@ -1,7 +1,9 @@
 from django.db import models
 
+from iaroapp.base_model import BaseModel
 
-class ProcedureCategory(models.Model):
+
+class ProcedureCategory(BaseModel):
     name = models.CharField(max_length=200, help_text="Enter category name.")
 
     def __str__(self):

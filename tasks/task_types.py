@@ -1,7 +1,9 @@
 from django.db import models
 
+from iaroapp.base_model import BaseModel
 
-class TaskTypes(models.Model):
+
+class TaskTypes(BaseModel):
     name = models.CharField(max_length=200, help_text="Enter task type.")
 
     def __str__(self):

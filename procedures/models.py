@@ -2,12 +2,13 @@ from ckeditor.fields import RichTextField
 from django.contrib.auth.models import Group
 from django.db import models
 
+from iaroapp.base_model import BaseModel
 from inventory.models import Branch
 from procedures.procedure_category import ProcedureCategory
 from procedures.procedure_type import ProcedureType
 
 
-class Procedure(models.Model):
+class Procedure(BaseModel):
     """Model representing a task (but not a specific copy of a procedure)."""
 
     title = models.CharField(max_length=200)

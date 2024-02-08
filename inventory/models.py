@@ -6,8 +6,10 @@ from django.template import Library
 from django.urls import reverse
 from django.utils.html import format_html
 
+from iaroapp.base_model import BaseModel
 
-class Storage(models.Model):
+
+class Storage(BaseModel):
     """Model representing a storage location."""
 
     name = models.CharField(max_length=500)
@@ -26,7 +28,7 @@ class Storage(models.Model):
         return self.name
 
 
-class Branch(models.Model):
+class Branch(BaseModel):
     """Model representing a storage location."""
 
     name = models.CharField(max_length=500)
@@ -50,14 +52,14 @@ class Branch(models.Model):
         return self.name
 
 
-class Units(models.Model):
+class Units(BaseModel):
     name = models.CharField(max_length=200, help_text="Enter unit for product.")
 
     def __str__(self):
         return self.name
 
 
-class Seller(models.Model):
+class Seller(BaseModel):
     name = models.CharField(max_length=200, help_text="Enter seller for product.")
 
     class Meta:
@@ -70,7 +72,7 @@ class Seller(models.Model):
 register = Library()
 
 
-class Product(models.Model):
+class Product(BaseModel):
     """Model representing a product."""
 
     name = models.CharField(max_length=500)
@@ -202,7 +204,7 @@ class Product(models.Model):
         return self.name
 
 
-class ProductStorage(models.Model):
+class ProductStorage(BaseModel):
     """Model representing the relationship between a product and a storage."""
 
     product = models.ForeignKey(

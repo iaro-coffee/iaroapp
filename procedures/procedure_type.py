@@ -1,7 +1,9 @@
 from django.db import models
 
+from iaroapp.base_model import BaseModel
 
-class ProcedureType(models.Model):
+
+class ProcedureType(BaseModel):
     name = models.CharField(max_length=200, help_text="Enter procedure type.")
 
     def __str__(self):

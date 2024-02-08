@@ -9,18 +9,19 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
 
+from iaroapp.base_model import BaseModel
 from inventory.models import Branch, Product
 from tasks.task_types import TaskTypes
 
 
-class Weekdays(models.Model):
+class Weekdays(BaseModel):
     name = models.CharField(max_length=200, help_text="Enter task weekdays.")
 
     def __str__(self):
         return self.name
 
 
-class Task(models.Model):
+class Task(BaseModel):
     """Model representing a task (but not a specific copy of a task)."""
 
     title = models.CharField(max_length=200)
@@ -88,7 +89,7 @@ class Task(models.Model):
         return self.title
 
 
-class TaskInstance(models.Model):
+class TaskInstance(BaseModel):
     """Model representing a specific copy of a task (i.e. that can be borrowed from the library)."""
 
     task = models.ForeignKey("Task", on_delete=models.CASCADE, null=True)
@@ -109,7 +110,7 @@ class TaskInstance(models.Model):
         return "{} ({})".format(self.id, self.task.title)
 
 
-class Recipe(models.Model):
+class Recipe(BaseModel):
     name = models.CharField(max_length=200, blank=True)
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name="product_recipe"
@@ -119,7 +120,7 @@ class Recipe(models.Model):
         return self.name
 
 
-class RecipeInstance(models.Model):
+class RecipeInstance(BaseModel):
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="recipe_instances", null=True
     )
@@ -134,7 +135,7 @@ class RecipeInstance(models.Model):
         )
 
 
-class BakingPlanInstance(models.Model):
+class BakingPlanInstance(BaseModel):
     """Model representing the relationship between a product and a storage."""
 
     recipe = models.ForeignKey(

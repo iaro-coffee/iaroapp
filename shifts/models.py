@@ -1,10 +1,11 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from iaroapp.base_model import BaseModel
 from ratings.models import EmployeeRating
 
 
-class Shift(models.Model):
+class Shift(BaseModel):
     """Model representing a shift (but not a specific copy of a tip)."""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
