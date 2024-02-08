@@ -19,6 +19,7 @@ class TasksInstanceInline(admin.TabularInline):
     model = TaskInstance
 
 
+@admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     """Administration object for Task models.
     Defines:
@@ -29,9 +30,6 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ("title", "display_users", "display_groups", "display_weekdays")
     list_filter = ("groups",)
     inlines = [TasksInstanceInline]
-
-
-admin.site.register(Task, TaskAdmin)
 
 
 class TaskInstanceAdmin(admin.ModelAdmin):
@@ -55,6 +53,7 @@ class TaskInstanceAdmin(admin.ModelAdmin):
 # and hide mail address
 
 
+@admin.display(description="Groups")
 def roles(self):
     # short_name = unicode # function to get group name
     def short_name(x):
@@ -69,10 +68,7 @@ def roles(self):
     return mark_safe("<nobr>%s</nobr>" % value)  # nosec
 
 
-roles.allow_tags = True
-roles.short_description = "Groups"
-
-
+@admin.display(ordering="last_login")
 def last(self):
     fmt = "%b %d, %H:%M"
     # fmt = "%Y %b %d, %H:%M:%S"
@@ -83,25 +79,18 @@ def last(self):
     return mark_safe("<nobr>%s</nobr>" % value)  # nosec
 
 
-last.allow_tags = True
-last.admin_order_field = "last_login"
-
-
+@admin.display(
+    boolean=True,
+    ordering="is_superuser",
+)
 def adm(self):
     return self.is_superuser
-
-
-adm.boolean = True
-adm.admin_order_field = "is_superuser"
 
 
 def persons(self):
     return ", ".join(
         ["%s" % (x.username) for x in self.user_set.all().order_by("username")]
     )
-
-
-persons.allow_tags = True
 
 
 class UserAdmin(UserAdmin):
@@ -120,16 +109,13 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Group, GroupAdmin)
 
 
+@admin.register(BakingPlanInstance)
 class BakingPlanInstanceAdmin(admin.ModelAdmin):
     list_display = ["recipe", "value", "display_weekdays", "branch"]
 
+    @admin.display(description="Weekday")
     def display_weekdays(self, obj):
         return ", ".join([weekday.name for weekday in obj.weekday.all()])
-
-    display_weekdays.short_description = "Weekday"
-
-
-admin.site.register(BakingPlanInstance, BakingPlanInstanceAdmin)
 
 
 class RecipeInstanceInline(admin.TabularInline):
@@ -144,16 +130,13 @@ class RecipeInstanceInline(admin.TabularInline):
     )
     readonly_fields = ("product_unit",)
 
+    @admin.display(description="Unit")
     def product_unit(self, obj):
         return obj.product_unit
 
-    product_unit.short_description = "Unit"
 
-
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     form = RecipeForm
     list_display = ["name", "product"]
     inlines = [RecipeInstanceInline]
-
-
-admin.site.register(Recipe, RecipeAdmin)

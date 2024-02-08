@@ -12,6 +12,7 @@ class BranchesInline(admin.TabularInline):
     model = Branch
 
 
+@admin.register(Branch)
 class BranchesAdmin(admin.ModelAdmin):
     """Administration object for Task models.
     Defines:
@@ -20,9 +21,6 @@ class BranchesAdmin(admin.ModelAdmin):
     """
 
     list_display = ("name", "display_storages", "departmentId")
-
-
-admin.site.register(Branch, BranchesAdmin)
 
 
 class ProductStorageInline(admin.TabularInline):
@@ -36,6 +34,7 @@ class ProductsInline(admin.TabularInline):
     model = Product
 
 
+@admin.register(Product)
 class ProductsAdmin(ImportExportModelAdmin):
     """Administration object for Task models.
     Defines:
@@ -49,15 +48,13 @@ class ProductsAdmin(ImportExportModelAdmin):
     # resource_classes = [BookResource]
 
 
-admin.site.register(Product, ProductsAdmin)
-
-
 class StoragesInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
 
     model = Storage
 
 
+@admin.register(Storage)
 class StoragesAdmin(admin.ModelAdmin):
     """Administration object for Task models.
     Defines:
@@ -66,9 +63,6 @@ class StoragesAdmin(admin.ModelAdmin):
     """
 
     list_display = ("name", "display_color")
-
-
-admin.site.register(Storage, StoragesAdmin)
 
 
 @admin.register(Seller)
