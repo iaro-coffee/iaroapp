@@ -60,7 +60,9 @@ def roles(self):
     def short_name(x):
         return str(x).upper()  # first letter of a group
 
-    p = sorted(["<a title='%s'>%s</a>" % (x, short_name(x)) for x in self.groups.all()])
+    p = sorted(
+        ["<a title='{}'>{}</a>".format(x, short_name(x)) for x in self.groups.all()]
+    )
     if self.user_permissions.count():
         p += ["+"]
     value = ", ".join(p)

@@ -43,7 +43,7 @@ class RecipeForm(forms.ModelForm):
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
-        super(RecipeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["product"].queryset = Product.objects.filter(
             seller__name="iaro bakery"
         ).order_by("name")

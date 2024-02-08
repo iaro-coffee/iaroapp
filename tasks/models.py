@@ -106,7 +106,7 @@ class TaskInstance(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return "{0} ({1})".format(self.id, self.task.title)
+        return "{} ({})".format(self.id, self.task.title)
 
 
 class Recipe(models.Model):
