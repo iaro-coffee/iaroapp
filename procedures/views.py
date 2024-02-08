@@ -88,11 +88,11 @@ def closing(request):
         if departmentId is not None:
             branch = Branch.objects.filter(departmentId=departmentId).first()
             if branch is not None:
-                branch_name = branch.name
+                pass
             else:
-                branch_name = Branch.objects.first().name
+                Branch.objects.first().name
         else:
-            branch_name = Branch.objects.first().name
+            Branch.objects.first().name
 
     return render(
         request,

@@ -1,12 +1,12 @@
-from datetime import datetime, time, timedelta
-from operator import itemgetter
+from datetime import datetime
 
-from django.forms.models import model_to_dict
+from django.contrib.auth import views as auth_views
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
-from inventory.models import Product
 from lib import planday
-from tasks.models import Task, TaskInstance
+from tasks.views import getMyTasks
 
 planday = planday.Planday()
 run_once_day = {}
@@ -49,7 +49,7 @@ def getNextShiftsByUser(request):
         userShifts = []
         for shift in nextShifts:
             if request.user.email == shift["employee"]:
-                if not "departmentId" in request.session:
+                if "departmentId" not in request.session:
                     request.session["departmentId"] = shift["departmentId"]
                 start = datetime.fromisoformat(shift["start"]).strftime("%H.%M")
                 end = datetime.fromisoformat(shift["end"]).strftime("%H.%M")
@@ -69,9 +69,6 @@ def getNextShiftsByUser(request):
     return nextShiftsUser[request.user.id]
 
 
-from tasks.views import getMyTasks
-
-
 def index(request):
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
@@ -86,11 +83,6 @@ def index(request):
             "today": today,
         },
     )
-
-
-from django.contrib.auth import views as auth_views
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 
 
 def login(request, *args, **kwargs):

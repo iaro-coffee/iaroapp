@@ -6,4 +6,4 @@ class IaroappConfig(AppConfig):
     name = "iaroapp"
 
     def ready(self):
-        import iaroapp.signals
+        pass

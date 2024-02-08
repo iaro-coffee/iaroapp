@@ -1,13 +1,11 @@
 import datetime
-import json
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.forms.models import model_to_dict
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render, reverse
 
+from .forms import ProductFormset
 from .models import Branch, Product, ProductStorage, Storage
 
 
@@ -54,15 +52,9 @@ def getInventoryModifiedDate():
     return modified_date if modified_date else "Unknown"
 
 
-from django.contrib import messages
-from django.shortcuts import redirect, reverse
-
-from .forms import ProductFormset
-
-
 def inventory_populate(request):
     if request.method == "POST":
-        form = ProductFormset(request.POST)
+        ProductFormset(request.POST)
 
         for key, value in request.POST.items():
             if "value" in key and value:
@@ -95,7 +87,6 @@ def inventory_populate(request):
         if branch != "All":
             # Get storages for selected branch
             branch = branches.filter(name=branch)[0]
-            selected_branch = branch
             storages = branch.storages.all()
             storages = list(storages)
 
@@ -150,9 +141,6 @@ def inventory_populate(request):
                 "formset": formset,
             },
         )
-
-
-from django.contrib.auth.decorators import user_passes_test
 
 
 def check_admin(user):
@@ -254,7 +242,7 @@ def inventory_packaging(request):
     target_branches = Branch.objects.all()
     product_storages_set = set()
     for product_storage in ProductStorage.objects.all():
-        if product_storage.oos == True and product_storage.main_storage == False:
+        if product_storage.oos is True and product_storage.main_storage is False:
             product_storages_set.add(product_storage)
     branch_counts = {}
     for product_storage in product_storages_set:
@@ -269,7 +257,6 @@ def inventory_packaging(request):
     target_branches = list(set(target_branches) - {branch})
 
     # Get storages which require packaging
-    filtered_products = set()
     products = Product.objects.all()
     product_storages = ProductStorage.objects.filter(product__in=products)
 

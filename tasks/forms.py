@@ -1,9 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from inventory.models import Branch, Product
-
-from .models import BakingPlanInstance, Recipe
+from .models import Product, Recipe, Task
 
 
 class BakingPlanForm(ModelForm):
@@ -39,11 +37,6 @@ class BakingPlanForm(ModelForm):
         )
 
 
-from django import forms
-
-from .models import Product, Recipe
-
-
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
@@ -54,9 +47,6 @@ class RecipeForm(forms.ModelForm):
         self.fields["product"].queryset = Product.objects.filter(
             seller__name="iaro bakery"
         ).order_by("name")
-
-
-from .models import Task
 
 
 class TaskForm(forms.ModelForm):

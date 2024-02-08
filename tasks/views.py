@@ -1,10 +1,17 @@
 from datetime import datetime, time, timedelta
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
-from django.shortcuts import render
+from django.shortcuts import redirect, render, reverse
 
-from .models import Task, TaskInstance, Weekdays
+from inventory.models import Branch
+from inventory.views import getCurrentBranch
+
+from .forms import BakingPlanForm, TaskForm, TaskFormset
+from .models import BakingPlanInstance, Recipe, Task, TaskInstance, Weekdays
 
 
 def getMyTasks(request):
@@ -41,18 +48,11 @@ def check_staff(user):
     return user.is_superuser or user.is_staff
 
 
-from django.contrib import messages
-
-from inventory.views import getCurrentBranch
-
-from .forms import TaskFormset
-
-
 def tasks(request):
     User = get_user_model()
 
     if request.method == "POST":
-        form = TaskFormset(request.POST)
+        TaskFormset(request.POST)
         user_id = request.user.id
         user = User.objects.get(id=user_id)
         date = datetime.now()
@@ -95,9 +95,6 @@ def tasks(request):
     )
 
 
-from django.contrib.auth.decorators import user_passes_test
-
-
 @user_passes_test(check_admin)
 def tasks_evaluation(request):
     tasks = Task.objects.all()
@@ -134,7 +131,7 @@ def tasks_evaluation(request):
                 if "done" not in task:
                     task["done"] = {}
                 if task["id"] == task_instance.task.id:
-                    if task_instance.date_done != None:
+                    if task_instance.date_done is not None:
                         if beginning_of_week.astimezone() < task_instance.date_done:
                             done = {}
                             done["done_weekday"] = weekdays[
@@ -157,17 +154,6 @@ def tasks_evaluation(request):
             "today": weekdayToday,
         },
     )
-
-
-from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
-from django.forms import modelformset_factory
-from django.shortcuts import redirect, reverse
-
-from inventory.models import Branch, Product, Weekdays
-
-from .forms import BakingPlanForm
-from .models import BakingPlanInstance, Recipe
 
 
 @user_passes_test(check_admin)
@@ -242,7 +228,7 @@ def tasks_baking(request):
                 if value_west:
                     form.fields["value_west"].widget.attrs["placeholder"] = value_west
             except ObjectDoesNotExist:
-                placeholder_value = ""
+                pass
             formset.append(form)
 
         bakingplans = BakingPlanInstance.objects.all()
@@ -264,9 +250,6 @@ def tasks_baking(request):
             "weekday": weekday,
         },
     )
-
-
-from .forms import TaskForm
 
 
 @user_passes_test(check_staff)

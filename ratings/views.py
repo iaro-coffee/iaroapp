@@ -4,7 +4,7 @@ from math import floor
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from django.db.models import Avg, Sum
+from django.db.models import Avg
 from django.forms import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import render

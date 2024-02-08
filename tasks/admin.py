@@ -1,6 +1,10 @@
 from django.contrib import admin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group, User
+from django.utils.safestring import mark_safe
 
-from .models import Task, TaskInstance, User, Weekdays
+from .forms import RecipeForm
+from .models import BakingPlanInstance, Recipe, RecipeInstance, Task, TaskInstance
 
 
 class TasksInline(admin.TabularInline):
@@ -50,15 +54,12 @@ class TaskInstanceAdmin(admin.ModelAdmin):
 # Custom admin view added to display groups in user table
 # and hide mail address
 
-from django.contrib import admin
-from django.contrib.auth.admin import GroupAdmin, UserAdmin
-from django.contrib.auth.models import Group, User
-from django.utils.safestring import mark_safe
-
 
 def roles(self):
     # short_name = unicode # function to get group name
-    short_name = lambda x: str(x).upper()  # first letter of a group
+    def short_name(x):
+        return str(x).upper()  # first letter of a group
+
     p = sorted(["<a title='%s'>%s</a>" % (x, short_name(x)) for x in self.groups.all()])
     if self.user_permissions.count():
         p += ["+"]
@@ -91,8 +92,6 @@ def adm(self):
 adm.boolean = True
 adm.admin_order_field = "is_superuser"
 
-from django.urls import reverse
-
 
 def persons(self):
     return ", ".join(
@@ -118,8 +117,6 @@ admin.site.unregister(Group)
 admin.site.register(User, UserAdmin)
 admin.site.register(Group, GroupAdmin)
 
-from .models import BakingPlanInstance
-
 
 class BakingPlanInstanceAdmin(admin.ModelAdmin):
     list_display = ["recipe", "value", "display_weekdays", "branch"]
@@ -131,11 +128,6 @@ class BakingPlanInstanceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(BakingPlanInstance, BakingPlanInstanceAdmin)
-
-from inventory.models import Product
-
-from .forms import RecipeForm
-from .models import Recipe, RecipeInstance
 
 
 class RecipeInstanceInline(admin.TabularInline):

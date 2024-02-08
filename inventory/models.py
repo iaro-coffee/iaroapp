@@ -1,7 +1,8 @@
 from colorful.fields import RGBColorField
-from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum
+from django.template import Library
 from django.urls import reverse
 from django.utils.html import format_html
 
@@ -65,8 +66,6 @@ class Seller(models.Model):
     def __str__(self):
         return self.name
 
-
-from django.template import Library
 
 register = Library()
 
@@ -203,10 +202,6 @@ class Product(models.Model):
         return self.name
 
 
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils import timezone
-
-
 class ProductStorage(models.Model):
     """Model representing the relationship between a product and a storage."""
 
@@ -248,10 +243,7 @@ class ProductStorage(models.Model):
 
 
 # Generated ToDos from inventory updates
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
-from tasks.models import Group, Task, TaskTypes, User, Weekdays
 
 # @receiver(post_save, sender=Product)
 # def product_post_save(sender, instance, created, **kwargs):
