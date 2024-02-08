@@ -39,7 +39,11 @@
             dateutil
             pymemcache
             nodejs
+            pre-commit
           ];
+          shellHook = ''
+            pre-commit install
+          '';
         };
 
         packages = { inherit start; };

@@ -1,61 +1,43 @@
 {% extends "base_generic.html" %}
 
-  {% block title %}Open Tasks{% endblock %}
-
-  {% block widgets %}
-  {% if user.is_superuser or user.is_staff %}
-  <a class="btn btn-primary" href="/tasks/add">
-    Add task
-  </a>
-  {% endif %}
-  <div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      {{ branch }}
-    </button>
-    <ul class="dropdown-menu">
-      {% for branch in branches %}
-      <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endblock %}
+  {% block title %}{{ task.title }}{% endblock %}
 
   {% block content %}
 
-  {% if task_list %}
+  {% if task.subtasks.all %}
 
   <form id="tasksForm" method="post">
     {% csrf_token %}
     {{ formset.management_form }}
     <div class="list-group w-auto">
 
-      {% for form in formset %}
-        {% if form.instance.id %}
-        <label class="list-group-item d-flex gap-3 {% if form.instance.done %}done{% endif %} {% if form.instance.subtasks.all %}subtasks{% endif %}">
+      {% for task in task.subtasks.all %}
+        {% if task.id %}
+        <label class="list-group-item d-flex gap-3 {% if task.done %}done{% endif %}">
           <fieldset>
-            <input type="checkbox" class="form-check-input flex-shrink-0" name="done_{{form.instance.id}}" {% if form.instance.done %}checked disabled{% endif %} />
-            <input type="number" name="id" value="{{form.instance.id}}" style="display: none;" />
+            <input type="checkbox" name="done_{{task.id}}" class="form-check-input flex-shrink-0" {% if task.done %}checked disabled{% endif %} />
+            <input type="number" name="id" value="{{ task.id }}" style="display: none;" />
           </fieldset>
           <span class="pt-1 form-checked-content">
-            {{ form.instance.title }}<br>
+            {{ task.title }}<br>
             <small class="d-block text-muted" style="margin: 0.1rem 0;">
               <span data-feather="tag" class="align-text-bottom"></span>
-              {{ form.instance.get_types|join:", " }}
-              {% if form.instance.assignees %}
+              {{ task.get_types|join:", " }}
+              {% if task.assignees %}
               <span data-feather="user" class="align-text-bottom" style="margin-left: 0.2rem"></span>
-              {{ form.instance.assignees }}
+              {{ task.assignees }}
               {% endif %}
             </small>
           </span>
-          {% if form.instance.summary %}
+          {% if task.summary %}
           <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
             <span data-feather="help-circle" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
             <span class="hidden">
-              {{ form.instance.summary }}
+              {{ task.summary }}
             </span>
           </div>
           {% endif %}
-          {% if form.instance.subtasks.all %}
+          {% if task.subtasks.all %}
           <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
             <span data-feather="arrow-right-circle" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
           </div>
@@ -115,7 +97,7 @@
       .descriptionLink {
         cursor: pointer;
       }
-      input[type="checkbox"] {
+      .input[type="checkbox"] {
         font-size: 1.375em;
       }
     </style>
@@ -144,7 +126,6 @@
           submitTasksModal.hide();
         }
 
-        // Hook description modal to button
         let descriptionLinks = document.querySelectorAll('.descriptionLink')
         descriptionLinks.forEach((link) => {
           link.addEventListener('click', (event) => {
@@ -166,20 +147,6 @@
           }
         });
         }
-
-        // Add click event listener to labels with class 'subtasks'
-        let subtaskLabels = document.querySelectorAll('.subtasks');
-        subtaskLabels.forEach((label) => {
-            label.addEventListener('click', function() {
-                event.preventDefault();
-                // Get the task ID from the closest parent element that has an 'id' attribute
-                const taskId = this.querySelector('input[name="id"]');
-                const params = new URLSearchParams(window.location.search);
-                const searchString = '?' + params.toString();
-                // Redirect to the task page
-                window.location.href = '/tasks/' + taskId.value + searchString;
-            });
-        });
 
       })
     </script>

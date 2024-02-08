@@ -18,7 +18,9 @@ def getMyTasks(request):
     weekdayToday = datetime.today().strftime("%A")
     weekdayToday = Weekdays.objects.get(name=weekdayToday)
 
-    tasks = Task.objects.all()
+    # Exclude subtasks
+    tasks = Task.objects.filter(parent_task=None)
+
     myTasks = []
     for task in tasks:
         userMatch = request.user in task.users.all()
@@ -268,3 +270,37 @@ def tasks_add(request):
         "tasks_add.html",
         context={"form": form, "subpage_of": "/tasks"},
     )
+
+
+# Render single task
+from django.utils.http import urlencode
+
+
+def task_single(request, taskId):
+
+    if request.method == "POST":
+
+        search_params = request.GET.copy()
+        search_params = search_params.get("branch", [])
+
+        form = TaskFormset(request.POST)
+        user_id = request.user.id
+        User = get_user_model()
+        user = User.objects.get(id=user_id)
+        date = datetime.now()
+
+        for key, value in request.POST.items():
+            if "done" in key:
+                task_id_done = key.split("_")[1]
+                task = Task.objects.get(id=task_id_done)
+                TaskInstance.objects.create(user=user, date_done=date, task=task)
+
+        task_single_url = reverse("task_single", args=[taskId])
+        if search_params:
+            task_single_url += "?branch=" + search_params
+
+        messages.success(request, "Tasks submitted successfully.")
+        return redirect(task_single_url)
+
+    task = Task.objects.get(id=taskId)
+    return render(request, "task_single.html", {"task": task, "subpage_of": "/tasks"})
