@@ -18,7 +18,9 @@ def getMyTasks(request):
     weekdayToday = datetime.today().strftime("%A")
     weekdayToday = Weekdays.objects.get(name=weekdayToday)
 
-    tasks = Task.objects.all()
+    # Exclude subtasks
+    tasks = Task.objects.filter(parent_task=None)
+
     myTasks = []
     for task in tasks:
         userMatch = request.user in task.users.all()
@@ -254,6 +256,9 @@ def tasks_baking(request):
 
 @user_passes_test(check_staff)
 def tasks_add(request):
+
+    parentTask = request.GET.get("parentTask")
+
     if request.method == "POST":
         form = TaskForm(request.POST)
         if form.is_valid():
@@ -261,10 +266,60 @@ def tasks_add(request):
             messages.success(request, "Task was added successfully.")
             return redirect("tasks_add")
     else:
-        form = TaskForm()
+        initial_values = {}
+        if parentTask:
+            initial_values = {"parent_task": int(parentTask)}
+        form = TaskForm(initial=initial_values)
+
+    context = {"form": form, "subpage_of": "/tasks"}
+
+    if parentTask:
+        context["parentTask"] = parentTask
 
     return render(
         request,
         "tasks_add.html",
-        context={"form": form, "subpage_of": "/tasks"},
+        context,
     )
+
+
+# Render single task
+
+
+def task_single(request, taskId):
+
+    branch = request.GET.get("branch")
+
+    if request.method == "POST":
+
+        search_params = request.GET.copy()
+        search_params = search_params.get("branch", [])
+
+        user_id = request.user.id
+        User = get_user_model()
+        user = User.objects.get(id=user_id)
+        date = datetime.now()
+
+        for key, value in request.POST.items():
+            if "done" in key:
+                task_id_done = key.split("_")[1]
+                task = Task.objects.get(id=task_id_done)
+                TaskInstance.objects.create(user=user, date_done=date, task=task)
+
+        task_single_url = reverse("task_single", args=[taskId])
+        if search_params:
+            task_single_url += "?branch=" + search_params
+
+        messages.success(request, "Tasks submitted successfully.")
+        return redirect(task_single_url)
+
+    task = Task.objects.get(id=taskId)
+
+    context = {
+        "task": task,
+    }
+
+    if branch:
+        context["branch"] = branch
+
+    return render(request, "task_single.html", context)
