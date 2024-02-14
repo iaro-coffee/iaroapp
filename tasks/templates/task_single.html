@@ -2,6 +2,20 @@
 
   {% block title %}{{ task.title }}{% endblock %}
 
+  {% block navigation %}
+    <a id="subpage-link" href="/tasks/{% if branch %}?branch={{ branch }}{% endif %}">
+    <span data-feather="arrow-left-circle" class="align-text-center"></span>
+    </a>
+  {% endblock %}
+
+  {% block widgets %}
+  {% if user.is_superuser or user.is_staff %}
+  <a class="btn btn-primary" href="/tasks/add?parentTask={{ task.id }}{% if branch %}&branch={{ branch}}{% endif %}">
+    Add subtask
+  </a>
+  {% endif %}
+  {% endblock %}
+
   {% block content %}
 
   {% if task.subtasks.all %}
@@ -15,7 +29,7 @@
         {% if task.id %}
         <label class="list-group-item d-flex gap-3 {% if task.done %}done{% endif %}">
           <fieldset>
-            <input type="checkbox" name="done_{{task.id}}" class="form-check-input flex-shrink-0" {% if task.done %}checked disabled{% endif %} />
+            <input type="checkbox" name="done_{{ task.id }}" class="form-check-input flex-shrink-0" {% if task.done %}checked disabled{% endif %} />
             <input type="number" name="id" value="{{ task.id }}" style="display: none;" />
           </fieldset>
           <span class="pt-1 form-checked-content">

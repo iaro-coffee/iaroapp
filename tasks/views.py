@@ -256,6 +256,9 @@ def tasks_baking(request):
 
 @user_passes_test(check_staff)
 def tasks_add(request):
+
+    parentTask = request.GET.get("parentTask")
+
     if request.method == "POST":
         form = TaskForm(request.POST)
         if form.is_valid():
@@ -263,27 +266,35 @@ def tasks_add(request):
             messages.success(request, "Task was added successfully.")
             return redirect("tasks_add")
     else:
-        form = TaskForm()
+        initial_values = {}
+        if parentTask:
+            initial_values = {"parent_task": int(parentTask)}
+        form = TaskForm(initial=initial_values)
+
+    context = {"form": form, "subpage_of": "/tasks"}
+
+    if parentTask:
+        context["parentTask"] = parentTask
 
     return render(
         request,
         "tasks_add.html",
-        context={"form": form, "subpage_of": "/tasks"},
+        context,
     )
 
 
 # Render single task
-from django.utils.http import urlencode
 
 
 def task_single(request, taskId):
+
+    branch = request.GET.get("branch")
 
     if request.method == "POST":
 
         search_params = request.GET.copy()
         search_params = search_params.get("branch", [])
 
-        form = TaskFormset(request.POST)
         user_id = request.user.id
         User = get_user_model()
         user = User.objects.get(id=user_id)
@@ -303,4 +314,12 @@ def task_single(request, taskId):
         return redirect(task_single_url)
 
     task = Task.objects.get(id=taskId)
-    return render(request, "task_single.html", {"task": task, "subpage_of": "/tasks"})
+
+    context = {
+        "task": task,
+    }
+
+    if branch:
+        context["branch"] = branch
+
+    return render(request, "task_single.html", context)

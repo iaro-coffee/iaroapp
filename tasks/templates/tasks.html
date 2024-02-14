@@ -4,7 +4,7 @@
 
   {% block widgets %}
   {% if user.is_superuser or user.is_staff %}
-  <a class="btn btn-primary" href="/tasks/add">
+  <a class="btn btn-primary" href="/tasks/add{% if branch %}?branch={{ branch }}{% endif %}">
     Add task
   </a>
   {% endif %}
@@ -57,7 +57,7 @@
           {% endif %}
           {% if form.instance.subtasks.all %}
           <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
-            <span data-feather="arrow-right-circle" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
+            <span data-feather="arrow-right" class="align-text-bottom" style="width: 20px; height: 20px; stroke-width: 1;"></span>
           </div>
           {% endif %}
         </label>
@@ -170,14 +170,16 @@
         // Add click event listener to labels with class 'subtasks'
         let subtaskLabels = document.querySelectorAll('.subtasks');
         subtaskLabels.forEach((label) => {
-            label.addEventListener('click', function() {
+            label.addEventListener('click', function(event) {
                 event.preventDefault();
-                // Get the task ID from the closest parent element that has an 'id' attribute
-                const taskId = this.querySelector('input[name="id"]');
-                const params = new URLSearchParams(window.location.search);
-                const searchString = '?' + params.toString();
-                // Redirect to the task page
-                window.location.href = '/tasks/' + taskId.value + searchString;
+                if (event.target.nodeName !== "svg") {
+                  // Get the task ID from the closest parent element that has an 'id' attribute
+                  const taskId = this.querySelector('input[name="id"]');
+                  const params = new URLSearchParams(window.location.search);
+                  const searchString = '?' + params.toString();
+                  // Redirect to the task page
+                  window.location.href = '/tasks/' + taskId.value + searchString;
+                };
             });
         });
 
