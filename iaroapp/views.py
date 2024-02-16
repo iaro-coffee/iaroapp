@@ -74,7 +74,12 @@ def hasOngoingShift(request):
     if not request.user.is_authenticated:
         return False
     try:
-        return True, Shift.objects.get(end_date__isnull=True).start_date.timestamp()
+        return (
+            True,
+            Shift.objects.filter(
+                user=request.user, end_date=None
+            ).start_date.timestamp(),
+        )
     except:
         return False, None
 
