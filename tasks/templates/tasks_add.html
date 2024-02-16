@@ -1,6 +1,16 @@
 {% extends "base_generic.html" %}
 
-{% block title %}Add Tasks{% endblock %}
+{% block title %}Add Task{% endblock %}
+
+{% block navigation %}
+    {% if parentTask %}
+    <a id="subpage-link" href="/tasks/{{ parentTask}}">
+    {% else %}
+    <a id="subpage-link" href="{{ subpage_of }}">
+    {% endif %}
+    <span data-feather="arrow-left-circle" class="align-text-center"></span>
+    </a>
+{% endblock %}
 
 {% block content %}
 

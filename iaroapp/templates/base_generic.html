@@ -195,11 +195,7 @@
             <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                 <div class="leftTitle">
                   <h1 class="h2">
-                    {% if subpage_of %}
-                    <a href="{{ subpage_of }}">
-                    <span data-feather="arrow-left-circle" class="align-text-center"></span>
-                    </a>
-                    {% endif %}
+                    {% block navigation %}{% endblock %}
                     {% block title %}{% endblock %}
                   </h1>
                   {% if modifiedDate %}
@@ -270,11 +266,24 @@
       })()
 
     document.addEventListener('DOMContentLoaded', function() {
+
         var selectElement = document.getElementById('weekday');
-        selectElement.addEventListener('change', function() {
-            var selectedOption = this.value;
-            window.location.href = '?weekday=' + encodeURIComponent(selectedOption);
-        });
+        if (selectElement) {
+            selectElement.addEventListener('change', function() {
+                var selectedOption = this.value;
+                window.location.href = '?weekday=' + encodeURIComponent(selectedOption);
+            });
+        };
+
+        const params = new URLSearchParams(window.location.search);
+        const searchString = params.toString();
+        const subpageLink = document.getElementById('subpage-link');
+
+
+        if (searchString && subpageLink) {
+            subpageLink.href += '?' + searchString;
+        }
+
     });
 </script>
 </body>

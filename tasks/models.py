@@ -51,8 +51,11 @@ class Task(BaseModel):
 
     @property
     def done(self):
-        today = timezone.now().date()
-        return self.taskinstance_set.filter(date_done__date=today).exists()
+        if self.subtasks.all():
+            return all(subtask.done for subtask in self.subtasks.all())
+        else:
+            today = timezone.now().date()
+            return self.taskinstance_set.filter(date_done__date=today).exists()
 
     @property
     def get_types(self):
