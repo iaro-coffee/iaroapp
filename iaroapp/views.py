@@ -76,9 +76,9 @@ def hasOngoingShift(request):
     try:
         return (
             True,
-            Shift.objects.filter(
-                user=request.user, end_date=None
-            ).start_date.timestamp(),
+            Shift.objects.filter(user=request.user, end_date=None)
+            .first()
+            .start_date.timestamp(),
         )
     except:
         return False, None
@@ -89,7 +89,7 @@ def index(request):
     userShifts = getNextShiftsByUser(request)
     myTasks = getMyTasks(request)
     ongoingShift = hasOngoingShift(request)
-
+    print(ongoingShift)
     return render(
         request,
         "index.html",
