@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from lib import planday
+from shifts.models import Shift
 from tasks.views import getMyTasks
 
 planday = planday.Planday()
@@ -69,10 +70,20 @@ def getNextShiftsByUser(request):
     return nextShiftsUser[request.user.id]
 
 
+def hasOngoingShift(request):
+    if not request.user.is_authenticated:
+        return False
+    try:
+        return True, Shift.objects.get(end_date__isnull=True).start_date.timestamp()
+    except:
+        return False, None
+
+
 def index(request):
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
     myTasks = getMyTasks(request)
+    ongoingShift = hasOngoingShift(request)
 
     return render(
         request,
@@ -81,6 +92,8 @@ def index(request):
             "nextShifts": userShifts,
             "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
             "today": today,
+            "ongoingShift": ongoingShift[0],
+            "shiftStart": ongoingShift[1],
         },
     )
 
