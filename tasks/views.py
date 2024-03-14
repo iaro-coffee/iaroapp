@@ -37,7 +37,7 @@ def getMyTasks(request):
     # Convert the list of tasks to a QuerySet and order by type
     myTasksQuerySet = Task.objects.filter(
         id__in=[task.id for task in myTasks]
-    ).order_by("types")
+    ).order_by("title")
 
     return myTasksQuerySet
 
