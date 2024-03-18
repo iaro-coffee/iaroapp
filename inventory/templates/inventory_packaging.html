@@ -3,7 +3,6 @@
 {% block title %}Packaging{% endblock %}
 
 {% block widgets %}
-{% if user.is_superuser or user.is_staff %}
 <div class="dropdown">
   <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
     {{ branch }}
@@ -14,7 +13,6 @@
     {% endfor %}
   </ul>
 </div>
-{% endif %}
 {% endblock %}
 
 {% block content %}
