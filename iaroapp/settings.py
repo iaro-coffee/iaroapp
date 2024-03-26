@@ -153,6 +153,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "iaroapp", "static"),
     os.path.join(BASE_DIR, "node_modules"),
+    # add theme here
 ]
 
 # Static file serving.

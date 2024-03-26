@@ -10,10 +10,16 @@
     <link rel="canonical" href="https://app.iaro.co">
     {% load static %}
     <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <!--<link href="{% static 'css/styles.css' %}" rel="stylesheet">-->
+
+    <!-- CSS Files -->
+    <link id="pagestyle" href="{% static 'softTheme/css/soft-ui-dashboard.css' %}" rel="stylesheet" />
+    <link id="pagestyle_dark" href="{% static 'softTheme/css/dark-theme-core.css' %}" rel="stylesheet" />
+
     <link rel="icon" href="{% static 'images/favicon.png' %}">
 </head>
-<body>
+<body class="g-sidenav-show bg-gray-100">
 
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="/">iaroapp</a>
@@ -53,6 +59,7 @@
                                 <span data-feather="home" class="align-text-bottom"></span>
                                 Dashboard
                             </a>
+                        </a>
                     </li>
                     <li class="nav-item">
                         {% url 'tasks' as tasks_url %}
@@ -64,6 +71,7 @@
                                 <span data-feather="check-square" class="align-text-bottom"></span>
                                 Tasks
                             </a>
+                        </a>
                     </li>
                     {% if showOpening == True %}
                     <li class="nav-item">
@@ -76,6 +84,7 @@
                                 <span data-feather="sunrise" class="align-text-bottom"></span>
                                 Store Opening
                             </a>
+                        </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
@@ -88,17 +97,19 @@
                                 <span data-feather="sunset" class="align-text-bottom"></span>
                                 Store Closing
                             </a>
+                        </a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
                         {% url 'inventory_packaging' as inventory_packaging_url %}
                         {% if request.path == inventory_packaging_url %}
                         <a class="nav-link active" href="{% url 'inventory_packaging' %}">
-                        {% else %}
-                        <a class="nav-link" href="{% url 'inventory_packaging' %}">
-                        {% endif %}
-                            <span data-feather="package" class="align-text-bottom"></span>
-                            Packaging
+                            {% else %}
+                            <a class="nav-link" href="{% url 'inventory_packaging' %}">
+                            {% endif %}
+                                <span data-feather="package" class="align-text-bottom"></span>
+                                Packaging
+                            </a>
                         </a>
                     </li>
                     {% if user.is_superuser %}
@@ -107,10 +118,11 @@
                         {% if request.path == tasks_baking_url %}
                         <a class="nav-link active" href="{% url 'tasks_baking' %}">
                         {% else %}
-                        <a class="nav-link" href="{% url 'tasks_baking' %}">
-                        {% endif %}
-                            <span data-feather="trello" class="align-text-bottom"></span>
-                            Baking plan
+                            <a class="nav-link" href="{% url 'tasks_baking' %}">
+                            {% endif %}
+                                <span data-feather="trello" class="align-text-bottom"></span>
+                                Baking plan
+                            </a>
                         </a>
                     </li>
                     {% endif %}
@@ -118,11 +130,12 @@
                         {% url 'inventory_populate' as inventory_populate_url %}
                         {% if request.path == inventory_populate_url %}
                         <a class="nav-link active" href="{% url 'inventory_populate' %}">
-                        {% else %}
-                        <a class="nav-link" href="{% url 'inventory_populate' %}">
-                        {% endif %}
-                            <span data-feather="layers" class="align-text-bottom"></span>
-                            Inventory
+                            {% else %}
+                            <a class="nav-link" href="{% url 'inventory_populate' %}">
+                            {% endif %}
+                                <span data-feather="layers" class="align-text-bottom"></span>
+                                Inventory
+                            </a>
                         </a>
                     </li>
                 </ul>
@@ -258,6 +271,9 @@
 
 <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'feather-icons/dist/feather.min.js' %}"></script>
+
+<script src="{% static 'softTheme/js/soft-ui-dashboard.min.js' %}"></script>
+<script src="{% static 'softTheme/js/scripts.js' %}"></script>
 
 <script lang="javascript">
       (() => {
