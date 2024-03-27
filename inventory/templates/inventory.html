@@ -108,7 +108,7 @@
         var triggeredElement = event.currentTarget;
         var parentElement = triggeredElement.parentNode;
         var rect = parentElement.getBoundingClientRect();
-        var header = document.querySelector('header');
+        var header = document.querySelector('nav');
         var headerHeight = header.offsetHeight;
         var scrollPosition = window.pageYOffset + rect.top - headerHeight - 5;
         window.scrollTo({
@@ -141,13 +141,15 @@
     let items = document.querySelectorAll("a.list-group-item");
     items.forEach(item => {
       let input = item.querySelector("input[name='value']");
-      input.addEventListener("input", function() {
-        if (input.value && input.checkValidity()) {
-          item.classList.add('done');
-        } else {
-          item.classList.remove('done');
-        }
-      });
+      if (input !== null) {
+        input.addEventListener("input", function() {
+          if (input.value && input.checkValidity()) {
+            item.classList.add('done');
+          } else {
+            item.classList.remove('done');
+          }
+        });
+      }
     });
 
   });
