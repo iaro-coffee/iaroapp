@@ -33,24 +33,24 @@
 {% include "includes/sidebar.html" %}
 <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     {% include "includes/navigation.html" %}
-    <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <div class="leftTitle">
-            <h1 class="h2">
-                {% block navigation %}{% endblock %}
-                <div class="container-fluid py-4">
-                {% block title %}{% endblock %}
+
+    <div class="container-fluid px-4">
+        <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <div class="leftTitle">
+                <h1 class="h2">
+                    {% block title %}{% endblock %}
+                </h1>
+                {% if modifiedDate %}
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm modified-date">
+                        <span data-feather="calendar" class="align-text-bottom"></span>
+                        Last updated: {{ modifiedDate }}
+                    </button>
                 </div>
-            </h1>
-            {% if modifiedDate %}
-            <div class="btn-toolbar mb-2 mb-md-0">
-                <button type="button" class="btn btn-sm modified-date">
-                    <span data-feather="calendar" class="align-text-bottom"></span>
-                    Last updated: {{ modifiedDate }}
-                </button>
+                {% endif %}
             </div>
-            {% endif %}
+            {% block widgets %}{% endblock %}
         </div>
-        {% block widgets %}{% endblock %}
     </div>
 
     {% if messages %}
@@ -65,7 +65,9 @@
         {% endfor %}
         {% endif %}
 
-        {% block content %}{% endblock %}
+        <div class="container-fluid py-4 px-4">
+            {% block content %}{% endblock %}
+        </div>
     </div>
 </main>
 
