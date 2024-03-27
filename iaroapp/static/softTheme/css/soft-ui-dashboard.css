@@ -3331,7 +3331,10 @@ textarea.form-control-lg {
   margin-right: var(--bs-navbar-brand-margin-end);
   font-size: var(--bs-navbar-brand-font-size);
   color: var(--bs-navbar-brand-color);
-  white-space: nowrap; }
+  white-space: nowrap;
+  display: flex !important;
+  justify-content: center;
+  }
   .navbar-brand:hover, .navbar-brand:focus {
     color: var(--bs-navbar-brand-hover-color); }
 
