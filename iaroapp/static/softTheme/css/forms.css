@@ -509,11 +509,6 @@ body.popup .submit-row {
 
 .inline-group ul.tools a.add,
 .inline-group div.add-row a,
-.inline-group .tabular tr.add-row td a {
-    background: url(../img/icon-addlink.svg) 0 1px no-repeat;
-    padding-left: 16px;
-    font-size: 12px;
-}
 
 .empty-form {
     display: none;
@@ -529,17 +524,6 @@ body.popup .submit-row {
     background-size: 14px;
 }
 
-.add-another {
-    width: 16px;
-    height: 16px;
-    background-image: url(../img/icon-addlink.svg);
-}
-
-.related-lookup {
-    width: 16px;
-    height: 16px;
-    background-image: url(../img/search.svg);
-}
 
 form .related-widget-wrapper ul {
     display: inline-block;
