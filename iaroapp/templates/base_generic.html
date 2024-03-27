@@ -12,225 +12,62 @@
     <!--<link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">-->
     <link rel="manifest" href="{% static 'manifest.json' %}">
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
 
     <!-- Nucleo Icons -->
-    <link href="{% static 'softTheme/css/nucleo-icons.css' %}" rel="stylesheet" />
-    <link href="{% static 'softTheme/css/nucleo-svg.css' %}" rel="stylesheet" />
+    <link href="{% static 'softTheme/css/nucleo-icons.css' %}" rel="stylesheet"/>
+    <link href="{% static 'softTheme/css/nucleo-svg.css' %}" rel="stylesheet"/>
 
     <!-- Font Awesome Icons -->
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-    <link href="{% static 'softTheme/css/nucleo-svg.css' %}" rel="stylesheet" />
+    <link href="{% static 'softTheme/css/nucleo-svg.css' %}" rel="stylesheet"/>
 
     <!-- CSS Files -->
-    <link id="pagestyle" href="{% static 'softTheme/css/soft-ui-dashboard.css' %}" rel="stylesheet" />
-    <link id="pagestyle_dark" href="{% static 'softTheme/css/dark-theme-core.css' %}" rel="stylesheet" />
+    <link id="pagestyle" href="{% static 'softTheme/css/soft-ui-dashboard.css' %}" rel="stylesheet"/>
+    <link id="pagestyle_dark" href="{% static 'softTheme/css/dark-theme-core.css' %}" rel="stylesheet"/>
 
     <link rel="icon" href="{% static 'images/favicon.png' %}">
 </head>
 <body class="g-sidenav-show bg-gray-100">
 
-    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-        {% include "includes/navigation.html" %}
-    </main>
-
-<div class="container-fluid">
-    <div class="row">
-        {% block sidebar %}
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-            <div class="position-sticky pt-3 sidebar-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        {% url 'index' as index_url %}
-                        {% if request.path == index_url %}
-                        <a class="nav-link active" aria-current="page" href="{% url 'index' %}">
-                            {% else %}
-                            <a class="nav-link" aria-current="page" href="{% url 'index' %}">
-                                {% endif %}
-                                <span data-feather="home" class="align-text-bottom"></span>
-                                Dashboard
-                            </a>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        {% url 'tasks' as tasks_url %}
-                        {% if request.path == tasks_url %}
-                        <a class="nav-link active" href="{% url 'tasks' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'tasks' %}">
-                                {% endif %}
-                                <span data-feather="check-square" class="align-text-bottom"></span>
-                                Tasks
-                            </a>
-                        </a>
-                    </li>
-                    {% if showOpening == True %}
-                    <li class="nav-item">
-                        {% url 'opening' as opening_url %}
-                        {% if request.path == opening_url %}
-                        <a class="nav-link active" href="{% url 'opening' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'opening' %}">
-                                {% endif %}
-                                <span data-feather="sunrise" class="align-text-bottom"></span>
-                                Store Opening
-                            </a>
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        {% url 'closing' as closing_url %}
-                        {% if request.path == closing_url %}
-                        <a class="nav-link active" href="{% url 'closing' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'closing' %}">
-                                {% endif %}
-                                <span data-feather="sunset" class="align-text-bottom"></span>
-                                Store Closing
-                            </a>
-                        </a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        {% url 'inventory_packaging' as inventory_packaging_url %}
-                        {% if request.path == inventory_packaging_url %}
-                        <a class="nav-link active" href="{% url 'inventory_packaging' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'inventory_packaging' %}">
-                            {% endif %}
-                                <span data-feather="package" class="align-text-bottom"></span>
-                                Packaging
-                            </a>
-                        </a>
-                    </li>
-                    {% if user.is_superuser %}
-                    <li class="nav-item">
-                        {% url 'tasks_baking' as tasks_baking_url %}
-                        {% if request.path == tasks_baking_url %}
-                        <a class="nav-link active" href="{% url 'tasks_baking' %}">
-                        {% else %}
-                            <a class="nav-link" href="{% url 'tasks_baking' %}">
-                            {% endif %}
-                                <span data-feather="trello" class="align-text-bottom"></span>
-                                Baking plan
-                            </a>
-                        </a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        {% url 'inventory_populate' as inventory_populate_url %}
-                        {% if request.path == inventory_populate_url %}
-                        <a class="nav-link active" href="{% url 'inventory_populate' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'inventory_populate' %}">
-                            {% endif %}
-                                <span data-feather="layers" class="align-text-bottom"></span>
-                                Inventory
-                            </a>
-                        </a>
-                    </li>
-                </ul>
-
-                {% load is_member%}
-                {% if user.is_superuser or user|is_member:'Barista' or user|is_member:'Service' %}
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-                    <span>Reports</span>
-                </h6>
-                <ul class="nav flex-column mb-2">
-                    <li class="nav-item">
-                        {% url 'inventory_shopping' as inventory_shopping_url %}
-                        {% if request.path == inventory_shopping_url %}
-                        <a class="nav-link active" href="{% url 'inventory_shopping' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'inventory_shopping' %}">
-                                {% endif %}
-                                <span data-feather="file-text" class="align-text-bottom"></span>
-                                Shopping list
-                            </a>
-                        </a>
-                    </li>
-                    {% if user.is_superuser %}
-                    <li class="nav-item">
-                        {% url 'inventory_evaluation' as inventory_evaluation_url %}
-                        {% if request.path == inventory_evaluation_url %}
-                            <a class="nav-link active" href="{% url 'inventory_evaluation' %}">
-                        {% else %}
-                            <a class="nav-link" href="{% url 'inventory_evaluation' %}">
-                        {% endif %}
-                            <span data-feather="file-text" class="align-text-bottom"></span>
-                            Inventory
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        {% url 'tasks_evaluation' as tasks_evaluation_url %}
-                        {% if request.path == tasks_evaluation_url %}
-                        <a class="nav-link active" href="{% url 'tasks_evaluation' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'tasks_evaluation' %}">
-                                {% endif %}
-                                <span data-feather="file-text" class="align-text-bottom"></span>
-                                Tasks
-                            </a>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        {% url 'ratings_evaluation' as ratings_evaluation_url %}
-                        {% if request.path == ratings_evaluation_url %}
-                        <a class="nav-link active" href="{% url 'ratings_evaluation' %}">
-                            {% else %}
-                            <a class="nav-link" href="{% url 'ratings_evaluation' %}">
-                                {% endif %}
-                                <span data-feather="file-text" class="align-text-bottom"></span>
-                                Ratings
-                            </a>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-                {% endif %}
-
-            </div>
-        </nav>
-        {% endblock %}
-
-
-        <main class="contentArea col-md-9 ms-sm-auto col-lg-10 px-md-4">
-
-            <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <div class="leftTitle">
-                  <h1 class="h2">
-                    {% block navigation %}{% endblock %}
-                    {% block title %}{% endblock %}
-                  </h1>
-                  {% if modifiedDate %}
-                  <div class="btn-toolbar mb-2 mb-md-0">
-                    <button type="button" class="btn btn-sm modified-date">
-                      <span data-feather="calendar" class="align-text-bottom"></span>
-                      Last updated: {{ modifiedDate }}
-                    </button>
-                  </div>
-                  {% endif %}
+{% include "includes/sidebar.html" %}
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+    {% include "includes/navigation.html" %}
+    <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <div class="leftTitle">
+            <h1 class="h2">
+                {% block navigation %}{% endblock %}
+                <div class="container-fluid py-4">
+                {% block title %}{% endblock %}
                 </div>
-                {% block widgets %}{% endblock %}
+            </h1>
+            {% if modifiedDate %}
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <button type="button" class="btn btn-sm modified-date">
+                    <span data-feather="calendar" class="align-text-bottom"></span>
+                    Last updated: {{ modifiedDate }}
+                </button>
             </div>
-
-            {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "success" %}
-                <div class="alert alert-success" role="alert">
-                {% else %}
-                <div class="alert alert-danger" role="alert">
-                {% endif %}
-                {{ message }}
-                </div>
-            {% endfor %}
             {% endif %}
-
-            {% block content %}{% endblock %}
-
-        </main>
+        </div>
+        {% block widgets %}{% endblock %}
     </div>
-</div>
+
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == "success" %}
+    <div class="alert alert-success" role="alert">
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            {% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</main>
 
 <style>
     .modified-date {
@@ -273,31 +110,31 @@
 <script src="{% static 'softTheme/js/dark-mode-handler.js' %}"></script>
 
 <script lang="javascript">
-      (() => {
-        'use strict'
-        feather.replace({ 'aria-hidden': 'true' })
-      })()
+    (() => {
+      'use strict'
+      feather.replace({ 'aria-hidden': 'true' })
+    })()
 
-    document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
 
-        var selectElement = document.getElementById('weekday');
-        if (selectElement) {
-            selectElement.addEventListener('change', function() {
-                var selectedOption = this.value;
-                window.location.href = '?weekday=' + encodeURIComponent(selectedOption);
-            });
-        };
+      var selectElement = document.getElementById('weekday');
+      if (selectElement) {
+          selectElement.addEventListener('change', function() {
+              var selectedOption = this.value;
+              window.location.href = '?weekday=' + encodeURIComponent(selectedOption);
+          });
+      };
 
-        const params = new URLSearchParams(window.location.search);
-        const searchString = params.toString();
-        const subpageLink = document.getElementById('subpage-link');
+      const params = new URLSearchParams(window.location.search);
+      const searchString = params.toString();
+      const subpageLink = document.getElementById('subpage-link');
 
 
-        if (searchString && subpageLink) {
-            subpageLink.href += '?' + searchString;
-        }
+      if (searchString && subpageLink) {
+          subpageLink.href += '?' + searchString;
+      }
 
-    });
+  });
 </script>
 </body>
 </html>
