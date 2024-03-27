@@ -5,24 +5,24 @@
   "icons": [
     {
       "sizes": "192x192",
-      "src": "images/favicon.png",
+      "src": "images/192x192.png",
       "type": "image/png"
     },
     {
       "sizes": "512x512",
-      "src": "images/favicon.png",
+      "src": "images/512x512.png",
       "type": "image/png"
     },
     {
       "purpose": "maskable",
       "sizes": "192x192",
-      "src": "images/favicon.png",
+      "src": "images/192x192_maskable.png",
       "type": "image/png"
     },
     {
       "purpose": "maskable",
       "sizes": "512x512",
-      "src": "images/favicon.png",
+      "src": "images/512x512_maskable.png",
       "type": "image/png"
     }
   ],
