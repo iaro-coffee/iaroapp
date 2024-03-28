@@ -34,8 +34,8 @@
                 {% if ongoingShift %}
                 <span id="clock" style="font-size:2.5rem"></span>
                 {% endif %}
-                <div class="px-4">
-                    <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
+                <div class="px-4" style="height: 100%; display: flex;">
+                    <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;" href="#">
                         {% if ongoingShift %} Punch out {% else %} Punch in {% endif %}
                     </a>
                 </div>
@@ -50,7 +50,7 @@
             <div class="card-header pb-0">
                 <div class="row">
                     <div class="col-lg-10 col-7">
-                        <h6>{% if showOpening %} You are opening the store? {% else %} You are closing the store later?
+                        <h6>{% if showOpening %} Are you opening the store? {% else %} Are you closing the store later?
                             {% endif %}</h6>
                         <p class="text-sm mb-0">
                             <i class="fa fa-bell text-info" aria-hidden="true"></i>
@@ -81,10 +81,10 @@
             <div class="card-header pb-0">
                 <div class="row">
                     <div class="col-lg-6 col-7">
-                        <h6>My Tasks</h6>
+                        <h6>Your Tasks</h6>
                         <p class="text-sm mb-0">
                             <i class="fa fa-check text-info" aria-hidden="true"></i>
-                            <span class="font-weight-bold ms-1">30 done</span> this month
+                            <span class="font-weight-bold ms-1">30 done</span> this month <!-- todo insert correct data -->
                         </p>
                     </div>
                 </div>
