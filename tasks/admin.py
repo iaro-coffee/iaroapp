@@ -28,7 +28,10 @@ class TaskAdmin(admin.ModelAdmin):
     """
 
     list_display = ("title", "display_users", "display_groups", "display_weekdays")
-    list_filter = ("groups",)
+    list_filter = (
+        "weekdays",
+        "groups",
+    )
     inlines = [TasksInstanceInline]
 
 
