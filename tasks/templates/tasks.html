@@ -69,7 +69,7 @@
                                 <td>
                                     <div class="d-flex px-2 py-1">
                                         <div class="d-flex flex-column justify-content-center responsive__mobile-3">
-                                            <p class="text-sm">{{ form.instance.title }}</p>
+                                            {{ form.instance.title }}
                                         </div>
                                     </div>
                                     <div class="d-flex">
@@ -248,6 +248,19 @@
 </script>
 
 <style>
+
+    /*.form-check-input {
+        appearance: checkbox !important;
+    }
+
+    .form-check-input:not(:checked) {
+        accent-color: #17ad3f;
+    }
+
+    .form-check-input:checked[type="checkbox"] {
+        accent-color: #17ad3f;
+    }*/
+
     .table-collapse {
         border-collapse: collapse;
     }
