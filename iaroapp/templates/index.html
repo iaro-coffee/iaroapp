@@ -1,4 +1,5 @@
 {% extends "base_generic.html" %}
+{% load static %}
 
 {% block title %}Welcome, {{ user.get_username }}{% endblock %}
 
@@ -12,155 +13,137 @@
     Punching in/out failed.
 </div>
 
-<div class="row g-1">
-    <div class="col-lg-6 pe-lg-2 mb-3">
-        <div class="card h-lg-100 overflow-hidden">
-            <div class="card-header bg-light">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h6 class="mb-0">{% if ongoingShift %} Punch out {% else %} Punch in {% endif %}</h6>
-                    </div>
-                    <div class="col-auto text-center pe-x1">
-                        <br><br>
+
+<div class="row my-4">
+    <div class="col-lg-4 col-md-6 mb-md-0 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <div class="row">
+                    <div class="col-lg-10 col-7">
+                        <h6>{% if ongoingShift %} End your shift? {% else %} Start shift? {% endif %}</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-clock text-info" aria-hidden="true"></i>
+                            {% if ongoingShift %}
+                            Punch out to end your shift {% else %} Punch in to start your shift
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
             </div>
-            <div class="card-body p-0">
-                <div class="list-group w-auto rounded-0">
-                    <div class="row align-items-center" style="padding:15px; text-align: center;">
-                        {% if ongoingShift %} <span id="clock" style="font-size:2.5rem"></span> {% endif %}
-                        <button id="punchShiftButton" type="button" class="btn btn-lg btn-primary">{% if ongoingShift %} Punch out {% else %} Punch in {% endif %}</button>
+            <div class="card-body px-0 pb-2" style="text-align: center;">
+                {% if ongoingShift %}
+                <span id="clock" style="font-size:2.5rem"></span>
+                {% endif %}
+                <div class="px-4" style="height: 100%; display: flex;">
+                    <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;" href="#">
+                        {% if ongoingShift %} Punch out {% else %} Punch in {% endif %}
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    {% if showOpening or showClosing %}
+    <div class="col-lg-4 col-md-6 mb-md-0 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <div class="row">
+                    <div class="col-lg-10 col-7">
+                        <h6>{% if showOpening %} Are you opening the store? {% else %} Are you closing the store later?
+                            {% endif %}</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-bell text-info" aria-hidden="true"></i>
+                            <strong>Reminder:</strong> make sure you completed all the steps.
+                        </p>
                     </div>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2" style="text-align: center;">
+                <div class="px-4" style="height: 100%; display: flex;">
+                    {% if showOpening %}
+                        <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;" href="/procedures/opening">
+                    {% else %}
+                        <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;" href="/procedures/closing">
+                    {% endif %}
+                            Check tasks
+                        </a>
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 
-{% if showOpening or showClosing %}
-    <div class="row g-1">
-{% endif %}
-{% if showOpening %}
-        <div class="col-lg-6 pe-lg-2 mb-3">
-            <div class="card h-lg-100 overflow-hidden">
-                <div class="card-header bg-light">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <h6 class="mb-0">Store Opening</h6>
-                        </div>
-                        <div class="col-auto text-center pe-x1">
-                            <br><br>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group w-auto rounded-0">
-                        <label class="list-group-item d-flex gap-3">
-                              <span class="pt-1 form-checked-content">
-                                  <strong>Reminder:</strong> make sure you completed all the steps.
-                              </span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="card-footer bg-light p-0">
-                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/procedures/opening">See store opening tasks
-                        <span class="fas fa-chevron-right ms-1 fs--2"></span>
-                    </a>
-                </div>
-            </div>
-        </div>
-{% endif %}
-
-{% if showClosing %}
-        <div class="col-lg-6 pe-lg-2 mb-3">
-            <div class="card h-lg-100 overflow-hidden">
-                <div class="card-header bg-light">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <h6 class="mb-0">Store Closing</h6>
-                        </div>
-                        <div class="col-auto text-center pe-x1">
-                            <br><br>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="list-group w-auto rounded-0">
-                        <label class="list-group-item d-flex gap-3">
-                              <span class="pt-1 form-checked-content">
-                                  <strong>Reminder:</strong> make sure you completed all the steps.
-                              </span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="card-footer bg-light p-0">
-                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/procedures/closing">See store closing tasks
-                        <span class="fas fa-chevron-right ms-1 fs--2"></span>
-                    </a>
-                </div>
-            </div>
-        </div>
-{% endif %}
-{% if showOpening or showClosing %}
-    </div>
-{% endif %}
-
-<div class="row g-0">
-
-    <div class="col-lg-6 pe-lg-2 mb-3">
-        <div class="card h-lg-100 overflow-hidden">
-            <div class="card-header bg-light">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h6 class="mb-0">My Tasks</h6>
-                    </div>
-                    <div class="col-auto text-center pe-x1">
-                        <br><br>
+<div class="row my-4">
+    <div class="col-lg-6 col-md-6 mb-md-0 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <div class="row">
+                    <div class="col-lg-6 col-7">
+                        <h6>Your Tasks</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-check text-info" aria-hidden="true"></i>
+                            <span class="font-weight-bold ms-1">30 done</span> this month <!-- todo insert correct data -->
+                        </p>
                     </div>
                 </div>
             </div>
-            <div class="card-body p-0">
-                <div class="list-group w-auto rounded-0">
-                    {% for task in task_list %}
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive">
+                    <table class="table align-items-center mb-2">
+                        <tbody>
+                        {% for task in task_list %}
                         {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
-                            <label class="list-group-item d-flex gap-3">
-                              <span class="pt-1 form-checked-content">
-                                {{ task.title }}
+                        <tr>
+                            <td>
+                                <div class="d-flex px-2 py-1">
+                                    <div class="px-4">
+                                        <i class="fa fa-list cursor-pointer" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="d-flex flex-column justify-content-center">
+                                        <h6 class="mb-0 text-sm">{{ task.title }}</h6>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle text-sm">
                                 <small class="d-block text-muted" style="margin: 0.1rem 0;">
-                                  <span data-feather="tag" class="align-text-bottom"></span>
-                                  {{ task.get_types|join:", " }},
-                                  <span data-feather="user" class="align-text-bottom"></span>
-                                  {{ task.assignees }}
+                                    <i class="fa fa-tag fixed-plugin-button-nav cursor-pointer" aria-hidden="true"></i>
+                                    {{ task.get_types|join:", " }},
+                                    <i class="fa fa-group fixed-plugin-button-nav cursor-pointer"
+                                       aria-hidden="true"></i>
+                                    {{ task.assignees }}
                                 </small>
-                              </span>
-                            </label>
+                            </td>
+                        </tr>
                         {% endif %}
-                    {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-                <div class="card-footer bg-light p-0">
-                    <a class="btn btn-sm btn-link d-block w-100 py-2" href="/tasks">See all tasks
-                        <span class="fas fa-chevron-right ms-1 fs--2"></span>
+                <div class="mb-2">
+                    <a class="text-body text-sm font-weight-bold icon-move-right mt-auto px-4" href="/tasks">
+                        See all tasks
+                        <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>
         </div>
     </div>
-
-     <div class="col-lg-6 pe-lg-2 mb-3">
-        <div class="card h-lg-100 overflow-hidden">
-            <div class="card-header bg-light">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h6 class="mb-0">Next Shifts</h6>
-                    </div>
-                    <div class="col-auto text-center pe-x1">
-                        <br><br>
+    <div class="col-lg-6 col-md-6 mb-md-0 mb-4">
+        <div class="card">
+            <div class="card-header pb-0">
+                <div class="row">
+                    <div class="col-lg-10 col-7">
+                        <h6>Your next shifts</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-dumbbell text-info" aria-hidden="true"></i>
+                            you can do this!
+                        </p>
                     </div>
                 </div>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body px-0 pb-2">
                 <ul class="shifts">
                     {% for shift in nextShifts %}
                     <li>
@@ -180,28 +163,32 @@
     </div>
 </div>
 
-    <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
-      <div class="modal-dialog" role="document">
+
+<div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
+    <div class="modal-dialog" role="document">
         <div class="modal-content rounded-4 shadow">
-          <div class="modal-body p-5">
-            <h2 class="fw-bold mb-0">Error</h2>
-            <br>
-            <span class="errorModalContent">Sorry, you forgot to rate your shift.</span>
-          </div>
+            <div class="modal-body p-5">
+                <h2 class="fw-bold mb-0">Error</h2>
+                <br>
+                <span class="errorModalContent">Sorry, you forgot to rate your shift.</span>
+            </div>
         </div>
-      </div>
-  </div>
+    </div>
+</div>
+
 
 <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
-      <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content rounded-4 shadow">
-          <div class="modal-body p-5">
-            <h2 class="fw-bold mb-0">{% if ongoingShift %} Submit rating and punch out {% else %} Punch in {% endif %}</h2>
-            <br>
-              <form id="ratingForm" method="post">
-                  {% csrf_token %}
-                  <input type="text" name="user" value="{{user.id}}" style="display: none;" />
-                  {% if ongoingShift %}
+            <div class="modal-body p-5">
+                <h2 class="fw-bold mb-0">
+                    {% if ongoingShift %} Submit rating and punch out {% else %} Start your shift? {% endif%}
+                </h2>
+                <br>
+                <form id="ratingForm" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="user" value="{{user.id}}" style="display: none;"/>
+                    {% if ongoingShift %}
                     <h5>How was todays shift for you?</h5>
                     <div class="row">
                         <div class="col-md-12">
@@ -219,94 +206,95 @@
                             </div>
                         </div>
                     </div>
-                  {% endif %}
-                <input type="submit" class="w-100 btn btn-lg btn-primary" value="Submit" style="margin-top: 1rem; max-width: 200px;"  data-bs-dismiss="modal"/>
-              </form>
-          </div>
+                    {% endif %}
+                    <input type="submit" class="w-100 mt-2 btn btn-lg bg-gradient-primary" value="Submit"
+                           data-bs-dismiss="modal"/>
+                </form>
+            </div>
         </div>
-      </div>
-  </div>
+    </div>
+</div>
+
 
 <style>
-  .btn-link {
-    text-decoration: none;
-  }
-  ul.shifts {
-    list-style: none;
-    padding: 0;
-    margin-top: 0.5rem;
-  }
-  ul.shifts li {
-    display: flex;
-    align-items: center;
-    margin: 0.25rem 1rem 0.25rem 0;
-  }
-  ul.shifts li .date {
-    padding: 1rem;
-    font-size: 1.4rem;
-    font-weight: 600;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  ul.shifts li .date .weekday {
-    font-size: 0.7rem;
-    color: #969696;
-    font-weight: 600;
-    margin-top: -0.4rem;
-  }
-  ul.shifts li .shift {
-    background: #feebef;
-    padding: 0.7rem 1.4rem;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-  ul.shifts li .shift .time {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #d35d7d;
-  }
-  ul.shifts li .shift .location {
-    color: #8a7f82;
-  }
-
-    div.stars {
-      display: inline-block;
+    .btn-link {
+      text-decoration: none;
+    }
+    ul.shifts {
+      list-style: none;
+      padding: 0;
+      margin-top: 0.5rem;
+    }
+    ul.shifts li {
+      display: flex;
+      align-items: center;
+      margin: 0.25rem 1rem 0.25rem 0;
+    }
+    ul.shifts li .date {
+      padding: 1rem;
+      font-size: 1.4rem;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    ul.shifts li .date .weekday {
+      font-size: 0.7rem;
+      color: #969696;
+      font-weight: 600;
+      margin-top: -0.4rem;
+    }
+    ul.shifts li .shift {
+      background: #feebef;
+      padding: 0.7rem 1.4rem;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    ul.shifts li .shift .time {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #d35d7d;
+    }
+    ul.shifts li .shift .location {
+      color: #8a7f82;
     }
 
-    input.star { display: none; }
+      div.stars {
+        display: inline-block;
+      }
 
-    label.star {
-      float: right;
-      padding: 5px;
-      font-size: 36px;
-      color: #000000;
-      transition: all .2s;
-    }
+      input.star { display: none; }
 
-    input.star:checked ~ label.star:before {
-      content: '★';
-      color: #FD4;
-      transition: all .25s;
-    }
+      label.star {
+        float: right;
+        padding: 5px;
+        font-size: 36px;
+        color: #000000;
+        transition: all .2s;
+      }
 
-    input.star-5:checked ~ label.star:before {
-      color: #FE7;
-      text-shadow: 0 0 5px #952;
-    }
+      input.star:checked ~ label.star:before {
+        content: '★';
+        color: #FD4;
+        transition: all .25s;
+      }
 
-    input.star-1:checked ~ label.star:before { color: #F62; }
+      input.star-5:checked ~ label.star:before {
+        color: #FE7;
+        text-shadow: 0 0 5px #952;
+      }
 
-    label.star:hover { transform: rotate(-15deg) scale(1.3); }
+      input.star-1:checked ~ label.star:before { color: #F62; }
 
-    label.star:before {
-      content: '☆';
-    }
-  </style>
+      label.star:hover { transform: rotate(-15deg) scale(1.3); }
+
+      label.star:before {
+        content: '☆';
+      }
+</style>
 <script>
-
     function shiftTime() {
         var shiftStart = '{{shiftStart}}';
         var span = document.getElementById('clock');
@@ -394,7 +382,6 @@
       }
 
     });
-  </script>
+</script>
 
-{% load static %}
 {% endblock %}
