@@ -35,11 +35,8 @@
     {% include "includes/navigation.html" %}
 
     <div class="container-fluid px-4">
-        <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2">
             <div class="leftTitle">
-                <h1 class="h2">
-                    {% block title %}{% endblock %}
-                </h1>
                 {% if modifiedDate %}
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <button type="button" class="btn btn-sm modified-date">
@@ -52,15 +49,16 @@
             {% block widgets %}{% endblock %}
         </div>
     </div>
+    {% if messages %}
+
     <div class="container-fluid">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}" role="alert" style="margin-bottom: 0;">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert" style="margin-bottom: 0;">
+            {{ message }}
+        </div>
+        {% endfor %}
     </div>
+    {% endif %}
     <div class="container-fluid py-4">
         {% block content %}{% endblock %}
     </div>

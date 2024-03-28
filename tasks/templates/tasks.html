@@ -1,24 +1,22 @@
 {% extends "base_generic.html" %}
 
-{% block title %}Open Tasks{% endblock %}
-
 {% block widgets %}
     <div class="d-flex justify-content-between flex-wrap gap-2">
-    {% if user.is_superuser or user.is_staff %}
-        <a class="btn btn-primary" href="/tasks/add{% if branch %}?branch={{ branch }}{% endif %}">
-            Add task
-        </a>
-    {% endif %}
-    <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {{ branch }}
-        </button>
-        <ul class="dropdown-menu">
-            {% for branch in branches %}
-                <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
+        {% if user.is_superuser or user.is_staff %}
+            <a class="btn btn-primary" href="/tasks/add{% if branch %}?branch={{ branch }}{% endif %}">
+                Add task
+            </a>
+        {% endif %}
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ branch }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                {% for branch in branches %}
+                    <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 {% endblock %}
 
@@ -278,6 +276,3 @@
     </style>
 
 {% endblock content %}
-
-
-
