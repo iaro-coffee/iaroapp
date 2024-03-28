@@ -169,15 +169,16 @@
         }
 
         // Hook description modal to button
-        let descriptionLinks = document.querySelectorAll('.descriptionLink')
+        let descriptionLinks = document.querySelectorAll('.descriptionLink');
         descriptionLinks.forEach((link) => {
             link.addEventListener('click', (event) => {
                 event.preventDefault();
+                event.stopPropagation();  // Add this line to stop event bubbling
                 var descriptionText = event.target.nextElementSibling.textContent;
                 var infoModalContent = document.querySelector('.infoModalContent').innerHTML = descriptionText;
                 infoModal.show();
-            })
-        })
+            });
+        });
 
         // Add click event listener to labels with class 'subtasks'
         let subtaskLabels = document.querySelectorAll('.subtasks');
