@@ -53,13 +53,16 @@
                                 <td>
                                     <div class="d-flex px-4 responsive__mobile-2">
                                         <fieldset>
-                                            <input type="checkbox"
-                                                   class="form-check-input flex-shrink-0"
-                                                   id="checkbox_{{ form.instance.id }}"
-                                                   name="done_{{ form.instance.id }}"
-                                                   {% if form.instance.done %}
-                                                   checked disabled
-                                                   {% endif %}/>
+                                            <div class="checkbox-wrapper {% if form.instance.done %} checked-tooltip {% endif %}"
+                                                    {% if form.instance.done %} data-bs-toggle="tooltip"
+                                                 data-bs-placement="top" title="Done" {% endif %}>
+                                                <input type="checkbox"
+                                                       class="form-check-input flex-shrink-0"
+                                                       id="checkbox_{{ form.instance.id }}"
+                                                       name="done_{{ form.instance.id }}"
+                                                        {% if form.instance.done %} checked disabled {% endif %}/>
+                                            </div>
+
                                             <input type="number" name="id"
                                                    value="{{ form.instance.id }}"
                                                    style="display: none;"/>
@@ -68,7 +71,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex px-2 py-1">
-                                        <div class="d-flex flex-column justify-content-center responsive__mobile-3">
+                                        <div class="mb-0 fw-bold text-sm responsive__mobile-3">
                                             {{ form.instance.title }}
                                         </div>
                                     </div>
@@ -201,8 +204,16 @@
 </script>
 
 <script>
+
+
     document.addEventListener("DOMContentLoaded", function () {
         var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
+
+        // Using Bootstrap's tooltip
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
 
         checkboxes.forEach(function (checkbox) {
             checkbox.addEventListener('change', function () {
