@@ -132,6 +132,7 @@ def inventory_populate(request):
             request,
             "inventory.html",
             context={
+                "pageTitle": "Inventory update",
                 "users": users,
                 "storages": storages,
                 "isSubmittedToday": isSubmittedToday,
@@ -193,6 +194,7 @@ def inventory_evaluation(request):
         request,
         "inventory_evaluation.html",
         context={
+            "pageTitle": "Inventory overview",
             "products": products,
             "modifiedDate": modified_date,
             "storages": storages,
@@ -216,6 +218,7 @@ def inventory_shopping(request):
         request,
         "inventory_shopping.html",
         context={
+            "pageTitle": "Shopping list",
             "products": products,
             "modifiedDate": modified_date,
             "sellers": sellers,
@@ -267,6 +270,7 @@ def inventory_packaging(request):
         request,
         "inventory_packaging.html",
         context={
+            "pageTitle": "Packaging",
             "products": products,
             "product_storages": product_storages,
             "modifiedDate": modified_date,

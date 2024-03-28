@@ -22,17 +22,20 @@ def index(request):
             user = User.objects.get(id=user_id)
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-            shifts = Shift.objects.filter(user=request.user, end_date=None)
             print(user.email)
+
+            shifts = Shift.objects.filter(user=request.user, end_date=None)
             planday.authenticate()
             if not shifts:  # if no open shift exists, create one
                 status = planday.punch_in_by_email(user.email)
+                print(status)
                 if status == 200:
                     Shift.objects.create(user=user, start_date=date)
                 else:
                     return HttpResponse(status=status)
             else:  # else close shift with rating
                 status = planday.punch_out_by_email(user.email)
+                print(status)
                 if status == 200:
                     rating = EmployeeRating.objects.create(
                         user=user, rating=star, date=date
