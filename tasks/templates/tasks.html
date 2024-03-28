@@ -169,11 +169,11 @@
         }
 
         // Hook description modal to button
-        let descriptionLinks = document.querySelectorAll('.descriptionLink');
+        let descriptionLinks = document.querySelectorAll('.descriptionLink svg');
         descriptionLinks.forEach((link) => {
             link.addEventListener('click', (event) => {
                 event.preventDefault();
-                event.stopPropagation();  // Add this line to stop event bubbling
+                event.stopPropagation();  // Add this line to stop affecting checkbox when opening modal
                 var descriptionText = event.target.nextElementSibling.textContent;
                 var infoModalContent = document.querySelector('.infoModalContent').innerHTML = descriptionText;
                 infoModal.show();
@@ -261,6 +261,16 @@
     .form-check-input:checked[type="checkbox"] {
         accent-color: #17ad3f;
     }*/
+
+    .descriptionLink svg {
+        transition: transform 0.2s ease-in-out;
+        scale: 1.10;
+    }
+
+    .descriptionLink svg:hover {
+        transform: scale(1.35);
+        cursor: pointer;!important;
+    }
 
     .table-collapse {
         border-collapse: collapse;
