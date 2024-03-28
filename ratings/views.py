@@ -47,6 +47,7 @@ def ratings_evaluation(request):
         request,
         "ratings_evaluation.html",
         context={
+            "pageTitle": "Ratings overview",
             "list": userDicts,
         },
     )
@@ -69,6 +70,7 @@ def user_ratings_evaluation(request, id):
         request,
         "user_ratings_evaluation.html",
         context={
+            "pageTitle": "Ratings from " + userName,
             "ratings": userRatings,
             "avgRating": avgRating,
             "userName": userName,

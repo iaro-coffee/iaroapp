@@ -88,6 +88,7 @@ def tasks(request):
         request,
         "tasks.html",
         context={
+            "pageTitle": "Tasks",
             "task_list": tasks,
             "today": today,
             "formset": formset,
@@ -151,6 +152,7 @@ def tasks_evaluation(request):
         request,
         "tasks_list_evaluation.html",
         context={
+            "pageTitle": "Tasks overview",
             "tasks": tasks_evaluation,
             "weekdays": weekdays,
             "today": weekdayToday,
@@ -246,6 +248,7 @@ def tasks_baking(request):
         request,
         "tasks_baking.html",
         context={
+            "pageTitle": "Baking plan",
             "formset": formset,
             "modifiedDate": modified_date,
             "weekdays": weekdays,

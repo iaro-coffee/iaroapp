@@ -94,6 +94,7 @@ def index(request):
         request,
         "index.html",
         context={
+            "pageTitle": "Dashboard",
             "nextShifts": userShifts,
             "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
             "today": today,

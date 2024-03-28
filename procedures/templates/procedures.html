@@ -1,15 +1,11 @@
 {% extends "base_generic.html" %}
 
-{% block title %}
-  {% if opening == True %}Opening{% endif %}{% if closing == True %}Closing{% endif %} Tasks
-{% endblock %}
-
 {% block widgets %}
 <div class="dropdown">
   <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
     {{ branch }}
   </button>
-  <ul class="dropdown-menu">
+  <ul class="dropdown-menu  dropdown-menu-end">
     {% for branch in branches %}
     <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
     {% endfor %}
@@ -20,7 +16,6 @@
 {% block content %}
 
   {% if procedures %}
-
   <form id="tasksForm" method="post">
     {% csrf_token %}
     <div class="list-group w-auto">
@@ -28,6 +23,7 @@
         <br><b>{{ category.name }}</b><br>
           {% for procedure in procedures %}
             {% for procedure_branch in procedure.branch %}
+            <br>
             {% if branch == procedure_branch.name and procedure.category == category.id %}
             <label class="list-group-item d-flex gap-3">
               <fieldset>

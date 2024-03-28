@@ -47,7 +47,7 @@ def opening(request):
     branches = Branch.objects.all()
     branches = branches.order_by("name")
 
-    branch = request.GET.get("branch")
+    branch = request.GET.get("branch").name
     if not branch:
         branch = Branch.objects.first().name
 
@@ -55,6 +55,7 @@ def opening(request):
         request,
         "procedures.html",
         context={
+            "pageTitle": "Store opening",
             "procedures": procedures,
             "today": datetime.today().date(),
             "categories": categories,
@@ -86,7 +87,7 @@ def closing(request):
     if not branch:
         departmentId = request.session.get("departmentId", None)
         if departmentId is not None:
-            branch = Branch.objects.filter(departmentId=departmentId).first()
+            branch = Branch.objects.filter(departmentId=departmentId).first().name
             if branch is not None:
                 pass
             else:
@@ -98,6 +99,7 @@ def closing(request):
         request,
         "procedures.html",
         context={
+            "pageTitle": "Store closing",
             "procedures": procedures,
             "today": datetime.today().date(),
             "categories": categories,
