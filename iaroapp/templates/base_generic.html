@@ -52,23 +52,19 @@
             {% block widgets %}{% endblock %}
         </div>
     </div>
-
-    {% if messages %}
-    {% for message in messages %}
-    {% if message.tags == "success" %}
-    <div class="alert alert-success" role="alert">
-        {% else %}
-        <div class="alert alert-danger" role="alert">
-            {% endif %}
-            {{ message }}
-        </div>
-        {% endfor %}
+    <div class="container-fluid">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert" style="margin-bottom: 0;">
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endif %}
-
-        <div class="container-fluid py-4">
-            {% block content %}{% endblock %}
-        </div>
     </div>
+    <div class="container-fluid py-4">
+        {% block content %}{% endblock %}
+    </div>
+
 </main>
 
 <style>

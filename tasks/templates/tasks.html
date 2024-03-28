@@ -3,6 +3,7 @@
 {% block title %}Open Tasks{% endblock %}
 
 {% block widgets %}
+    <div class="d-flex justify-content-between flex-wrap gap-2">
     {% if user.is_superuser or user.is_staff %}
         <a class="btn btn-primary" href="/tasks/add{% if branch %}?branch={{ branch }}{% endif %}">
             Add task
@@ -18,59 +19,101 @@
             {% endfor %}
         </ul>
     </div>
+    </div>
 {% endblock %}
 
 {% block content %}
 
-{% if task_list %}
+    {% if task_list %}
+        <form id="tasksForm" method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card mb-4">
+{#                        <div class="card-header pb-0 responsive__mobile-2">#}
+{#                            <h6>Tasks Table</h6>#}
+{#                        </div>#}
+                        <div class="card-body px-0 pt-0 pb-2">
+                            <div class="table-responsive p-0">
+                                <table class="table align-items-center mb-2">
+                                    <thead>
+                                    <tr class="task-row-separator">
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle responsive__mobile-1">
+                                            Select
+                                        </th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Task
+                                        </th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
+                                            Details
+                                        </th>
+                                    </tr>
+                                    </thead>
 
-    <form id="tasksForm" method="post">
-        {% csrf_token %}
-        {{ formset.management_form }}
-        <div class="list-group w-auto">
+                                    <tbody>
+                                    {% for form in formset %}
+                                        {% if form.instance.id %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex px-4 responsive__mobile-2">
+                                                        <fieldset>
+                                                            <input type="checkbox"
+                                                                   class="form-check-input flex-shrink-0"
+                                                                   id="checkbox_{{ form.instance.id }}"
+                                                                   name="done_{{ form.instance.id }}"
+                                                                   {% if form.instance.done %}checked
+                                                                   disabled{% endif %}/>
+                                                            <input type="number" name="id"
+                                                                   value="{{ form.instance.id }}"
+                                                                   style="display: none;"/>
+                                                        </fieldset>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex px-2 py-1">
+                                                        <div class="d-flex flex-column justify-content-center responsive__mobile-3">
+                                                            {{ form.instance.title }}
+                                                        </div>
+                                                    </div>
+                                                <div class="d-flex">
+                                                    <small class="d-block text-muted text-xs opacity-7 text-secondary" style="margin: 0.1rem 0; padding-left: 0.5rem;">
+                                                        <span data-feather="tag" class="align-text-bottom" style="height: 16px"></span>
+                                                        {{ form.instance.get_types|join:", " }}
+                                                        {% if form.instance.assignees %}
+                                                            <span data-feather="user" class="align-text-bottom"
+                                                                  style="margin-left: 0.2rem; height: 16px"></span>
+                                                            {{ form.instance.assignees }}
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                                </td>
+                                                <td class="align-middle text-center text-sm">
+                                                    {% if form.instance.summary %}
+                                                        <div class="descriptionLink">
+                                                    <span data-feather="help-circle" class="align-text-bottom"
+                                                          style="width: 20px; height: 20px; stroke-width: 1;"></span>
+                                                            <span class="hidden">{{ form.instance.summary }}</span>
+                                                        </div>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" id="submitTasksBtn" class="w-100 btn btn-primary" value="Submit tasks"
+                           style="margin-top: 1rem; float: right; max-width: 200px;"/>
+                </div>
+            </div>
+        </form>
 
-            {% for form in formset %}
-                {% if form.instance.id %}
-                    <label class="list-group-item d-flex gap-3 {% if form.instance.done %}done{% endif %} {% if form.instance.subtasks.all %}subtasks{% endif %}">
-                        <fieldset>
-                            <input type="checkbox" class="form-check-input flex-shrink-0"
-                                   name="done_{{ form.instance.id }}" {% if form.instance.done %}checked
-                                   disabled{% endif %}/>
-                            <input type="number" name="id" value="{{ form.instance.id }}" style="display: none;"/>
-                        </fieldset>
-                        <span class="pt-1 form-checked-content">
-        {{ form.instance.title }}<br>
-        <small class="d-block text-muted" style="margin: 0.1rem 0;">
-          <span data-feather="tag" class="align-text-bottom"></span>
-          {{ form.instance.get_types|join:", " }}
-            {% if form.instance.assignees %}
-                <span data-feather="user" class="align-text-bottom" style="margin-left: 0.2rem"></span>
-                {{ form.instance.assignees }}
-            {% endif %}
-        </small>
-      </span>
-                        {% if form.instance.summary %}
-                            <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
-                                <span data-feather="help-circle" class="align-text-bottom"
-                                      style="width: 20px; height: 20px; stroke-width: 1;"></span>
-                                <span class="hidden">
-          {{ form.instance.summary }}
-        </span>
-                            </div>
-                        {% endif %}
-                        {% if form.instance.subtasks.all %}
-                            <div class="descriptionLink" style="display: flex; flex-direction: row; gap: 0.5rem;">
-                                <span data-feather="arrow-right" class="align-text-bottom"
-                                      style="width: 20px; height: 20px; stroke-width: 1;"></span>
-                            </div>
-                        {% endif %}
-                    </label>
-                {% endif %}
-            {% endfor %}
-        </div>
-{#        <input type="submit" id="submitTasksBtn" class="w-100 btn btn-primary" value="Submit tasks"#}
-{#               style="margin-top: 1rem; float: right; max-width: 200px;"/>#}
-    </form>
+    {% else %}
+        <p>There are no tasks available.</p>
+    {% endif %}
 
     <div class="modal fade" id="submitTasksModal" tabindex="-1" role="dialog"
          aria-labelledby="submitTasksModalLabel" aria-hidden="true">
@@ -105,44 +148,17 @@
         </div>
     </div>
 
-    <style>
-        .form-checked-content {
-            flex-grow: 1;
-        }
 
-        .d-flex {
-            align-items: center;
-        }
 
-        .checked {
-            background-color: rgb(249, 244, 174);
-        }
-
-        .done {
-            background-color: rgb(209, 231, 221);
-            border: 1px solid #e0cbcd;
-        }
-
-        .descriptionLink {
-            cursor: pointer;
-        }
-
-        input[type="checkbox"] {
-            {#font-size: 1.375em;#}
-        }
-    </style>
 
     <script>
         function submitForm() {
-
             var form = document.querySelector('#tasksForm');
             form.submit()
             window.scrollTo(0, 0);
-
         };
 
         document.addEventListener("DOMContentLoaded", function () {
-
             var submitTasksModal = new bootstrap.Modal(document.getElementById("submitTasksModal"), {});
             var infoModal = new bootstrap.Modal(document.getElementById("infoModal"), {});
 
@@ -167,18 +183,6 @@
                 })
             })
 
-            // Colorize checked tasks
-            var checkboxes = document.querySelectorAll('input');
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].addEventListener('change', function () {
-                    if (this.checked) {
-                        this.closest('.list-group-item').classList.add('checked');
-                    } else {
-                        this.closest('.list-group-item').classList.remove('checked');
-                    }
-                });
-            }
-
             // Add click event listener to labels with class 'subtasks'
             let subtaskLabels = document.querySelectorAll('.subtasks');
             subtaskLabels.forEach((label) => {
@@ -199,147 +203,81 @@
         })
     </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
 
-    checkboxes.forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            var row = this.closest('tr');
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    var row = this.closest('tr');
 
-            if (this.checked) {
-                row.style.backgroundColor = '#f0f0f0';
-            } else {
-                row.style.backgroundColor = '';
-            }
+                    if (this.checked) {
+                        row.style.backgroundColor = 'rgba(20,23,39,0.15)';
+
+                    } else {
+                        row.style.backgroundColor = '';
+                    }
+                });
+            });
+
+            var rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                row.addEventListener('click', function (event) {
+                    if (event.target.type !== 'checkbox') {
+                        var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
+                        if (!checkbox.disabled) {
+                            checkbox.checked = !checkbox.checked;
+                            checkbox.dispatchEvent(new Event('change'));
+                        }
+                    }
+                });
+
+                row.addEventListener('mouseover', function () {
+                    var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
+                    if (!checkbox.checked) {
+                        this.style.cursor = 'pointer';
+                        this.style.backgroundColor = 'rgba(20,23,39,0.05)';
+                    }
+                });
+
+                row.addEventListener('mouseout', function () {
+                    var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
+                    if (!checkbox.checked) {
+                        this.style.backgroundColor = '';
+                    }
+                });
+            });
         });
-    });
+    </script>
 
-    var rows = document.querySelectorAll('tbody tr');
-
-    rows.forEach(row => {
-        row.addEventListener('click', function(event) {
-            if (event.target.type !== 'checkbox') {
-                var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
-                if (!checkbox.disabled) {
-                    checkbox.checked = !checkbox.checked;
-                    checkbox.dispatchEvent(new Event('change'));
-                }
-            }
-        });
-
-        row.addEventListener('mouseover', function() {
-            this.style.cursor = 'pointer';
-            this.style.backgroundColor = '#e9ecef';
-        });
-
-        row.addEventListener('mouseout', function() {
-            var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
-            if (!checkbox.checked) {
-                this.style.backgroundColor = '';
-            }
-        });
-    });
-});
-</script>
-
-{% else %}
-    <p>There are no tasks available.</p>
-{% endif %}
-
-
-
-    {% load static %}
     <style>
-    .form-check-input:not(:checked) {
+        .form-check-input:not(:checked) {
+            background-color: rgba(128, 128, 128, 0.25);
+        }
 
-    background-color: rgba(128, 128, 128, 0.25);
-}
+        .form-check-input:checked[type="checkbox"] {
+            background-image: linear-gradient(310deg, #17ad37 0%, #84dc14 100%);
+        }
+
+        @media only screen and (max-width: 539px) {
+            .responsive__mobile-1 {
+                padding: 0.6rem !important;
+                width: 36px !important;
+            }
+            .responsive__mobile-2 {
+                padding: 0.5rem !important;
+            }
+
+            .responsive__mobile-3 {
+                width: 180px;!important;
+                word-wrap: break-word;!important;
+                white-space: normal;!important;
+            }
+        }
     </style>
 
-    <div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-header pb-0">
-                    <h6>Tasks Table</h6>
-                </div>
-                <div class="card-body px-0 pt-0 pb-2">
-                    <div class="table-responsive p-0">
-                        <table class="table align-items-center mb-2">
-                            <thead>
-                            <tr class="task-row-separator">
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Select
-                                </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Task
-                                </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                    Type
-                                </th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    Branch
-                                </th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    Details
-                                </th>
-
-                                <th class="text-secondary opacity-7"></th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            {% for form in formset %}
-                                {% if form.instance.id %}
-                                    <!-- Add onclick event to toggle the checkbox and onmouseover & onmouseout for hover effect -->
-                                    <tr onclick="toggleCheckbox('{{ form.instance.id }}')" style="cursor: pointer;">
-                                        <td>
-                                            <div class="d-flex px-4">
-                                                <fieldset>
-                                                    <input type="checkbox" class="form-check-input flex-shrink-0"
-                                                           id="checkbox_{{ form.instance.id }}"
-                                                           name="done_{{ form.instance.id }}"
-                                                           {% if form.instance.done %}checked disabled{% endif %}/>
-                                                    <input type="number" name="id" value="{{ form.instance.id }}"
-                                                           style="display: none;"/>
-                                                </fieldset>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex px-2 py-1">
-                                                <div class="d-flex flex-column justify-content-center">
-                                                    {{ form.instance.title }}
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="align-middle text-sm">
-                                            {{ form.instance.get_types|join:", " }}
-                                        </td>
-                                        <td class="align-middle text-center text-sm">
-                                            {% if form.instance.assignees %}
-                                                {{ form.instance.assignees }}
-                                            {% endif %}
-                                        </td>
-                                        <td class="align-middle text-center text-sm">
-                                            {% if form.instance.summary %}
-                                                <div class="descriptionLink">
-                                                    <span data-feather="help-circle" class="align-text-bottom"
-                                                          style="width: 20px; height: 20px; stroke-width: 1;"></span>
-                                                    <span class="hidden">{{ form.instance.summary }}</span>
-                                                </div>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-{% endblock %}
+{% endblock content %}
 
 
 
