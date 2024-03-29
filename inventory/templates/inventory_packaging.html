@@ -44,14 +44,6 @@
                             </thead>
 
                             <tbody>
-                                <!-- Reusable SVG Usage Symbol for Product Storages Display-->
-                                <svg style="display: none;">
-                                    <defs>
-                                        <symbol id="x-circle-fill" viewBox="0 0 16 16">
-                                            <circle cx="8" cy="8" r="7"></circle>
-                                        </symbol>
-                                    </defs>
-                                </svg>
 
                                 {% for product in products %}
                                     {% if branch == "All" or product.get_main_storage in branch.get_storages %}
@@ -75,25 +67,21 @@
                                                     </div>
                                                 </td>
 
-
-
                                                 <!-- Product Storages Display -->
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <label for="checkbox{{ forloop.counter }}" class="mb-0">
-                                                            {% for product_storage in product.product_storages.all %}
-                                                                {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
-                                                                    <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                        {% for product_storage in product.product_storages.all %}
+                                                            {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
+                                                                <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
                                                                     <div class="d-flex align-items-center">
-                                                                        <svg class="bi me-1" width="16" height="16" style="color: {{ product_storage.storage.color }};">
-                                                                            <use href="#x-circle-fill"></use>
+                                                                        <svg class="bi me-1" width="16" height="16">
+                                                                            <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}"></circle>
                                                                         </svg>
                                                                         {{ product_storage.storage.name }}
                                                                     </div>
-                                                                    </span>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </label>
+                                                                </span>
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     </div>
                                                 </td>
 
