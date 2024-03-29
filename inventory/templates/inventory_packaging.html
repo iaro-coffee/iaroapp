@@ -1,181 +1,265 @@
 {% extends "base_generic.html" %}
 
 {% block widgets %}
-<div class="dropdown">
-  <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    {{ branch }}
-  </button>
-  <ul class="dropdown-menu">
-    {% for branch in branches %}
-    <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
-    {% endfor %}
-  </ul>
-</div>
+    <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ branch }}
+        </button>
+        <ul class="dropdown-menu">
+            {% for branch in branches %}
+                <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
 
 {% block content %}
 
-<div style="width: 100%;">
-  <table class="table table-hover">
-    <tbody>
-    {% for target_branch in target_branches %}
-        <tr class="title">
-          <th colspan="4">Deliver to {{ target_branch }}</th>
-        </tr>
-        <tr class="header">
-          <th scope="col" width="1%"></th>
-          <th scope="col">Name</th>
-          <th scope="col" class="storages-column">Storages</th>
-          <th scope="col" style="white-space: nowrap;">Needed</th>
-        </tr>
-        {% for product in products %}
-          {% if branch == "All" or product.get_main_storage in branch.get_storages %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-2 table-collapse">
 
-              {% if product.needs_packaging and target_branch in product.get_storage_branches %}
+                            <thead>
+                            {% for target_branch in target_branches %}
+                                <tr class="title">
+                                    <th colspan="4"><h6>Deliver to {{ target_branch }}</h6></th>
+                                </tr>
+                                <tr class="task-row-separator">
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle responsive__mobile-1">
+                                        Select
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Product
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
+                                        Storages
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
+                                        Needed
+                                    </th>
+                                </tr>
+                            </thead>
 
-              <tr class="entry">
-                <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
-                <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
-                <td class="storages-column">
-                  <label for="checkbox{{forloop.counter}}">
-                    {% for product_storage in product.product_storages.all %}
-                    {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
-                    <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
-                      <svg class="bi ms-1" width="16" height="16" style="color: {{ product_storage.storage.color }};">
-                        <use xlink:href="#x-circle-fill">
-                          <symbol id="x-circle-fill" viewBox="0 0 16 16">
-                            <circle cx="8" cy="8" r="7" />
-                          </symbol>
-                        </use>
-                      </svg>
-                      {{ product_storage.storage.name }}
-                    </span>
-                    {% endif %}
-                    {% endfor %}
-                    </label>
-                </td>
-                <td>
-                  <label for="checkbox{{forloop.counter}}" style="margin-right: 1rem;">
-                    {% for product_storage, data in product.get_oos_value_shipping.items %}
-                    {% if product_storage == target_branch %}
-                      {{ data.value_needed|floatformat:2 }}
-                    {% endif %}
-                    {% endfor %}
-                    {{ product.unit.all|join:", " }}
-                  </label>
-                </td>
-              </tr>
+                            <tbody>
+                                <!-- Reusable SVG Usage Symbol for Product Storages Display-->
+                                <svg style="display: none;">
+                                    <defs>
+                                        <symbol id="x-circle-fill" viewBox="0 0 16 16">
+                                            <circle cx="8" cy="8" r="7"></circle>
+                                        </symbol>
+                                    </defs>
+                                </svg>
 
-              {% endif %}
+                                {% for product in products %}
+                                    {% if branch == "All" or product.get_main_storage in branch.get_storages %}
+                                        {% if product.needs_packaging and target_branch in product.get_storage_branches %}
 
-          {% endif %}
-        {% endfor %}
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+                                            <tr class="entry">
 
-<style>
-  table {
-    font-size: 1rem;
-  }
-  label {
-    width: 100%;
-    padding: .9rem;
-    user-select: none;
-    background: none;
-    display: flex;
-    gap: 0.2rem;
-    flex-wrap: wrap;
-  }
-  tbody tr.header:hover, tbody tr.title:hover {
-    background-color: white !important;
-    box-shadow: none !important;
-  }
-  .table > :not(caption) > * > * {
-    box-shadow: none !important;
-  }
-  tbody tr.title th {
-    padding-top: 3rem !important;
-    font-size: 1.5rem !important;
-    font-weight: 200 !important;
-    padding-left: 0 !important;
-  }
-  tr.header th {
-    color: #495057 !important;
-    background-color: #e9ecef;
-    border-color: #dee2e6;
-  }
-  tbody tr.title:first-child th{
-    padding-top: 1rem !important;
-  }
-  tbody tr td {
-    background-color: rgb(248, 215, 218) !important;
-    border-bottom-color: rgb(201, 192, 192) !important;
-  }
-  tbody tr.done td {
-    background-color: rgb(209, 231, 221) !important;
-  }
-  td:not(first-child) {
-    padding: 0rem !important;
-    overflow-wrap: anywhere;
-  }
-  td:first-child {
-    padding: 0.8rem 0 0.8rem 1.5rem !important;
-  }
-  .badge {
-    display: flex;
-    gap: 0.5rem;
-    flex-direction: row;
-    align-items: center;
-    font-size: 0.85rem;
-    padding-right: 0.7rem;
-    font-weight: 500;
-  }
-  @media (max-width: 767px) {
-    .storages-column {
-      display: none;
+                                                <td>
+                                                    <div class="d-flex px-4 responsive__mobile-2">
+                                                        <!-- Adjusted to include name attribute starting with "done_" for js -->
+                                                        <input type="checkbox" id="checkbox{{ forloop.counter }}"
+                                                               name="done_{{ forloop.counter }}">
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <label for="checkbox{{ forloop.counter }}" class="sr-only">Select {{ product.name }}</label>
+                                                        <h6 class="mb-0 text-sm responsive__mobile-3">
+                                                            {{ product.name }}
+                                                        </h6>
+                                                    </div>
+                                                </td>
+
+
+
+                                                <!-- Product Storages Display -->
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <label for="checkbox{{ forloop.counter }}" class="mb-0">
+                                                            {% for product_storage in product.product_storages.all %}
+                                                                {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
+                                                                    <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <svg class="bi me-1" width="16" height="16" style="color: {{ product_storage.storage.color }};">
+                                                                            <use href="#x-circle-fill"></use>
+                                                                        </svg>
+                                                                        {{ product_storage.storage.name }}
+                                                                    </div>
+                                                                    </span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </label>
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <label for="checkbox{{ forloop.counter }}" class="mb-0">
+                                                        <div class="d-flex align-items-center">
+                                                        <h6 class="mb-0 text-sm">
+                                                            {% for product_storage, data in product.get_oos_value_shipping.items %}
+                                                                {% if product_storage == target_branch %}
+                                                                    {{ data.value_needed|floatformat:2 }}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            {{ product.unit.all|join:", " }}
+                                                        </h6>
+                                                        </div>
+                                                    </label>
+                                                </td>
+                                            </tr>
+
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <style>
+    .descriptionLink svg {
+        transition: transform 0.2s ease-in-out;
+        scale: 1.10;
     }
-  }
-  label {
-    padding: .9rem .6rem !important;
-  }
+
+    .descriptionLink svg:hover {
+        transform: scale(1.35);
+        cursor: pointer;!important;
+    }
+
+    .table-collapse {
+        border-collapse: collapse;
+    }
+
+    .form-check-input:not(:checked) {
+        background-color: rgba(128, 128, 128, 0.25);
+    }
+
+    .form-check-input:checked[type="checkbox"] {
+        background-image: linear-gradient(310deg, #17ad37 0%, #84dc14 100%);
+    }
+
+    @media only screen and (max-width: 539px) {
+        .responsive__mobile-1 {
+            padding: 0.6rem !important;
+            width: 36px !important;
+        }
+        .responsive__mobile-2 {
+            padding: 0.5rem !important;
+        }
+
+        .responsive__mobile-3 {
+            width: 180px;!important;
+            word-wrap: break-word;!important;
+            white-space: normal;!important;
+        }
+    }
 </style>
 
-<script>
+    <script>
 
-  window.onload = function() {
-    var i, l, trs = document.getElementsByClassName('entry');
-    for (i = 0, l = trs.length; i < l; i++) {
-      attachClickHandler(trs[i]);
-      var checkbox = trs[i].querySelector('input');
-      if (checkbox) {
-        if (checkbox.checked) {
-          trs[i].classList.add('done');
+        window.onload = function () {
+            var i, l, trs = document.getElementsByClassName('entry');
+            for (i = 0, l = trs.length; i < l; i++) {
+                attachClickHandler(trs[i]);
+                var checkbox = trs[i].querySelector('input');
+                if (checkbox) {
+                    if (checkbox.checked) {
+                        trs[i].classList.add('done');
+                    }
+                }
+            }
+        };
+
+        function clickHandler() {
+            var checkbox = this.querySelector('input');
+            if (this.classList.contains('done')) {
+                this.classList.remove('done');
+                checkbox.checked = false;
+            } else {
+                this.classList.add('done');
+                checkbox.checked = true;
+            }
         }
-      }
-    }
-  };
 
-  function clickHandler() {
-    var checkbox = this.querySelector('input');
-    if (this.classList.contains('done')) {
-      this.classList.remove('done');
-      checkbox.checked = false;
-    } else {
-      this.classList.add('done');
-      checkbox.checked = true;
-    }
-  }
-
-  function attachClickHandler(tr) {
-      tr.onclick = function() {
-        if (event.target.tagName != 'INPUT') {
-          event.preventDefault();
+        function attachClickHandler(tr) {
+            tr.onclick = function () {
+                if (event.target.tagName != 'INPUT') {
+                    event.preventDefault();
+                }
+                clickHandler.call(tr);
+            };
         }
-        clickHandler.call(tr);
-      };
-  }
 
+    </script>
+
+    <script>
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
+
+        // Using Bootstrap's tooltip
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                var row = this.closest('tr');
+
+                if (this.checked) {
+                    row.style.backgroundColor = 'rgba(20,23,39,0.15)';
+
+                } else {
+                    row.style.backgroundColor = '';
+                }
+            });
+        });
+
+        var rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            row.addEventListener('click', function (event) {
+                if (event.target.type !== 'checkbox') {
+                    var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
+                    if (!checkbox.disabled) {
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+
+            row.addEventListener('mouseover', function () {
+                var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
+                if (!checkbox.checked) {
+                    this.style.cursor = 'pointer';
+                    this.style.backgroundColor = 'rgba(20,23,39,0.05)';
+                }
+            });
+
+            row.addEventListener('mouseout', function () {
+                var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
+                if (!checkbox.checked) {
+                    this.style.backgroundColor = '';
+                }
+            });
+        });
+    });
 </script>
 {% endblock %}
