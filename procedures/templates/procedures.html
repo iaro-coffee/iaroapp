@@ -23,7 +23,6 @@
         <br><b>{{ category.name }}</b><br>
           {% for procedure in procedures %}
             {% for procedure_branch in procedure.branch %}
-            <br>
             {% if branch == procedure_branch.name and procedure.category == category.id %}
             <label class="list-group-item d-flex gap-3">
               <fieldset>
