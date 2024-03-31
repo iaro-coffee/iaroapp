@@ -38,11 +38,9 @@
         <div class="title d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2">
             <div class="leftTitle">
                 {% if modifiedDate %}
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <button type="button" class="btn btn-sm modified-date">
-                        <span data-feather="calendar" class="align-text-bottom"></span>
-                        Last updated: {{ modifiedDate }}
-                    </button>
+                <div class="btn-toolbar mb-md-0 text-sm">
+                    <span data-feather="calendar" class="align-text-bottom"> </span>
+                    &nbsp;Last updated: {{ modifiedDate }}
                 </div>
                 {% endif %}
             </div>
