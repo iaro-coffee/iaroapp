@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth import views as auth_views
 from django.http import HttpResponseRedirect
@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from lib import planday
 from shifts.models import Shift
+from tasks.models import TaskInstance
 from tasks.views import getMyTasks
 
 planday = planday.Planday()
@@ -84,11 +85,20 @@ def hasOngoingShift(request):
         return False, None
 
 
+def getTasksDoneLastMonth(request):
+    return TaskInstance.objects.filter(
+        user=request.user,
+        date_done__lte=datetime.today(),
+        date_done__gt=datetime.today() - timedelta(days=30),
+    ).count()
+
+
 def index(request):
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
     myTasks = getMyTasks(request)
     ongoingShift = hasOngoingShift(request)
+    tasksDoneLastMonth = getTasksDoneLastMonth(request)
     print(ongoingShift)
     return render(
         request,
@@ -97,6 +107,7 @@ def index(request):
             "pageTitle": "Dashboard",
             "nextShifts": userShifts,
             "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
+            "tasks_done_last_month": tasksDoneLastMonth,
             "today": today,
             "ongoingShift": ongoingShift[0],
             "shiftStart": ongoingShift[1],
