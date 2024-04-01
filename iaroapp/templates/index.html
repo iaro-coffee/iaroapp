@@ -87,7 +87,6 @@
                             <i class="fa fa-check text-info" aria-hidden="true"></i>
                             <span class="font-weight-bold ms-1">{{ tasks_done_last_month }} done</span> in the last 30
                             days
-                            <!-- todo insert correct data -->
                         </p>
                     </div>
                 </div>
@@ -644,6 +643,8 @@
         spanGaps: true,
         responsive: true,
         maintainAspectRatio: false,
+        min: 1,
+        max: 5,
         plugins: {
           legend: {
             display: false,
