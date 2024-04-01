@@ -19,12 +19,12 @@ from tasks.views import getMyTasks
 
 planday = planday.Planday()
 run_once_day = {}
-run_once_day_stats = {}
+run_once_day_punch_clock = {}
 nextShifts = []
 nextShiftsUser = {}
 showOpening = False
 showClosing = False
-statsUser = {}
+punchClockRecordsUser = {}
 
 
 def shiftsWereCheckedToday(userId):
@@ -33,10 +33,10 @@ def shiftsWereCheckedToday(userId):
     return True
 
 
-def shiftsStatisticsWereCheckedToday(userId):
+def punchClockRecordsWereCheckedToday(userId):
     if (
-        userId not in run_once_day_stats
-        or run_once_day_stats[userId] != datetime.today().date()
+        userId not in run_once_day_punch_clock
+        or run_once_day_punch_clock[userId] != datetime.today().date()
     ):
         return False
     return True
@@ -116,64 +116,65 @@ def getTasksDoneLastMonth(request):
 
 def getStatistics(request):
     now = timezone.now()
-    if not shiftsStatisticsWereCheckedToday(request.user.id):
-        run_once_day_stats[request.user.id] = now.date()
-        statistics = {
-            "labels": [],
-            "workHours": [],
-            "tasks": [],
-            "ratings": [],
-        }
-        statisticsSum = {"workHours": 0, "tasks": 0, "ratings": 0}
 
-        sevenDaysAgo = timezone.now() - timedelta(days=7)
+    statistics = {
+        "labels": [],
+        "workHours": [],
+        "tasks": [],
+        "ratings": [],
+    }
+    statisticsSum = {"workHours": 0, "tasks": 0, "ratings": 0}
 
-        taskQuerySet = TaskInstance.objects.filter(
-            user=request.user,
-            date_done__gt=sevenDaysAgo,
-        )
-        statisticsSum["tasks"] = taskQuerySet.count()
+    sevenDaysAgo = timezone.now() - timedelta(days=7)
 
-        ratingsQuerySet = EmployeeRating.objects.filter(
-            user=request.user,
-            date__gt=sevenDaysAgo,
-        )
-        statisticsSum["ratings"] = ratingsQuerySet.aggregate(Avg("rating"))[
-            "rating__avg"
-        ]
+    taskQuerySet = TaskInstance.objects.filter(
+        user=request.user,
+        date_done__gt=sevenDaysAgo,
+    )
+    statisticsSum["tasks"] = taskQuerySet.count()
 
+    ratingsQuerySet = EmployeeRating.objects.filter(
+        user=request.user,
+        date__gt=sevenDaysAgo,
+    )
+    statisticsSum["ratings"] = round(
+        ratingsQuerySet.aggregate(Avg("rating"))["rating__avg"], 2
+    )
+
+    if not punchClockRecordsWereCheckedToday(request.user.id):
+        run_once_day_punch_clock[request.user.id] = now.date()
         planday.authenticate()
         userEmail = User.objects.get(id=request.user.id).email
-        punchClockRecords = planday.get_user_punchclock_records_of_timespan(
-            userEmail, sevenDaysAgo, now
+        punchClockRecordsUser[request.user.id] = (
+            planday.get_user_punchclock_records_of_timespan(
+                userEmail, sevenDaysAgo, now
+            )
         )
-        print(punchClockRecords)
 
-        for x in range(7):
-            d = now.date() - timedelta(days=x)
-            statistics["labels"].insert(0, d.strftime("%m-%d"))
+    for x in range(7):
+        d = now.date() - timedelta(days=x)
+        statistics["labels"].insert(0, d.strftime("%m-%d"))
 
-            tasks = taskQuerySet.filter(date_done__date=d)
-            taskCount = tasks.count()
-            statistics["tasks"].insert(0, taskCount)
+        tasks = taskQuerySet.filter(date_done__date=d)
+        taskCount = tasks.count()
+        statistics["tasks"].insert(0, taskCount)
 
-            ratings = ratingsQuerySet.filter(date__date=d)
-            print(ratings)
-            rating = ratings.first().rating if ratings.count() != 0 else None
-            statistics["ratings"].insert(0, rating)
+        ratings = ratingsQuerySet.filter(date__date=d)
+        rating = ratings.first().rating if ratings.count() != 0 else None
+        statistics["ratings"].insert(0, rating)
 
-            hours = 0
-            for record in punchClockRecords:
-                startDateTime = parse_datetime(record["startDateTime"])
-                endDateTime = parse_datetime(record["endDateTime"])
-                if startDateTime.strftime("%m-%d") == d.strftime("%m-%d"):
-                    diff = endDateTime - startDateTime
-                    hours = diff.seconds / 3600
-            statistics["workHours"].insert(0, hours)
-        statsUser[request.user.id] = (statistics, statisticsSum)
-    else:
-        print("yes")
-    return statsUser[request.user.id]
+        hours = 0
+        for record in punchClockRecordsUser[request.user.id]:
+            startDateTime = parse_datetime(record["startDateTime"])
+            endDateTime = parse_datetime(record["endDateTime"])
+            if startDateTime.strftime("%m-%d") == d.strftime("%m-%d"):
+                diff = endDateTime - startDateTime
+                hours = diff.seconds / 3600
+        statistics["workHours"].insert(0, hours)
+
+    statisticsSum["workHours"] = round(sum(statistics["workHours"]), 2)
+
+    return (statistics, statisticsSum)
 
 
 def index(request):
