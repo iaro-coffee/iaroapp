@@ -86,24 +86,22 @@
                                                 </td>
 
                                                 <!-- Product Storages Display -->
-                                                <td class="responsive__hide">
-
-                                                    <div class="d-flex align-items-center">
-                                                        {% for product_storage in product.product_storages.all %}
-                                                            {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
-
-                                                                <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
-
-                                                                    <div class="d-flex align-items-center">
-                                                                        <svg class="bi me-1" width="16" height="16">
-                                                                            <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}"></circle>
-                                                                        </svg>
-                                                                        {{ product_storage.storage.name }}
-                                                                    </div>
-                                                                </span>
-                                                                <br><br>
-                                                            {% endif %}
-                                                        {% endfor %}
+                                                <td>
+                                                    <div class="responsive__hide">
+                                                        <div class="badge-wrap d-flex align-items-center">
+                                                            {% for product_storage in product.product_storages.all %}
+                                                                {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
+                                                                    <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <svg class="bi me-1" width="16" height="16">
+                                                                                <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}"></circle>
+                                                                            </svg>
+                                                                            {{ product_storage.storage.name }}
+                                                                        </div>
+                                                                    </span>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
                                                     </div>
                                                 </td>
 
@@ -166,9 +164,17 @@
     .responsive__show {
         display: none;
     }
-
+    .badge-wrap {
+        height: 20px;
+    }
     .badge {
         background-color: rgba(211, 211, 211, 0.3);
+        padding: 0.4rem;
+        font-size: 10px;
+        gap: 0.5rem;
+    }
+        .badge-wrap.d-flex {
+            gap: 0.5rem;
     }
     @media (max-width: 1199px) {
         .responsive__hide {
@@ -181,8 +187,6 @@
 
         }
         .badge {
-            font-size: 10px;
-            padding: 0.2rem 0.4rem;
             word-wrap: break-word;
             white-space: normal;
         }
