@@ -3,12 +3,12 @@
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2">
     {% if user.is_superuser or user.is_staff %}
-    <a class="btn btn-primary" href="/tasks/add{% if branch %}?branch={{ branch }}{% endif %}">
+    <a class="btn bg-gradient-primary" href="/tasks/add{% if branch %}?branch={{ branch }}{% endif %}">
         Add task
     </a>
     {% endif %}
     <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             {{ branch }}
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -37,7 +37,7 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle responsive__mobile-1">
                                     Select
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" style="width: 100%">
                                     Task
                                 </th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
@@ -49,13 +49,13 @@
                             <tbody>
                             {% for form in formset %}
                             {% if form.instance.id %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex px-4 responsive__mobile-2">
-                                        <fieldset>
-                                            <div class="checkbox-wrapper {% if form.instance.done %} checked-tooltip {% endif %}"
-                                                    {% if form.instance.done %} data-bs-toggle="tooltip"
-                                                 data-bs-placement="top" title="Done" {% endif %}>
+                            <tr {% if form.instance.done %}
+                                                 data-bs-toggle="tooltip" data-bs-placement="top" title="Done"
+                                                 {% endif %}>
+                                <td style="width: 40px;" >
+                                    <div class="d-flex px-4 responsive__mobile-2" >
+                                        <div class="form-check" >
+                                            <div class="checkbox-wrapper {% if form.instance.done %} checked-tooltip {% endif %}">
                                                 <input type="checkbox"
                                                        class="form-check-input flex-shrink-0"
                                                        id="checkbox_{{ form.instance.id }}"
@@ -63,12 +63,13 @@
                                                         {% if form.instance.done %} checked disabled {% endif %}/>
                                             </div>
 
-                                            <input type="number" name="id"
-                                                   value="{{ form.instance.id }}"
-                                                   style="display: none;"/>
-                                        </fieldset>
+                                        </div>
+                                        <input type="number" name="id"
+                                               value="{{ form.instance.id }}"
+                                               style="display: none;"/>
                                     </div>
                                 </td>
+
                                 <td>
                                     <div class="d-flex px-2 py-1">
                                         <h6 class="mb-0 text-sm responsive__mobile-3">
@@ -76,14 +77,15 @@
                                         </h6>
                                     </div>
                                     <div class="d-flex">
-                                        <small class="d-block text-muted text-xs opacity-7 text-secondary"
-                                               style="margin: 0.1rem 0; padding-left: 0.5rem;">
+                                        <small class="d-block text-muted text-xs opacity-7 text-secondary responsive__mobile-3"
+                                               style="padding-left: 0.3rem;">
                                             <span data-feather="tag" class="align-text-bottom"
                                                   style="height: 16px"></span>
                                             {{ form.instance.get_types|join:", " }}
                                             {% if form.instance.assignees %}
+                                                <br class="responsive__break" style="display: none;">
                                             <span data-feather="user" class="align-text-bottom"
-                                                  style="margin-left: 0.2rem; height: 16px"></span>
+                                                  style="height: 16px"></span>
                                             {{ form.instance.assignees }}
                                             {% endif %}
                                         </small>
@@ -92,8 +94,7 @@
                                 <td class="align-middle text-center text-sm">
                                     {% if form.instance.summary %}
                                     <div class="descriptionLink">
-                                                    <span data-feather="help-circle" class="align-text-bottom"
-                                                          style="width: 20px; height: 20px; stroke-width: 1;"></span>
+                                        <span data-feather="help-circle" class="align-text-bottom"></span>
                                         <span class="hidden">{{ form.instance.summary }}</span>
                                     </div>
                                     {% endif %}
@@ -106,8 +107,7 @@
                     </div>
                 </div>
             </div>
-            <input type="submit" id="submitTasksBtn" class="w-100 btn bg-gradient-primary" value="Submit tasks"
-                   style="margin-top: 1rem; float: right; max-width: 200px;"/>
+            <input type="submit" id="submitTasksBtn" class="w-100 btn bg-gradient-primary" value="Submit tasks"/>
         </div>
     </div>
 </form>
@@ -205,109 +205,131 @@
 
 <script>
 
+document.addEventListener("DOMContentLoaded", function () {
+    // init Bootstrap's tooltip
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
 
-    document.addEventListener("DOMContentLoaded", function () {
-        var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
+    // Background for done tasks
+    var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
+    var rows = document.querySelectorAll('tbody tr');
 
-        // Using Bootstrap's tooltip
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', function () {
+            var row = this.closest('tr');
+            var checkboxWrapper = this.closest('.checked-tooltip');
 
-        checkboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
-                var row = this.closest('tr');
-
-                if (this.checked) {
-                    row.style.backgroundColor = 'rgba(20,23,39,0.15)';
-
-                } else {
-                    row.style.backgroundColor = '';
-                }
-            });
+            if (this.checked && checkboxWrapper.classList.contains('checked-tooltip')) {
+                row.style.backgroundColor = "#e7e7e9";
+                {#row.style.backgroundImage = "linear-gradient(310deg, #17ad37 0%, #84dc14 100%)";#}
+            } else {
+                row.style.backgroundImage = '';
+            }
         });
 
-        var rows = document.querySelectorAll('tbody tr');
+        checkbox.dispatchEvent(new Event('change'));
+    });
 
-        rows.forEach(row => {
-            row.addEventListener('click', function (event) {
-                if (event.target.type !== 'checkbox') {
-                    var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
-                    if (!checkbox.disabled) {
-                        checkbox.checked = !checkbox.checked;
-                        checkbox.dispatchEvent(new Event('change'));
-                    }
-                }
-            });
-
-            row.addEventListener('mouseover', function () {
+    rows.forEach(row => {
+        row.addEventListener('click', function (event) {
+            if (event.target.type !== 'checkbox') {
                 var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
-                if (!checkbox.checked) {
-                    this.style.cursor = 'pointer';
-                    this.style.backgroundColor = 'rgba(20,23,39,0.05)';
+                if (!checkbox.disabled) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
                 }
-            });
+            }
+        });
 
-            row.addEventListener('mouseout', function () {
-                var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
-                if (!checkbox.checked) {
-                    this.style.backgroundColor = '';
-                }
-            });
+        row.addEventListener('mouseover', function () {
+            var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
+            if (!checkbox.checked) {
+                this.style.cursor = 'pointer';
+                this.style.backgroundColor = 'rgba(20,23,39,0.10)';
+            }
+        });
+
+        row.addEventListener('mouseout', function () {
+            var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
+            if (!checkbox.checked) {
+                this.style.backgroundColor = '';
+            }
         });
     });
+});
+
 </script>
 
 <style>
-
-    /*.form-check-input {
-        appearance: checkbox !important;
+    .bg-gradient-primary {
+        background-image: linear-gradient(310deg, #141727 0%, #3A416F 100%);
+        float: right;
+        max-width: 200px;
     }
-
-    .form-check-input:not(:checked) {
-        accent-color: #17ad3f;
+    .form-check-input {
+        appearance: none;
+        scale: 0.85;
     }
-
-    .form-check-input:checked[type="checkbox"] {
-        accent-color: #17ad3f;
-    }*/
 
     .descriptionLink svg {
         transition: transform 0.2s ease-in-out;
-        scale: 1.10;
+        scale: 0.85;
+        stroke-width: 1;
+        color: rgba(20, 23, 39, 0.8);
     }
 
     .descriptionLink svg:hover {
         transform: scale(1.35);
-        cursor: pointer;!important;
+        cursor: pointer;
     }
 
+    .form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+        border-color: #949db0;
+    }
+
+    .form-check-input:disabled[type="checkbox"] {
+        background-image: linear-gradient(310deg, #17ad37 0%, #84dc14 100%);
+    }
     .table-collapse {
         border-collapse: collapse;
     }
 
-    .form-check-input:not(:checked) {
-        background-color: rgba(128, 128, 128, 0.25);
-    }
-
-    .form-check-input:checked[type="checkbox"] {
-        background-image: linear-gradient(310deg, #17ad37 0%, #84dc14 100%);
-    }
-
-    @media only screen and (max-width: 539px) {
-        .responsive__mobile-1 {
-            padding: 0.6rem !important;
-            width: 36px !important;
+    @media (max-width: 629px) {
+        .table thead th  {
+            max-width: 200px !important;
         }
-        .responsive__mobile-2 {
-            padding: 0.5rem !important;
+        .table td {
+            max-width: 200px !important;
         }
-
+    }
+    @media (max-width: 539px) {
         .responsive__mobile-3 {
-            width: 180px;!important;
+            width: 160px;!important;
             word-wrap: break-word;!important;
             white-space: normal;!important;
+        }
+    }
+
+    @media (max-width: 419px) {
+        .responsive__mobile-3{
+            width: 140px !important;
+        }
+
+        .responsive__break {
+            display: block !important;
+        }
+    }
+
+    @media (max-width: 389px) {
+        .responsive__mobile-1 {
+            padding: 0.5rem !important;
+            width: 36px !important;
+        }
+
+        .responsive__mobile-2 {
+            padding: 0.5rem !important;
         }
     }
 </style>

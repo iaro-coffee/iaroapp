@@ -34,7 +34,7 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         Product
                                     </th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__hide responsive__mobile-1">
                                         Storages
                                     </th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
@@ -54,8 +54,12 @@
                                                 <td>
                                                     <div class="d-flex px-4 responsive__mobile-2">
                                                         <!-- Adjusted to include name attribute starting with "done_" for js -->
-                                                        <input type="checkbox" id="checkbox{{ forloop.counter }}"
+                                                        <div class="form-check" >
+                                                        <input class="form-check-input flex-shrink-0"
+                                                               type="checkbox"
+                                                               id="checkbox{{ forloop.counter }}"
                                                                name="done_{{ forloop.counter }}">
+                                                            </div>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -65,14 +69,31 @@
                                                             {{ product.name }}
                                                         </h6>
                                                     </div>
-                                                </td>
-
-                                                <!-- Product Storages Display -->
-                                                <td>
-                                                    <div class="d-flex align-items-center">
+                                                    <div class="responsive__show">
                                                         {% for product_storage in product.product_storages.all %}
                                                             {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
                                                                 <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <svg class="bi" width="16" height="16">
+                                                                            <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}"></circle>
+                                                                        </svg>
+                                                                        {{ product_storage.storage.name }}
+                                                                    </div>
+                                                                </span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </td>
+
+                                                <!-- Product Storages Display -->
+                                                <td class="responsive__hide">
+
+                                                    <div class="d-flex align-items-center">
+                                                        {% for product_storage in product.product_storages.all %}
+                                                            {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
+
+                                                                <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+
                                                                     <div class="d-flex align-items-center">
                                                                         <svg class="bi me-1" width="16" height="16">
                                                                             <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}"></circle>
@@ -80,6 +101,7 @@
                                                                         {{ product_storage.storage.name }}
                                                                     </div>
                                                                 </span>
+                                                                <br><br>
                                                             {% endif %}
                                                         {% endfor %}
                                                     </div>
@@ -118,42 +140,91 @@
 
 
 
-    <style>
-    .descriptionLink svg {
-        transition: transform 0.2s ease-in-out;
-        scale: 1.10;
+<style>
+    .bg-gradient-primary {
+        background-image: linear-gradient(310deg, #141727 0%, #3A416F 100%);
+        float: right;
+        max-width: 200px;
+    }
+    .form-check-input {
+        appearance: none;
+        scale: 0.85;
     }
 
-    .descriptionLink svg:hover {
-        transform: scale(1.35);
-        cursor: pointer;!important;
+    .form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+        border-color: #949db0;
+    }
+
+    .form-check-input:disabled[type="checkbox"] {
+        background-image: linear-gradient(310deg, #17ad37 0%, #84dc14 100%);
     }
 
     .table-collapse {
         border-collapse: collapse;
     }
 
-    .form-check-input:not(:checked) {
-        background-color: rgba(128, 128, 128, 0.25);
+    .responsive__show {
+        display: none;
     }
 
-    .form-check-input:checked[type="checkbox"] {
-        background-image: linear-gradient(310deg, #17ad37 0%, #84dc14 100%);
+    .badge {
+        background-color: rgba(211, 211, 211, 0.3);
+    }
+    @media (max-width: 1199px) {
+        .responsive__hide {
+            display: none;
+        }
+        .responsive__show {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+        }
+        .badge {
+            font-size: 10px;
+            padding: 0.2rem 0.4rem;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+        .badge svg {
+            width: 22px;
+        }
     }
 
-    @media only screen and (max-width: 539px) {
-        .responsive__mobile-1 {
-            padding: 0.6rem !important;
-            width: 36px !important;
+    @media (max-width: 629px) {
+        .table thead th  {
+            max-width: 200px !important;
         }
-        .responsive__mobile-2 {
-            padding: 0.5rem !important;
+        .table td {
+            max-width: 200px !important;
         }
-
+    }
+    @media (max-width: 539px) {
         .responsive__mobile-3 {
-            width: 180px;!important;
+            width: 160px;!important;
             word-wrap: break-word;!important;
             white-space: normal;!important;
+        }
+    }
+
+    @media (max-width: 419px) {
+        .responsive__mobile-3{
+            width: 140px !important;
+        }
+
+        .responsive__break {
+            display: block !important;
+        }
+    }
+
+    @media (max-width: 429px) {
+        .responsive__mobile-1 {
+            padding: 0.5rem !important;
+            width: 36px !important;
+        }
+
+        .responsive__mobile-2 {
+            padding: 0.5rem !important;
         }
     }
 </style>
