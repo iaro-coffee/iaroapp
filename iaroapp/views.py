@@ -1,6 +1,8 @@
+import json
 from datetime import datetime, timedelta
 
 from django.contrib.auth import views as auth_views
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -99,7 +101,14 @@ def index(request):
     myTasks = getMyTasks(request)
     ongoingShift = hasOngoingShift(request)
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
-    print(ongoingShift)
+    statistics = {
+        "label": ["1", "2", "3", "4", "5", "6", "7"],
+        "workHours": [8, 6, 4, 5, 3, 5, 6, 8],
+        "tasks": [0, 0, 7, 12, 2, 4, 7, 8],
+        "ratings": [4, 3, 4, 5, 5, 5, 5, 4],
+    }
+    statistics_sum = {"workHours": 28, "tasks": 45, "ratings": 4.34}
+    # TODO(Rapha): figure out how to say, that there was no rating on a day. -1?
     return render(
         request,
         "index.html",
@@ -108,6 +117,8 @@ def index(request):
             "nextShifts": userShifts,
             "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
             "tasks_done_last_month": tasksDoneLastMonth,
+            "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
+            "statistics_sum": statistics_sum,
             "today": today,
             "ongoingShift": ongoingShift[0],
             "shiftStart": ongoingShift[1],
