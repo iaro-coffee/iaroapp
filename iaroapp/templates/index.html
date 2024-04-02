@@ -87,7 +87,6 @@
                             <i class="fa fa-check text-info" aria-hidden="true"></i>
                             <span class="font-weight-bold ms-1">{{ tasks_done_last_month }} done</span> in the last 30
                             days
-                            <!-- todo insert correct data -->
                         </p>
                     </div>
                 </div>
@@ -181,7 +180,7 @@
                 <h6>Your work hours: last 7 days</h6>
                 <p class="text-sm">
                     <i class="fa fa-clock text-success"></i>
-                    <span class="font-weight-bold">{{ statistics_sum.workHours }}</span>h
+                    <span class="font-weight-bold">{{ statistics_sum.workHours }}h</span>
                 </p>
             </div>
             <div class="card-body p-3">
@@ -473,7 +472,7 @@
     new Chart(ctx1, {
       type: "line",
       data: {
-        labels: statistics['label'],
+        labels: statistics['labels'],
         datasets: [{
             label: "Work hours",
             tension: 0.4,
@@ -489,6 +488,7 @@
         ],
       },
       options: {
+        spanGaps: true,
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -547,7 +547,7 @@
     new Chart(ctx2, {
       type: "line",
       data: {
-        labels: statistics['label'],
+        labels: statistics['labels'],
         datasets: [
           {
             label: "Tasks",
@@ -564,6 +564,7 @@
         ],
       },
       options: {
+        spanGaps: true,
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -622,7 +623,7 @@
     new Chart(ctx3, {
       type: "line",
       data: {
-        labels: statistics['label'],
+        labels: statistics['labels'],
         datasets: [
           {
             label: "Ratings",
@@ -639,8 +640,11 @@
         ],
       },
       options: {
+        spanGaps: true,
         responsive: true,
         maintainAspectRatio: false,
+        min: 1,
+        max: 5,
         plugins: {
           legend: {
             display: false,

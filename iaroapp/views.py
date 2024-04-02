@@ -2,26 +2,42 @@ import json
 from datetime import datetime, timedelta
 
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Avg
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 from lib import planday
+from ratings.views import EmployeeRating
 from shifts.models import Shift
 from tasks.models import TaskInstance
 from tasks.views import getMyTasks
 
 planday = planday.Planday()
 run_once_day = {}
+run_once_day_punch_clock = {}
 nextShifts = []
 nextShiftsUser = {}
 showOpening = False
 showClosing = False
+punchClockRecordsUser = {}
 
 
 def shiftsWereCheckedToday(userId):
     if userId not in run_once_day or run_once_day[userId] != datetime.today().date():
+        return False
+    return True
+
+
+def punchClockRecordsWereCheckedToday(userId):
+    if (
+        userId not in run_once_day_punch_clock
+        or run_once_day_punch_clock[userId] != datetime.today().date()
+    ):
         return False
     return True
 
@@ -88,11 +104,77 @@ def hasOngoingShift(request):
 
 
 def getTasksDoneLastMonth(request):
-    return TaskInstance.objects.filter(
+    now = timezone.now()
+    lastMonth = now - timedelta(days=30)
+    tasks = TaskInstance.objects.filter(
         user=request.user,
-        date_done__lte=datetime.today(),
-        date_done__gt=datetime.today() - timedelta(days=30),
-    ).count()
+        date_done__lt=now,
+        date_done__gt=lastMonth,
+    )
+    return tasks.count()
+
+
+def getStatistics(request):
+    now = timezone.now()
+
+    statistics = {
+        "labels": [],
+        "workHours": [],
+        "tasks": [],
+        "ratings": [],
+    }
+    statisticsSum = {"workHours": 0, "tasks": 0, "ratings": 0}
+
+    sevenDaysAgo = timezone.now() - timedelta(days=7)
+
+    taskQuerySet = TaskInstance.objects.filter(
+        user=request.user,
+        date_done__gt=sevenDaysAgo,
+    )
+    statisticsSum["tasks"] = taskQuerySet.count()
+
+    ratingsQuerySet = EmployeeRating.objects.filter(
+        user=request.user,
+        date__gt=sevenDaysAgo,
+    )
+    statisticsSum["ratings"] = round(
+        ratingsQuerySet.aggregate(Avg("rating"))["rating__avg"], 2
+    )
+
+    if not punchClockRecordsWereCheckedToday(request.user.id):
+        run_once_day_punch_clock[request.user.id] = now.date()
+        planday.authenticate()
+        userEmail = User.objects.get(id=request.user.id).email
+        punchClockRecordsUser[request.user.id] = (
+            planday.get_user_punchclock_records_of_timespan(
+                userEmail, sevenDaysAgo, now
+            )
+        )
+
+    for x in range(7):
+        d = now.date() - timedelta(days=x)
+        statistics["labels"].insert(0, d.strftime("%m-%d"))
+
+        tasks = taskQuerySet.filter(date_done__date=d)
+        taskCount = tasks.count()
+        statistics["tasks"].insert(0, taskCount)
+
+        ratings = ratingsQuerySet.filter(date__date=d)
+        rating = ratings.first().rating if ratings.count() != 0 else None
+        statistics["ratings"].insert(0, rating)
+
+        hours = 0
+        for record in punchClockRecordsUser[request.user.id]:
+            startDateTime = parse_datetime(record["startDateTime"])
+            endDateTime = parse_datetime(record["endDateTime"])
+            if startDateTime.strftime("%m-%d") == d.strftime("%m-%d"):
+                diff = endDateTime - startDateTime
+                hours = diff.seconds / 3600
+        statistics["workHours"].insert(0, hours)
+
+    statisticsSum["workHours"] = round(sum(statistics["workHours"]), 2)
+
+    return (statistics, statisticsSum)
 
 
 def index(request):
@@ -101,13 +183,8 @@ def index(request):
     myTasks = getMyTasks(request)
     ongoingShift = hasOngoingShift(request)
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
-    statistics = {
-        "label": ["1", "2", "3", "4", "5", "6", "7"],
-        "workHours": [8, 6, 4, 5, 3, 5, 6, 8],
-        "tasks": [0, 0, 7, 12, 2, 4, 7, 8],
-        "ratings": [4, 3, 4, 5, 5, 5, 5, 4],
-    }
-    statistics_sum = {"workHours": 28, "tasks": 45, "ratings": 4.34}
+
+    statistics, statisticsSum = getStatistics(request)
     # TODO(Rapha): figure out how to say, that there was no rating on a day. -1?
     return render(
         request,
@@ -118,7 +195,7 @@ def index(request):
             "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
             "tasks_done_last_month": tasksDoneLastMonth,
             "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
-            "statistics_sum": statistics_sum,
+            "statistics_sum": statisticsSum,
             "today": today,
             "ongoingShift": ongoingShift[0],
             "shiftStart": ongoingShift[1],
