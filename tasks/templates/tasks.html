@@ -219,13 +219,11 @@ document.addEventListener("DOMContentLoaded", function () {
     checkboxes.forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
             var row = this.closest('tr');
-            var checkboxWrapper = this.closest('.checked-tooltip');
-
-            if (this.checked && checkboxWrapper.classList.contains('checked-tooltip')) {
+            var checkboxWrapper = this.closest('.checkbox-wrapper');
+            if (checkboxWrapper && this.checked) {
                 row.style.backgroundColor = "#e7e7e9";
-                {#row.style.backgroundImage = "linear-gradient(310deg, #17ad37 0%, #84dc14 100%)";#}
             } else {
-                row.style.backgroundImage = '';
+                row.style.backgroundColor = '';
             }
         });
 
