@@ -78,7 +78,7 @@
                                                                 <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
                                                                     <div class="d-flex align-items-center">
                                                                         <svg class="bi" width="16" height="16">
-                                                                            <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}"></circle>
+                                                                            <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}" stroke="#cbd3da"></circle>
                                                                         </svg>
                                                                         {{ product_storage.storage.name }}
                                                                     </div>
@@ -96,7 +96,7 @@
                                                                 <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
                                                                     <div class="d-flex align-items-center">
                                                                         <svg class="bi me-1" width="16" height="16">
-                                                                            <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}"></circle>
+                                                                            <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}" stroke="#cbd3da"></circle>
                                                                         </svg>
                                                                         {{ product_storage.storage.name }}
                                                                     </div>
@@ -169,17 +169,17 @@
         height: 20px;
     }
     .badge {
-        background-color: rgba(211, 211, 211, 0.3);
-        padding: 0.4rem;
+        background-color: rgba(58, 65, 111, 0.10);
+        padding: 0.2rem 0.4rem;
         font-size: 10px;
         gap: 0.5rem;
     }
-        .badge-wrap.d-flex {
-            gap: 0.5rem;
+    .badge-wrap.d-flex {
+        gap: 0.5rem;
     }
-        .badge svg {
-            width: 20px;
-        }
+    .badge svg {
+        width: 18px;
+    }
     @media (max-width: 1199px) {
         .responsive__hide {
             display: none;
@@ -239,7 +239,6 @@
 </style>
 
     <script>
-
         window.onload = function () {
             var i, l, trs = document.getElementsByClassName('entry');
             for (i = 0, l = trs.length; i < l; i++) {
@@ -276,8 +275,6 @@
     </script>
 
     <script>
-
-
     document.addEventListener("DOMContentLoaded", function () {
         var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
 
