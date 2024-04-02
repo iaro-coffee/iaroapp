@@ -21,6 +21,8 @@ def getMyTasks(request):
     # Exclude subtasks
     tasks = Task.objects.filter(parent_task=None)
 
+    # TODO(Rapha): filter tasks by not done
+
     myTasks = []
     for task in tasks:
         userMatch = request.user in task.users.all()

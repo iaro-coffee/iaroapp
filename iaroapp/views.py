@@ -192,7 +192,9 @@ def index(request):
         "index.html",
         context={
             "pageTitle": "Dashboard",
-            "nextShifts": userShifts,
+            "nextShifts": userShifts[
+                0 : len(userShifts) if len(userShifts) <= 3 else 3
+            ],
             "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
             "tasks_done_last_month": tasksDoneLastMonth,
             "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
