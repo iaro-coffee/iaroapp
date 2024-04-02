@@ -42,7 +42,17 @@ def ratings_evaluation(request):
         ]
         if rating:
             rating = floor(rating * 10) / 10.0
-        userDicts.append({"user": model_to_dict(user), "avg_rating": rating})
+            ratingBar = int(round(rating / 5 * 100, -1))
+        else:
+            rating = 0
+        userDicts.append(
+            {
+                "user": model_to_dict(user),
+                "avg_rating": rating,
+                "avg_rating_bar": ratingBar,
+            }
+        )
+    userDicts.sort(key=lambda x: (x["avg_rating"] is 0, x["avg_rating"]), reverse=False)
     return render(
         request,
         "ratings_evaluation.html",

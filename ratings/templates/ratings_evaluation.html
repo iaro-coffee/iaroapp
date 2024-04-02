@@ -2,68 +2,102 @@
 
 {% block content %}
 
+{% load static %}
+
 <div style="width: 100%;">
     <div class="row d-flex align-items-center h-100">
 
         <div class="row py-3">
-        {% for item in list %}
-          <div class="col-lg-4 py-3">
-            <div class="card" style="border-radius: 15px; border-color: {% if item.avg_rating <= 2 %} #dc3545   {% elif item.avg_rating <= 3.5 %} #ffc107   {% elif not item.avg_rating %} grey {% else %} #28a745 {% endif %} ;">
-                <a href="/ratings/evaluation/{{ item.user.id }}"  class="text-decoration-none">
+            {% for item in list %}
+            <div class="col-lg-4 py-3">
+                <div class="card h-100"
+                     style="border-radius: 15px;">
                     <div class="card-body p-4">
-                        <div class="d-flex text-black">
-                            <div class="flex-shrink-0">
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                     alt="Generic placeholder image" class="img-fluid"
-                                     style="width: 120px; border-radius: 10px;">
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <h5 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.username }}</h5>
-                                <p class="mb-2 pb-1" style="color: #2b2a2a;">
-                                  <span data-feather="user" class="align-text-bottom"></span>
-                                  {{ item.user.groups|join:", " }}</p>
-                                <div class="d-flex justify-content-start rounded-3 p-2 mb-2"
-                                     style="background-color: {% if item.avg_rating <= 2 %} #dc3545   {% elif item.avg_rating <= 3.5 %} #ffc107  {% elif not item.avg_rating %} grey {% else %} #28a745 {% endif %} ;">
-                                  <strong>Rating: {{ item.avg_rating }} </strong>
+                        <div class="d-flex" style="flex-direction: column; height: 100%;">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <img src="{% static 'images/avatar.png' %}"
+                                         alt="Generic placeholder image" class="img-fluid avatar-img">
                                 </div>
-                                <!--<div class="d-flex pt-1">
-                                  <button type="button" class="btn btn-outline-primary me-1 flex-grow-1">Chat</button>
-                                  <button type="button" class="btn btn-primary flex-grow-1">Follow</button>
-                                </div>-->
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.username }}</h6>
+                                    <p class="text-xs mb-2 pb-1">
+                                        <span data-feather="user" class="align-text-bottom" style="height: 16px"></span>
+                                        {{ item.user.groups|join:", " }}</p>
+
+                                    <div class="progress-wrapper w-75">
+                                      <div class="progress">
+                                          {% if item.avg_rating %}
+                                            <div class="progress-bar bg-gradient-success w-{{ item.avg_rating_bar }}" role="progressbar" aria-valuenow="{{ item.avg_rating_bar }}" aria-valuemin="0" aria-valuemax="100">{{ item.avg_rating }}</div>
+                                          {% endif %}
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4" style="height: 100%; display: flex;/* align-self: flex-end;*/">
+                                <a class="text-body text-sm font-weight-bold icon-move-right mt-auto"
+                                   href="/ratings/evaluation/{{ item.user.id }}" style="align-self: flex-end;">
+                                    Details
+                                    <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-       </div>
 
     </div>
 </div>
 
 <style>
-  table {
-    font-size: 1rem;
-  }
-  label {
-    width: 100%;
-    padding: .9rem;
-    user-select: none;
-  }
-  tbody tr {
-    border-bottom-color: rgb(201, 192, 192) !important;
-  }
-  tbody tr.done {
-    background-color: rgb(209, 231, 221);
-  }
-  td:not(first-child) {
-    padding: 0rem !important;
-    overflow-wrap: anywhere;
-  }
-  td:first-child {
-    padding: 0.8rem !important;
-  }
+    .avatar-img {
+        width: 100px;
+        border-radius: 10px;
+        background-color: darkslateblue;
+    }
+
+    .progress-bar {
+      height: auto !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+    }
+
+    .progress {
+        overflow: hidden !important;
+        height: auto !important;
+    }
+
+    .progress > .w-10, .w-20, .w-30, .w-40 {
+        background-image: linear-gradient(310deg, #C41E3A 0%, #F88379 100%);
+    }
+
+    .progress > .w-50, .w-60, .w-70 {
+        background-image: linear-gradient(310deg, #FAFA33 0%, #FFD700 100%);
+    }
+
+    table {
+      font-size: 1rem;
+    }
+    label {
+      width: 100%;
+      padding: .9rem;
+      user-select: none;
+    }
+    tbody tr {
+      border-bottom-color: rgb(201, 192, 192) !important;
+    }
+    tbody tr.done {
+      background-color: rgb(209, 231, 221);
+    }
+    td:not(first-child) {
+      padding: 0rem !important;
+      overflow-wrap: anywhere;
+    }
+    td:first-child {
+      padding: 0.8rem !important;
+    }
 
 </style>
 
