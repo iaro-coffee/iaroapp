@@ -4,51 +4,52 @@
 
 {% load static %}
 
-<div style="width: 100%;">
-    <div class="row d-flex align-items-center h-100">
+<div class="row">
+    <!-- TODO(Rapha): add team mood -->
+</div>
 
-        <div class="row py-3">
-            {% for item in list %}
-            <div class="col-lg-4 py-3">
-                <div class="card h-100"
-                     style="border-radius: 15px;">
-                    <div class="card-body p-4">
-                        <div class="d-flex" style="flex-direction: column; height: 100%;">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0">
-                                    <img src="{% static 'images/avatar.png' %}"
-                                         alt="Generic placeholder image" class="img-fluid avatar-img">
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.username }}</h6>
-                                    <p class="text-xs mb-2 pb-1">
-                                        <span data-feather="user" class="align-text-bottom" style="height: 16px"></span>
-                                        {{ item.user.groups|join:", " }}</p>
+<div class="row">
+    {% for item in list %}
+    <div class="col-lg-4 py-3">
+        <div class="card h-100"
+             style="border-radius: 15px;">
+            <div class="card-body p-4">
+                <div class="d-flex" style="flex-direction: column; height: 100%;">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <img src="{% static 'images/avatar.png' %}"
+                                 alt="Generic placeholder image" class="img-fluid avatar-img">
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.username }}</h6>
+                            <p class="text-xs mb-2 pb-1">
+                                <span data-feather="user" class="align-text-bottom" style="height: 16px"></span>
+                                {{ item.user.groups|join:", " }}</p>
 
-                                    <div class="progress-wrapper w-75">
-                                      <div class="progress">
-                                          {% if item.avg_rating %}
-                                            <div class="progress-bar bg-gradient-success w-{{ item.avg_rating_bar }}" role="progressbar" aria-valuenow="{{ item.avg_rating_bar }}" aria-valuemin="0" aria-valuemax="100">{{ item.avg_rating }}</div>
-                                          {% endif %}
-                                      </div>
+                            <div class="progress-wrapper w-75">
+                                <div class="progress">
+                                    {% if item.avg_rating %}
+                                    <div class="progress-bar bg-gradient-success w-{{ item.avg_rating_bar }}"
+                                         role="progressbar" aria-valuenow="{{ item.avg_rating_bar }}"
+                                         aria-valuemin="0" aria-valuemax="100">{{ item.avg_rating }}
                                     </div>
+                                    {% endif %}
                                 </div>
-                            </div>
-                            <div class="mt-4" style="height: 100%; display: flex;/* align-self: flex-end;*/">
-                                <a class="text-body text-sm font-weight-bold icon-move-right mt-auto"
-                                   href="/ratings/evaluation/{{ item.user.id }}" style="align-self: flex-end;">
-                                    Details
-                                    <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
-                                </a>
                             </div>
                         </div>
                     </div>
+                    <div class="mt-4" style="height: 100%; display: flex;/* align-self: flex-end;*/">
+                        <a class="text-body text-sm font-weight-bold icon-move-right mt-auto"
+                           href="/ratings/evaluation/{{ item.user.id }}" style="align-self: flex-end;">
+                            Details
+                            <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
-            {% endfor %}
         </div>
-
     </div>
+    {% endfor %}
 </div>
 
 <style>

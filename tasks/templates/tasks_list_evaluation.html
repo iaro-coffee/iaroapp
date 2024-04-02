@@ -2,16 +2,19 @@
 
 {% block content %}
 
-<div style="width: 100%;">
-    {% for weekday in weekdays%}
-    <div class="list-group">
+
+{% for weekday in weekdays%}
+<div class="list-group card mb-4" style="border-radius: var(--bs-card-border-radius) !important;">
+    <div class="card-header p-1">
         <h4 data-bs-toggle="collapse"
             href="#collapse{{ weekday }}"
             role="button"
             class="list-group-item"
-            style="margin-bottom: 0px; margin-top: 15px;">
+            style="margin-bottom: 0px;">
             {{ weekday }}
         </h4>
+    </div>
+    <div class="card-body p-2">
         <div class="list-group-item collapse {% if weekday == today %}show{% endif %}" id="collapse{{ weekday }}">
             <table class="table table-hover">
                 <thead>
@@ -22,81 +25,86 @@
                 </thead>
                 <tbody>
                 {% for key, tasks in tasks.items %}
-                    {% if key == weekday %}
-                        {% for task in tasks %}
-                        <tr class="{% if weekday in task.done.keys %}done{% else %}open{% endif %}">
-                            <td style="vertical-align: middle;"><label>{{ task.title }}</label></td>
-                            <td style="vertical-align: middle;">
-                                <label style="font-size: 12px;">
-                                {% if weekday in task.done.keys %}
-                                    {% for key, value in task.done.items %}
-                                      {% if key == weekday %}
-                                        {{ value.done_datetime }} by <b>{{ value.done_persons|join:", " }}{% endif %}</b>
-                                    {% endfor %}
-                                {% endif %}
-                              </label>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    {% endif %}
+                {% if key == weekday %}
+                {% for task in tasks %}
+                <tr class="{% if weekday in task.done.keys %}done{% else %}open{% endif %}">
+                    <td style="vertical-align: middle;"><label>{{ task.title }}</label></td>
+                    <td style="vertical-align: middle;">
+                        <label style="font-size: 12px;">
+                            {% if weekday in task.done.keys %}
+                            {% for key, value in task.done.items %}
+                            {% if key == weekday %}
+                            {{ value.done_datetime }} by <b>{{ value.done_persons|join:", " }}{% endif %}</b>
+                            {% endfor %}
+                            {% endif %}
+                        </label>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-    {% endfor %}
 </div>
+{% endfor %}
 
 <style>
-  table {
-    font-size: 1rem;
-  }
-  label {
-    width: 100%;
-    padding: .9rem;
-    user-select: none;
-  }
-  h4 {
-    background-color: rgb(248, 215, 218);
-  }
-  .done {
-    background-color: rgb(209, 231, 221);
-  }
-  .open {
-    background-color: rgb(248, 215, 218);
-    border-bottom-color: rgb(201, 192, 192) !important;
-  }
-  td:not(first-child) {
-    padding: 0rem !important;
-    overflow-wrap: anywhere;
-  }
-  td:first-child {
-    padding: 0.8rem !important;
-  }
+    .list-group-item {
+        border-width: 0px;
+        border-radius: var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius) !important;
+    }
+
+    table {
+      font-size: 1rem;
+    }
+    label {
+      width: 100%;
+      padding: .9rem;
+      user-select: none;
+    }
+    h4 {
+      background-color: rgb(248, 215, 218);
+    }
+    .done {
+      background-color: rgb(209, 231, 221);
+    }
+    .open {
+      background-color: rgb(248, 215, 218);
+      border-bottom-color: rgb(201, 192, 192) !important;
+    }
+    td:not(first-child) {
+      padding: 0rem !important;
+      overflow-wrap: anywhere;
+    }
+    td:first-child {
+      padding: 0.8rem !important;
+    }
 </style>
 
 <script type="text/javascript">
-  (() => {
-    document.getElementById("collapse{{ today }}").scrollIntoView({
-      behavior: 'smooth'
-    });
-
-    // Colorize weekdays depending on tasks done
-    const listGroupItems = document.querySelectorAll('h4.list-group-item');
-    for (const [index, listGroupItem] of listGroupItems.entries()) {
-      const collapseElement = listGroupItem.nextElementSibling;
-      const areAllSubTrsDone = Array.from(collapseElement.querySelectorAll('tbody tr')).every((trElement) => {
-        return trElement.classList.contains('done');
+    (() => {
+      document.getElementById("collapse{{ today }}").scrollIntoView({
+        behavior: 'smooth'
       });
-      listGroupItem.classList.add(areAllSubTrsDone ? 'done' : 'open');
-      if (index > 0) {
-        listGroupItem.classList.add('not-first');
-      }
-    }
-    const firstListGroupItem = listGroupItems[0];
-    firstListGroupItem.classList.remove('not-first');
 
-  })()
+      // Colorize weekdays depending on tasks done
+      const listGroupItems = document.querySelectorAll('h4.list-group-item');
+      for (const [index, listGroupItem] of listGroupItems.entries()) {
+        const collapseElement = listGroupItem.nextElementSibling;
+        const areAllSubTrsDone = Array.from(collapseElement.querySelectorAll('tbody tr')).every((trElement) => {
+          return trElement.classList.contains('done');
+        });
+        listGroupItem.classList.add(areAllSubTrsDone ? 'done' : 'open');
+        if (index > 0) {
+          listGroupItem.classList.add('not-first');
+        }
+      }
+      const firstListGroupItem = listGroupItems[0];
+      firstListGroupItem.classList.remove('not-first');
+
+    })()
 </script>
 
 {% endblock %}
