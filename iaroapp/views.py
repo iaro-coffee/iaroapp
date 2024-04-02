@@ -137,9 +137,9 @@ def getStatistics(request):
         user=request.user,
         date__gt=sevenDaysAgo,
     )
-    statisticsSum["ratings"] = round(
-        ratingsQuerySet.aggregate(Avg("rating"))["rating__avg"], 2
-    )
+    ratingsAverage = ratingsQuerySet.aggregate(Avg("rating"))["rating__avg"]
+    if ratingsAverage is not None:
+        statisticsSum["ratings"] = round(ratingsAverage, 2)
 
     if not punchClockRecordsWereCheckedToday(request.user.id):
         run_once_day_punch_clock[request.user.id] = now.date()
