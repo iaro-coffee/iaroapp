@@ -206,12 +206,6 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
-    // init Bootstrap's tooltip
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-
     // Background for done tasks
     var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
     var rows = document.querySelectorAll('tbody tr');
