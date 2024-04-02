@@ -13,6 +13,9 @@
     color: #ffffff;
 }
 
+body.dark-page .navbar-brand-img {
+    content:url("/static/images/logo_small_white.png");
+}
 /* END */
 
 :root {
