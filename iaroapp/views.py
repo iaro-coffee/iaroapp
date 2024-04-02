@@ -174,7 +174,7 @@ def getStatistics(request):
 
     statisticsSum["workHours"] = round(sum(statistics["workHours"]), 2)
 
-    return (statistics, statisticsSum)
+    return statistics, statisticsSum
 
 
 def index(request):
