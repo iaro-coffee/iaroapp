@@ -31,8 +31,8 @@
                                     </tr>
                                 </thead>
                                 <thead>
-                                    <tr class="task-row-separator">
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle responsive__mobile-1">
+                                    <tr>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle responsive__mobile-1">
                                             Select
                                         </th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
@@ -41,7 +41,7 @@
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__hide responsive__mobile-1">
                                             Storages
                                         </th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
                                             Needed
                                         </th>
                                     </tr>
@@ -56,13 +56,14 @@
                                             <tr class="entry">
                                                 <td style="width: 40px;">
                                                     <div class="d-flex px-4 responsive__mobile-2">
-                                                        <!-- Adjusted to include name attribute starting with "done_" for js -->
-                                                        <div class="form-check" >
-                                                        <input class="form-check-input flex-shrink-0"
-                                                               type="checkbox"
-                                                               id="checkbox{{ forloop.counter }}"
-                                                               name="done_{{ forloop.counter }}">
+                                                        <div class="form-check">
+                                                            <div class="checkbox-wrapper">
+                                                                <input class="form-check-input flex-shrink-0"
+                                                                       type="checkbox"
+                                                                       id="checkbox{{ forloop.counter }}"
+                                                                       name="done_{{ forloop.counter }}">
                                                             </div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td >
@@ -148,6 +149,11 @@
     .form-check-input {
         appearance: none;
         scale: 0.85;
+    }
+
+    .checkbox-wrapper {
+        display: flex;
+        justify-content: center;
     }
 
     .form-check:not(.form-switch) .form-check-input[type="checkbox"] {
