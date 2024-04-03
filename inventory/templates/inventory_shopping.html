@@ -7,7 +7,6 @@
 
 
 {% block content %}
-
 {% for seller in sellers %}
     <div class="row">
         <div class="col-12">
@@ -27,7 +26,7 @@
 
                                 <thead>
                                 <tr class="header">
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
+                                    <th style="width: 80px;" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
                                         Select
                                     </th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
@@ -113,7 +112,7 @@
 
                                   </tr>
 
-                                  {% endif %}
+                                {% endif %}
                                 {% endfor %}
                                 </tbody>
 
