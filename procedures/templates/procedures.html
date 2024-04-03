@@ -16,96 +16,98 @@
 {% block content %}
 
 {% if procedures %}
-<div class="row">
-    <form id="tasksForm" method="post">
-    {% csrf_token %}
-    <div class="col-12">
-        {% for category in categories %}
-
-        <div class="card mb-4">
-            <div class="card-body px-0 pt-0 pb-2">
-                <div class="table-responsive p-0">
-                    <table class="table align-items-center mb-2 table-collapse">
-
-                        <thead>
-                        <tr class="title">
-                            <th colspan="4">
-                                <h6 style="margin-top: 20px">{{ category.name }}</h6>
-                            </th>
-                        </tr>
-                        </thead>
-                        <thead>
-                        <tr class="task-row-separator">
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle responsive__mobile-1">
-                                Select
-                            </th>
-                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Product
-                            </th>
-                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
-                                Details
-                            </th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
+{% for category in categories %}
+    <div class="row">
+        <form id="tasksForm" method="post">
+        {% csrf_token %}
+        <div class="col-12">
 
 
-                        {% for procedure in procedures %}
-                        {% for procedure_branch in procedure.branch %}
-                        {% if branch == procedure_branch.name and procedure.category == category.id %}
+            <div class="card mb-4">
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-2 table-collapse">
 
-                        <tr class="entry">
-                            <td style="width: 40px;">
-                                <div class="d-flex px-4 responsive__mobile-2">
-                                    <!-- Adjusted to include name attribute starting with "done_" for js -->
-                                    <div class="form-check">
-                                        <input class="form-check-input flex-shrink-0"
-                                               type="checkbox"
-                                               id="checkbox{{ forloop.counter }}"
-                                               name="done"
-                                        {% if procedure.date_done|date:"Y-m-d" == today|date:"Y-m-d" %}checked{% endif %}>
-                                        <input type="number" name="id" value="{{procedure.id}}" style="display: none;"/>
+                            <thead>
+                            <tr class="title">
+                                <th colspan="4">
+                                    <h6 style="margin-top: 20px">{{ category.name }}</h6>
+                                </th>
+                            </tr>
+                            </thead>
+                            <thead>
+                            <tr class="task-row-separator">
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
+                                    Select
+                                </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
+                                    Product
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">
+                                    Details
+                                </th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+
+
+                            {% for procedure in procedures %}
+                            {% for procedure_branch in procedure.branch %}
+                            {% if branch == procedure_branch.name and procedure.category == category.id %}
+
+                            <tr class="entry">
+                                <td style="width: 40px;">
+                                    <div class="d-flex px-4 responsive__mobile-2">
+                                        <!-- Adjusted to include name attribute starting with "done_" for js -->
+                                        <div class="form-check">
+                                            <input class="form-check-input flex-shrink-0"
+                                                   type="checkbox"
+                                                   id="checkbox{{ forloop.counter }}"
+                                                   name="done"
+                                            {% if procedure.date_done|date:"Y-m-d" == today|date:"Y-m-d" %}checked{% endif %}>
+                                            <input type="number" name="id" value="{{procedure.id}}" style="display: none;"/>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex px-2 py-1">
-                                    <label for="checkbox{{ forloop.counter }}" class="sr-only">
-                                        Select {{ procedure.title }}
-                                    </label>
-                                    <h6 class="mb-0 text-sm responsive__mobile-3">
-                                        {{ procedure.title }}
-                                    </h6>
-                                </div>
-                            </td>
-                            <td class="align-middle text-center text-sm">
-                                {% if procedure.summary %}
-                                <div class="descriptionLink">
-                                    <span data-feather="help-circle" class="align-text-bottom"
-                                          style="width: 20px; height: 20px; stroke-width: 1;"></span>
-                                    <span class="hidden">
-                                      {{ procedure.summary }}
-                                    </span>
-                                </div>
-                                {% endif %}
-                            </td>
-                        </tr>
+                                </td>
+                                <td>
+                                    <div class="d-flex px-2 py-1">
+                                        <label for="checkbox{{ forloop.counter }}" class="sr-only">
+                                            Select {{ procedure.title }}
+                                        </label>
+                                        <h6 class="mb-0 text-sm responsive__mobile-3">
+                                            {{ procedure.title }}
+                                        </h6>
+                                    </div>
+                                </td>
+                                <td class="align-middle text-center text-sm">
+                                    {% if procedure.summary %}
+                                    <div class="descriptionLink">
+                                        <span data-feather="help-circle" class="align-text-bottom"
+                                              style="width: 20px; height: 20px; stroke-width: 1;"></span>
+                                        <span class="hidden">
+                                          {{ procedure.summary }}
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
 
-                        {% endif %}
-                        {% endfor %}
-                        {% endfor %}
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
 
+                    </div>
                 </div>
             </div>
+
         </div>
-        {% endfor %}
+        </form>
     </div>
-    </form>
-</div>
+{% endfor %}
 {% else %}
 <p>There are no tasks available.</p>
 {% endif %}

@@ -8,6 +8,7 @@
 
 {% block content %}
 
+{% for seller in sellers %}
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
@@ -15,7 +16,7 @@
                     <div class="table-responsive p-0">
                         <table class="table align-items-center mb-2 table-collapse">
                             <tbody>
-                            {% for seller in sellers %}
+
                                 <thead>
                                 <tr class="title">
                                     <th colspan="4">
@@ -26,16 +27,16 @@
 
                                 <thead>
                                 <tr class="header">
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle responsive__mobile-1">
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
                                         Select
                                     </th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
                                         Product
                                     </th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__hide responsive__mobile-1">
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder responsive__hide responsive__mobile-1">
                                         Storages
                                     </th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">
                                         To buy
                                     </th>
                                 </tr>
@@ -116,15 +117,13 @@
                                 {% endfor %}
                                 </tbody>
 
-                            {% endfor %}
-
                         </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+{% endfor %}
 
 
 <script src="{% static 'js/tables_appearence.js' %}"></script>
