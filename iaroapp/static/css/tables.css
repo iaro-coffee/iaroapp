@@ -5,7 +5,7 @@
 
 .descriptionLink svg {
     transition: transform 0.2s ease-in-out;
-    scale: 0.85;
+    scale: 1.05;
     stroke-width: 1;
     color: rgba(20, 23, 39, 0.8);
 }
@@ -20,13 +20,13 @@ table tr.entry:hover {
     cursor: pointer;
 }
 
-.form-check:not:hover {
-    border: 2px solid #3A416F;
-}
-
 .checkbox-wrapper {
     display: flex;
     justify-content: center;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked:after {
+    margin-top: 1px;
 }
 
 .form-check:not(.form-switch) .form-check-input[type="checkbox"] {
@@ -81,6 +81,18 @@ table tr.entry:hover {
         .badge svg {
             width: 26px;
         }
+        .responsive__product {
+            width: 100%;
+        }
+
+        .buy-column {
+            display: flex;
+            justify-content: center;
+        }
+        .buy-column .value, .buy-column .unit {
+            display: block;
+            text-align: center;
+        }
     }
 
     @media (max-width: 629px) {
@@ -107,10 +119,6 @@ table tr.entry:hover {
         .responsive__break {
             display: block !important;
         }
-        .buy-column .value, .buy-column .unit {
-    display: block; /* This will apply block display to both elements */
-}
-
     }
 
     @media (max-width: 392px) {
