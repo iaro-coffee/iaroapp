@@ -1,152 +1,132 @@
 {% extends "base_generic.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}" type="text/css">
+{% endblock extra_css %}
+
 
 {% block content %}
 
-<div style="width: 100%;">
-  <table class="table table-hover">
-    <tbody>
-    {% for seller in sellers %}
-        <tr class="title">
-          <th colspan="4">{{ seller }}</th>
-        </tr>
-        <tr class="header">
-          <th scope="col" width="1%"></th>
-          <th scope="col">Name</th>
-          <th scope="col" class="storages-column">Storages</th>
-          <th scope="col" style="white-space: nowrap;">To buy</th>
-        </tr>
-        {% for product in products %}
-          {%if product.oos and product.display_seller == seller %}
-          <tr class="entry">
-            <td><input type="checkbox" id="checkbox{{forloop.counter}}"></td>
-            <td><label for="checkbox{{forloop.counter}}">{{ product.name }}</label></td>
-            <td class="storages-column">
-              <label for="checkbox{{forloop.counter}}" style="display: flex; gap: 0.2rem;">
-              {% for storage in product.storages %}
-              <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary-emphasis">
-                <svg class="bi ms-1" width="16" height="16" style="color: {{ storage.color }};">
-                  <use xlink:href="#x-circle-fill">
-                    <symbol id="x-circle-fill" viewBox="0 0 16 16">
-                      <circle cx="8" cy="8" r="7" />
-                    </symbol>
-                  </use>
-                  </svg>
-                {{ storage }}
-              </span>
-              {% endfor %}
-              </label>
-            </td>
-            <td class="buy-column"><label for="checkbox{{forloop.counter}}">{{ product.value_oos|floatformat:2 }} {{ product.unit.all|join:", " }}</label></td>
-          </tr>
-          {% endif %}
-        {% endfor %}
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-2 table-collapse">
+                            <tbody>
+                            {% for seller in sellers %}
+                                <thead>
+                                <tr class="title">
+                                    <th colspan="4">
+                                        <h6 style="margin-top: 20px">{{ seller }}</h6>
+                                    </th>
+                                </tr>
+                                </thead>
 
-<style>
-  table {
-    font-size: 1rem;
-  }
-  label {
-    width: 100%;
-    padding: .9rem;
-    user-select: none;
-    background: none;
-    flex-wrap: wrap;
-  }
-  tbody tr.header:hover, tbody tr.title:hover {
-    background-color: white !important;
-    box-shadow: none !important;
-  }
-  .table > :not(caption) > * > * {
-    box-shadow: none !important;
-  }
-  tbody tr.title th {
-    padding-top: 3rem !important;
-    font-size: 1.5rem !important;
-    font-weight: 200 !important;
-    padding-left: 0 !important;
-  }
-  tr.header th {
-    color: #495057 !important;
-    background-color: #e9ecef;
-    border-color: #dee2e6;
-  }
-  tbody tr.title:first-child th{
-    padding-top: 1rem !important;
-  }
-  tbody tr td {
-    background-color: rgb(248, 215, 218) !important;
-    border-bottom-color: rgb(201, 192, 192) !important;
-  }
-  tbody tr.done td {
-    background-color: rgb(209, 231, 221) !important;
-  }
-  td:not(first-child) {
-    padding: 0rem !important;
-    overflow-wrap: anywhere;
-  }
-  td:first-child {
-    padding: 0.8rem 0 0.8rem 1.5rem !important;
-  }
-  .badge {
-    display: flex;
-    gap: 0.5rem;
-    flex-direction: row;
-    align-items: center;
-    font-size: 0.85rem;
-    padding-right: 0.7rem;
-    font-weight: 500;
-  }
-  @media (max-width: 767px) {
-    .storages-column {
-      display: none;
-    }
-  }
-  label {
-    padding: .9rem .6rem !important;
-  }
-  .buy-column label {
-    margin-right: 1rem;
-  }
-</style>
+                                <thead>
+                                <tr class="header">
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 align-middle responsive__mobile-1">
+                                        Select
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Product
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__hide responsive__mobile-1">
+                                        Storages
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 responsive__mobile-1">
+                                        To buy
+                                    </th>
+                                </tr>
+                                </thead>
 
-<script>
+                                <tbody>
+                                {% for product in products %}
+                                {%if product.oos and product.display_seller == seller %}
 
-  window.onload = function() {
-    var i, l, trs = document.getElementsByClassName('entry');
-    for (i = 0, l = trs.length; i < l; i++) {
-      attachClickHandler(trs[i]);
-      var checkbox = trs[i].querySelector('input');
-      if (checkbox) {
-        if (checkbox.checked) {
-          trs[i].classList.add('done');
-        }
-      }
-    }
-  };
+                                  <tr class="entry">
+                                    <td>
+                                        <div class="d-flex px-4 responsive__mobile-2">
+                                            <div class="form-check">
+                                                <div class="checkbox-wrapper">
+                                                    <input class="form-check-input flex-shrink-0"
+                                                           type="checkbox"
+                                                           id="checkbox{{ forloop.counter }}"
+                                                           name="done_{{ forloop.counter }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <label for="checkbox{{ forloop.counter }}" class="sr-only">Select {{ product.name }}</label>
+                                            <h6 class="mb-0 text-sm responsive__mobile-3">
+                                                {{ product.name }}
+                                            </h6>
+                                        </div>
 
-  function clickHandler() {
-    var checkbox = this.querySelector('input');
-    if (this.classList.contains('done')) {
-      this.classList.remove('done');
-      checkbox.checked = false;
-    } else {
-      this.classList.add('done');
-      checkbox.checked = true;
-    }
-  }
+                                        <!-- Product Storages Display Mobile -->
+                                        <div class="mt-1 responsive__show">
+                                            {% for storage in product.storages %}
+                                                <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                    <div class="d-flex align-items-center">
+                                                        <svg class="bi me-1" width="16" height="16">
+                                                            <circle cx="8" cy="8" r="7"
+                                                                    fill="{{ storage.color }}"
+                                                                    stroke="#cbd3da">
+                                                            </circle>
+                                                        </svg>
+                                                        {{ storage }}
+                                                    </div>
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
 
-  function attachClickHandler(tr) {
-      tr.onclick = function() {
-        if (event.target.tagName != 'INPUT') {
-          event.preventDefault();
-        }
-        clickHandler.call(tr);
-      };
-  }
+                                    <!-- Product Storages Display Laptop-->
+                                    <td class="responsive__hide">
+                                    <div class="responsive__badges">
+                                        {% for storage in product.storages %}
+                                            <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                <div class="d-flex align-items-center">
+                                                    <svg class="bi me-1" width="16" height="16">
+                                                        <circle cx="8" cy="8" r="7"
+                                                                fill="{{ storage.color }}"
+                                                                stroke="#cbd3da">
+                                                        </circle>
+                                                    </svg>
+                                                    {{ storage }}
+                                                </div>
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                    </td>
 
-</script>
+                                    <td class="buy-column">
+                                        <label for="checkbox{{ forloop.counter }}">
+                                            <span class="value">{{ product.value_oos|floatformat:2 }}</span>
+                                            <span class="unit">{{ product.unit.all|join:", " }}</span>
+                                        </label>
+                                    </td>
+
+                                  </tr>
+
+                                  {% endif %}
+                                {% endfor %}
+                                </tbody>
+
+                            {% endfor %}
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<script src="{% static 'js/tables_appearence.js' %}"></script>
+
 {% endblock %}

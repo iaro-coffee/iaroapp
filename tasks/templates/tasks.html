@@ -1,4 +1,10 @@
 {% extends "base_generic.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}" type="text/css">
+{% endblock extra_css %}
+
 
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2">
@@ -18,7 +24,8 @@
         </ul>
     </div>
 </div>
-{% endblock %}
+{% endblock widgets %}
+
 
 {% block content %}
 
@@ -49,7 +56,7 @@
                             <tbody>
                             {% for form in formset %}
                             {% if form.instance.id %}
-                            <tr {% if form.instance.done %}
+                            <tr class="entry" {% if form.instance.done %}
                                                  data-bs-toggle="tooltip" data-bs-placement="top" title="Done"
                                                  {% endif %}>
                                 <td>
@@ -150,185 +157,7 @@
 </div>
 
 
-<script>
-    function submitForm() {
-        var form = document.querySelector('#tasksForm');
-        form.submit()
-        window.scrollTo(0, 0);
-    };
-
-    document.addEventListener("DOMContentLoaded", function () {
-        var submitTasksModal = new bootstrap.Modal(document.getElementById("submitTasksModal"), {});
-        var infoModal = new bootstrap.Modal(document.getElementById("infoModal"), {});
-
-        document.getElementById('tasksForm').onsubmit = function (evt) {
-            evt.preventDefault();
-            submitTasksModal.show();
-        }
-
-        document.getElementById('confirmSubmit').onclick = function () {
-            submitForm();
-            submitTasksModal.hide();
-        }
-
-        // Hook description modal to button
-        let descriptionLinks = document.querySelectorAll('.descriptionLink svg');
-        descriptionLinks.forEach((link) => {
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                event.stopPropagation();  // Add this line to stop affecting checkbox when opening modal
-                var descriptionText = event.target.nextElementSibling.textContent;
-                var infoModalContent = document.querySelector('.infoModalContent').innerHTML = descriptionText;
-                infoModal.show();
-            });
-        });
-
-        // Add click event listener to labels with class 'subtasks'
-        let subtaskLabels = document.querySelectorAll('.subtasks');
-        subtaskLabels.forEach((label) => {
-            label.addEventListener('click', function (event) {
-                event.preventDefault();
-                if (event.target.nodeName !== "svg") {
-                    // Get the task ID from the closest parent element that has an 'id' attribute
-                    const taskId = this.querySelector('input[name="id"]');
-                    const params = new URLSearchParams(window.location.search);
-                    const searchString = '?' + params.toString();
-                    // Redirect to the task page
-                    window.location.href = '/tasks/' + taskId.value + searchString;
-                }
-                ;
-            });
-        });
-
-    })
-</script>
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-    // Background for done tasks
-    var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
-    var rows = document.querySelectorAll('tbody tr');
-
-    checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('change', function () {
-            var row = this.closest('tr');
-            var checkboxWrapper = this.closest('.checkbox-wrapper');
-            if (checkboxWrapper && this.checked) {
-                row.style.backgroundColor = "#e7e7e9";
-            } else {
-                row.style.backgroundColor = '';
-            }
-        });
-
-        checkbox.dispatchEvent(new Event('change'));
-    });
-
-    rows.forEach(row => {
-        row.addEventListener('click', function (event) {
-            if (event.target.type !== 'checkbox') {
-                var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
-                if (!checkbox.disabled) {
-                    checkbox.checked = !checkbox.checked;
-                    checkbox.dispatchEvent(new Event('change'));
-                }
-            }
-        });
-
-        row.addEventListener('mouseover', function () {
-            var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
-            if (!checkbox.checked) {
-                this.style.cursor = 'pointer';
-                this.style.backgroundColor = 'rgba(20,23,39,0.10)';
-            }
-        });
-
-        row.addEventListener('mouseout', function () {
-            var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
-            if (!checkbox.checked) {
-                this.style.backgroundColor = '';
-            }
-        });
-    });
-});
-
-</script>
-
-<style>
-    .bg-gradient-primary {
-        background-image: linear-gradient(310deg, #141727 0%, #3A416F 100%);
-        float: right;
-        max-width: 200px;
-    }
-    .form-check-input {
-        appearance: none;
-        scale: 0.85;
-    }
-
-    .descriptionLink svg {
-        transition: transform 0.2s ease-in-out;
-        scale: 0.85;
-        stroke-width: 1;
-        color: rgba(20, 23, 39, 0.8);
-    }
-
-    .descriptionLink svg:hover {
-        transform: scale(1.35);
-        cursor: pointer;
-    }
-
-    .checkbox-wrapper {
-        display: flex;
-        justify-content: center;
-    }
-
-    .form-check:not(.form-switch) .form-check-input[type="checkbox"] {
-        border-color: #949db0;
-    }
-
-    .form-check-input:disabled[type="checkbox"] {
-        background-image: linear-gradient(310deg, #17ad37 0%, #84dc14 100%);
-    }
-    .table-collapse {
-        border-collapse: collapse;
-    }
-
-    @media (max-width: 629px) {
-        .table thead th  {
-            max-width: 200px !important;
-        }
-        .table td {
-            max-width: 200px !important;
-        }
-    }
-    @media (max-width: 539px) {
-        .responsive__mobile-3 {
-            width: 160px;!important;
-            word-wrap: break-word;!important;
-            white-space: normal;!important;
-        }
-    }
-
-    @media (max-width: 419px) {
-        .responsive__mobile-3{
-            width: 140px !important;
-        }
-
-        .responsive__break {
-            display: block !important;
-        }
-    }
-
-    @media (max-width: 392px) {
-        .responsive__mobile-1 {
-            padding: 0.5rem !important;
-            width: 36px !important;
-        }
-
-        .responsive__mobile-2 {
-            padding: 0.5rem !important;
-        }
-    }
-</style>
+<script src="{% static 'js/tables_appearence.js' %}"></script>
+<script src="{% static 'js/tables_behavior-tasks.js' %}"></script>
 
 {% endblock content %}

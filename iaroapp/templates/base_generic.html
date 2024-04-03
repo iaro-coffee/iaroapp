@@ -26,6 +26,8 @@
     <link id="pagestyle" href="{% static 'softTheme/css/soft-ui-dashboard.css' %}" rel="stylesheet"/>
     <link id="pagestyle_dark" href="{% static 'softTheme/css/dark-theme-core.css' %}" rel="stylesheet"/>
 
+        {% block extra_css %}{% endblock extra_css %}
+
     <link rel="icon" href="{% static 'images/favicon.png' %}">
 </head>
 <body class="g-sidenav-show bg-gray-100">
