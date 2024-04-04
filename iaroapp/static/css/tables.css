@@ -118,15 +118,21 @@ table tr.entry:hover {
         .responsive__product {
             width: 100%;
         }
-
-        .buy-column {
-            display: flex;
-            justify-content: center;
+        .w-responsive__product {
+            width: 100% !important;
         }
-        .buy-column .value, .buy-column .unit {
+
+        .units-column, .units-wrap {
+            display: block !important;
+            justify-content: center !important;
+        }
+        .units-column .value, .units-column .unit {
             display: block;
             text-align: center;
+            margin: 0 !important;
+            scale: 0.85;
         }
+
     }
 
     @media (max-width: 629px) {

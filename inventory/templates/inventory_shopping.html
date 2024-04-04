@@ -19,26 +19,26 @@
                                 <thead>
                                 <tr class="title">
                                     <th colspan="4">
-                                        <h6 style="margin-top: 20px">{{ seller }}</h6>
+                                        <h6>{{ seller }}</h6>
                                     </th>
                                 </tr>
                                 </thead>
 
                                 <thead>
-                                <tr class="header">
-                                    <th style="width: 80px;" class="text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
-                                        Select
-                                    </th>
-                                    <th class="w-20 text-uppercase text-secondary text-xxs font-weight-bolder">
-                                        Product
-                                    </th>
-                                    <th class="w-100 text-uppercase text-secondary text-xxs font-weight-bolder responsive__hide responsive__mobile-1">
-                                        Storages
-                                    </th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">
-                                        To buy
-                                    </th>
-                                </tr>
+                                    <tr class="header">
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
+                                            Select
+                                        </th>
+                                        <th class="w-20 text-uppercase text-secondary text-xxs font-weight-bolder">
+                                            Product
+                                        </th>
+                                        <th class="w-100 text-uppercase text-secondary text-xxs font-weight-bolder responsive__hide responsive__mobile-1">
+                                            Storages
+                                        </th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">
+                                            To buy
+                                        </th>
+                                    </tr>
                                 </thead>
 
                                 <tbody>
@@ -47,7 +47,7 @@
 
                                   <tr class="entry">
                                     <td>
-                                        <div class="d-flex px-4 responsive__mobile-2">
+                                        <div class="d-flex justify-content-center responsive__mobile-2" >
                                             <div class="form-check">
                                                 <div class="checkbox-wrapper">
                                                     <input class="form-check-input flex-shrink-0"
@@ -104,12 +104,16 @@
                                     </td>
 
                                     <td>
-                                        <div class="buy-column">
-                                        <label for="checkbox{{ forloop.counter }}">
-                                            <span class="value">{{ product.value_oos|floatformat:2 }}</span>
-                                            <span class="unit">{{ product.unit.all|join:", " }}</span>
-                                        </label>
+                                    <div class="d-flex align-items-center units-wrap">
+                                            <div class="units-column d-flex">
+                                                <h6 class="mb-0 text-sm value">
+                                                    {{ product.value_oos|floatformat:2 }}
+                                                </h6>
+                                                <h6 class="mb-0 me-2 ms-1 text-sm unit">
+                                                    {{ product.unit.all|join:", " }}
+                                                </h6>
                                             </div>
+                                        </div>
                                     </td>
 
                                   </tr>
