@@ -47,7 +47,7 @@ def opening(request):
     branches = Branch.objects.all()
     branches = branches.order_by("name")
 
-    branch = request.GET.get("branch").name
+    branch = request.GET.get("branch")
     if not branch:
         branch = Branch.objects.first().name
 
