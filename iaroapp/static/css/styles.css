@@ -22,6 +22,11 @@ body {
 .navbar-vertical .navbar-nav > .nav-item .nav-link.active .icon {
   background-image: linear-gradient(310deg, #ebede8 0%, #d4cac8 100%);
 }
+
+.sidenav {
+  z-index: 1030;
+}
+
 :root {
   --bs-blue: #63B3ED;
   --bs-indigo: #596CFF;
