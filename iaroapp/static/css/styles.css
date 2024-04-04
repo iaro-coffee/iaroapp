@@ -10,6 +10,17 @@ body {
   font-size: .875rem;
 }
 
+.hidden {
+  display: none;
+}
+.navbar-vertical .navbar-nav > .nav-item .nav-link.active .icon {
+    color: #ffffff;
+}
+
+body.dark-page .navbar-brand-img {
+    content:url("/static/images/logo_small_white.png");
+}
+
 .feather {
   width: 16px;
   height: 16px;

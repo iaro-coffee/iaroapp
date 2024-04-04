@@ -5,19 +5,6 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 
-/* CHANGED BY IARO TEAM */
-.hidden {
-  display: none;
-}
-.navbar-vertical .navbar-nav > .nav-item .nav-link.active .icon {
-    color: #ffffff;
-}
-
-body.dark-page .navbar-brand-img {
-    content:url("/static/images/logo_small_white.png");
-}
-/* END */
-
 :root {
   --bs-blue: #63B3ED;
   --bs-indigo: #596CFF;
