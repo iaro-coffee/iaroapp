@@ -8,46 +8,38 @@ function submitForm() {
 };
 
 document.addEventListener("DOMContentLoaded", function () {
-    var submitTasksModal = new bootstrap.Modal(document.getElementById("submitTasksModal"), {});
-    var infoModal = new bootstrap.Modal(document.getElementById("infoModal"), {});
-
-    document.getElementById('tasksForm').onsubmit = function (evt) {
-        evt.preventDefault();
-        submitTasksModal.show();
-    }
-
-    document.getElementById('confirmSubmit').onclick = function () {
-        submitForm();
-        submitTasksModal.hide();
-    }
-
-    // Hook description modal to button
-    let descriptionLinks = document.querySelectorAll('.descriptionLink svg');
+    let descriptionLinks = document.querySelectorAll('.descriptionLink');
     descriptionLinks.forEach((link) => {
-        link.addEventListener('click', (event) => {
+        link.addEventListener('click', function(event) {
             event.preventDefault();
-            event.stopPropagation();  // Add this line to stop affecting checkbox when opening modal
-            var descriptionText = event.target.nextElementSibling.textContent;
-            var infoModalContent = document.querySelector('.infoModalContent').innerHTML = descriptionText;
-            infoModal.show();
-        });
-    });
+            event.stopPropagation();
 
-    // Add click event listener to labels with class 'subtasks'
-    let subtaskLabels = document.querySelectorAll('.subtasks');
-    subtaskLabels.forEach((label) => {
-        label.addEventListener('click', function (event) {
-            event.preventDefault();
-            if (event.target.nodeName !== "svg") {
-                // Get the task ID from the closest parent element that has an 'id' attribute
-                const taskId = this.querySelector('input[name="id"]');
-                const params = new URLSearchParams(window.location.search);
-                const searchString = '?' + params.toString();
-                // Redirect to the task page
-                window.location.href = '/tasks/' + taskId.value + searchString;
+            var taskRow = this.closest('.entry');
+            var descriptionPlaceholder = taskRow.querySelector('.task-description');
+
+            var isVisible = descriptionPlaceholder.style.display === 'flex';
+            descriptionPlaceholder.style.display = isVisible ? 'none' : 'flex';
+
+            if (!isVisible) {
+                var descriptionText = this.querySelector('.hidden').textContent;
+                descriptionPlaceholder.innerHTML = descriptionText;
             }
-            ;
+
+            // Directly toggle the SVG for the icon
+            var chevronIcon = this.querySelector('svg');
+            if (chevronIcon) {
+                // Determine the new icon
+                var newIcon = isVisible ? 'chevron-right' : 'chevron-down';
+                // Remove the existing SVG
+                chevronIcon.remove();
+                // Create a new span for Feather to target
+                var iconSpan = document.createElement('span');
+                iconSpan.setAttribute('data-feather', newIcon);
+                this.insertBefore(iconSpan, this.firstChild);
+                // Reapply Feather to render the new icon
+                feather.replace();
+            }
         });
     });
+});
 
-})

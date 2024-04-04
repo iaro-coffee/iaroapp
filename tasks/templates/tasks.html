@@ -47,9 +47,9 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
                                     Task
                                 </th>
-                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">
-                                    Details
-                                </th>
+{#                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">#}
+{#                                    Details#}
+{#                                </th>#}
                             </tr>
                             </thead>
 
@@ -78,14 +78,13 @@
                                 </td>
 
                                 <td>
-                                    <div class="d-flex px-2 py-1">
+                                    <div class="d-flex px-1 py-1">
                                         <h6 class="mb-0 text-sm responsive__mobile-3">
                                             {{ form.instance.title }}
                                         </h6>
                                     </div>
                                     <div class="d-flex">
-                                        <small class="d-block text-muted text-xs opacity-7 text-secondary responsive__mobile-3"
-                                               style="padding-left: 0.3rem;">
+                                        <small class="d-block px-1 text-muted text-xs opacity-7 text-secondary responsive__mobile-3">
                                             <span data-feather="tag" class="align-text-bottom"
                                                   style="height: 16px"></span>
                                             {{ form.instance.get_types|join:", " }}
@@ -97,14 +96,17 @@
                                             {% endif %}
                                         </small>
                                     </div>
-                                </td>
-                                <td class="align-middle text-center text-sm">
                                     {% if form.instance.summary %}
-                                    <div class="descriptionLink">
-                                        <span data-feather="help-circle" class="align-text-bottom"></span>
-                                        <span class="hidden">{{ form.instance.summary }}</span>
-                                    </div>
-                                    {% endif %}
+                                        <div class="d-flex px-1 py-1 align-items-center no-select descriptionLink">
+
+                                            <span class="" data-feather="chevron-right"></span>
+                                            Description
+
+                                            <span class="hidden">{{ form.instance.summary }}</span>
+                                        </div>
+                                                                    {% endif %}
+                                    <!-- Inside your for loop for each task -->
+                                    <div class="ml-4 task-description" style="display: none;"></div>
                                 </td>
                             </tr>
                             {% endif %}
@@ -156,14 +158,6 @@
     </div>
 </div>
 
-
-<script>
-
-</script>
-
-<style>
-
-</style>
 
 <script src="{% static 'js/tables_appearence.js' %}"></script>
 <script src="{% static 'js/tables_behavior-tasks.js' %}"></script>
