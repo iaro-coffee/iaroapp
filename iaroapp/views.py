@@ -184,9 +184,8 @@ def index(request):
     myTasks = getMyTasks(request)
     ongoingShift = hasOngoingShift(request)
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
-
     statistics, statisticsSum = getStatistics(request)
-    # TODO(Rapha): figure out how to say, that there was no rating on a day. -1?
+
     return render(
         request,
         "index.html",
@@ -197,7 +196,7 @@ def index(request):
             ],
             "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
             "tasks_done_last_month": tasksDoneLastMonth,
-            "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
+            "statistics": statistics,
             "statistics_sum": statisticsSum,
             "today": today,
             "ongoingShift": ongoingShift[0],
