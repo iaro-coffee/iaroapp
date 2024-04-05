@@ -35,6 +35,24 @@ def check_admin(user):
 @user_passes_test(check_admin)
 def ratings_evaluation(request):
     users = User.objects.all()
+
+    teamRatings = {
+        "dates": [],
+        "ratings": [],
+    }
+    teamRatingsQuerySet = (
+        EmployeeRating.objects.filter()
+        .values("date__date")
+        .annotate(average=Avg("rating"))
+        .order_by("-date__date")[:15]
+    )
+
+    for result in teamRatingsQuerySet.iterator():
+        teamRatings["dates"].insert(0, result["date__date"])
+        teamRatings["ratings"].insert(0, result["average"])
+
+    print(teamRatings)
+
     userDicts = []
     for user in users:
         rating = EmployeeRating.objects.filter(user=user).aggregate(Avg("rating"))[
@@ -59,6 +77,7 @@ def ratings_evaluation(request):
         context={
             "pageTitle": "Ratings overview",
             "list": userDicts,
+            "teamRatings": teamRatings,
         },
     )
 
