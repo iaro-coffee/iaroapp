@@ -51,8 +51,6 @@ def ratings_evaluation(request):
         teamRatings["dates"].insert(0, result["date__date"])
         teamRatings["ratings"].insert(0, result["average"])
 
-    print(teamRatings)
-
     userDicts = []
     for user in users:
         rating = EmployeeRating.objects.filter(user=user).aggregate(Avg("rating"))[
@@ -85,22 +83,32 @@ def ratings_evaluation(request):
 @user_passes_test(check_admin)
 def user_ratings_evaluation(request, id):
     userName = User.objects.filter(id=id).distinct().values("username")[0]["username"]
-    userRatings = []
     avgRating = EmployeeRating.objects.filter(user=id).aggregate(Avg("rating"))[
         "rating__avg"
     ]
     if avgRating:
         avgRating = floor(avgRating * 10) / 10.0
-    ratings = EmployeeRating.objects.filter(user=id).order_by("date").reverse()
-    for rating in ratings:
-        userRatings.append(model_to_dict(rating))
+
+    userRatings = {
+        "dates": [],
+        "ratings": [],
+    }
+    ratings = (
+        EmployeeRating.objects.filter(user=id)
+        .values("date__date", "rating")
+        .order_by("-date")[:25]
+    )
+
+    for result in ratings.iterator():
+        userRatings["dates"].insert(0, result["date__date"])
+        userRatings["ratings"].insert(0, result["rating"])
 
     return render(
         request,
         "user_ratings_evaluation.html",
         context={
-            "pageTitle": "Ratings from " + userName,
-            "ratings": userRatings,
+            "pageTitle": "Ratings from " + userName + " (∅ " + str(avgRating) + ")",
+            "userRatings": userRatings,
             "avgRating": avgRating,
             "userName": userName,
         },

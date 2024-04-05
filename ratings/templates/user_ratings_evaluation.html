@@ -1,67 +1,193 @@
 {% extends "base_generic.html" %}
-
+{% load static %}
+{% load json_filters %}
+{% load index_filters %}
 {% block content %}
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom"
-     xmlns:task.done_datetime xmlns:task.done_datetime xmlns:task.done_datetime xmlns:task.done_datetime>
-    <h1 class="h2">Ratings from {{ userName }} (∅ {{ avgRating }})</h1>
-</div>
-
-<div style="width: 100%;">
-    <div class="row d-flex align-items-center h-100">
-        <div class="card-body p-0">
-            <div class="list-group w-auto rounded-0">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Rating</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in ratings %}
-                            <tr>
-                                <td class="align-middle">
-                                  <span>
-                                    {{ item.date|date:"d.M, Y (l)"}}
-                                  </span>
-                                </td>
-                                <td class="align-middle">
-                                  <span>
-                                    {{ item.rating }}
-                                  </span>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <div class="card z-index-2">
+            <div class="card-header pb-0">
+                <h6>{{ userName }}s ratings</h6>
+                <p class="text-sm">
+                    <i class="fa fa-star text-success"></i>
+                    <span class="font-weight-bold">How are {{ userName }}s shifts going?</span>
+                </p>
+            </div>
+            <div class="card-body p-3">
+                <div class="chart">
+                    <canvas id="chart-line1" class="chart-canvas" height="300"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<div class="row">
+    <div class="col-12">
+
+        <div class="card mb-4">
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-2 table-collapse">
+
+                        <thead>
+                            <tr class="title">
+                                <th colspan="4">
+                                    <h6 style="margin-top: 20px">All ratings</h6>
+                                </th>
+                            </tr>
+                        </thead>
+                        <thead>
+                            <tr class="task-row-separator">
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
+                                    Date
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">
+                                    Rating
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for item in userRatings.dates reversed %}
+                                {% with i=forloop.counter %}
+                                    <tr class="entry">
+                                        <td>
+                                            <div class="d-flex px-4 responsive__mobile-2">
+                                                <span>
+                                                    {{ item|date:"d.M, Y (l)"}}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-center text-sm">
+                                            <span>
+                                                {{ userRatings.ratings | reverse_index:i }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{% static 'softTheme/js/plugins/chartjs.min.js' %}"></script>
+<script>
+    var ratings = JSON.parse('{{ userRatings | to_json | escapejs }}');
+
+    var ctx = document.getElementById("chart-line1").getContext("2d");
+
+    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+    gradientStroke.addColorStop(1, 'rgba(255,136,0,0.2)');
+    gradientStroke.addColorStop(0.2, 'rgba(255,193,121,0.0)');
+    gradientStroke.addColorStop(0, 'rgba(255,221,182,0)'); //orange colors
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: ratings['dates'],
+        datasets: [{
+            label: "Rating",
+            tension: 0.4,
+            borderWidth: 0,
+            pointRadius: 0,
+            borderColor: "orange",
+            borderWidth: 3,
+            backgroundColor: gradientStroke,
+            fill: true,
+            data: ratings['ratings'],
+            maxBarThickness: 6
+          },
+        ],
+      },
+      options: {
+        spanGaps: true,
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: '#b2b9bf',
+              font: {
+                size: 11,
+                family: "Open Sans",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: false,
+              drawTicks: false,
+              borderDash: [5, 5]
+            },
+            ticks: {
+              display: true,
+              color: '#b2b9bf',
+              padding: 20,
+              font: {
+                size: 11,
+                family: "Open Sans",
+                style: 'normal',
+                lineHeight: 2
+              },
+            }
+          },
+        },
+      },
+    });
+</script>
+
 <style>
-  table {
-    font-size: 1rem;
-  }
-  label {
-    width: 100%;
-    padding: .9rem;
-    user-select: none;
-  }
-  tbody tr {
-    border-bottom-color: rgb(201, 192, 192) !important;
-  }
-  tbody tr.done {
-    background-color: rgb(209, 231, 221);
-  }
-  td:not(first-child) {
-    padding: 0rem !important;
-    overflow-wrap: anywhere;
-  }
-  td:first-child {
-    padding: 0.8rem !important;
-  }
+    table {
+      font-size: 1rem;
+    }
+    label {
+      width: 100%;
+      padding: .9rem;
+      user-select: none;
+    }
+    tbody tr {
+      border-bottom-color: rgb(201, 192, 192) !important;
+    }
+    tbody tr.done {
+      background-color: rgb(209, 231, 221);
+    }
+    td:not(first-child) {
+      padding: 0rem !important;
+      overflow-wrap: anywhere;
+    }
+    td:first-child {
+      padding: 0.8rem !important;
+    }
 
 </style>
 
