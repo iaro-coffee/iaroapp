@@ -75,11 +75,14 @@ register = Library()
 class Product(BaseModel):
     """Model representing a product."""
 
-    name = models.CharField(max_length=500)
+    name = models.CharField(max_length=500, unique=True)
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
-    internally_produced = models.BooleanField(default=False)
+    internally_produced = models.BooleanField(
+        default=False,
+        help_text="If this is checked the product will not show up on the shopping list.",
+    )
 
     @property
     def has_main_storage(self):
@@ -217,7 +220,7 @@ class ProductStorage(BaseModel):
     threshold = models.IntegerField(
         default=30,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Enter the threshold in percent when an item needs to get bought.",
+        help_text="Enter the amount of the item, when it needs to get bought.",
     )
     main_storage = models.BooleanField(default=False)
 

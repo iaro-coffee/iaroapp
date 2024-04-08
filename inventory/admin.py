@@ -47,6 +47,8 @@ class ProductsAdmin(ImportExportModelAdmin):
     inlines = [ProductStorageInline]
     # resource_classes = [BookResource]
 
+    list_filter = ("product_storages__storage",)
+
 
 class StoragesInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
