@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
-from pathlib import Path
-
 import dj_database_url
+from pathlib import Path
 from import_export.formats.base_formats import CSV, XLSX
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,22 +25,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag'
-
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY", "cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag"
-)
-
-DEBUG = os.environ.get("DJANGO_DEBUG", "")
-ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = [
-    "https://app.iaro.co",
-    "https://proxy.iaro.co",
-    "http://192.168.178.253",
-    "https://*.127.0.0.1",
-    "https://iaroapp.project-insanity.org",
-]
+# SECURITY WARNING: the internet should never see this. Read .env or set default values here:
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(',')
+CACHES = {
+    "default": {
+        "BACKEND": os.environ.get("DJANGO_CACHE_BACKEND", ""),
+        "LOCATION": os.environ.get("DJANGO_CACHE_LOCATION", ""),
+    }
+}
 
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
@@ -139,9 +136,9 @@ LOGIN_REQUIRED_IGNORE_PATHS = [
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Update database configuration from $DATABASE_URL environment variable (if defined)
-
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES["default"].update(db_from_env)
+# Commented out for now, as we are using sqlite3 for development
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES["default"].update(db_from_env)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -169,10 +166,3 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Allow only XLSX and CSV formats
 
 IMPORT_EXPORT_FORMATS = [XLSX, CSV]
-
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "127.0.0.1:11211",
-    }
-}
