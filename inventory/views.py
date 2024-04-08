@@ -205,10 +205,10 @@ def inventory_evaluation(request):
 
 
 def inventory_shopping(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(internally_produced=False)
     sellers = []
     for prod in products:
-        if (prod.display_seller() not in sellers) and prod.oos:
+        if (prod.display_seller() not in sellers) and prod.has_shortage:
             sellers.append(prod.display_seller())
 
     # Get last product modification date
@@ -234,7 +234,7 @@ def inventory_packaging(request):
     main_storage_branches = set()
     for product in Product.objects.all():
         for product_storage in product.product_storages.all():
-            if product_storage.main_storage and product_storage.oos:
+            if product_storage.main_storage and product_storage.has_shortage:
                 main_storage_branches.add(product_storage.branch)
     branches = list(main_storage_branches)
     branches = list(set(branches) - {branch})
@@ -245,7 +245,10 @@ def inventory_packaging(request):
     target_branches = Branch.objects.all()
     product_storages_set = set()
     for product_storage in ProductStorage.objects.all():
-        if product_storage.oos is True and product_storage.main_storage is False:
+        if (
+            product_storage.has_shortage is True
+            and product_storage.main_storage is False
+        ):
             product_storages_set.add(product_storage)
     branch_counts = {}
     for product_storage in product_storages_set:

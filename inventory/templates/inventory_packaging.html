@@ -82,7 +82,7 @@
                                                     <!-- Product Storages Display Mobile -->
                                                     <div class="mt-1 responsive__show">
                                                         {% for product_storage in product.product_storages.all %}
-                                                            {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
+                                                            {% if not product_storage.main_storage and product_storage.has_shortage and product_storage.branch == target_branch %}
                                                                 <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
                                                                     <div class="d-flex align-items-center">
                                                                         <svg class="bi me-1" width="16" height="16">
@@ -100,7 +100,7 @@
                                                 <td class="responsive__hide">
                                                     <div class="badge-wrap d-flex align-items-center">
                                                         {% for product_storage in product.product_storages.all %}
-                                                            {% if not product_storage.main_storage and product_storage.oos and product_storage.branch == target_branch %}
+                                                            {% if not product_storage.main_storage and product_storage.has_shortage and product_storage.branch == target_branch %}
                                                                 <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
                                                                     <div class="d-flex align-items-center">
                                                                         <svg class="bi me-1" width="16" height="16">

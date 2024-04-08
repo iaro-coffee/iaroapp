@@ -34,7 +34,7 @@
               <td>
                 {% for product_storage, data in product.get_product_storage.items %}
                   {% if product_storage == storage %}
-                    {% if data.oos %}
+                    {% if data.has_shortage %}
                     <span class="warning">
                     {% else %}
                     <span>

@@ -43,7 +43,7 @@
 
                                 <tbody>
                                 {% for product in products %}
-                                {%if product.oos and product.display_seller == seller %}
+                                {%if product.has_shortage and product.display_seller == seller %}
 
                                   <tr class="entry">
                                     <td>
@@ -107,7 +107,7 @@
                                     <div class="d-flex align-items-center units-wrap">
                                             <div class="units-column d-flex">
                                                 <h6 class="mb-0 text-sm value">
-                                                    {{ product.value_oos|floatformat:2 }}
+                                                    {{ product.value_to_buy|floatformat:2 }}
                                                 </h6>
                                                 <h6 class="mb-0 me-2 ms-1 text-sm unit">
                                                     {{ product.unit.all|join:", " }}

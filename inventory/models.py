@@ -79,6 +79,7 @@ class Product(BaseModel):
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
+    internally_produced = models.BooleanField(default=False)
 
     @property
     def has_main_storage(self):
@@ -94,21 +95,21 @@ class Product(BaseModel):
         return False
 
     def needs_packaging(self):
-        if self.has_main_storage and self.oos:
+        if self.has_main_storage and self.has_shortage:
             for product_storage in self.product_storages.all():
-                if not product_storage.main_storage and product_storage.oos:
+                if not product_storage.main_storage and product_storage.has_shortage:
                     return True
         return False
 
     @property
-    def oos(self):
+    def has_shortage(self):
         for product_storage in self.product_storages.all():
-            if product_storage.oos:
+            if product_storage.has_shortage:
                 return True
         return False
 
     @property
-    def value_oos(self):
+    def value_to_buy(self):
         total_value = self.product_storages.aggregate(total_value=Sum("value"))[
             "total_value"
         ]
@@ -124,7 +125,7 @@ class Product(BaseModel):
         for branch in self.get_storage_branches:
             value_needed = 0
             for product_storage in self.product_storages.all():
-                if not product_storage.main_storage and product_storage.oos:
+                if not product_storage.main_storage and product_storage.has_shortage:
                     if branch == product_storage.branch:
                         value_needed = value_needed + product_storage.value_needed
             product_storage_dict[branch] = {
@@ -164,7 +165,7 @@ class Product(BaseModel):
         )["total_value_intended"]
         if total_value is None or total_value_intended is None:
             return ""
-        if self.oos:
+        if self.has_shortage:
             color = "red"
         else:
             color = ""
@@ -186,7 +187,7 @@ class Product(BaseModel):
                 product_storage_dict[storage.storage] = {
                     "value": storage.value,
                     "value_intended": storage.value_intended,
-                    "oos": (
+                    "has_shortage": (
                         ((100 / storage.value_intended) * storage.value)
                         < storage.threshold
                     ),
@@ -195,7 +196,7 @@ class Product(BaseModel):
                 product_storage_dict[storage.storage] = {
                     "value": storage.value,
                     "value_intended": storage.value_intended,
-                    "oos": True,
+                    "has_shortage": True,
                 }
         return product_storage_dict
 
@@ -225,9 +226,9 @@ class ProductStorage(BaseModel):
         return self.value_intended - self.value
 
     @property
-    def oos(self):
+    def has_shortage(self):
         if self.value and self.value_intended:
-            return ((100 / self.value_intended) * self.value) < self.threshold
+            return self.value < self.threshold
         return True
 
     @property
