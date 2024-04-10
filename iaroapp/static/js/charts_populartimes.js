@@ -292,6 +292,7 @@ populartimesData.forEach((day, index) => {
     const legendItem = document.createElement('h6');
     legendItem.textContent = day.name.slice(0, 2);
     legendItem.className = 'legend-item';
+    legendItem.style.cursor = 'pointer';
     legendItem.onclick = () => {
         updateChartForDay(index);
     };
