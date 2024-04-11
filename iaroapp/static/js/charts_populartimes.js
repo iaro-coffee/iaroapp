@@ -1,7 +1,7 @@
 // Chart time
 const now = new Date();
 const hours = [];
-for (let i = 7; i <= 17; i++) {
+for (let i = 7; i < 18; i++) {
     const suffix = i < 12 ? 'AM' : 'PM';
     const hourIn12 = i > 12 ? i - 12 : i;
     hours.push(`${hourIn12} ${suffix}`);
@@ -47,7 +47,7 @@ const livePopularityData = new Array(hours.length).fill(null); // Use null for e
 const currentHourIndex = currentHour - 7;
 console.log('Current hour index:', currentHourIndex); // Debugging
 // Only set the live popularity for the current hour
-if (currentHour >= 7 && currentHour <= 17) {
+if (currentHour >= 7 && currentHour <= 18) {
     // Calculate the index for the current hour based on your hours array
     // Ensure livePopularity is a number and assign it to the correct position
     livePopularityData[currentHourIndex] = Number(livePopularity);
@@ -58,11 +58,11 @@ if (currentHour >= 7 && currentHour <= 17) {
 // Initialize datasets once
 const datasets = populartimesData.map((day, index) => ({
     label: day.name,
-    data: day.data.slice(7, 17),
+    data: day.data.slice(7, 18),
     backgroundColor: gradient,
     borderRadius: 10,
     hidden: true, // Initially hide all
-    barThickness: 9,
+    barThickness: 8,
 }));
 
 
@@ -73,7 +73,7 @@ datasets.push({
     data: livePopularityData,
     backgroundColor: 'rgba(130,214,22,0.65)',
     borderRadius: 10,
-    barThickness: 9,
+    barThickness: 8,
     borderColor: 'green',
     borderWidth: 0,
     order: 1,
@@ -264,7 +264,7 @@ let populartimesChart = new Chart(ctx, {
                 },
                 ticks: {
                     display: true,
-                    maxTicksLimit: 5,
+                    maxTicksLimit: 6,
                     color: '#b2b9bf',
                     padding: 20,
                     maxRotation: 0,
