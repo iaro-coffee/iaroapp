@@ -205,7 +205,7 @@ def inventory_evaluation(request):
 
 
 def inventory_shopping(request):
-    products = Product.objects.filter(internally_produced=False)
+    products = Product.objects.filter(seller__internal=False)
     sellers = []
     for prod in products:
         if (prod.display_seller() not in sellers) and prod.has_shortage:
@@ -219,6 +219,30 @@ def inventory_shopping(request):
         "inventory_shopping.html",
         context={
             "pageTitle": "Shopping list",
+            "products": products,
+            "modifiedDate": modified_date,
+            "sellers": sellers,
+        },
+    )
+
+
+def inventory_production(request):
+    products = Product.objects.filter(seller__internal=True)
+    sellers = []
+    for prod in products:
+        if (prod.display_seller() not in sellers) and prod.has_shortage:
+            sellers.append(prod.display_seller())
+
+    # TODO(Rapha) get product for every branch where it has a shortage. So we can make production/baking plan per branch
+
+    # Get last product modification date
+    modified_date = getInventoryModifiedDate()
+
+    return render(
+        request,
+        "inventory_shopping.html",
+        context={
+            "pageTitle": "Production",
             "products": products,
             "modifiedDate": modified_date,
             "sellers": sellers,
