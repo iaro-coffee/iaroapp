@@ -172,6 +172,8 @@ function getUsualStatus(value) {
         return 'A little busy';
     } else if (value >= 20) {
         return 'Not too busy';
+    } else if (value > 0) {
+        return 'Not busy';
     } else {
         return 'Closed';
     }
@@ -210,12 +212,6 @@ let populartimesChart = new Chart(ctx, {
                 mode: 'index',
                 intersect: false,
                 callbacks: {
-                    title: function(tooltipItems, data) {
-                        const dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                        const dayIndex = dayOfWeek[new Date().getDay() - 1];
-                        const time = tooltipItems[0].label;
-                        return `${dayIndex} ${time}`;
-                    },
                     label: function(context) {
                         const usualStatus = getUsualStatus(context.raw);
                         return `${context.dataset.label}: ${context.raw}% (${usualStatus})`;
@@ -300,7 +296,10 @@ populartimesData.forEach((day, index) => {
     legendContainer.appendChild(legendItem);
 });
 
-
+populartimesData.forEach((data) => {
+    console.log(data.name);
+});
+console.log('Today\'s place:', todayData.name);
 
 
 // Init document

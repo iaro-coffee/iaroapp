@@ -189,7 +189,7 @@ def index(request):
     statistics, statisticsSum = getStatistics(request)
 
     # Fetch data for the graph
-    formatted_address = request.GET.get('formatted_address', "Iaro West Sophienstraße 108")
+    formatted_address = request.GET.get('formatted_address', "Iaro Ost Karlsruhe")
     populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address)
     populartimes_json = json.dumps(populartimes_data.get('populartimes', []), cls=DjangoJSONEncoder)
     currentivepopularity_json = json.dumps(populartimes_data.get('current_popularity', []), cls=DjangoJSONEncoder)

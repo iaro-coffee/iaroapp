@@ -219,7 +219,10 @@
                 <input type="hidden" name="formatted_address" id="formatted_address"
                        value="{{ request.GET.formatted_address|default:'Iaro West Sophienstraße 108' }}">
 
-                <button class="text-bold mt-3 w-35 {% if request.GET.formatted_address == 'Iaro Ost Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
+                <button class="text-bold mt-3 w-35
+                        {% if request.GET.formatted_address == 'Iaro Ost Karlsruhe' or not request.GET.formatted_address %}btn-active
+                        {% else %}btn-default
+                        {% endif %}"
                         type="submit"
                         onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
                     Iaro Ost
