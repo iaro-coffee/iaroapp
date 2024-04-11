@@ -65,6 +65,7 @@ const datasets = populartimesData.map((day, index) => ({
     barThickness: 8,
 }));
 
+
 // Add live popularity dataset
 datasets.push({
     id: 'livePopularity',
@@ -207,18 +208,21 @@ let populartimesChart = new Chart(ctx, {
         maintainAspectRatio: false,
         plugins: {
             tooltip: {
-
                 enabled: true,
                 mode: 'index',
                 intersect: false,
                 callbacks: {
                     label: function(context) {
-                        const usualStatus = getUsualStatus(context.raw);
-                        return `${context.dataset.label}: ${context.raw}% (${usualStatus})`;
+                        if (context.dataset.id === 'livePopularity' && context.dataIndex === currentHourIndex) {
+                            return `Live: ${context.raw}% (${currentLiveStatus})`;
+                        } else if (context.dataset.id !== 'livePopularity') {
+                            const usualStatus = getUsualStatus(context.raw);
+                            return `${context.dataset.label}: ${context.raw}% (${usualStatus})`;
+                        }
+                        return null;
                     }
                 }
             },
-
             legend: {
                 display: false,
             }
