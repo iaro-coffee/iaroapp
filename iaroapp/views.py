@@ -193,7 +193,6 @@ def index(request):
     populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address)
     populartimes_json = json.dumps(populartimes_data.get('populartimes', []), cls=DjangoJSONEncoder)
     currentivepopularity_json = json.dumps(populartimes_data.get('current_popularity', []), cls=DjangoJSONEncoder)
-    print(currentivepopularity_json)
     time_spent = populartimes_data.get('time_spent', [15, 45])  # Defaulting to some value if not found
 
     # TODO(Rapha): figure out how to say, that there was no rating on a day. -1?
@@ -208,6 +207,7 @@ def index(request):
             "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
             "tasks_done_last_month": tasksDoneLastMonth,
             "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
+            "statistics": statistics,
             "statistics_sum": statisticsSum,
             "today": today,
             "ongoingShift": ongoingShift[0],

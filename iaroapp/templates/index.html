@@ -639,8 +639,8 @@
 
 <script src="{% static 'softTheme/js/plugins/chartjs.min.js' %}"></script>
 <script>
-    //console.log('{{ statistics | escapejs }}');
     var statistics = JSON.parse('{{ statistics | to_json | escapejs }}');
+    console.log('statistics: ', statistics);
 
     var ctx1 = document.getElementById("chart-line1").getContext("2d");
     var ctx2 = document.getElementById("chart-line2").getContext("2d");
