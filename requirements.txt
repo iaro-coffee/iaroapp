@@ -17,3 +17,4 @@ crispy-bootstrap5
 django-colorful
 pymemcache
 pre-commit
+livepopulartimes

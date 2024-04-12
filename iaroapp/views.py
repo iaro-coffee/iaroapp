@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timedelta
 
+import livepopulartimes
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
@@ -11,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
+from inventory.views import getCurrentBranch
 from lib import planday
 from ratings.views import EmployeeRating
 from shifts.models import Shift
@@ -186,21 +188,43 @@ def index(request):
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
     statistics, statisticsSum = getStatistics(request)
 
+    # Get Iaro address from request
+    formatted_address = request.GET.get("formatted_address", None)
+    if formatted_address == "Iaro Ost Karlsruhe":
+        branch = "Iaro Ost"
+    elif formatted_address == "Iaro West Karlsruhe":
+        branch = "Iaro West"
+    else:
+        branch = getCurrentBranch(request).name
+        if branch == "Iaro West":
+            formatted_address = "Iaro West Karlsruhe"
+        elif branch == "Iaro Ost":
+            formatted_address = "Iaro Ost Karlsruhe"
+
+    populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address)
+    time_spent = populartimes_data.get("time_spent", [15, 45])
+
     return render(
         request,
         "index.html",
         context={
             "pageTitle": "Dashboard",
             "nextShifts": userShifts[
-                0 : len(userShifts) if len(userShifts) <= 3 else 3
+                0 : len(userShifts) if len(userShifts) <= 5 else 5
             ],
-            "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 3 else 3],
+            "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 5 else 5],
             "tasks_done_last_month": tasksDoneLastMonth,
+            "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
             "statistics": statistics,
             "statistics_sum": statisticsSum,
             "today": today,
             "ongoingShift": ongoingShift[0],
             "shiftStart": ongoingShift[1],
+            "formatted_address": formatted_address,
+            "populartimes": populartimes_data.get("populartimes", []),
+            "time_spent": time_spent,
+            "current_popularity": populartimes_data.get("current_popularity", []),
+            "branch": branch,
         },
     )
 
