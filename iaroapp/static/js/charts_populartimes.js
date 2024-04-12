@@ -6,37 +6,24 @@ for (let i = 8; i < 18; i++) {
     const hourIn12 = i > 12 ? i - 12 : i;
     hours.push(`${hourIn12} ${suffix}`);
 }
+
 // Current time
 const currentTime = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-console.log('Current time:', currentTime); // Debugging
-
 
 // Mapping JS day index to popularTime data structure
 const currentHour = new Date().getHours();
 const jsDayOfWeek  = new Date().getDay(); // JS day, 0-Sunday, 1-Monday, ..., 6-Saturday
 const dayIndex = jsDayOfWeek === 0 ? 6 : jsDayOfWeek - 1; // API day, 0-Monday, ..., 6-Sunday
-console.log('dayIndex:', dayIndex); // Debugging
 const todayData = populartimesData[dayIndex];
-console.log('todayData:', todayData); // Debugging
 
 const currentPopularityIndex = currentHour; // Assuming index 0 corresponds to midnight
 const nextPopularityIndex = currentPopularityIndex + 1;
-console.log('Current hour index:', currentPopularityIndex, ' Next  hour index:', nextPopularityIndex); // Debugging
 
 const currentUsualPopularity = todayData.data[currentPopularityIndex];
-console.log('current hour: ', currentHour); // Debugging
-console.log('Current usual popularity:', currentUsualPopularity); // Debugging
-
 const nextHourPopularity = todayData.data[nextPopularityIndex];
-console.log('Current Live popularity:', currentLivePopularity); // Debugging
-console.log('Next hour popularity:', nextHourPopularity); // Debugging
 
 let currentLiveStatus = getLiveStatus(currentLivePopularity, currentUsualPopularity); // Pass the usual popularity for comparison
-let nextStatus = getLiveStatus(nextHourPopularity, nextHourPopularity);
-console.log('Current Live status:', currentLiveStatus); // Debugging
-console.log('Next hour status:', nextStatus); // Debugging
-
-
+let nextStatus = getLiveStatus(nextHourPopularity, nextHourPopularity); // Debugging
 
 const ctx = document.getElementById('populartimesChart').getContext('2d');
 const gradient = ctx.createLinearGradient(0, 0, 0, 150);
@@ -45,15 +32,6 @@ gradient.addColorStop(1, 'rgba(87,95,154)');
 
 const livePopularityData = new Array(hours.length).fill(null); // Use null for empty values
 const currentHourIndex = currentHour - 8;
-
-
-console.log('Current hour index:', currentHourIndex); // Debugging
-// Only set the live popularity for the current hour
-if (currentHour >= 8 && currentHour <= 18) {
-    // Calculate the index for the current hour based on your hours array
-    // Ensure livePopularity is a number and assign it to the correct position
-    livePopularityData[currentHourIndex] = Number(livePopularity);
-}
 
 
 // Generate datasets for each day with hidden state except for the first one
@@ -66,8 +44,6 @@ const datasets = populartimesData.map((day, index) => ({
     hidden: true, // Initially hide all
     barThickness: 8,
 }));
-
-
 // Add live popularity dataset
 datasets.push({
     id: 'livePopularity',
@@ -82,6 +58,10 @@ datasets.push({
     hidden: true,
 });
 
+// Only set the live popularity for the current hour
+if (currentHour >= 8 && currentHour <= 18) {
+    livePopularityData[currentHourIndex] = Number(livePopularity);
+}
 
 // Function to update the active day styling in the legend
 function updateLegendActiveStyle(activeIndex) {
@@ -111,10 +91,8 @@ function updateChartForDay(dayIndex) {
     const liveIndex = datasets.findIndex(d => d.id === 'livePopularity');
     datasets[liveIndex].hidden = dayIndex !== (new Date().getDay() - 1);
 
-    // Update the chart
     populartimesChart.update();
 
-    // Update legend style
     updateLegendActiveStyle(dayIndex);
 }
 
@@ -183,7 +161,7 @@ function getUsualStatus(value) {
 }
 
 
-
+// Chart instance
 let populartimesChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -283,9 +261,6 @@ let populartimesChart = new Chart(ctx, {
     },
 });
 
-
-
-
 // Custom chart legend
 const legendContainer = document.getElementById('chartLegend');
 
@@ -303,9 +278,6 @@ populartimesData.forEach((day, index) => {
 });
 
 
-console.log('Selected place:', currentBranch); // Debugging
-
-
 // Init document
 document.addEventListener('DOMContentLoaded', function() {
     updatePredictions();
@@ -317,9 +289,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
-
-// Future updates
 // Summaries
 const daySummaries = populartimesData.map(day => {
     return {
