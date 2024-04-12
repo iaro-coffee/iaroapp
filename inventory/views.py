@@ -240,7 +240,7 @@ def inventory_production(request):
 
     return render(
         request,
-        "inventory_shopping.html",
+        "inventory_production.html",
         context={
             "pageTitle": "Production",
             "products": products,
