@@ -215,25 +215,25 @@
                 </div>
             </div>
 
-            <form class="d-flex justify-content-center gap-2 mb-4" method="GET" action="{% url 'index' %}">
-                <input type="hidden" name="formatted_address" id="formatted_address"
-                       value="{{ request.GET.formatted_address|default:'Iaro West Sophienstraße 108' }}">
+<form class="d-flex justify-content-center gap-2 mb-4" method="GET" action="{% url 'index' %}">
+    <input type="hidden" name="formatted_address" id="formatted_address" value="{{ formatted_address }}">
 
-                <button class="text-bold mt-3 w-35
-                        {% if request.GET.formatted_address == 'Iaro Ost Karlsruhe' or not request.GET.formatted_address %}btn-active
-                        {% else %}btn-default
-                        {% endif %}"
-                        type="submit"
-                        onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
-                    Iaro Ost
-                </button>
+    <button class="text-bold mt-3 w-35 {% if branch == 'Iaro Ost' %}btn-active{% else %}btn-default{% endif %}"
+            type="submit"
+            onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
+        Iaro Ost
+    </button>
 
-                <button class="text-bold mt-3 w-35 {% if request.GET.formatted_address == 'Iaro West Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
-                        type="submit"
-                        onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
-                    Iaro West
-                </button>
-            </form>
+    <button class="text-bold mt-3 w-35 {% if branch == 'Iaro West' %}btn-active{% else %}btn-default{% endif %}"
+            type="submit"
+            onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
+        Iaro West
+    </button>
+</form>
+<!-- Debugging: Print the branch value in the template -->
+<div>Current branch: '{{ branch }}'</div>
+
+
 
         </div>
     </div>
@@ -352,7 +352,6 @@
         }
 
         .btn-default {
-            color: black;
             justify-content: center;
             display: flex;
             border: none;
@@ -634,6 +633,7 @@
     var populartimesData = JSON.parse('{{ populartimes_json | safe }}');
     const currentLivePopularity = JSON.parse('{{ currentivepopularity_json | safe }}');
     const livePopularity = JSON.parse('{{ currentivepopularity_json | safe }}');
+    const currentBranch = '{{ branch }}';
 </script>
 <script src="{% static 'js/charts_populartimes.js' %}"></script>
 

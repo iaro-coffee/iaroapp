@@ -1,7 +1,7 @@
 // Chart time
 const now = new Date();
 const hours = [];
-for (let i = 7; i < 18; i++) {
+for (let i = 8; i < 18; i++) {
     const suffix = i < 12 ? 'AM' : 'PM';
     const hourIn12 = i > 12 ? i - 12 : i;
     hours.push(`${hourIn12} ${suffix}`);
@@ -44,10 +44,12 @@ gradient.addColorStop(0, 'rgba(203,12,159)');
 gradient.addColorStop(1, 'rgba(87,95,154)');
 
 const livePopularityData = new Array(hours.length).fill(null); // Use null for empty values
-const currentHourIndex = currentHour - 7;
+const currentHourIndex = currentHour - 8;
+
+
 console.log('Current hour index:', currentHourIndex); // Debugging
 // Only set the live popularity for the current hour
-if (currentHour >= 7 && currentHour <= 18) {
+if (currentHour >= 8 && currentHour <= 18) {
     // Calculate the index for the current hour based on your hours array
     // Ensure livePopularity is a number and assign it to the correct position
     livePopularityData[currentHourIndex] = Number(livePopularity);
@@ -58,7 +60,7 @@ if (currentHour >= 7 && currentHour <= 18) {
 // Initialize datasets once
 const datasets = populartimesData.map((day, index) => ({
     label: day.name,
-    data: day.data.slice(7, 18),
+    data: day.data.slice(8, 18),
     backgroundColor: gradient,
     borderRadius: 10,
     hidden: true, // Initially hide all
@@ -214,10 +216,10 @@ let populartimesChart = new Chart(ctx, {
                 callbacks: {
                     label: function(context) {
                         if (context.dataset.id === 'livePopularity' && context.dataIndex === currentHourIndex) {
-                            return `Live: ${context.raw}% (${currentLiveStatus})`;
+                            return `Live: ${currentLiveStatus}`;
                         } else if (context.dataset.id !== 'livePopularity') {
                             const usualStatus = getUsualStatus(context.raw);
-                            return `${context.dataset.label}: ${context.raw}% (${usualStatus})`;
+                            return `Usually: ${usualStatus}`;
                         }
                         return null;
                     }
@@ -300,10 +302,8 @@ populartimesData.forEach((day, index) => {
     legendContainer.appendChild(legendItem);
 });
 
-populartimesData.forEach((data) => {
-    console.log(data.name);
-});
-console.log('Today\'s place:', todayData.name);
+
+console.log('Selected place:', currentBranch); // Debugging
 
 
 // Init document

@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
+from inventory.views import getCurrentBranch
 from lib import planday
 from ratings.views import EmployeeRating
 from shifts.models import Shift
@@ -185,15 +186,23 @@ def index(request):
     myTasks = getMyTasks(request)
     ongoingShift = hasOngoingShift(request)
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
-
     statistics, statisticsSum = getStatistics(request)
 
-    # Fetch data for the graph
-    formatted_address = request.GET.get('formatted_address', "Iaro Ost Karlsruhe")
+    # Get Iaro address from request
+    formatted_address = request.GET.get('formatted_address', None)
+    if formatted_address == "Iaro Ost Karlsruhe":
+        branch = "Iaro Ost"
+    elif formatted_address == "Iaro West Karlsruhe":
+        branch = "Iaro West"
+    else:
+        branch = getCurrentBranch(request)
+
+    print(getCurrentBranch(request))
+
     populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address)
     populartimes_json = json.dumps(populartimes_data.get('populartimes', []), cls=DjangoJSONEncoder)
     currentivepopularity_json = json.dumps(populartimes_data.get('current_popularity', []), cls=DjangoJSONEncoder)
-    time_spent = populartimes_data.get('time_spent', [15, 45])  # Defaulting to some value if not found
+    time_spent = populartimes_data.get('time_spent', [15, 45])
 
     # TODO(Rapha): figure out how to say, that there was no rating on a day. -1?
     return render(
@@ -214,8 +223,11 @@ def index(request):
             "shiftStart": ongoingShift[1],
             "formatted_address": formatted_address,
             "populartimes_json": populartimes_json,
+            # "populartimes": populartimes_data.get('populartimes', []),
             "time_spent": time_spent,
             "currentivepopularity_json": currentivepopularity_json,
+            # "current_popularity": populartimes_data.get('current_popularity', []),
+            "branch": branch,
         },
     )
 
