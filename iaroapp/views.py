@@ -189,22 +189,21 @@ def index(request):
     statistics, statisticsSum = getStatistics(request)
 
     # Get Iaro address from request
-    formatted_address = request.GET.get('formatted_address', None)
+    formatted_address = request.GET.get("formatted_address", None)
     if formatted_address == "Iaro Ost Karlsruhe":
         branch = "Iaro Ost"
     elif formatted_address == "Iaro West Karlsruhe":
         branch = "Iaro West"
     else:
-        branch = getCurrentBranch(request)
-
-    print(getCurrentBranch(request))
+        branch = getCurrentBranch(request).name
+        if branch == "Iaro West":
+            formatted_address = "Iaro West Karlsruhe"
+        elif branch == "Iaro Ost":
+            formatted_address = "Iaro Ost Karlsruhe"
 
     populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address)
-    populartimes_json = json.dumps(populartimes_data.get('populartimes', []), cls=DjangoJSONEncoder)
-    currentivepopularity_json = json.dumps(populartimes_data.get('current_popularity', []), cls=DjangoJSONEncoder)
-    time_spent = populartimes_data.get('time_spent', [15, 45])
+    time_spent = populartimes_data.get("time_spent", [15, 45])
 
-    # TODO(Rapha): figure out how to say, that there was no rating on a day. -1?
     return render(
         request,
         "index.html",
@@ -222,11 +221,9 @@ def index(request):
             "ongoingShift": ongoingShift[0],
             "shiftStart": ongoingShift[1],
             "formatted_address": formatted_address,
-            "populartimes_json": populartimes_json,
-            # "populartimes": populartimes_data.get('populartimes', []),
+            "populartimes": populartimes_data.get("populartimes", []),
             "time_spent": time_spent,
-            "currentivepopularity_json": currentivepopularity_json,
-            # "current_popularity": populartimes_data.get('current_popularity', []),
+            "current_popularity": populartimes_data.get("current_popularity", []),
             "branch": branch,
         },
     )
