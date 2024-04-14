@@ -215,13 +215,13 @@
             <form class="d-flex justify-content-center gap-2 mb-4" method="GET" action="{% url 'index' %}">
                 <input type="hidden" name="formatted_address" id="formatted_address" value="{{ formatted_address }}">
 
-                <button class="text-bold mt-3 w-35 {% if branch == 'Iaro Ost' %}btn-active{% else %}btn-default{% endif %}"
+                <button class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro Ost' %}btn-active{% else %}btn-default{% endif %}"
                         type="submit"
                         onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
                     Iaro Ost
                 </button>
 
-                <button class="text-bold mt-3 w-35 {% if branch == 'Iaro West' %}btn-active{% else %}btn-default{% endif %}"
+                <button class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro West' %}btn-active{% else %}btn-default{% endif %}"
                         type="submit"
                         onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
                     Iaro West
@@ -344,9 +344,10 @@
     .active-day {
         color: #82d616 !important;
     }
-
+    body.dark-page button.btn-active {
+        color: #82d616 !important;
+    }
     .btn-default {
-        color: black;
         justify-content: center;
         display: flex;
         border: none;
