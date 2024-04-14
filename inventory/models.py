@@ -61,6 +61,10 @@ class Units(BaseModel):
 
 class Seller(BaseModel):
     name = models.CharField(max_length=200, help_text="Enter seller for product.")
+    internal = models.BooleanField(
+        default=False,
+        help_text="If this is checked the products will not show up on the shopping list but instead in production.",
+    )
 
     class Meta:
         verbose_name_plural = "Seller"
@@ -79,10 +83,6 @@ class Product(BaseModel):
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
-    internally_produced = models.BooleanField(
-        default=False,
-        help_text="If this is checked the product will not show up on the shopping list.",
-    )
 
     @property
     def has_main_storage(self):
