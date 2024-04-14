@@ -16,6 +16,12 @@ const jsDayOfWeek  = new Date().getDay(); // JS day, 0-Sunday, 1-Monday, ..., 6-
 const dayIndex = jsDayOfWeek === 0 ? 6 : jsDayOfWeek - 1; // API day, 0-Monday, ..., 6-Sunday
 const todayData = populartimesData[dayIndex];
 
+console.log('Current hour:', currentHour);
+console.log('Current day:', dayIndex);
+console.log('Today data:', todayData);
+console.log('Live popularity:', currentLivePopularity);
+console.log('Data:', populartimesData);
+
 const currentPopularityIndex = currentHour; // Assuming index 0 corresponds to midnight
 const nextPopularityIndex = currentPopularityIndex + 1;
 
@@ -66,16 +72,18 @@ if (currentHour >= 8 && currentHour <= 18) {
 // Function to update the active day styling in the legend
 function updateLegendActiveStyle(activeIndex) {
     const legendItems = document.querySelectorAll('.legend-item');
+    const todayIndex = (new Date().getDay() + 6) % 7; // Adjusted so 0 (Sunday) becomes 6, other days are decremented by 1
+
     legendItems.forEach((item, index) => {
-        if (index === activeIndex) {
-            if (index !== new Date().getDay() - 1) {
-                item.style.color = 'rgba(203,12,159,1)';
-            }
-        } else {
-            item.style.color = '#344767'; // Default color
+        item.style.color = '#344767';
+
+        if (index === todayIndex) {
+            item.style.color = '#82d616';
+        }
+        if (index === activeIndex && index !== todayIndex) {
+            item.style.color = 'rgba(203,12,159,1)';
         }
     });
-    legendItems[new Date().getDay() - 1].style.color = '#82d616'; // Always green for the current day
 }
 
 
@@ -89,7 +97,10 @@ function updateChartForDay(dayIndex) {
 
     // Check if the live popularity should be shown
     const liveIndex = datasets.findIndex(d => d.id === 'livePopularity');
-    datasets[liveIndex].hidden = dayIndex !== (new Date().getDay() - 1);
+    // Show the live popularity if it is the current day
+    const todayIndex = (new Date().getDay() + 6) % 7;
+
+    datasets[liveIndex].hidden = dayIndex !== todayIndex;
 
     populartimesChart.update();
 
@@ -283,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updatePredictions();
 
     // Init chart on today and update legend styling
-    const todayIndex = new Date().getDay() - 1;
+    const todayIndex = (new Date().getDay() + 6) % 7;
     updateChartForDay(todayIndex);
     updateLegendActiveStyle(todayIndex);
 });
