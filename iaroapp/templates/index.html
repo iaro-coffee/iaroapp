@@ -177,7 +177,7 @@
         </div>
     </div>
     <div class="col-lg-4 mb-4">
-        <div class="card z-index-2">
+        <div class="card z-index-2" id="popular-times">
             <div class="card-header pb-0">
                 <h6>Popular Times</h6>
                 <div class="live__container d-flex align-left">
@@ -212,7 +212,7 @@
                 </div>
             </div>
 
-            <form class="d-flex justify-content-center gap-2 mb-4" method="GET" action="{% url 'index' %}">
+            <form class="d-flex justify-content-center gap-2 mb-4" method="GET" action="{% url 'index' %}#popular-times">
                 <input type="hidden" name="formatted_address" id="formatted_address" value="{{ formatted_address }}">
 
                 <button class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro Ost' %}btn-active{% else %}btn-default{% endif %}"
