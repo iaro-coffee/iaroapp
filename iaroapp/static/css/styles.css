@@ -27,7 +27,8 @@ body.dark-page .navbar-brand-img {
 }
 
 .bg-gradient-primary {
-  background-image: linear-gradient(310deg, #ebede8 0%, #d4cac8 100%);
+  /*background-image: linear-gradient(310deg, #ebede8 0%, #d4cac8 100%);*/
+  background-image: linear-gradient(310deg, #67748e 0%, #67748e 100%); /* temporally changed for better readability before full recolor*/
 }
 
 .navbar-vertical .navbar-nav > .nav-item .nav-link.active .icon {
@@ -109,7 +110,8 @@ body.dark-page .navbar-brand-img {
   --bs-highlight-bg: #fcf8e3; }
 
 .btn-primary {
-  --bs-btn-color: #fff;
+  --bs-btn-color: #000000;
+  /*--bs-btn-color: #fff;*/
   --bs-btn-bg: #d4cac8;
   --bs-btn-border-color: #d4cac8;
   --bs-btn-hover-color: #fff;
@@ -139,3 +141,4 @@ body.dark-page .navbar-brand-img {
 .btn.bg-gradient-primary.dropdown-toggle {
   color: color-yiq(#d4cac8);
   background-color: #d4cac8; }
+

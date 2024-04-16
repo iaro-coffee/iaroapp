@@ -12,23 +12,22 @@
             </form>
             <ul class="navbar-nav  justify-content-end">
 
-                {% if request.user.is_superuser %}
-                <li class="nav-item d-flex align-items-center">
-                    <a href="{% url 'admin:index' %}" class="nav-link text-body font-weight-bold px-0">
-                        <span class="d-sm-inline d-none me-3">Admin</span>
-                    </a>
-                </li>
-                {% endif %}
-
                 {% if request.user.is_authenticated %}
                     <li class="nav-item d-flex align-items-center">
 
-                        <a href="#" onclick="document.getElementById('logout_form').submit(); return false;"
-                           class="nav-link text-body font-weight-bold px-0">
+                    <li class="nav-item dropdown d-flex align-items-center">
+                        <a class="nav-link text-body font-weight-bold px-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-user me-sm-1"></i>
-                            <span class="d-sm-inline d-none me-3">Sign out <span
-                                    style="opacity: 0.5;">({{ user }})</span></span>
+                            <span class="d-sm-inline d-none me-3">Account <span style="opacity: 0.75;">({{ user }})</span></span>
                         </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+{#                            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>  // TODO: Add profile page#}
+                    {#        <li><a class="dropdown-item" href="{% url 'password' %}">Change password</a></li>  // TODO: Add profile page#}
+                            <li><a class="dropdown-item" href="#" onclick="document.getElementById('logout_form').submit(); return false;">Logout</a></li>
+                            {% if request.user.is_superuser %}
+                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a></li>
+                            {% endif %}
+                        </ul>
                     </li>
                     {% else %}
                     <li class="nav-item d-flex align-items-center">
@@ -59,3 +58,19 @@
     </div>
 </nav>
 <!-- End Navbar -->
+
+<style>
+*:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.nav-link:focus .fa-user {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.nav-link[aria-expanded="true"] .fa-user {
+    color: #82d616;
+}
+</style>
