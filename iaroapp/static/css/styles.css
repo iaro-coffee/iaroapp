@@ -64,7 +64,8 @@ body.dark-page .navbar-brand-img {
   --bs-gray-900: #212529;
   --bs-primary: #d4cac8;
   --bs-secondary: #ebede8;
-  --bs-success: #82d616;
+  --bs-success: #d7e9cf;
+  --bs-success-dark: #7fae6b; /*-- #d7e9cf 50% darker 25% saturated*/
   --bs-info: #17c1e8;
   --bs-warning: #fbcf33;
   --bs-danger: #ea0606;
@@ -73,7 +74,7 @@ body.dark-page .navbar-brand-img {
   --bs-white: #fff;
   --bs-primary-rgb: 212, 202, 200;
   --bs-secondary-rgb: 235, 237, 232;
-  --bs-success-rgb: 130, 214, 22;
+  --bs-success-rgb: 215, 233, 207;
   --bs-info-rgb: 23, 193, 232;
   --bs-warning-rgb: 251, 207, 51;
   --bs-danger-rgb: 234, 6, 6;
@@ -142,3 +143,6 @@ body.dark-page .navbar-brand-img {
   color: color-yiq(#d4cac8);
   background-color: #d4cac8; }
 
+.alert-success {
+  --bs-alert-bg: var(--bs-success);
+}

@@ -40,7 +40,6 @@ table tr.entry:hover {
     transition: transform 0.2s ease-in-out;
     scale: 1.05;
     stroke-width: 1;
-    color: rgba(20, 23, 39, 0.8);
 }
 
 .descriptionLink svg:hover {
