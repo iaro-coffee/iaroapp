@@ -78,10 +78,10 @@ function updateLegendActiveStyle(activeIndex) {
         item.style.color = '#344767';
 
         if (index === todayIndex) {
-            item.style.color = '#82d616';
+            item.style.setProperty('color', '#82d616', 'important');
         }
         if (index === activeIndex && index !== todayIndex) {
-            item.style.color = 'rgba(203,12,159,1)';
+            item.style.setProperty('color', '#CB0C9FFF', 'important');
         }
     });
 }
