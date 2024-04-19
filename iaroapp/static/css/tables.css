@@ -165,7 +165,7 @@ table tr.entry:hover {
     }
     @media (max-width: 539px) {
         .responsive__mobile-3 {
-            width: 160px;!important;
+            width: 260px;!important;
             word-wrap: break-word;!important;
             white-space: normal;!important;
         }
@@ -173,7 +173,7 @@ table tr.entry:hover {
 
     @media (max-width: 419px) {
         .responsive__mobile-3{
-            width: 140px !important;
+            width: 240px !important;
         }
 
         .responsive__break {
