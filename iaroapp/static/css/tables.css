@@ -75,7 +75,17 @@ table tr.entry:hover {
 .descriptionLink svg {
     scale: 1.25;
 }
-
+.task-description table tbody tr {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+}
+.task-description table tbody tr td {
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+    min-width: 60px;
+}
 
 /* Packaging/Shopping storage badges */
 .responsive__show {
