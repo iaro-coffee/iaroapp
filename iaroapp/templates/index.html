@@ -33,7 +33,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body px-0 pb-2" style="text-align: center;">
+            <div class="card-body" style="text-align: center;">
                 {% if ongoingShift %}
                 <span id="clock" style="font-size:2.5rem"></span>
                 {% endif %}
@@ -285,7 +285,7 @@
 
 <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
     <div class="modal-dialog" role="document">
-        <div class="modal-content rounded-4 shadow">
+        <div class="modal-content card card-body rounded-4 shadow">
             <div class="modal-body p-5">
                 <h2 class="fw-bold mb-0">Error</h2>
                 <br>
@@ -298,7 +298,7 @@
 
 <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
     <div class="modal-dialog" role="document">
-        <div class="modal-content rounded-4 shadow">
+        <div class="modal-content card card-body rounded-4 shadow">
             <div class="modal-body p-5">
                 <h2 class="fw-bold mb-0">
                     {% if ongoingShift %} Submit rating and punch out {% else %} Start your shift? {% endif%}
@@ -485,12 +485,13 @@
       margin-top: -0.4rem;
     }
     ul.shifts li .shift {
-      background-image: linear-gradient(310deg, var(--bs-primary) 0%, var(--bs-primary) 100%);
+      {#background-image: linear-gradient(310deg, var(--bs-primary) 0%, var(--bs-primary) 100%);#}
       padding: 0.7rem 1.4rem;
       border-radius: 5px;
       display: flex;
       flex-direction: column;
       width: 100%;
+        background-color: var(--bs-body-color);
     }
     ul.shifts li .shift .time {
       font-size: 1rem;

@@ -8,7 +8,7 @@
 
 {% block widgets %}
     <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             {{ branch }}
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -31,7 +31,7 @@
 
                                 <thead>
                                     <tr class="title">
-                                        <th colspan="4">
+                                        <th class="border-bottom-0" colspan="4">
                                             <h6>Deliver to {{ target_branch }}</h6>
                                         </th>
                                     </tr>
@@ -80,7 +80,7 @@
                                                         </h6>
                                                     </div>
                                                     <!-- Product Storages Display Mobile -->
-                                                    <div class="mt-1 responsive__show">
+                                                    <div class="mt-1 mb-1 responsive__show">
                                                         {% for product_storage in product.product_storages.all %}
                                                             {% if not product_storage.main_storage and product_storage.has_shortage and product_storage.branch == target_branch %}
                                                                 <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">

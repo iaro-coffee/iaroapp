@@ -146,3 +146,7 @@ body.dark-page .navbar-brand-img {
 .alert-success {
   --bs-alert-bg: var(--bs-success);
 }
+
+.card .card-body {
+  font-family: 'Inter', sans-serif !important;
+}
