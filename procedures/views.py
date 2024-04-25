@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from inventory.models import Branch
+from inventory.views import getCurrentBranch
 
 from .models import Procedure
 from .procedure_category import ProcedureCategory
@@ -47,12 +48,12 @@ def opening(request):
     for procedure in procedureModels:
         procedures.append(model_to_dict(procedure))
 
+    # Get current branch by GET parameter or Planday query
+    branch = getCurrentBranch(request).name
     branches = Branch.objects.all()
+    # Filter selected branch from available branches
+    branches = branches.exclude(name=branch)
     branches = branches.order_by("name")
-
-    branch = request.GET.get("branch")
-    if not branch:
-        branch = Branch.objects.first().name
 
     return render(
         request,
@@ -83,20 +84,12 @@ def closing(request):
     for procedure in procedureModels:
         procedures.append(model_to_dict(procedure))
 
+    # Get current branch by GET parameter or Planday query
+    branch = getCurrentBranch(request).name
     branches = Branch.objects.all()
+    # Filter selected branch from available branches
+    branches = branches.exclude(name=branch)
     branches = branches.order_by("name")
-
-    branch = request.GET.get("branch")
-    if not branch:
-        departmentId = request.session.get("departmentId", None)
-        if departmentId is not None:
-            branch = Branch.objects.filter(departmentId=departmentId).first().name
-            if branch is not None:
-                pass
-            else:
-                Branch.objects.first().name
-        else:
-            Branch.objects.first().name
 
     return render(
         request,
