@@ -18,7 +18,7 @@
 {% if procedures %}
 {% for category in categories %}
     <div class="row">
-        <form id="tasksForm" method="post">
+        <form class="tasksForm" method="post">
         {% csrf_token %}
         <div class="col-12">
 
@@ -138,14 +138,25 @@
 
 <script>
     function submitForm() {
-      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-      var alerts = document.getElementsByClassName("alert");
-      var form = document.querySelector('#tasksForm');
-      var form_data = new FormData(form);
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var alerts = document.getElementsByClassName("alert");
+        var forms = document.getElementsByClassName('tasksForm');
+        console.log(forms);
+
+        var mergedForm = new FormData();
+        for(var i = 0; i < forms.length; i++) {
+            var form = forms[i];
+            var data = new FormData(form);
+            var formValues = data.entries()
+            while (!(ent = formValues.next()).done) {
+                mergedForm.append(`${ent.value[0]}`, ent.value[1])
+            }
+        }
+
 
       let objSerializedForm = {};
       let nextIsFinished = false;
-      for (let [name, value] of form_data) {
+      for (let [name, value] of mergedForm) {
         if (name === "done") {
           nextIsFinished = true;
         }
@@ -165,7 +176,6 @@
             isSubmittedToday = true;
           }
         }
-        window.scrollTo(0, 0);
       }
       request.open('POST', '/procedures/');
       request.setRequestHeader("X-CSRFToken", csrftoken);

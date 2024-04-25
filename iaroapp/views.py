@@ -24,8 +24,6 @@ run_once_day = {}
 run_once_day_punch_clock = {}
 nextShifts = []
 nextShiftsUser = {}
-showOpening = False
-showClosing = False
 punchClockRecordsUser = {}
 
 
@@ -44,25 +42,11 @@ def punchClockRecordsWereCheckedToday(userId):
     return True
 
 
-def getShowOpening(request):
-    if not shiftsWereCheckedToday(request.user.id):
-        getNextShiftsByUser(request)
-    return showOpening
-
-
-def getShowClosing(request):
-    if not shiftsWereCheckedToday(request.user.id):
-        getNextShiftsByUser(request)
-    return showClosing
-
-
 def getNextShiftsByUser(request):
     if not request.user.is_authenticated:
         return {}
     global nextShifts
     global nextShiftsUser
-    global showOpening
-    global showClosing
     today = datetime.today().date()
     if not shiftsWereCheckedToday(request.user.id):
         planday.authenticate()
@@ -80,13 +64,6 @@ def getNextShiftsByUser(request):
                 userShifts.append(
                     {"day": day, "start": start, "end": end, "weekday": weekday}
                 )
-                shiftdayString = datetime.fromisoformat(shift["start"]).strftime(
-                    "%Y-%m-%d"
-                )
-                if shiftdayString == str(today) and start == "07.30":
-                    showOpening = True
-                if shiftdayString == str(today) and end == "18.30":
-                    showClosing = True
         nextShiftsUser[request.user.id] = userShifts
     return nextShiftsUser[request.user.id]
 

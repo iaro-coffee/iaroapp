@@ -16,13 +16,16 @@ from .procedure_category import ProcedureCategory
 def index(request):
     if request.method == "POST":
         request_data = request.body
+        print(request_data)
         form_data = json.loads(request_data.decode("utf-8"))
         taskids_completed = list(form_data.keys())
         tasks = list(form_data.values())
         date = datetime.now()
 
+        print(tasks)
         for i in range(len(tasks)):
             task = Procedure.objects.get(id=taskids_completed[i])
+            print(task)
             if tasks[i]:
                 task.date_done = date
             else:

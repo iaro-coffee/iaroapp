@@ -31,27 +31,22 @@
                 </a>
             </li>
 
-            {% if showOpening or showClosing %}
-                {% if showOpening == True %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if '/procedures/opening' == request.path %} active {% endif %} " href=" {% url 'opening' %}">
-                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
-                                <span data-feather="sunrise" class="align-text-bottom"></span>
-                            </div>
-                            <span class="nav-link-text ms-1">Store Opening</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if '/procedures/closing' == request.path %} active {% endif %} " href=" {% url 'closing' %}">
-                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
-                                <span data-feather="sunset" class="align-text-bottom"></span>
-                            </div>
-                            <span class="nav-link-text ms-1">Store Closing</span>
-                        </a>
-                    </li>
-                {% endif %}
-            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link {% if '/procedures/opening' == request.path %} active {% endif %} " href=" {% url 'opening' %}">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                        <span data-feather="sunrise" class="align-text-bottom"></span>
+                    </div>
+                    <span class="nav-link-text ms-1">Store Opening</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/procedures/closing' == request.path %} active {% endif %} " href=" {% url 'closing' %}">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                        <span data-feather="sunset" class="align-text-bottom"></span>
+                    </div>
+                    <span class="nav-link-text ms-1">Store Closing</span>
+                </a>
+            </li>
 
             <li class="nav-item">
                 <a class="nav-link {% if '/inventory/packaging' == request.path %} active {% endif %} " href=" {% url 'inventory_packaging' %}">

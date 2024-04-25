@@ -48,14 +48,12 @@
         </div>
     </div>
 
-    {% if showOpening or showClosing %}
     <div class="col-lg-4 mb-4">
         <div class="card h-100">
             <div class="card-header pb-0">
                 <div class="row">
                     <div>
-                        <h6>{% if showOpening %} Are you opening the store? {% else %} Are you closing the store later?
-                            {% endif %}</h6>
+                        <h6>Are you opening the store?</h6>
                         <p class="text-sm mb-0">
                             <i class="fa fa-bell text-info" aria-hidden="true"></i>
                             <strong>Reminder:</strong> make sure you completed all the steps.
@@ -65,20 +63,38 @@
             </div>
             <div class="card-body px-0 pb-2" style="text-align: center;">
                 <div class="px-4" style="height: 100%; display: flex;">
-                    {% if showOpening %}
                     <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;"
                        href="/procedures/opening">
-                        {% else %}
+                            Check tasks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <div class="row">
+                    <div>
+                        <h6>Are you closing the store later?</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-bell text-info" aria-hidden="true"></i>
+                            <strong>Reminder:</strong> make sure you completed all the steps.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2" style="text-align: center;">
+                <div class="px-4" style="height: 100%; display: flex;">
                         <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;"
                            href="/procedures/closing">
-                            {% endif %}
                             Check tasks
                         </a>
                 </div>
             </div>
         </div>
     </div>
-    {% endif %}
 </div>
 
 <div class="row">
