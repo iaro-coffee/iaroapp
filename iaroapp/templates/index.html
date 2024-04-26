@@ -3,6 +3,8 @@
 {% load json_filters %}
 
 {% block extra_css %}
+<link href="{% static 'css/dashboard.css' %}" rel="stylesheet"/>
+<link href="{% static 'css/charts.css' %}" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock extra_css %}
 
@@ -16,272 +18,254 @@
     Punching in/out failed.
 </div>
 
-
-<div class="row">
-    <div class="col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header pb-0">
-                <div class="row">
-                    <div>
-                        <h6>{% if ongoingShift %} End your shift? {% else %} Start shift? {% endif %}</h6>
-                        <p class="text-sm mb-0">
-                            <i class="fa fa-clock text-info" aria-hidden="true"></i>
-                            {% if ongoingShift %}
-                            Punch out to end your shift {% else %} Punch in to start your shift
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body" style="text-align: center;">
-                {% if ongoingShift %}
-                <span id="clock" style="font-size:2.5rem"></span>
-                {% endif %}
-                <div class="px-4" style="display: flex;">
-                    <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;"
-                       href="#">
-                        {% if ongoingShift %} Punch out {% else %} Punch in {% endif %}
-                    </a>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    {% if showOpening or showClosing %}
-    <div class="col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header pb-0">
-                <div class="row">
-                    <div>
-                        <h6>{% if showOpening %} Are you opening the store? {% else %} Are you closing the store later?
-                            {% endif %}</h6>
-                        <p class="text-sm mb-0">
-                            <i class="fa fa-bell text-info" aria-hidden="true"></i>
-                            <strong>Reminder:</strong> make sure you completed all the steps.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body px-0 pb-2" style="text-align: center;">
-                <div class="px-4" style="height: 100%; display: flex;">
-                    {% if showOpening %}
-                    <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;"
-                       href="/procedures/opening">
-                        {% else %}
-                        <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;"
-                           href="/procedures/closing">
-                            {% endif %}
-                            Check tasks
-                        </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-</div>
-
-<div class="row">
-    <div class="col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header pb-0">
-                <div class="row">
-                    <div>
-                        <h6>Your Tasks</h6>
-                        <p class="text-sm mb-0">
-                            <i class="fa fa-check text-info" aria-hidden="true"></i>
-                            <span class="font-weight-bold ms-1">{{ tasks_done_last_month }} done</span> in the last 30
-                            days
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body px-0 pb-2">
-                <div class="table-responsive">
-                    <table class="table align-items-center mb-2">
-                        <tbody>
-                        {% for task in task_list %}
-                        {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
-                        <tr>
-                            <td>
-                                <div class="d-flex px-2 py-1">
-                                    <div class="d-flex px-4" style="align-items:center;">
-                                        <i class="fa fa-thumbtack cursor-pointer" aria-hidden="true"></i>
-                                    </div>
-                                    <div>
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm">{{ task.title }}</h6>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex">
-                                            <small class="d-block text-xs opacity-7"
-                                                   style="margin: 0.1rem 0; padding-left: 0.5rem;">
-                                            <span data-feather="tag" class="align-text-bottom"
-                                                  style="height: 16px"></span>
-                                                {{ task.get_types|join:", " }}
-                                                {% if task.assignees %}
-                                                <span data-feather="user" class="align-text-bottom"
-                                                      style="margin-left: 0.2rem; height: 16px"></span>
-                                                {{ task.assignees }}
-                                                {% endif %}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+<div class="main__blocks">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <h6>{% if ongoingShift %} End your shift? {% else %} Start shift? {% endif %}</h6>
+                    <p class="text-sm mb-0">
+                        <i class="fa fa-clock text-info" aria-hidden="true"></i>
+                        {% if ongoingShift %}
+                        Punch out to end your shift {% else %} Punch in to start your shift
                         {% endif %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mb-2">
-                    <a class="text-body text-sm font-weight-bold icon-move-right mt-auto px-4" href="/tasks">
-                        See all tasks
-                        <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header pb-0">
-                <div class="row">
-                    <div>
-                        <h6>Your next shifts</h6>
-                        <p class="text-sm mb-0">
-                            <i class="fa fa-dumbbell text-info" aria-hidden="true"></i>
-                            you can do this!
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body px-0 pb-2">
-                <ul class="shifts">
-                    {% for shift in nextShifts %}
-                    <li>
-                        <div class="date">
-                            {{ shift.day }}
-                            <span class="weekday">{{ shift.weekday }}</span>
-                        </div>
-                        <div class="shift">
-                            <span class="time">{{ shift.start }} – {{ shift.end }}</span>
-                            <span class="location">iaro, Sophienstraße</span>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 mb-4">
-        <div class="card z-index-2" id="popular-times">
-            <div class="card-header pb-0">
-                <h6>Popular Times</h6>
-                <div class="live__container d-flex align-left">
-                    <div class="video__icon">
-                        <div class="circle--outer"></div>
-                        <div class="circle--inner"></div>
-                    </div>
-                    <p class="text-sm">
-                        <span class="predict__info"></span>
                     </p>
                 </div>
-
-            </div>
-
-            <div class="card-body p-3">
-                <div class="text-bold align-center justify-content-center gap-1 d-flex"
-                     id="chartLegend">
-                </div>
-
-                <div class="chart">
-                    <canvas id="populartimesChart" class="chart-canvas" height="300"></canvas>
-                </div>
-                <div class="d-flex justify-content-center align-items-center">
-                    <span data-feather="clock" class="align-text-bottom"
-                          style="height: 15px"></span>
-
+                <div class="card-body text-center">
+                    {% if ongoingShift %}
+                    <span id="clock"></span>
+                    {% endif %}
                     <div class="d-flex">
-                        &nbsp;People spend
-                        <span class="text-bold">&nbsp;{{ time_spent.0 }}-{{ time_spent.1 }} min&nbsp;</span>
-                        today
+                        <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
+                            {% if ongoingShift %} Punch out {% else %} Punch in {% endif %}
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <form class="d-flex justify-content-center gap-2 mb-4" method="GET" action="{% url 'index' %}#popular-times">
-                <input type="hidden" name="formatted_address" id="formatted_address" value="{{ formatted_address }}">
+        {% if showOpening or showClosing %}
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <h6>{% if showOpening %} Are you opening the store? {% else %} Are you closing the store later?
+                        {% endif %}</h6>
+                    <p class="text-sm mb-0">
+                        <i class="fa fa-bell text-info" aria-hidden="true"></i>
+                        <strong>Reminder:</strong> make sure you completed all the steps.
+                    </p>
+        
+                </div>
+                <div class="card-body text-center pb-2">
+                    <div class="d-flex">
+                        {% if showOpening %}
+                        <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;" href="/procedures/opening">
+                            {% else %}
+                            <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;"
+                                href="/procedures/closing">
+                                {% endif %}
+                                Check tasks
+                            </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 
-                <button class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro Ost' %}btn-active{% else %}btn-default{% endif %}"
-                        type="submit"
-                        onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
-                    Iaro Ost
-                </button>
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <h6>Your Tasks</h6>
+                    <p class="text-sm mb-0">
+                        <i class="fa fa-check text-info" aria-hidden="true"></i>
+                        <span class="font-weight-bold ms-1">{{ tasks_done_last_month }} done</span> in the last 30
+                        days
+                    </p>
+                </div>
+                <div class="card-body px-0 pb-2">
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-2">
+                            <tbody>
+                                {% for task in task_list %}
+                                {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex px-4" style="align-items:center;">
+                                                <i class="fa fa-thumbtack cursor-pointer" aria-hidden="true"></i>
+                                            </div>
+                                            <div>
+                                                <div class="d-flex px-2 py-1">
+                                                    <div class="d-flex flex-column justify-content-center">
+                                                        <h6 class="mb-0 text-sm">{{ task.title }}</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex">
+                                                    <small class="d-block text-xs opacity-7"
+                                                        style="margin: 0.1rem 0; padding-left: 0.5rem;">
+                                                        <span data-feather="tag" class="align-text-bottom"
+                                                            style="height: 16px"></span>
+                                                        {{ task.get_types|join:", " }}
+                                                        {% if task.assignees %}
+                                                        <span data-feather="user" class="align-text-bottom"
+                                                            style="margin-left: 0.2rem; height: 16px"></span>
+                                                        {{ task.assignees }}
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        <a class="text-body text-sm font-weight-bold icon-move-right mt-auto px-4" href="/tasks">
+                            See all tasks
+                            <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <button class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro West' %}btn-active{% else %}btn-default{% endif %}"
-                        type="submit"
-                        onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
-                    Iaro West
-                </button>
-            </form>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <h6>Your next shifts</h6>
+                    <p class="text-sm mb-0">
+                        <i class="fa fa-dumbbell text-info" aria-hidden="true"></i>
+                        you can do this!
+                    </p>
+                </div>
+                <div class="card-body px-0 pb-2">
+                    <ul class="shifts">
+                        {% for shift in nextShifts %}
+                        <li>
+                            <div class="date">
+                                {{ shift.day }}
+                                <span class="weekday">{{ shift.weekday }}</span>
+                            </div>
+                            <div class="shift">
+                                <span class="time">{{ shift.start }} – {{ shift.end }}</span>
+                                <span class="location">iaro, Sophienstraße</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100" id="popular-times">
+                <div class="card-header pb-0">
+                    <h6>Popular Times</h6>
+                    <div class="live__container d-flex align-left">
+                        <div class="video__icon">
+                            <div class="circle--outer"></div>
+                            <div class="circle--inner"></div>
+                        </div>
+                        <p class="text-sm">
+                            <span class="predict__info"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div class="text-bold align-center justify-content-center gap-1 d-flex" id="chartLegend">
+                    </div>
+                    <div class="chart">
+                        <canvas id="populartimesChart" class="chart-canvas" height="300"></canvas>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span data-feather="clock" class="align-text-bottom" style="height: 15px"></span>
+
+                        <div class="d-flex">
+                            &nbsp;People spend
+                            <span class="text-bold">&nbsp;{{ time_spent.0 }}-{{ time_spent.1 }} min&nbsp;</span>
+                            today
+                        </div>
+                    </div>
+                </div>
+
+                <form class="d-flex justify-content-center gap-2 mb-4" method="GET"
+                    action="{% url 'index' %}#popular-times">
+                    <input type="hidden" name="formatted_address" id="formatted_address" value="{{ formatted_address }}">
+
+                    <button
+                        class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro Ost' %}btn-active{% else %}btn-default{% endif %}"
+                        type="submit" onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
+                        Iaro Ost
+                    </button>
+
+                    <button
+                        class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro West' %}btn-active{% else %}btn-default{% endif %}"
+                        type="submit" onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
+                        Iaro West
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <h6>Your work hours: last 7 days</h6>
+                    <p class="text-sm">
+                        <i class="fa fa-clock text-success"></i>
+                        <span class="font-weight-bold">{{ statistics_sum.workHours }}h</span>
+                    </p>
+                </div>
+                <div class="card-body p-3">
+                    <div class="chart">
+                        <canvas id="chart-line1" class="chart-canvas" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <h6>Your tasks done: last 7 days</h6>
+                    <p class="text-sm">
+                        <i class="fa fa-thumbtack text-success"></i>
+                        <span class="font-weight-bold">{{ statistics_sum.tasks }}</span>
+                    </p>
+                </div>
+                <div class="card-body p-3">
+                    <div class="chart">
+                        <canvas id="chart-line2" class="chart-canvas" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <h6>How your shifts went: last 7 days</h6>
+                    <p class="text-sm">
+                        <i class="fa fa-star text-success"></i>
+                        <span class="font-weight-bold">{{ statistics_sum.ratings }}</span>
+                    </p>
+                </div>
+                <div class="card-body p-3">
+                    <div class="chart">
+                        <canvas id="chart-line3" class="chart-canvas" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-lg-4 mb-4">
-        <div class="card z-index-2 h-100">
-            <div class="card-header pb-0">
-                <h6>Your work hours: last 7 days</h6>
-                <p class="text-sm">
-                    <i class="fa fa-clock text-success"></i>
-                    <span class="font-weight-bold">{{ statistics_sum.workHours }}h</span>
-                </p>
-            </div>
-            <div class="card-body p-3">
-                <div class="chart">
-                    <canvas id="chart-line1" class="chart-canvas" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 mb-4">
-        <div class="card z-index-2 h-100">
-            <div class="card-header pb-0">
-                <h6>Your tasks done: last 7 days</h6>
-                <p class="text-sm">
-                    <i class="fa fa-thumbtack text-success"></i>
-                    <span class="font-weight-bold">{{ statistics_sum.tasks }}</span>
-                </p>
-            </div>
-            <div class="card-body p-3">
-                <div class="chart">
-                    <canvas id="chart-line2" class="chart-canvas" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4 mb-4">
-        <div class="card z-index-2">
-            <div class="card-header pb-0">
-                <h6>How your shifts went: last 7 days</h6>
-                <p class="text-sm">
-                    <i class="fa fa-star text-success"></i>
-                    <span class="font-weight-bold">{{ statistics_sum.ratings }}</span>
-                </p>
-            </div>
-            <div class="card-body p-3">
-                <div class="chart">
-                    <canvas id="chart-line3" class="chart-canvas" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -295,7 +279,6 @@
     </div>
 </div>
 
-
 <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content card card-body rounded-4 shadow">
@@ -306,586 +289,47 @@
                 <br>
                 <form id="ratingForm" method="post">
                     {% csrf_token %}
-                    <input type="text" name="user" value="{{user.id}}" style="display: none;"/>
+                    <input type="text" name="user" value="{{user.id}}" style="display: none;" />
                     {% if ongoingShift %}
                     <h5>How was todays shift for you?</h5>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="stars">
-                                <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
+                                <input class="star star-5" id="star-5" type="radio" name="star" value="5" />
                                 <label class="star star-5" for="star-5"></label>
-                                <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
+                                <input class="star star-4" id="star-4" type="radio" name="star" value="4" />
                                 <label class="star star-4" for="star-4"></label>
-                                <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
+                                <input class="star star-3" id="star-3" type="radio" name="star" value="3" />
                                 <label class="star star-3" for="star-3"></label>
-                                <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
+                                <input class="star star-2" id="star-2" type="radio" name="star" value="2" />
                                 <label class="star star-2" for="star-2"></label>
-                                <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
+                                <input class="star star-1" id="star-1" type="radio" name="star" value="1" />
                                 <label class="star star-1" for="star-1"></label>
                             </div>
                         </div>
                     </div>
                     {% endif %}
                     <input type="submit" class="w-100 mt-2 btn btn-lg bg-gradient-primary" value="Submit"
-                           data-bs-dismiss="modal"/>
+                        data-bs-dismiss="modal" />
                 </form>
             </div>
         </div>
     </div>
-</div>
-
-<style>
-    .legend-item {
-        font-family: 'Inter', sans-serif !important;
-        color: #344767;
-        transition: color 0.3s;
-    }
-
-    .active-day {
-        color: #82d616 !important;
-    }
-    body.dark-page button.btn-active {
-        color: #82d616 !important;
-    }
-    .btn-default {
-        justify-content: center;
-        display: flex;
-        border: none;
-        background: none;
-    }
-
-    .btn-active {
-        color: #82d616 !important;
-        justify-content: center;
-        display: flex;
-        border: none;
-        background: none;
-
-    }
-
-    .predict__info {
-        position: relative;
-        margin-left: 1.5rem;
-        top: 0.2rem;
-
-    }
-
-    *:before, *:after {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-    }
-
-    .video__icon {
-        position: absolute;
-        scale: 0.5;
-        width: 50px;
-        left: 8px;
-        top: 50px;
-    }
-
-    .video__icon .circle--outer {
-        border: 1px solid #82d616;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin: 0 auto 5px;
-        position: relative;
-        opacity: .8;
-        -webkit-animation: circle 2s ease-in-out infinite;
-        animation: circle 2s ease-in-out infinite;
-    }
-
-    .video__icon .circle--inner {
-        background: #82d616;
-        left: 15px;
-        top: 10px;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        position: absolute;
-        opacity: .8;
-    }
-
-    .video__icon .circle--inner:after {
-        content: '';
-        display: block;
-        border: 2px solid #82d616;
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        top: -4px;
-        left: -4px;
-        position: absolute;
-        opacity: .8;
-        -webkit-animation: circle 2s ease-in-out .2s infinite;
-        animation: circle 2s ease-in-out .2s infinite;
-    }
-
-    .video__icon p {
-        color: #000;
-        text-align: center;
-    }
-
-    @-webkit-keyframes circle {
-        from {
-            -webkit-transform: scale(1);
-            transform: scale(1);
-        }
-
-        to {
-            -webkit-transform: scale(1.5);
-            transform: scale(1.5);
-            opacity: 0;
-        }
-    }
-
-    @keyframes circle {
-        from {
-            -webkit-transform: scale(1);
-            transform: scale(1);
-        }
-
-        to {
-            -webkit-transform: scale(1.5);
-            transform: scale(1.5);
-            opacity: 0;
-        }
-    }
 
 
-</style>
 
-<style>
-    .btn-link {
-      text-decoration: none;
-    }
-    ul.shifts {
-      list-style: none;
-      padding: 0;
-      margin-top: 0.5rem;
-    }
-    ul.shifts li {
-      display: flex;
-      align-items: center;
-      margin: 0.25rem 1rem 0.25rem 0;
-    }
-    ul.shifts li .date {
-      padding: 1rem;
-      font-size: 1.4rem;
-      font-weight: 600;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    ul.shifts li .date .weekday {
-      font-size: 0.7rem;
-      color: #969696;
-      font-weight: 600;
-      margin-top: -0.4rem;
-    }
-    ul.shifts li .shift {
-      {#background-image: linear-gradient(310deg, var(--bs-primary) 0%, var(--bs-primary) 100%);#}
-      padding: 0.7rem 1.4rem;
-      border-radius: 5px;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-        background-color: var(--bs-body-color);
-    }
-    ul.shifts li .shift .time {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #ffffff;
-    }
-    ul.shifts li .shift .location {
-      color: #efefef;
-    }
 
-      div.stars {
-        display: inline-block;
-      }
-
-      input.star { display: none; }
-
-      label.star {
-        float: right;
-        padding: 5px;
-        font-size: 36px;
-        color: #000000;
-        transition: all .2s;
-      }
-
-      input.star:checked ~ label.star:before {
-        content: '★';
-        color: #FD4;
-        transition: all .25s;
-      }
-
-      input.star-5:checked ~ label.star:before {
-        color: #FE7;
-        text-shadow: 0 0 5px #952;
-      }
-
-      input.star-1:checked ~ label.star:before { color: #F62; }
-
-      label.star:hover { transform: rotate(-15deg) scale(1.3); }
-
-      label.star:before {
-        content: '☆';
-      }
-</style>
-<script>
-    function shiftTime() {
-        var shiftStart = '{{shiftStart}}';
-        var span = document.getElementById('clock');
-        var now = new Date();
-        var shiftStartDate = new Date(parseFloat(shiftStart)*1000);
-        var millis = now - shiftStartDate;
-        let h,m,s;
-        h = Math.floor(millis/1000/60/60);
-        m = Math.floor((millis/1000/60/60 - h)*60);
-        s = Math.floor(((millis/1000/60/60 - h)*60 - m)*60);
-        s < 10 ? s = '0' + s: s = s
-        m < 10 ? m = '0' + m: m = m
-        h < 10 ? h = '0' + h: h = h
-        span.textContent = h + ":" + m + ":" + s;
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-
-      var ongoingShift = '{{ongoingShift}}';
-      var ongoingShift = (ongoingShift.toLowerCase() === "true");
-      if (ongoingShift) {
-          shiftTime();
-          setInterval(shiftTime, 1000);
-      }
-
-      document.getElementById('ratingForm').onsubmit = function (evt) {
-        evt.preventDefault();
-        var ongoingShift = '{{ongoingShift}}';
-        var ongoingShift = (ongoingShift.toLowerCase() === "true");
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-          var errorModal = new bootstrap.Modal(document.getElementById("errorModal"), {});
-          var submitModal = new bootstrap.Modal(document.getElementById("submitModal"), {});
-          var alerts = document.getElementsByClassName("alert");
-          for(var i = 0; i < alerts.length; i++) {
-            var alert = alerts[i];
-            alert.classList.add('hidden');
-          }
-          var form = document.querySelector('#ratingForm');
-          var form_data = new FormData(form);
-
-          let objSerializedForm = {};
-          console.log(form_data);
-          var star;
-          for (let [name, value] of form_data) {
-            if (name === "user") {
-              userid = value;
-            }
-            if (name === "star") {
-              star = value;
-            }
-          }
-          if (star == null && ongoingShift) {
-            submitModal.hide();
-            errorModal.show();
-            return;
-          }
-          objSerializedForm[userid] = {'star': star};
-          console.log(objSerializedForm);
-
-          var request = new XMLHttpRequest();
-          request.onreadystatechange = function() {
-            if (request.readyState == XMLHttpRequest.DONE) {
-              if(request.status == 200) {
-                var element = document.getElementsByClassName("alert-success")[0];
-                element.classList.remove("hidden");
-                location.reload(); // todo improve
-              } else {
-                var element = document.getElementsByClassName("alert-danger")[0];
-                element.classList.remove("hidden");
-              }
-            }
-            window.scrollTo(0, 0);
-          }
-
-          request.open('POST', '/shifts/');
-          request.setRequestHeader("X-CSRFToken", csrftoken);
-          request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-          request.send(JSON.stringify(objSerializedForm));
-          form.reset();
-      }
-
-      document.getElementById('punchShiftButton').onclick = function (evt) {
-        var submitModal = new bootstrap.Modal(document.getElementById("submitModal"), {});
-        submitModal.show();
-      }
-
-    });
-</script>
-
-<script>
-    // Need to keep global for PopularTimes Chart
-    var populartimesData = JSON.parse('{{ populartimes | to_json | escapejs }}');
-    const currentLivePopularity = JSON.parse('{{ current_popularity | to_json | escapejs }}');
-    const livePopularity = currentLivePopularity;
-    const currentBranch = '{{ branch }}';
-</script>
-<script src="{% static 'js/charts_populartimes.js' %}"></script>
-
-<script src="{% static 'softTheme/js/plugins/chartjs.min.js' %}"></script>
-<script>
-    var statistics = JSON.parse('{{ statistics | to_json | escapejs }}');
-
-    var ctx1 = document.getElementById("chart-line1").getContext("2d");
-    var ctx2 = document.getElementById("chart-line2").getContext("2d");
-    var ctx3 = document.getElementById("chart-line3").getContext("2d");
-
-    var gradientStroke1 = ctx1.createLinearGradient(0, 230, 0, 50);
-    gradientStroke1.addColorStop(1, 'rgba(203,12,159,0.2)');
-    gradientStroke1.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-    gradientStroke1.addColorStop(0, 'rgba(203,12,159,0)'); //purple colors
-
-    var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
-    gradientStroke2.addColorStop(1, 'rgba(87,95,154,0.2)');
-    gradientStroke2.addColorStop(0.2, 'rgba(108,112,154,0.0)');
-    gradientStroke2.addColorStop(0, 'rgba(133,135,154,0)'); //blue colors
-
-    var gradientStroke3 = ctx3.createLinearGradient(0, 230, 0, 50);
-    gradientStroke3.addColorStop(1, 'rgba(255,136,0,0.2)');
-    gradientStroke3.addColorStop(0.2, 'rgba(255,193,121,0.0)');
-    gradientStroke3.addColorStop(0, 'rgba(255,221,182,0)'); //orange colors
-
-    new Chart(ctx1, {
-      type: "line",
-      data: {
-        labels: statistics['labels'],
-        datasets: [{
-            label: "Work hours",
-            tension: 0.4,
-            borderWidth: 0,
-            pointRadius: 0,
-            borderColor: "#cb0c9f",
-            borderWidth: 3,
-            backgroundColor: gradientStroke1,
-            fill: true,
-            data: statistics['workHours'],
-            maxBarThickness: 6
-          },
-        ],
-      },
-      options: {
-        spanGaps: true,
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              padding: 10,
-              color: '#b2b9bf',
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              color: '#b2b9bf',
-              padding: 20,
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-        },
-      },
-    });
-    new Chart(ctx2, {
-      type: "line",
-      data: {
-        labels: statistics['labels'],
-        datasets: [
-          {
-            label: "Tasks",
-            tension: 0.4,
-            borderWidth: 0,
-            pointRadius: 0,
-            borderColor: "#575f9a",
-            borderWidth: 3,
-            backgroundColor: gradientStroke2,
-            fill: true,
-            data: statistics['tasks'],
-            maxBarThickness: 6
-          },
-        ],
-      },
-      options: {
-        spanGaps: true,
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              padding: 10,
-              color: '#b2b9bf',
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              color: '#b2b9bf',
-              padding: 20,
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-        },
-      },
-    });
-    new Chart(ctx3, {
-      type: "line",
-      data: {
-        labels: statistics['labels'],
-        datasets: [
-          {
-            label: "Rating",
-            tension: 0.4,
-            borderWidth: 0,
-            pointRadius: 0,
-            borderColor: "orange",
-            borderWidth: 3,
-            backgroundColor: gradientStroke3,
-            fill: true,
-            data: statistics['ratings'],
-            maxBarThickness: 6
-          },
-        ],
-      },
-      options: {
-        spanGaps: true,
-        responsive: true,
-        maintainAspectRatio: false,
-        min: 1,
-        max: 5,
-        plugins: {
-          legend: {
-            display: false,
-          }
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index',
-        },
-        scales: {
-          y: {
-            grid: {
-              drawBorder: false,
-              display: true,
-              drawOnChartArea: true,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              padding: 10,
-              color: '#b2b9bf',
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-          x: {
-            grid: {
-              drawBorder: false,
-              display: false,
-              drawOnChartArea: false,
-              drawTicks: false,
-              borderDash: [5, 5]
-            },
-            ticks: {
-              display: true,
-              color: '#b2b9bf',
-              padding: 20,
-              font: {
-                size: 11,
-                family: "Open Sans",
-                style: 'normal',
-                lineHeight: 2
-              },
-            }
-          },
-        },
-      },
-    });
-</script>
+    <script>
+        // Charts parsing
+        var populartimesData = JSON.parse('{{ populartimes | to_json | escapejs }}');
+        const currentLivePopularity = JSON.parse('{{ current_popularity | to_json | escapejs }}');
+        const livePopularity = currentLivePopularity;
+        const currentBranch = '{{ branch }}';
+        var statistics = JSON.parse('{{ statistics | to_json | escapejs }}');
+    </script>
+    <script src="{% static 'js/shifts.js' %}"></script>
+    <script src="{% static 'js/charts_populartimes.js' %}"></script>
+    <script src="{% static 'js/charts_user-stats.js' %}"></script>
+   
 
 {% endblock %}

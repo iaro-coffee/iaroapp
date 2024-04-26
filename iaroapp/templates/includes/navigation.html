@@ -4,14 +4,19 @@
      navbar-scroll="true">
     <div class="container-fluid py-1 px-3">
         {{ pageTitle }}
-        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+        <div class="collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
             <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             </div>
             <form id="logout_form" method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
             </form>
-            <ul class="navbar-nav  justify-content-end">
-
+            <ul class="navbar-nav justify-content-end">
+                <li class="nav-item px-3 d-flex align-items-center">
+                    <label for="theme-switch" class="nav-link text-body p-0 m-0">
+                        <i class="fa fa-sun fixed-plugin-button-nav cursor-pointer" id="theme-indicator"></i>
+                    </label>
+                    <input type="checkbox" class="d-none" id="theme-switch"/>
+                </li>
                 {% if request.user.is_authenticated %}
                     <li class="nav-item d-flex align-items-center">
 
@@ -21,7 +26,7 @@
                             <span class="d-sm-inline d-none me-3">Account <span style="opacity: 0.75;">({{ user }})</span></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-{#                            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>  // TODO: Add profile page#}
+                    {#        <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>  // TODO: Add profile page#}
                     {#        <li><a class="dropdown-item" href="{% url 'password' %}">Change password</a></li>  // TODO: Add profile page#}
                             <li><a class="dropdown-item" href="#" onclick="document.getElementById('logout_form').submit(); return false;">Logout</a></li>
                             {% if request.user.is_superuser %}
@@ -47,12 +52,7 @@
                         </div>
                     </a>
                 </li>
-                <li class="nav-item px-3 d-flex align-items-center">
-                    <label for="theme-switch" class="nav-link text-body p-0 m-0">
-                        <i class="fa fa-sun fixed-plugin-button-nav cursor-pointer" id="theme-indicator"></i>
-                    </label>
-                    <input type="checkbox" class="d-none" id="theme-switch"/>
-                </li>
+
             </ul>
         </div>
     </div>

@@ -13,10 +13,6 @@ table tr.entry:hover {
     justify-content: center;
 }
 
-.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked:after {
-    margin-top: 1px;
-}
-
 .form-check:not(.form-switch) .form-check-input[type="checkbox"] {
     border-color: #949db0;
 }

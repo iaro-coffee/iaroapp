@@ -16,11 +16,11 @@ const jsDayOfWeek  = new Date().getDay(); // JS day, 0-Sunday, 1-Monday, ..., 6-
 const dayIndex = jsDayOfWeek === 0 ? 6 : jsDayOfWeek - 1; // API day, 0-Monday, ..., 6-Sunday
 const todayData = populartimesData[dayIndex];
 
-console.log('Current hour:', currentHour);
-console.log('Current day:', dayIndex);
-console.log('Today data:', todayData);
-console.log('Live popularity:', currentLivePopularity);
-console.log('Data:', populartimesData);
+// console.log('Current hour:', currentHour);
+// console.log('Current day:', dayIndex);
+// console.log('Today data:', todayData);
+// console.log('Live popularity:', currentLivePopularity);
+// console.log('Data:', populartimesData);
 
 const currentPopularityIndex = currentHour; // Assuming index 0 corresponds to midnight
 const nextPopularityIndex = currentPopularityIndex + 1;
