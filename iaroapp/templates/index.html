@@ -31,11 +31,11 @@
                         {% endif %}
                     </p>
                 </div>
-                <div class="card-body text-center">
+                <div class="card-body text-center py-1">
                     {% if ongoingShift %}
                     <span id="clock"></span>
                     {% endif %}
-                    <div class="d-flex">
+                    <div class="d-flex justify-content-center">
                         <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
                             {% if ongoingShift %} Punch out {% else %} Punch in {% endif %}
                         </a>
@@ -43,34 +43,51 @@
                 </div>
             </div>
         </div>
-
-        {% if showOpening or showClosing %}
+    
         <div class="col-lg-4 mb-4">
             <div class="card h-100">
                 <div class="card-header pb-0">
-                    <h6>{% if showOpening %} Are you opening the store? {% else %} Are you closing the store later?
-                        {% endif %}</h6>
+                    <h6>Are you opening the store?</h6>
                     <p class="text-sm mb-0">
                         <i class="fa fa-bell text-info" aria-hidden="true"></i>
                         <strong>Reminder:</strong> make sure you completed all the steps.
                     </p>
-        
+    
                 </div>
-                <div class="card-body text-center pb-2">
-                    <div class="d-flex">
-                        {% if showOpening %}
-                        <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;" href="/procedures/opening">
-                            {% else %}
-                            <a class="btn bg-gradient-primary mt-3 w-100" style="align-self: flex-end;"
-                                href="/procedures/closing">
-                                {% endif %}
-                                Check tasks
-                            </a>
+                <div class="card-body text-center py-1">
+                    <div class="d-flex justify-content-center">
+                        <a class="btn bg-gradient-primary mt-3 w-100""
+                            href="/procedures/opening">
+                            Check tasks
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        {% endif %}
+    
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div>
+                            <h6>Are you closing the store later?</h6>
+                            <p class="text-sm mb-0">
+                                <i class="fa fa-bell text-info" aria-hidden="true"></i>
+                                <strong>Reminder:</strong> make sure you completed all the steps.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body text-center py-1">
+                    <div class="d-flex justify-content-center">
+                        <a class="btn bg-gradient-primary mt-3 w-100""
+                            href="/procedures/closing">
+                            Check tasks
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -124,7 +141,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-3">
+                    <div class="mb-3">
                         <a class="text-body text-sm font-weight-bold icon-move-right mt-auto px-4" href="/tasks">
                             See all tasks
                             <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
@@ -147,7 +164,7 @@
                     <ul class="shifts">
                         {% for shift in nextShifts %}
                         <li>
-                            <div class="date">
+                            <div class="date px-4">
                                 {{ shift.day }}
                                 <span class="weekday">{{ shift.weekday }}</span>
                             </div>

@@ -15,7 +15,7 @@
 
             <li class="nav-item">
                 <a class="nav-link {% if '/' == request.path %} active {% endif %} " href=" {% url 'index' %}">
-                    <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                         <span data-feather="home" class="align-text-bottom"></span>
                     </div>
                     <span class="nav-link-text ms-1">Dashboard</span>
@@ -24,7 +24,7 @@
 
             <li class="nav-item">
                 <a class="nav-link {% if '/tasks/' == request.path %} active {% endif %} " href=" {% url 'tasks' %}">
-                    <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                         <span data-feather="check-square" class="align-text-bottom"></span>
                     </div>
                     <span class="nav-link-text ms-1">Tasks</span>
@@ -50,7 +50,7 @@
 
             <li class="nav-item">
                 <a class="nav-link {% if '/inventory/packaging' == request.path %} active {% endif %} " href=" {% url 'inventory_packaging' %}">
-                    <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                         <span data-feather="package" class="align-text-bottom"></span>
                     </div>
                     <span class="nav-link-text ms-1">Packaging</span>
@@ -59,7 +59,7 @@
 
             <li class="nav-item">
                 <a class="nav-link {% if '/tasks/baking' == request.path %} active {% endif %} " href=" {% url 'tasks_baking' %}">
-                    <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                         <span data-feather="trello" class="align-text-bottom"></span>
                     </div>
                     <span class="nav-link-text ms-1">Baking plan</span>
@@ -68,7 +68,7 @@
 
             <li class="nav-item">
                 <a class="nav-link {% if '/inventory/populate' == request.path %} active {% endif %} " href=" {% url 'inventory_populate' %}">
-                    <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                         <span data-feather="layers" class="align-text-bottom"></span>
                     </div>
                     <span class="nav-link-text ms-1">Inventory</span>
@@ -84,7 +84,7 @@
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link {% if '/inventory/shopping' == request.path %} active {% endif %} " href=" {% url 'inventory_shopping' %}">
-                        <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                             <span data-feather="file-text" class="align-text-bottom"></span>
                         </div>
                         <span class="nav-link-text ms-1">Shopping list</span>
@@ -93,7 +93,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link {% if '/inventory/production' == request.path %} active {% endif %} " href=" {% url 'inventory_production' %}">
-                        <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                             <span data-feather="file-text" class="align-text-bottom"></span>
                         </div>
                         <span class="nav-link-text ms-1">Production</span>
@@ -103,7 +103,7 @@
                 {% if user.is_superuser %}
                     <li class="nav-item">
                         <a class="nav-link {% if '/inventory/evaluation' == request.path %} active {% endif %} " href=" {% url 'inventory_evaluation' %}">
-                            <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                                 <span data-feather="file-text" class="align-text-bottom"></span>
                             </div>
                             <span class="nav-link-text ms-1">Inventory</span>
@@ -112,7 +112,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link {% if '/tasks/evaluation' == request.path %} active {% endif %} " href=" {% url 'tasks_evaluation' %}">
-                            <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                                 <span data-feather="file-text" class="align-text-bottom"></span>
                             </div>
                             <span class="nav-link-text ms-1">Tasks</span>
@@ -121,7 +121,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link {% if '/ratings/evaluation' == request.path %} active {% endif %} " href=" {% url 'ratings_evaluation' %}">
-                            <div class="icon icon-shape icon-sm border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                                 <span data-feather="file-text" class="align-text-bottom"></span>
                             </div>
                             <span class="nav-link-text ms-1">Ratings</span>
