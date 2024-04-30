@@ -14,8 +14,8 @@ body {
   display: none;
 }
 .navbar-vertical .navbar-nav > .nav-item .nav-link.active{
-    border: 1px solid var(--bs-body-color);
-    box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.05);
+  background-color: rgba(40, 49, 72, 0.60) !important;
+  color: #fff !important;
 }
 
 body.dark-page .navbar-brand-img {
