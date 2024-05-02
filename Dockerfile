@@ -36,8 +36,18 @@ RUN adduser --disabled-password --gecos '' django && \
 # switch to non-root user
 USER django
 
+# install Nginx
+RUN apt-get update && \
+    apt-get install -y nginx && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# copy Nginx conf
+COPY nginx.conf /etc/nginx/nginx.conf
+
 # set entrypoint
 ENTRYPOINT ["entrypoint.sh"]
 
 # expose port 8000
 EXPOSE 8000
+EXPOSE 80
