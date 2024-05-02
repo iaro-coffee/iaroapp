@@ -29,17 +29,17 @@ RUN npm ci
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# install nginx
+RUN apt-get update && \
+    apt-get install -y nginx && \
+    apt-get clean
+
 # create non-root user and adjust permissions
 RUN adduser --disabled-password --gecos '' django && \
     chown -R django:django /var/www/iaro-project/static
 
 # switch to non-root user
 USER django
-
-# install nginx
-RUN apt-get update && \
-    apt-get install -y nginx && \
-    apt-get clean
 
 # set entrypoint
 ENTRYPOINT ["entrypoint.sh"]
