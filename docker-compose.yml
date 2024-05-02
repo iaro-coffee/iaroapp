@@ -21,4 +21,4 @@ services:
       - django_gunicorn  # start after django_gunicorn
 
 volumes:
-  static:                # define volume for static files
+  static_volume:                # define volume for static files
