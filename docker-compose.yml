@@ -5,7 +5,7 @@ services:
     volumes:
       - static_volume:/var/www/iaro-project/static   # mount volume for static files
     env_file:
-      - .env             # environment variables for django
+      - ./.env             # environment variables for django
     build:
       context: .         # context for build (current directory)
     ports:
