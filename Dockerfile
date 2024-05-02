@@ -1,6 +1,12 @@
 # use python 3.11 on a slim debian-based image
 FROM python:3.11-slim
 
+# install npm
+RUN apt-get update && \
+    apt-get install -y npm && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # upgrade pip
 RUN pip install --upgrade pip
 
@@ -14,6 +20,10 @@ WORKDIR /app
 
 # create static files dir
 RUN mkdir -p /var/www/iaro-project/static
+
+# install npm dependencies
+COPY package.json /app/
+RUN npm ci
 
 # create non-root user and adjust permissions
 RUN adduser --disabled-password --gecos '' django && \
