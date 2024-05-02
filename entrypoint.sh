@@ -7,4 +7,4 @@ python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
 # start gunicorn server
-gunicorn iaro-project.wsgi:application --bind 0.0.0.0:8000
+gunicorn iaroapp.wsgi:application --bind 0.0.0.0:8000
