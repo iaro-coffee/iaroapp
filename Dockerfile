@@ -34,6 +34,14 @@ RUN apt-get update && \
     apt-get install -y nginx && \
     apt-get clean
 
+# log Nginx files and set permissions
+RUN touch /var/log/nginx/error.log /var/log/nginx/access.log && \
+    chmod 666 /var/log/nginx/error.log /var/log/nginx/access.log
+
+# redirect Nginx logs to stdout and stderr
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
+
 # create non-root user and adjust permissions
 RUN adduser --disabled-password --gecos '' django && \
     chown -R django:django /var/www/iaro-project/static

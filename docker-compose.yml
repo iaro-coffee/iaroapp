@@ -14,6 +14,7 @@ services:
     build: ./nginx       # build nginx from specified directory
     volumes:
       - static_volume:/var/www/iaro-project/static   # share static volume with nginx
+      - ./host/path/nginx/logs:/var/log/nginx  # nginx logs
     ports:
       - "80:80"          # expose port 80 for nginx
     depends_on:
