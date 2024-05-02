@@ -36,10 +36,10 @@ RUN adduser --disabled-password --gecos '' django && \
 # switch to non-root user
 USER django
 
-# install Nginx
+# install nginx
 RUN apt-get update && \
     apt-get install -y nginx && \
-    apt-get clean &&
+    apt-get clean
 
 # set entrypoint
 ENTRYPOINT ["entrypoint.sh"]
