@@ -39,8 +39,7 @@ USER django
 # install Nginx
 RUN apt-get update && \
     apt-get install -y nginx && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get clean &&
 
 # set entrypoint
 ENTRYPOINT ["entrypoint.sh"]
