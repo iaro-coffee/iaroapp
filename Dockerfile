@@ -25,16 +25,16 @@ RUN mkdir -p /var/www/iaro-project/static
 COPY package.json /app/
 RUN npm ci
 
+# copy and set entrypoint script
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # create non-root user and adjust permissions
 RUN adduser --disabled-password --gecos '' django && \
     chown -R django:django /var/www/iaro-project/static
 
 # switch to non-root user
 USER django
-
-# copy and set entrypoint script
-COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # set entrypoint
 ENTRYPOINT ["entrypoint.sh"]
