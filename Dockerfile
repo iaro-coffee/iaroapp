@@ -42,9 +42,6 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# copy Nginx conf
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # set entrypoint
 ENTRYPOINT ["entrypoint.sh"]
 
