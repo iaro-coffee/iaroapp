@@ -4,8 +4,9 @@ services:
   django_gunicorn:
     volumes:
       - static_volume:/var/www/iaro-project/static   # mount volume for static files
+      - ./db:/app/db     # mount host dir ./db to container path /app/db for sqlite
     env_file:
-      - ./.env             # environment variables for django
+      - ./.env           # environment variables for django
     build:
       context: .         # context for build (current directory)
     ports:

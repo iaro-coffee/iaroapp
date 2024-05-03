@@ -43,8 +43,10 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
 # create non-root user and adjust permissions
-RUN adduser --disabled-password --gecos '' django && \
-    chown -R django:django /var/www/iaro-project/static
+RUN adduser --disabled-password --gecos '' django
+
+# change ownership of the /app and static files dir
+RUN chown -R django:django /app /var/www/iaro-project/static
 
 # switch to non-root user
 USER django
