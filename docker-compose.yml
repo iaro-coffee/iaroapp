@@ -4,6 +4,7 @@ services:
   django_gunicorn:
     volumes:
       - static_volume:/var/www/iaro-project/static   # mount volume for static files
+      - media_volume:/var/www/iaro-project/media     # mount volume for media
       - ./db:/app/db     # mount host dir ./db to container path /app/db for sqlite
     env_file:
       - ./.env           # environment variables for django
@@ -15,6 +16,7 @@ services:
     build: ./nginx       # build nginx from specified directory
     volumes:
       - static_volume:/var/www/iaro-project/static   # share static volume with nginx
+      - media_volume:/var/www/iaro-project/media     # share media volume with nginx
       - ./host/path/nginx/logs:/var/log/nginx  # nginx logs
     ports:
       - "80:80"          # expose port 80 for nginx

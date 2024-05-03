@@ -157,6 +157,10 @@ STATICFILES_DIRS = [
 # http://whitenoise.evans.io/en/stable/django.html#django-middleware
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# Media files
+MEDIA_URL = "/media/"
+MEDIA_ROOT = "/var/www/iaro-project/media"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"

@@ -18,8 +18,8 @@ RUN pip install -r /app/requirements.txt
 COPY . /app
 WORKDIR /app
 
-# create static files dir
-RUN mkdir -p /var/www/iaro-project/static
+# create static files and media dir
+RUN mkdir -p /var/www/iaro-project/static /var/www/iaro-project/media
 
 # install npm dependencies
 COPY package.json /app/
@@ -45,8 +45,8 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 # create non-root user and adjust permissions
 RUN adduser --disabled-password --gecos '' django
 
-# change ownership of the /app and static files dir
-RUN chown -R django:django /app /var/www/iaro-project/static
+# change ownership of the /app, static and mediafiles dir
+RUN chown -R django:django /app /var/www/iaro-project/static /var/www/iaro-project/media
 
 # switch to non-root user
 USER django
