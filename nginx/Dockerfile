@@ -1,5 +1,9 @@
 FROM nginx:1.19-alpine
 
+ENV APP_HOST=app
+ENV APP_PORT=9000
+ENV DOMAIN=app.iaro.co
+
 # remove default server definition
 RUN rm /etc/nginx/conf.d/default.conf
 
