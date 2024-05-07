@@ -54,8 +54,4 @@ themeSwitch.addEventListener('change', function () {
         setIndicator(1)
         setPage(1)
     }
-    const sidenavLines = document.querySelectorAll('.sidenav-toggler-line');
-    sidenavLines.forEach(line => {
-        line.style.color = page.classList.contains('dark-page') ? '#d7d7d7' : '#68758e';
-    });
 });
