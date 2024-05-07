@@ -1,25 +1,58 @@
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
-import datetime  # for checking renewal date range.
-
 from django import forms
+from django.forms import ModelForm
+
+from .models import Product, Recipe, Task
 
 
-class RenewTaskForm(forms.Form):
-    """Form for a librarian to renew tasks."""
-    renewal_date = forms.DateField(
-            help_text="Enter a date between now and 4 weeks (default 3).")
+class BakingPlanForm(ModelForm):
+    name = forms.CharField(required=False)
+    value_ost = forms.FloatField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}), required=False
+    )
+    value_west = forms.FloatField(
+        widget=forms.NumberInput(attrs={"class": "form-control"}), required=False
+    )
 
-    def clean_renewal_date(self):
-        data = self.cleaned_data['renewal_date']
+    class Meta:
+        model = Recipe
+        fields = ["name", "value_ost", "value_west"]
 
-        # Check date is not in past.
-        if data < datetime.date.today():
-            raise ValidationError(_('Invalid date - renewal in past'))
-        # Check date is in range librarian allowed to change (+4 weeks)
-        if data > datetime.date.today() + datetime.timedelta(weeks=4):
-            raise ValidationError(
-                _('Invalid date - renewal more than 4 weeks ahead'))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["value_ost"].widget = forms.TextInput(
+            attrs={
+                "name": f"{self.instance.id}_value_ost",
+                "class": "form-control",
+                "pattern": "[0-9]+([.,][0-9]+)?",
+                "inputmode": "decimal",
+            }
+        )
+        self.fields["value_west"].widget = forms.TextInput(
+            attrs={
+                "name": f"{self.instance.id}_value_west",
+                "class": "form-control",
+                "pattern": "[0-9]+([.,][0-9]+)?",
+                "inputmode": "decimal",
+            }
+        )
 
-        # Remember to always return the cleaned data.
-        return data
+
+class RecipeForm(forms.ModelForm):
+    class Meta:
+        model = Recipe
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["product"].queryset = Product.objects.filter(
+            seller__name="iaro bakery"
+        ).order_by("name")
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = "__all__"
+
+
+TaskFormset = forms.modelformset_factory(Task, fields=("title",), extra=1)

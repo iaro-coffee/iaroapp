@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  django_gunicorn:
+    volumes:
+      - static_volume:/var/www/iaro-project/static   # mount volume for static files
+      - media_volume:/var/www/iaro-project/media     # mount volume for media
+      - ./db:/app/db     # mount host dir ./db to container path /app/db for sqlite
+    env_file:
+      - ./.env           # environment variables for django
+    build:
+      context: .         # context for build (current directory)
+    ports:
+      - "8000:8000"      # expose port 8000 for django app
+  nginx:
+    build: ./nginx       # build nginx from specified directory
+    volumes:
+      - static_volume:/var/www/iaro-project/static   # share static volume with nginx
+      - media_volume:/var/www/iaro-project/media     # share media volume with nginx
+      - ./host/path/nginx/logs:/var/log/nginx  # nginx logs
+    ports:
+      - "80:80"          # expose port 80 for nginx
+    depends_on:
+      - django_gunicorn  # start after django_gunicorn
+
+volumes:
+  static_volume:                # define volume for static files

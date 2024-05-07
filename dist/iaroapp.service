@@ -7,7 +7,7 @@ Type=simple
 User=http
 Environment=PYTHONUNBUFFERED=1
 WorkingDirectory=/usr/share/iaroapp
-ExecStart=/bin/bash -c 'python3 /usr/share/iaroapp/manage.py runserver 0.0.0.0:8000'
+ExecStart=docker run -p 192.168.178.251:8000:8000 app-iaro
 RestartSec=30
 Restart=on-failure
 

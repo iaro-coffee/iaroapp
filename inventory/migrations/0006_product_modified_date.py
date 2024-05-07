@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('inventory', '0005_addcategories'),
+        ("inventory", "0005_addcategories"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='modified_date',
+            model_name="product",
+            name="modified_date",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

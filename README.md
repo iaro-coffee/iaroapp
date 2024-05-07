@@ -21,20 +21,16 @@ echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
 nix run nixpkgs#git clone https://git.project-insanity.org/onny/iaroapp.git
 ```
 
-On Synology
-
-Requirements
-* Setup user home directories, see [here](https://asciich.ch/wordpress/synology-home-directory-fur-benutzer-festlegen/)
-* Add Synocommunity Repo, see [here](https://synocommunity.com)
-* Install `git` via Synology Software Center
+On Debian
 
 ```
+sudo apt install git python3 npm
 cd /usr/share
 sudo git clone https://git.project-insanity.org/onny/iaroapp.git
 chown -R http:http iaroapp
 cd iaroapp
-sudo -u http python3 -m ensurepip
-sudo -u http python3 -m pip install -r requirements.txt
+sudo -u http python3 -m venv .venv
+sudo -u http .venv/bin/pip3 install -r requirements.txt
 cp dist/iaroapp.service /etc/systemd/system/
 cp dist/app.iaro.co.conf /etc/nginx/sites-enabled/
 systemctl enable iaroapp
@@ -55,7 +51,15 @@ Create `.env` file in the project root folder and add the Planday credentials
 ```
 CLIENT_ID=
 REFRESH_TOKEN=
-``` 
+```
+
+## Build
+
+```
+cd iaroapp
+nix develop
+make
+```
 
 ## Run
 
@@ -71,4 +75,3 @@ http://localhost:8000/admin.
 ## Documentation
 
 ### Where are the template files stored?
-

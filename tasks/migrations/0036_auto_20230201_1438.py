@@ -4,18 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0035_auto_20230201_1434'),
+        ("tasks", "0035_auto_20230201_1434"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='task',
+            name="task",
             options={},
         ),
         migrations.RemoveField(
-            model_name='task',
-            name='user',
+            model_name="task",
+            name="user",
         ),
     ]

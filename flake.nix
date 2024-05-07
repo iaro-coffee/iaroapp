@@ -1,7 +1,7 @@
 {
   inputs = {
-    # FIXME: Switch to 23.05 release when it's ready
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
+    # Update to NixOS 24.05 as soon it is released
+    nixpkgs.url = "nixpkgs/master";
     # Required for multi platform support
     flake-utils.url = "github:numtide/flake-utils";
   };
@@ -23,17 +23,27 @@
         devShell = pkgs.mkShell {
           packages = with pkgs; with python3Packages; [
             python3
-            django
+            django_5
             dj-database-url
             whitenoise
             django-widget-tweaks
             setuptools # Required by widget-tweaks
             django-login-required-middleware
+            django_colorful
+            django-crispy-forms
+            django-crispy-bootstrap5
+            django-import-export
             requests
             python-dotenv
             django-ckeditor
             dateutil
+            pymemcache
+            nodejs
+            pre-commit
           ];
+          shellHook = ''
+            pre-commit install
+          '';
         };
 
         packages = { inherit start; };

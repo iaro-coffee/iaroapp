@@ -2,3 +2,7 @@ db.sqlite3
 test
 .env
 .vscode
+.idea
+__pycache__
+node_modules
+staticfiles

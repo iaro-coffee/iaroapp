@@ -1,0 +1,136 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}" type="text/css">
+{% endblock extra_css %}
+
+
+{% block content %}
+{% for seller in sellers %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-2 table-collapse">
+                            <tbody>
+
+                                <thead>
+                                <tr class="title">
+                                    <th colspan="4">
+                                        <h6>{{ seller }}</h6>
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <thead>
+                                    <tr class="header">
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
+                                            Select
+                                        </th>
+                                        <th class="w-20 text-uppercase text-secondary text-xxs font-weight-bolder">
+                                            Product
+                                        </th>
+                                        <th class="w-100 text-uppercase text-secondary text-xxs font-weight-bolder responsive__hide responsive__mobile-1">
+                                            Storages
+                                        </th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">
+                                            To buy
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                {% for product in products %}
+                                {%if product.has_shortage and product.display_seller == seller %}
+
+                                  <tr class="entry">
+                                    <td>
+                                        <div class="d-flex justify-content-center responsive__mobile-2" >
+                                            <div class="form-check">
+                                                <div class="checkbox-wrapper">
+                                                    <input class="form-check-input flex-shrink-0"
+                                                           type="checkbox"
+                                                           id="checkbox{{ forloop.counter }}"
+                                                           name="done_{{ forloop.counter }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="responsive__product">
+                                        <div class="d-flex align-items-center">
+                                            <label for="checkbox{{ forloop.counter }}" class="sr-only">Select {{ product.name }}</label>
+                                            <h6 class="mb-0 text-sm responsive__mobile-3">
+                                                {{ product.name }}
+                                            </h6>
+                                        </div>
+
+                                        <!-- Product Storages Display Mobile -->
+                                        <div class="mt-1 responsive__show">
+                                            {% for storage in product.storages %}
+                                                <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                    <div class="d-flex align-items-center">
+                                                        <svg class="bi me-1" width="16" height="16">
+                                                            <circle cx="8" cy="8" r="7"
+                                                                    fill="{{ storage.color }}"
+                                                                    stroke="#cbd3da">
+                                                            </circle>
+                                                        </svg>
+                                                        {{ storage }}
+                                                    </div>
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+
+                                    <!-- Product Storages Display Laptop-->
+                                    <td class="responsive__hide">
+                                    <div class="responsive__badges">
+                                        {% for storage in product.storages %}
+                                            <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                <div class="d-flex align-items-center">
+                                                    <svg class="bi me-1" width="16" height="16">
+                                                        <circle cx="8" cy="8" r="7"
+                                                                fill="{{ storage.color }}"
+                                                                stroke="#cbd3da">
+                                                        </circle>
+                                                    </svg>
+                                                    {{ storage }}
+                                                </div>
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                    </td>
+
+                                    <td>
+                                    <div class="d-flex align-items-center units-wrap">
+                                            <div class="units-column d-flex">
+                                                <h6 class="mb-0 text-sm value">
+                                                    {{ product.value_to_buy|floatformat:2 }}
+                                                </h6>
+                                                <h6 class="mb-0 me-2 ms-1 text-sm unit">
+                                                    {{ product.unit.all|join:", " }}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                  </tr>
+
+                                {% endif %}
+                                {% endfor %}
+                                </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+
+<script src="{% static 'js/tables_appearence.js' %}"></script>
+
+{% endblock %}

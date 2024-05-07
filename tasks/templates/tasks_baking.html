@@ -1,0 +1,96 @@
+{% extends "base_generic.html" %}
+
+{% block widgets %}
+<div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ weekday }}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+        {% for weekday_selection in weekdays %}
+        <li><a class="dropdown-item" href="?weekday={{ weekday_selection }}">{{ weekday_selection }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    <div style="width: 100%;">
+        <table class="table table-hover table-striped">
+            <thread class="table-light">
+                <tr class="header">
+                    <th scope="col" style="width:70%;">Name</th>
+                    <th scope="col">Qty Iaro Ost</th>
+                    <th scope="col">Qty Iaro West</th>
+                </tr>
+            </thread>
+            <tbody>
+            {% for form in formset %}
+            <tr>
+                <td class="align-middle">{{ form.name.value }}</td>
+                <td class="align-middle">
+                    <div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        {{ form.value_ost }}
+                        {% for unit in form.instance.unit.all %}
+                        <small class="opacity-50 text-nowrap truncate">
+                            {{ unit.name }}
+                        </small>
+                        {% endfor %}
+                    </div>
+                </td>
+                <td class="align-middle">
+                    <div style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        {{ form.value_west }}
+                        {% for unit in form.instance.unit.all %}
+                        <small class="opacity-50 text-nowrap truncate">
+                            {{ unit.name }}
+                        </small>
+                        {% endfor %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <input type="submit" id="submitTasksBtn" class="w-100 btn btn-primary" value="Update baking plan"
+               style="max-width: 250px;"/>
+    </div>
+</form>
+
+<style>
+    .truncate {
+      width: 30px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ".";
+    }
+    table {
+      font-size: 1rem;
+    }
+    tr.header th {
+      color: #495057 !important;
+      background-color: #e9ecef;
+      border-color: #dee2e6;
+    }
+    td {
+      padding: .9rem .5rem !important;
+    }
+    td:first-child {
+      padding: .9rem .9rem !important;
+    }
+    #submitTasksBtn {
+      float: right;
+    }
+    .form-control:invalid {
+      color: navy;
+      outline: none;
+      border-color: #ff1050;
+      box-shadow: 0 0 10px #ff0000;
+    }
+</style>
+
+{% endblock %}

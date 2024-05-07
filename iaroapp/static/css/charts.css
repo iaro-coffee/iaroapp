@@ -1,0 +1,121 @@
+/* Popularity Times */
+.legend-item {
+    font-family: 'Inter', sans-serif !important;
+    color: #344767;
+    transition: color 0.3s;
+}
+
+.active-day {
+    color: #82d616 !important;
+}
+
+body.dark-page button.btn-active {
+    color: #82d616 !important;
+}
+
+.btn-default {
+    justify-content: center;
+    display: flex;
+    border: none;
+    background: none;
+}
+
+.btn-active {
+    color: #82d616 !important;
+    justify-content: center;
+    display: flex;
+    border: none;
+    background: none;
+
+}
+
+.predict__info {
+    position: relative;
+    margin-left: 1.5rem;
+    top: 0.2rem;
+
+}
+
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.video__icon {
+    position: absolute;
+    scale: 0.5;
+    width: 50px;
+    left: 8px;
+    top: 50px;
+}
+
+.video__icon .circle--outer {
+    border: 1px solid #82d616;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 auto 5px;
+    position: relative;
+    opacity: .8;
+    -webkit-animation: circle 2s ease-in-out infinite;
+    animation: circle 2s ease-in-out infinite;
+}
+
+.video__icon .circle--inner {
+    background: #82d616;
+    left: 15px;
+    top: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    opacity: .8;
+}
+
+.video__icon .circle--inner:after {
+    content: '';
+    display: block;
+    border: 2px solid #82d616;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    top: -4px;
+    left: -4px;
+    position: absolute;
+    opacity: .8;
+    -webkit-animation: circle 2s ease-in-out .2s infinite;
+    animation: circle 2s ease-in-out .2s infinite;
+}
+
+.video__icon p {
+    color: #000;
+    text-align: center;
+}
+
+@-webkit-keyframes circle {
+    from {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+
+    to {
+        -webkit-transform: scale(1.5);
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+@keyframes circle {
+    from {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+
+    to {
+        -webkit-transform: scale(1.5);
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}

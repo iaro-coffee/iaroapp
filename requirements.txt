@@ -1,9 +1,9 @@
-dj-database-url==0.5.0
-Django==4.0.8
-gunicorn==20.1.0
-psycopg2-binary==2.9.3
-wheel==0.38.1
-whitenoise==6.0.0
+dj-database-url
+Django
+gunicorn
+psycopg2-binary
+wheel
+whitenoise
 django-widget-tweaks
 setuptools
 django-login-required-middleware
@@ -11,3 +11,10 @@ python-dotenv
 requests
 django-ckeditor
 python-dateutil
+django-import-export
+django-crispy-forms
+crispy-bootstrap5
+django-colorful
+pymemcache
+pre-commit
+livepopulartimes

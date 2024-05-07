@@ -5,15 +5,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tasks', '0043_alter_taskinstance_description'),
+        ("tasks", "0043_alter_taskinstance_description"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='task',
-            name='summary',
-            field=ckeditor.fields.RichTextField(blank=True, help_text='Enter a brief description of the task', max_length=1000),
+            model_name="task",
+            name="summary",
+            field=ckeditor.fields.RichTextField(
+                blank=True,
+                help_text="Enter a brief description of the task",
+                max_length=1000,
+            ),
         ),
     ]

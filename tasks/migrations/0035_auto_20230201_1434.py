@@ -5,24 +5,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('tasks', '0034_auto_20230201_1420'),
+        ("tasks", "0034_auto_20230201_1420"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='Author',
+            name="Author",
         ),
         migrations.AddField(
-            model_name='task',
-            name='users',
-            field=models.ManyToManyField(help_text='Select which groups should be assigned for the task', to=settings.AUTH_USER_MODEL),
+            model_name="task",
+            name="users",
+            field=models.ManyToManyField(
+                help_text="Select which groups should be assigned for the task",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='task',
-            name='user',
+            model_name="task",
+            name="user",
             field=models.CharField(max_length=200),
         ),
     ]

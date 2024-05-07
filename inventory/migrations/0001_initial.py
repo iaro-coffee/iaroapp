@@ -4,36 +4,79 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Seller',
+            name="Seller",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Enter seller for product.', max_length=200)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Enter seller for product.", max_length=200
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Units',
+            name="Units",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Enter unit for product.', max_length=200)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Enter unit for product.", max_length=200
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('value', models.FloatField()),
-                ('value_intended', models.FloatField()),
-                ('seller', models.ManyToManyField(help_text='Select seller for this product', to='inventory.Seller')),
-                ('unit', models.ManyToManyField(help_text='Select unit for this product', to='inventory.Units')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                ("value", models.FloatField()),
+                ("value_intended", models.FloatField()),
+                (
+                    "seller",
+                    models.ManyToManyField(
+                        help_text="Select seller for this product",
+                        to="inventory.Seller",
+                    ),
+                ),
+                (
+                    "unit",
+                    models.ManyToManyField(
+                        help_text="Select unit for this product", to="inventory.Units"
+                    ),
+                ),
             ],
         ),
     ]
