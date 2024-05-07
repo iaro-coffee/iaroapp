@@ -1,7 +1,7 @@
 FROM nginx:1.19-alpine
 
 ENV APP_HOST=app
-ENV APP_PORT=9000
+ENV APP_PORT=8000
 ENV DOMAIN=app.iaro.co
 
 # remove default server definition
