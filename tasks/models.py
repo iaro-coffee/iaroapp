@@ -40,7 +40,7 @@ class Task(BaseModel):
     summary = RichTextField(
         max_length=1000, help_text="Enter a brief description of the task", blank=True
     )
-    branch = models.ForeignKey("inventory.Branch", on_delete=models.CASCADE, null=True)
+    branch = models.ManyToManyField("inventory.Branch", related_name="tasks", blank=True)
     parent_task = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
