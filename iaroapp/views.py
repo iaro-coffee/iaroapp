@@ -12,12 +12,12 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
-from inventory.views import getCurrentBranch
+from inventory.views import get_current_branch
 from lib import planday
 from ratings.views import EmployeeRating
 from shifts.models import Shift
 from tasks.models import TaskInstance
-from tasks.views import getMyTasks
+from tasks.views import get_my_tasks
 
 planday = planday.Planday()
 run_once_day = {}
@@ -160,7 +160,7 @@ def getStatistics(request):
 def index(request):
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
-    myTasks = getMyTasks(request)
+    myTasks = get_my_tasks(request)
     ongoingShift = hasOngoingShift(request)
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
     statistics, statisticsSum = getStatistics(request)
@@ -172,7 +172,7 @@ def index(request):
     elif formatted_address == "Iaro West Karlsruhe":
         branch = "Iaro West"
     else:
-        branch = getCurrentBranch(request).name
+        branch = get_current_branch(request).name
         if branch == "Iaro West":
             formatted_address = "Iaro West Karlsruhe"
         elif branch == "Iaro Ost":

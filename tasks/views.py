@@ -3,50 +3,101 @@ from datetime import datetime, time, timedelta
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect, render, reverse
+from django.views.generic import ListView
 
 from inventory.models import Branch
-from inventory.views import getCurrentBranch
+from inventory.views import get_current_branch
 
 from .forms import BakingPlanForm, TaskForm, TaskFormset
 from .models import BakingPlanInstance, Recipe, Task, TaskInstance, Weekdays
 
+from django.db.models import Q
+from django.utils import timezone
 
-# tasks/views.py
 
-def getMyTasks(request):
-    weekdayToday = datetime.today().strftime("%A")
-    weekdayToday = Weekdays.objects.get(name=weekdayToday)
+class TasksView(LoginRequiredMixin, ListView):
+    """Handles task display and updates based on the current branch and day."""
 
-    # Exclude subtasks
-    tasks = Task.objects.filter(parent_task=None)
+    template_name = "tasks.html"
+    formset_class = TaskFormset
 
-    myTasks = []
-    branch = getCurrentBranch(request)
+    def get_context_data(self, request):
+        tasks = get_my_tasks(request)
+        today = timezone.now().date()
+        branch = get_current_branch(request)
+        branches = list(Branch.objects.exclude(name=branch).order_by("name")) + ["All"]
 
-    for task in tasks:
-        userMatch = request.user in task.users.all()
-        groupMatch = any(group in request.user.groups.all() for group in task.groups.all())
-        noUserOrGroup = not task.groups.all() and not task.users.all()
-        weekdayMatch = weekdayToday in list(task.weekdays.all())
+        formset = self.formset_class(queryset=tasks)
+        for form in formset:
+            if form.instance.pk and branch != "All":
+                form.instance.done_for_branch = form.instance.is_done(branch)
 
-        if branch == "All":
-            branchMatch = True
-        else:
-            branchMatch = branch in task.branch.all()
+        return {
+            "pageTitle": "Tasks",
+            "task_list": tasks,
+            "today": today,
+            "formset": formset,
+            "branches": branches,
+            "branch": branch,
+        }
 
-        if (userMatch or groupMatch or noUserOrGroup) and (weekdayMatch or not task.weekdays.exists()) and branchMatch:
-            if task.pk:  # ensure the task has been saved
-                if branch != "All":
-                    task.done_for_branch = task.is_done(branch)
-            myTasks.append(task)
+    def get(self, request):
+        """Render the task management page."""
+        context = self.get_context_data(request)
+        return render(request, self.template_name, context)
 
-    # Convert the list of tasks to a QuerySet and order by title
-    myTasksQuerySet = Task.objects.filter(id__in=[task.id for task in myTasks if task.pk]).order_by("title")
+    def post(self, request):
+        """Process task completion submissions."""
+        task_formset = self.formset_class(request.POST)
+        user = get_user_model().objects.get(id=request.user.id)
+        date = timezone.now()
+        branch = get_current_branch(request)
 
-    return myTasksQuerySet
+        for form in task_formset:
+            if form.is_valid() and 'done' in form.cleaned_data:
+                TaskInstance.objects.create(
+                    user=user,
+                    date_done=date,
+                    task=form.instance,
+                    branch=branch
+                )
+        messages.success(request, "Tasks submitted successfully.")
+        return redirect(reverse("tasks"))
+
+
+def get_my_tasks(request):
+    """
+    Fetches tasks for the current user based on the day of the week, user's groups, and selected branch.
+    Excludes subtasks and optimizes queries to improve performance.
+    """
+    today_weekday = timezone.now().strftime("%A")
+    tasks = Task.objects.filter(
+        Q(weekdays__name=today_weekday) | Q(weekdays__isnull=True),
+        parent_task=None
+    ).prefetch_related('users', 'groups', 'branch')
+
+    branch = get_current_branch(request)
+    user_groups_ids = request.user.groups.values_list('id', flat=True)
+
+    if branch == "All":
+        branch_filter = Q()
+    else:
+        branch_filter = Q(branch__name=branch)
+
+    # Filter tasks based on user, groups membership and branch
+    filtered_tasks = tasks.filter(
+        Q(users=request.user) |
+        Q(groups__id__in=user_groups_ids) |
+        (Q(users__isnull=True) & Q(groups__isnull=True)),
+        branch_filter
+    )
+
+    return filtered_tasks.distinct().order_by("title")
+
 
 
 def check_admin(user):
@@ -56,58 +107,6 @@ def check_admin(user):
 def check_staff(user):
     return user.is_superuser or user.is_staff
 
-
-def tasks(request):
-    User = get_user_model()
-
-    if request.method == "POST":
-        TaskFormset(request.POST)
-        user_id = request.user.id
-        user = User.objects.get(id=user_id)
-        date = datetime.now()
-        branch = getCurrentBranch(request)
-
-        for key, value in request.POST.items():
-            if "done" in key:
-                task_id_done = key.split("_")[1]
-                task = Task.objects.get(id=task_id_done)
-                TaskInstance.objects.create(user=user, date_done=date, task=task, branch=branch)
-
-        messages.success(request, "Tasks submitted successfully.")
-        return redirect(reverse("tasks"))
-
-    tasks = getMyTasks(request)
-    today = datetime.today().date()
-
-    # Get current branch by GET parameter or Planday query
-    branch = getCurrentBranch(request)
-    branches = Branch.objects.all()
-
-    # Filter selected branch from available branches
-    if branch != "All":
-        branches = branches.exclude(name=branch)
-    branches = branches.order_by("name")
-    branches = list(branches)
-    branches.append("All")
-
-    # Ensure formset queryset respects branch-specific task completion
-    formset = TaskFormset(queryset=tasks)
-    for form in formset:
-        if form.instance.pk and branch != "All":
-            form.instance.done_for_branch = form.instance.is_done(branch)
-
-    return render(
-        request,
-        "tasks.html",
-        context={
-            "pageTitle": "Tasks",
-            "task_list": tasks,
-            "today": today,
-            "formset": formset,
-            "branches": branches,
-            "branch": branch,
-        },
-    )
 
 @user_passes_test(check_admin)
 def tasks_evaluation(request):

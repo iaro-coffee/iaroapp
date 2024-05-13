@@ -9,7 +9,7 @@ from .forms import ProductFormset
 from .models import Branch, Product, ProductStorage, Storage
 
 
-def getCurrentBranch(request):
+def get_current_branch(request):
     branch = request.GET.get("branch")
     if branch == "All":
         return branch
@@ -82,7 +82,7 @@ def inventory_populate(request):
         storages = []
 
         # Get current branch by GET parameter or Planday query
-        branch = getCurrentBranch(request)
+        branch = get_current_branch(request)
 
         if branch != "All":
             # Get storages for selected branch
@@ -153,7 +153,7 @@ def inventory_evaluation(request):
     storages = Storage.objects.all()
 
     # Get current branch by GET parameter or Planday query
-    branch = getCurrentBranch(request)
+    branch = get_current_branch(request)
 
     # Get list of branches which are not selected
     branches = getAvailableBranchesFiltered(branch)
@@ -252,7 +252,7 @@ def inventory_production(request):
 
 def inventory_packaging(request):
     # Get current branch by GET parameter or Planday query
-    branch = getCurrentBranch(request)
+    branch = get_current_branch(request)
 
     # Get source branches
     main_storage_branches = set()

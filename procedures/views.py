@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from inventory.models import Branch
-from inventory.views import getCurrentBranch
+from inventory.views import get_current_branch
 
 from .models import Procedure
 from .procedure_category import ProcedureCategory
@@ -49,7 +49,7 @@ def opening(request):
         procedures.append(model_to_dict(procedure))
 
     # Get current branch by GET parameter or Planday query
-    branch = getCurrentBranch(request).name
+    branch = get_current_branch(request).name
     branches = Branch.objects.all()
     # Filter selected branch from available branches
     branches = branches.exclude(name=branch)
@@ -85,7 +85,7 @@ def closing(request):
         procedures.append(model_to_dict(procedure))
 
     # Get current branch by GET parameter or Planday query
-    branch = getCurrentBranch(request).name
+    branch = get_current_branch(request).name
     branches = Branch.objects.all()
     # Filter selected branch from available branches
     branches = branches.exclude(name=branch)
