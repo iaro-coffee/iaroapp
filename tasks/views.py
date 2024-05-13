@@ -14,6 +14,8 @@ from .forms import BakingPlanForm, TaskForm, TaskFormset
 from .models import BakingPlanInstance, Recipe, Task, TaskInstance, Weekdays
 
 
+# tasks/views.py
+
 def getMyTasks(request):
     weekdayToday = datetime.today().strftime("%A")
     weekdayToday = Weekdays.objects.get(name=weekdayToday)
@@ -21,27 +23,25 @@ def getMyTasks(request):
     # Exclude subtasks
     tasks = Task.objects.filter(parent_task=None)
 
-    # TODO(Rapha): filter tasks by not done
-
     myTasks = []
+    branch = getCurrentBranch(request)
     for task in tasks:
         userMatch = request.user in task.users.all()
-        groupMatch = any(
-            group in request.user.groups.all() for group in task.groups.all()
-        )
+        groupMatch = any(group in request.user.groups.all() for group in task.groups.all())
         noUserOrGroup = not task.groups.all() and not task.users.all()
         weekdayMatch = weekdayToday in list(task.weekdays.all())
-        if (userMatch or groupMatch or noUserOrGroup) and (
-            weekdayMatch or not task.weekdays.exists()
-        ):
+        branchMatch = branch in task.branch.all()
+        if (userMatch or groupMatch or noUserOrGroup) and (weekdayMatch or not task.weekdays.exists()) and branchMatch:
+            if task.pk:  # ensure the task has been saved
+                task.done_for_branch = task.is_done(branch)  # check if task is_done
             myTasks.append(task)
 
-    # Convert the list of tasks to a QuerySet and order by type
-    myTasksQuerySet = Task.objects.filter(
-        id__in=[task.id for task in myTasks]
-    ).order_by("title")
+    # Convert the list of tasks to a QuerySet and order by title
+    myTasksQuerySet = Task.objects.filter(id__in=[task.id for task in myTasks if task.pk]).order_by("title")
 
     return myTasksQuerySet
+
+
 
 
 def check_admin(user):
@@ -60,12 +60,13 @@ def tasks(request):
         user_id = request.user.id
         user = User.objects.get(id=user_id)
         date = datetime.now()
+        branch = getCurrentBranch(request)
 
         for key, value in request.POST.items():
             if "done" in key:
                 task_id_done = key.split("_")[1]
                 task = Task.objects.get(id=task_id_done)
-                TaskInstance.objects.create(user=user, date_done=date, task=task)
+                TaskInstance.objects.create(user=user, date_done=date, task=task, branch=branch)
 
         messages.success(request, "Tasks submitted successfully.")
         return redirect(reverse("tasks"))
@@ -84,7 +85,11 @@ def tasks(request):
         branches.append("All")
         tasks = tasks.filter(branch=branch)
 
+    # Ensure formset queryset respects branch-specific task completion
     formset = TaskFormset(queryset=tasks)
+    for form in formset:
+        if form.instance.pk:
+            form.instance.done_for_branch = form.instance.is_done(branch)
 
     return render(
         request,
@@ -98,7 +103,6 @@ def tasks(request):
             "branch": branch,
         },
     )
-
 
 @user_passes_test(check_admin)
 def tasks_evaluation(request):

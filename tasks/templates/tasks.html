@@ -53,18 +53,18 @@
                             <tbody>
                             {% for form in formset %}
                             {% if form.instance.id %}
-                            <tr class="entry" {% if form.instance.done %}
+                                <tr class="entry" {% if form.instance.done_for_branch %}
                                                  data-bs-toggle="tooltip" data-bs-placement="top" title="Done"
                                                  {% endif %}>
                                 <td>
                                     <div class="d-flex justify-content-center responsive__mobile-2" >
                                         <div class="form-check" >
-                                            <div class="checkbox-wrapper {% if form.instance.done %} checked-tooltip {% endif %}">
+                                            <div class="checkbox-wrapper {% if form.instance.done_for_branch %} checked-tooltip {% endif %}">
                                                 <input type="checkbox"
                                                        class="form-check-input flex-shrink-0"
                                                        id="checkbox_{{ form.instance.id }}"
                                                        name="done_{{ form.instance.id }}"
-                                                        {% if form.instance.done %} checked disabled {% endif %}/>
+                                                       {% if form.instance.done_for_branch %} checked disabled {% endif %}/>
                                             </div>
 
                                         </div>

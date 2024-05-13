@@ -25,37 +25,20 @@ class Task(BaseModel):
     """Model representing a task (but not a specific copy of a task)."""
 
     title = models.CharField(max_length=200)
-    users = models.ManyToManyField(
-        User, help_text="Select which users should be assigned for the task", blank=True
-    )
-    groups = models.ManyToManyField(
-        Group,
-        help_text="Select which groups should be assigned for the task",
-        blank=True,
-    )
-    weekdays = models.ManyToManyField(
-        Weekdays, help_text="Select weekdays for this task", blank=True
-    )
+    users = models.ManyToManyField(User, help_text="Select which users should be assigned for the task", blank=True)
+    groups = models.ManyToManyField(Group, help_text="Select which groups should be assigned for the task", blank=True)
+    weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task", blank=True)
     types = models.ManyToManyField(TaskTypes, help_text="Select a type for this task")
-    summary = RichTextField(
-        max_length=1000, help_text="Enter a brief description of the task", blank=True
-    )
+    summary = RichTextField(max_length=1000, help_text="Enter a brief description of the task", blank=True)
     branch = models.ManyToManyField("inventory.Branch", related_name="tasks", blank=True)
-    parent_task = models.ForeignKey(
-        "self",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="subtasks",
-    )
+    parent_task = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="subtasks")
 
-    @property
-    def done(self):
+    def is_done(self, branch):
         if self.subtasks.all():
-            return all(subtask.done for subtask in self.subtasks.all())
+            return all(subtask.is_done(branch) for subtask in self.subtasks.all())
         else:
             today = timezone.now().date()
-            return self.taskinstance_set.filter(date_done__date=today).exists()
+            return self.taskinstance_set.filter(date_done__date=today, branch=branch).exists()
 
     @property
     def get_types(self):
@@ -99,6 +82,7 @@ class TaskInstance(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=200, blank=True)
     date_done = models.DateTimeField(null=True, blank=True)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=True)
 
     @property
     def is_overdue(self):

@@ -18,6 +18,12 @@ class TasksInstanceInline(admin.TabularInline):
 
     model = TaskInstance
 
+@admin.action(description="Duplicate selected tasks")
+def duplicate_tasks(modeladmin, request, queryset):
+    for task in queryset:
+        task.pk = None
+        task.save()
+
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
@@ -33,7 +39,7 @@ class TaskAdmin(admin.ModelAdmin):
         "groups",
     )
     inlines = [TasksInstanceInline]
-
+    actions = [duplicate_tasks]
 
 class TaskInstanceAdmin(admin.ModelAdmin):
     """Administration object for TaskInstance models.
