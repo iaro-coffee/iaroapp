@@ -25,23 +25,28 @@ def getMyTasks(request):
 
     myTasks = []
     branch = getCurrentBranch(request)
+
     for task in tasks:
         userMatch = request.user in task.users.all()
         groupMatch = any(group in request.user.groups.all() for group in task.groups.all())
         noUserOrGroup = not task.groups.all() and not task.users.all()
         weekdayMatch = weekdayToday in list(task.weekdays.all())
-        branchMatch = branch in task.branch.all()
+
+        if branch == "All":
+            branchMatch = True
+        else:
+            branchMatch = branch in task.branch.all()
+
         if (userMatch or groupMatch or noUserOrGroup) and (weekdayMatch or not task.weekdays.exists()) and branchMatch:
             if task.pk:  # ensure the task has been saved
-                task.done_for_branch = task.is_done(branch)  # check if task is_done
+                if branch != "All":
+                    task.done_for_branch = task.is_done(branch)
             myTasks.append(task)
 
     # Convert the list of tasks to a QuerySet and order by title
     myTasksQuerySet = Task.objects.filter(id__in=[task.id for task in myTasks if task.pk]).order_by("title")
 
     return myTasksQuerySet
-
-
 
 
 def check_admin(user):
@@ -77,18 +82,18 @@ def tasks(request):
     # Get current branch by GET parameter or Planday query
     branch = getCurrentBranch(request)
     branches = Branch.objects.all()
+
     # Filter selected branch from available branches
-    branches = branches.exclude(name=branch)
+    if branch != "All":
+        branches = branches.exclude(name=branch)
     branches = branches.order_by("name")
     branches = list(branches)
-    if branch != "All":
-        branches.append("All")
-        tasks = tasks.filter(branch=branch)
+    branches.append("All")
 
     # Ensure formset queryset respects branch-specific task completion
     formset = TaskFormset(queryset=tasks)
     for form in formset:
-        if form.instance.pk:
+        if form.instance.pk and branch != "All":
             form.instance.done_for_branch = form.instance.is_done(branch)
 
     return render(
