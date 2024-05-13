@@ -37,7 +37,9 @@ class TaskAdmin(admin.ModelAdmin):
     list_filter = (
         "weekdays",
         "groups",
+        "branch",
     )
+    search_fields = ["title"]
     inlines = [TasksInstanceInline]
     actions = [duplicate_tasks]
 
