@@ -5,6 +5,7 @@ from django.db.models import Sum
 from django.template import Library
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.text import slugify
 
 from iaroapp.base_model import BaseModel
 
@@ -34,6 +35,7 @@ class Branch(BaseModel):
     name = models.CharField(max_length=500)
     storages = models.ManyToManyField(Storage)
     departmentId = models.CharField(max_length=500, default="")
+    technical_name = models.CharField(max_length=500, blank=True)
 
     class Meta:
         verbose_name_plural = "Branches"
@@ -50,6 +52,11 @@ class Branch(BaseModel):
     def __str__(self):
         """String for representing the Model object."""
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.technical_name:
+            self.technical_name = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class Units(BaseModel):
