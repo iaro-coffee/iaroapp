@@ -1,12 +1,15 @@
 from datetime import datetime, time, timedelta
+from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect, render, reverse
+from django.utils import timezone
 from django.views.generic import ListView
 
 from inventory.models import Branch
@@ -15,9 +18,6 @@ from inventory.views import get_current_branch
 from .forms import BakingPlanForm, TaskForm, TaskFormset
 from .models import BakingPlanInstance, Recipe, Task, TaskInstance, Weekdays
 
-from django.db.models import Q
-from django.utils import timezone
-
 
 class TasksView(LoginRequiredMixin, ListView):
     """Handles task display and updates based on the current branch and day."""
@@ -25,10 +25,10 @@ class TasksView(LoginRequiredMixin, ListView):
     template_name = "tasks.html"
     formset_class = TaskFormset
 
-    def get_context_data(self, request):
-        tasks = get_my_tasks(request)
+    def get_context_data(self, *, object_list: Any = None, **kwargs: Any):
+        tasks = get_my_tasks(object_list)
         today = timezone.now().date()
-        branch = get_current_branch(request)
+        branch = get_current_branch(object_list)
         branches = list(Branch.objects.exclude(name=branch).order_by("name")) + ["All"]
 
         formset = self.formset_class(queryset=tasks)
@@ -45,9 +45,9 @@ class TasksView(LoginRequiredMixin, ListView):
             "branch": branch,
         }
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         """Render the task management page."""
-        context = self.get_context_data(request)
+        context = self.get_context_data(object_list=request)
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -58,12 +58,9 @@ class TasksView(LoginRequiredMixin, ListView):
         branch = get_current_branch(request)
 
         for form in task_formset:
-            if form.is_valid() and 'done' in form.cleaned_data:
+            if form.is_valid() and "done" in form.cleaned_data:
                 TaskInstance.objects.create(
-                    user=user,
-                    date_done=date,
-                    task=form.instance,
-                    branch=branch
+                    user=user, date_done=date, task=form.instance, branch=branch
                 )
         messages.success(request, "Tasks submitted successfully.")
         return redirect(reverse("tasks"))
@@ -76,12 +73,11 @@ def get_my_tasks(request):
     """
     today_weekday = timezone.now().strftime("%A")
     tasks = Task.objects.filter(
-        Q(weekdays__name=today_weekday) | Q(weekdays__isnull=True),
-        parent_task=None
-    ).prefetch_related('users', 'groups', 'branch')
+        Q(weekdays__name=today_weekday) | Q(weekdays__isnull=True), parent_task=None
+    ).prefetch_related("users", "groups", "branch")
 
     branch = get_current_branch(request)
-    user_groups_ids = request.user.groups.values_list('id', flat=True)
+    user_groups_ids = request.user.groups.values_list("id", flat=True)
 
     if branch == "All":
         branch_filter = Q()
@@ -90,14 +86,13 @@ def get_my_tasks(request):
 
     # Filter tasks based on user, groups membership and branch
     filtered_tasks = tasks.filter(
-        Q(users=request.user) |
-        Q(groups__id__in=user_groups_ids) |
-        (Q(users__isnull=True) & Q(groups__isnull=True)),
-        branch_filter
+        Q(users=request.user)
+        | Q(groups__id__in=user_groups_ids)
+        | (Q(users__isnull=True) & Q(groups__isnull=True)),
+        branch_filter,
     )
 
     return filtered_tasks.distinct().order_by("title")
-
 
 
 def check_admin(user):
@@ -121,7 +116,7 @@ def tasks_evaluation(request):
         "Saturday",
         "Sunday",
     ]
-    weekdayToday = datetime.today().strftime("%A")
+    weekday_today = datetime.today().strftime("%A")
 
     for weekday in weekdays:
         tasks_evaluation[weekday] = []
@@ -146,14 +141,15 @@ def tasks_evaluation(request):
                 if task["id"] == task_instance.task.id:
                     if task_instance.date_done is not None:
                         if beginning_of_week.astimezone() < task_instance.date_done:
-                            done = {}
-                            done["done_weekday"] = weekdays[
-                                task_instance.date_done.weekday()
-                            ]
-                            done["done_datetime"] = task_instance.date_done.strftime(
-                                "%d.%m, %H:%M"
-                            )
-                            done["done_persons"] = task_instance.user
+                            done = {
+                                "done_weekday": weekdays[
+                                    task_instance.date_done.weekday()
+                                ],
+                                "done_datetime": task_instance.date_done.strftime(
+                                    "%d.%m, %H:%M"
+                                ),
+                                "done_persons": task_instance.user,
+                            }
                             task["done"][
                                 weekdays[task_instance.date_done.weekday()]
                             ] = done
@@ -165,7 +161,7 @@ def tasks_evaluation(request):
             "pageTitle": "Tasks overview",
             "tasks": tasks_evaluation,
             "weekdays": weekdays,
-            "today": weekdayToday,
+            "today": weekday_today,
         },
     )
 
@@ -269,7 +265,6 @@ def tasks_baking(request):
 
 @user_passes_test(check_staff)
 def tasks_add(request):
-
     parentTask = request.GET.get("parentTask")
 
     if request.method == "POST":
@@ -300,7 +295,6 @@ def tasks_add(request):
 
 
 def task_single(request, taskId):
-
     branch = request.GET.get("branch")
 
     if request.method == "POST":

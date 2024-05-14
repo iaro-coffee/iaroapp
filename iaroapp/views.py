@@ -143,13 +143,14 @@ def getStatistics(request):
         statistics["ratings"].insert(0, rating)
 
         hours = 0
-        for record in punchClockRecordsUser[request.user.id]:
-            if "startDateTime" in record and "endDateTime" in record:
-                startDateTime = parse_datetime(record["startDateTime"])
-                endDateTime = parse_datetime(record["endDateTime"])
-                if startDateTime.strftime("%m-%d") == d.strftime("%m-%d"):
-                    diff = endDateTime - startDateTime
-                    hours = diff.seconds / 3600
+        if punchClockRecordsUser:
+            for record in punchClockRecordsUser[request.user.id]:
+                if "startDateTime" in record and "endDateTime" in record:
+                    start_date_time = parse_datetime(record["startDateTime"])
+                    end_date_time = parse_datetime(record["endDateTime"])
+                    if start_date_time.strftime("%m-%d") == d.strftime("%m-%d"):
+                        diff = end_date_time - start_date_time
+                        hours = diff.seconds / 3600
         statistics["workHours"].insert(0, hours)
 
     statisticsSum["workHours"] = round(sum(statistics["workHours"]), 2)

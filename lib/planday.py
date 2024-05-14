@@ -202,8 +202,12 @@ class Planday:
             params=payload,
         )
         response = json.loads(response.text)
-        response = response["data"]
         shifts = []
+
+        if "data" not in response:
+            return shifts
+
+        response = response["data"]
         for shift in response:
             if "employeeId" in shift:
                 employee = employees[shift["employeeId"]]["email"]
