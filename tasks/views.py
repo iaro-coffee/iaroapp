@@ -68,23 +68,22 @@ class TasksView(LoginRequiredMixin, ListView):
         print("post data:", request.POST)  # debug
 
         if task_formset.is_valid():
+            print("Formset is valid")      # debug
             for form in task_formset:
-                logger.info("Processing form: %s", form.cleaned_data)
-                done_field = f"done_{form.instance.id}"
-                if done_field in request.POST and request.POST[done_field]:
-                    logger.info("Task %s marked as done", form.instance.id)
-                    TaskInstance.objects.create(
-                        user=user,
-                        date_done=date_done,
-                        task=form.instance,
-                        branch=branch
-                    )
+                if form.instance.pk:
+                    done_field = f"done_{form.instance.id}"
+                    done_value = request.POST.get(done_field)  # debug
+                    print(f"Processing form: {form.instance.id}, done_field: {done_field}, value: {done_value}")  # debug
+                    if done_field in request.POST and request.POST[done_field] == 'on':
+                        TaskInstance.objects.create(
+                            user=user,
+                            date_done=date_done,
+                            task=form.instance,
+                            branch=branch
+                        )
+                        print(f"Task {form.instance.id} marked as done and TaskInstance created")  # debug
             messages.success(request, "Tasks submitted successfully.")
         else:
-            logger.error("Formset is not valid. Errors: %s", task_formset.errors)
-            for form in task_formset:
-                if not form.is_valid():
-                    logger.error("Form errors: %s", form.errors)
             messages.error(request, "There was an error with your submission. Please check the form and try again.")
 
         return redirect(reverse("tasks"))

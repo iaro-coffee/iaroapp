@@ -57,13 +57,18 @@
                                         <div class="d-flex justify-content-center responsive__mobile-2">
                                             <div class="form-check">
                                                 <div class="checkbox-wrapper {% if form.instance.done_for_branch %} checked-tooltip {% endif %}">
-                                                    <input type="checkbox" class="form-check-input flex-shrink-0" id="checkbox_{{ form.instance.id }}" name="done_{{ form.instance.id }}" {% if form.instance.done_for_branch %} checked disabled {% endif %}/>
+                                                    <input type="checkbox" class="form-check-input flex-shrink-0"
+                                                           id="checkbox_{{ form.instance.id }}"
+                                                           name="done_{{ form.instance.id }}"
+                                                            {% if form.instance.done_for_branch %} checked
+                                                           disabled {% endif %}/>
+                                                    <input type="hidden" name="{{ form.prefix }}-id"
+                                                           id="id_{{ form.prefix }}-id" value="{{ form.instance.id }}">
+                                                    <input type="hidden" name="{{ form.prefix }}-title"
+                                                           id="id_{{ form.prefix }}-title"
+                                                           value="{{ form.instance.title }}">
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="{{ form.prefix }}-id"
-                                                   id="id_{{ form.prefix }}-id" value="{{ form.instance.id }}">
-                                            <input type="hidden" name="{{ form.prefix }}-title"
-                                                   id="id_{{ form.prefix }}-title" value="{{ form.instance.title }}">
                                         </div>
                                     </td>
                                     <td>
