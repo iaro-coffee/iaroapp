@@ -49,64 +49,58 @@
                                 </th>
                             </tr>
                             </thead>
-
                             <tbody>
                             {% for form in formset %}
                             {% if form.instance.id %}
-                                <tr class="entry" {% if form.instance.done_for_branch %}
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Done"
-                                {% endif %}>
+                                <tr class="entry" {% if form.instance.done_for_branch %} data-bs-toggle="tooltip" data-bs-placement="top" title="Done" {% endif %}>
                                     <td>
                                         <div class="d-flex justify-content-center responsive__mobile-2">
                                             <div class="form-check">
                                                 <div class="checkbox-wrapper {% if form.instance.done_for_branch %} checked-tooltip {% endif %}">
-                                                    <input type="checkbox"
-                                                           class="form-check-input flex-shrink-0"
-                                                           id="checkbox_{{ form.instance.id }}"
-                                                           name="done_{{ form.instance.id }}"
-                                                            {% if form.instance.done_for_branch %} checked
-                                                           disabled {% endif %}/>
+                                                    <input type="checkbox" class="form-check-input flex-shrink-0" id="checkbox_{{ form.instance.id }}" name="done_{{ form.instance.id }}" {% if form.instance.done_for_branch %} checked disabled {% endif %}/>
                                                 </div>
-
                                             </div>
-                                            <input type="number" name="id"
-                                                   value="{{ form.instance.id }}"
-                                                   style="display: none;"/>
+                                            <input type="hidden" name="{{ form.prefix }}-id"
+                                                   id="id_{{ form.prefix }}-id" value="{{ form.instance.id }}">
+                                            <input type="hidden" name="{{ form.prefix }}-title"
+                                                   id="id_{{ form.prefix }}-title" value="{{ form.instance.title }}">
                                         </div>
                                     </td>
-
                                     <td>
                                         <div class="d-flex px-1 py-1">
-                                            <h6 class="mb-0 text-sm responsive__mobile-3">
-                                                {{ form.instance.title }}
-                                            </h6>
+                                            <h6 class="mb-0 text-sm responsive__mobile-3">{{ form.instance.title }}</h6>
+
                                         </div>
                                         <div class="d-flex">
                                             <small class="d-block px-1 text-xs opacity-7 responsive__mobile-3">
-                                            <span data-feather="tag" class="align-text-bottom"
-                                                  style="height: 16px"></span>
+                                                <span data-feather="tag" class="align-text-bottom" style="height: 16px"></span>
                                                 {{ form.instance.get_types|join:", " }}
                                                 {% if form.instance.assignees %}
-                                                    <!-- <br class="responsive__break" style="display: none;"> -->
-                                                    <span data-feather="user" class="align-text-bottom"
-                                                          style="height: 16px"></span>
+                                                    <span data-feather="user" class="align-text-bottom" style="height: 16px"></span>
                                                     {{ form.instance.assignees }}
                                                 {% endif %}
                                             </small>
                                         </div>
                                         {% if form.instance.summary %}
                                             <div class="d-flex text-sm px-1 py-1 align-items-center no-select descriptionLink">
-
                                                 <span class="" data-feather="chevron-right"></span>
                                                 Description
-
                                                 <span class="hidden">{{ form.instance.summary }}</span>
                                             </div>
                                         {% endif %}
-                                        <!-- Inside your for loop for each task -->
                                         <div class="ml-4 card rounded-0 task-description" style="display: none;"></div>
                                     </td>
                                 </tr>
+                                <!-- Display form errors for debugging -->
+                                {% if form.errors %}
+                                    <tr>
+                                        <td colspan="2">
+                                            <div class="alert alert-danger">
+                                                {{ form.errors }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endif %}
                             {% endfor %}
                             </tbody>
@@ -122,6 +116,7 @@
         </div>
     </div>
 </form>
+
 
 {% else %}
 <p>There are no tasks available.</p>

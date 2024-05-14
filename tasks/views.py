@@ -18,6 +18,10 @@ from inventory.views import get_current_branch
 from .forms import BakingPlanForm, TaskForm, TaskFormset
 from .models import BakingPlanInstance, Recipe, Task, TaskInstance, Weekdays
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class TasksView(LoginRequiredMixin, ListView):
     """Handles task display and updates based on the current branch and day."""
@@ -25,7 +29,8 @@ class TasksView(LoginRequiredMixin, ListView):
     template_name = "tasks.html"
     formset_class = TaskFormset
 
-    def get_context_data(self, *, object_list: Any = None, **kwargs: Any):
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
         tasks = get_my_tasks(object_list)
         today = timezone.now().date()
         branch = get_current_branch(object_list)
@@ -36,33 +41,52 @@ class TasksView(LoginRequiredMixin, ListView):
             if form.instance.pk and branch != "All":
                 form.instance.done_for_branch = form.instance.is_done(branch)
 
-        return {
+        context.update({
             "pageTitle": "Tasks",
             "task_list": tasks,
             "today": today,
             "formset": formset,
             "branches": branches,
             "branch": branch,
-        }
+        })
+        return context
 
     def get(self, request, *args, **kwargs):
         """Render the task management page."""
         context = self.get_context_data(object_list=request)
         return render(request, self.template_name, context)
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         """Process task completion submissions."""
         task_formset = self.formset_class(request.POST)
-        user = get_user_model().objects.get(id=request.user.id)
-        date = timezone.now()
+        user = request.user
+        date_done = timezone.now()
         branch = get_current_branch(request)
 
-        for form in task_formset:
-            if form.is_valid() and "done" in form.cleaned_data:
-                TaskInstance.objects.create(
-                    user=user, date_done=date, task=form.instance, branch=branch
-                )
-        messages.success(request, "Tasks submitted successfully.")
+        print("user:", user)               # debug
+        print("branch:", branch)           # debug
+        print("post data:", request.POST)  # debug
+
+        if task_formset.is_valid():
+            for form in task_formset:
+                logger.info("Processing form: %s", form.cleaned_data)
+                done_field = f"done_{form.instance.id}"
+                if done_field in request.POST and request.POST[done_field]:
+                    logger.info("Task %s marked as done", form.instance.id)
+                    TaskInstance.objects.create(
+                        user=user,
+                        date_done=date_done,
+                        task=form.instance,
+                        branch=branch
+                    )
+            messages.success(request, "Tasks submitted successfully.")
+        else:
+            logger.error("Formset is not valid. Errors: %s", task_formset.errors)
+            for form in task_formset:
+                if not form.is_valid():
+                    logger.error("Form errors: %s", form.errors)
+            messages.error(request, "There was an error with your submission. Please check the form and try again.")
+
         return redirect(reverse("tasks"))
 
 
