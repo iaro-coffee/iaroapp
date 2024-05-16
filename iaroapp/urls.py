@@ -24,45 +24,19 @@ from django.urls import include, path
 from . import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-]
-
-
-urlpatterns += [
-    path("tasks/", include("tasks.urls")),
-]
-
-urlpatterns += [
-    path("procedures/", include("procedures.urls")),
-]
-
-urlpatterns += [
-    path("ratings/", include("ratings.urls")),
-]
-
-urlpatterns += [
-    path("shifts/", include("shifts.urls")),
-]
-
-urlpatterns += [
-    path("inventory/", include("inventory.urls")),
-]
-
-urlpatterns += [
     path("", views.index, name="index"),
-]
-
-# Use static() to add url mapping to serve static files during development (only)
-
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-# Add Django site authentication urls (for login, logout, password management)
-urlpatterns += [
+    path("admin/", admin.site.urls),
+    path("inventory/", include("inventory.urls")),
+    path("procedures/", include("procedures.urls")),
+    path("shifts/", include("shifts.urls")),
+    path("ratings/", include("ratings.urls")),
+    path("tasks/", include("tasks.urls")),
+    path("users/", include("users.urls")),
+    path("registration/", include("registration.urls")),
     path("accounts/login/", views.login),
     path("accounts/", include("django.contrib.auth.urls")),
 ]
 
-# Add registration Forms
-urlpatterns += [
-    path("registration/", include("registration.urls")),
-]
+# Use static() to add url mapping to serve static files during development (only)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
