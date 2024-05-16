@@ -3,32 +3,78 @@
 {% block content %}
 
 <div class="center">
-	<form id="logout_form" method="post" action="{% url 'logout' %}">
-		{% csrf_token %}
-	</form>
-	<form method="POST" enctype="multipart/form-data" class="card p-4">
-		{% csrf_token %}
+    <form id="logout_form" method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+    </form>
+    <form method="POST" enctype="multipart/form-data" class="card p-4">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center">
+            {% if user.profile %}
+                <img class="img-fluid avatar-img" src="{{ user.profile.avatar.url }}" alt="{{ user.username }}'s avatar" accept=".jpg,.jpeg,.png"/>
+            {% endif %}
+        </div>
+        <h2 class="text-center">{{ user.username | title }}</h2>
+        <p class="text-center"><a style="color: black;" href="mailto:{{user.email}}">{{user.email}}</a></p>
+        <hr>
 
-	    {% if user.profile %}
-			<img src="{{user.profile.avatar.url}}" alt="{{ user.username }}" class="avatar"  accept=".jpg,.jpeg,.png"/>
-	    {% endif %}
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="id_username" name="username" value="{{ user_form.username.value }}" required>
+            {% if user_form.username.errors %}
+                <div class="text-danger">
+                    {% for error in user_form.username.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
-	    <h2 class="text-center">{{ user.username | title }}</h2>
-	    <p class="text-center"><a href="mailto:{{user.email}}">{{user.email}}</a></p>
-   	    <hr>
+        <div class="mb-3">
+            <label for="id_email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="id_email" name="email" value="{{ user_form.email.value }}" required>
+            {% if user_form.email.errors %}
+                <div class="text-danger">
+                    {% for error in user_form.email.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
-            <label for="email">Email Address:</label>
-            <input type="email" id="email" name="email" value="{{user.email}}" />
+        <div class="mb-3">
+            <label for="id_avatar" class="form-label">Avatar</label>
+            <input type="file" class="form-control" id="id_avatar" name="avatar" accept=".jpg,.jpeg,.png">
+            {% if profile_form.avatar.errors %}
+                <div class="text-danger">
+                    {% for error in profile_form.avatar.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
+        <div class="mb-3">
+            <label for="id_branch" class="form-label">Branch</label>
+            <select class="form-control" style="color: #495057 !important;" id="id_branch" name="branch">
+                {% for branch in profile_form.branch.field.queryset %}
+                    <option value="{{ branch.id }}" {% if branch.id == profile_form.branch.value %}selected{% endif %}>{{ branch.name }}</option>
+                {% endfor %}
+            </select>
+            {% if profile_form.branch.errors %}
+                <div class="text-danger">
+                    {% for error in profile_form.branch.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
-		<label for="avatar">Avatar:</label>
-		<input type="file" name="avatar" id="avatar">
+        <button type="submit" class="w-100 btn bg-gradient-primary">Update Profile</button>
+        <br><br>
+        <button type="button" class="w-100 btn bg-gradient-primary" onclick="document.getElementById('logout_form').submit(); return false;">Logout</button>
 
-	    <button type="submit" class="btn btn-primary full-width">Update Profile</button>
-		<br><br>
-		<button type="submit" class="btn btn-primary full-width" onclick="document.getElementById('logout_form').submit(); return false;">Logout</button>
-
-	</form>
+    </form>
 </div>
+
 
 {% endblock content %}

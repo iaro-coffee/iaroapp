@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Avg
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -18,6 +18,7 @@ from ratings.views import EmployeeRating
 from shifts.models import Shift
 from tasks.models import TaskInstance
 from tasks.views import get_my_tasks
+from users.models import Profile
 
 planday = planday.Planday()
 run_once_day = {}
@@ -166,18 +167,16 @@ def index(request):
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
     statistics, statisticsSum = getStatistics(request)
 
-    # Get Iaro address from request
-    formatted_address = request.GET.get("formatted_address", None)
-    if formatted_address == "Iaro Ost Karlsruhe":
-        branch = "Iaro Ost"
-    elif formatted_address == "Iaro West Karlsruhe":
-        branch = "Iaro West"
-    else:
-        branch = get_current_branch(request).name
-        if branch == "Iaro West":
-            formatted_address = "Iaro West Karlsruhe"
-        elif branch == "Iaro Ost":
-            formatted_address = "Iaro Ost Karlsruhe"
+    user_profile = get_object_or_404(Profile, user=request.user)
+    branch_address = None
+    formatted_address = None
+    if user_profile.branch:
+        branch_address = user_profile.branch.street_address + ", " + user_profile.branch.city
+        formatted_address = f"{user_profile.branch.name} Karlsruhe"
+
+    # Override formatted_address if provided in GET request
+    if 'formatted_address' in request.GET:
+        formatted_address = request.GET.get("formatted_address")
 
     populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address)
     time_spent = populartimes_data.get("time_spent", [15, 45])
@@ -202,7 +201,8 @@ def index(request):
             "populartimes": populartimes_data.get("populartimes", []),
             "time_spent": time_spent,
             "current_popularity": populartimes_data.get("current_popularity", []),
-            "branch": branch,
+            "branch": user_profile.branch.name if user_profile.branch else None,
+            "branch_address": branch_address,
         },
     )
 

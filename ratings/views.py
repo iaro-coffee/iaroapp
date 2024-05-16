@@ -1,5 +1,6 @@
 import datetime
 import json
+import profile
 from math import floor
 
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -61,9 +62,12 @@ def ratings_evaluation(request):
             ratingBar = int(round(rating / 5 * 100, -1))
         else:
             rating = 0
+
+        profile = user.profile
         userDicts.append(
             {
                 "user": model_to_dict(user),
+                "profile": model_to_dict(profile),
                 "avg_rating": rating,
                 "avg_rating_bar": ratingBar,
             }

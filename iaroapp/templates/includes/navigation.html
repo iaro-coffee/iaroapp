@@ -26,7 +26,7 @@
                             <span class="d-sm-inline d-none me-3">Account <span style="opacity: 0.75;">({{ user }})</span></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    {#        <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>  // TODO: Add profile page#}
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
                     {#        <li><a class="dropdown-item" href="{% url 'password' %}">Change password</a></li>  // TODO: Add profile page#}
                             <li><a class="dropdown-item" href="#" onclick="document.getElementById('logout_form').submit(); return false;">Logout</a></li>
                             {% if request.user.is_superuser %}

@@ -170,3 +170,8 @@ body.dark-page .sidenav-toggler-line {
   margin-bottom: 0;
 }
 
+.avatar-img {
+    width: 100px;
+    border-radius: 10px;
+    background-color: darkslateblue;
+}

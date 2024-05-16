@@ -1,18 +1,20 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render, reverse
 from django.views import View
 
+from users.forms import UserUpdateForm, ProfileUpdateForm
+
 
 class Profile(LoginRequiredMixin, View):
     def get(self, request):
-        # user_form = UserUpdateForm(instance=request.user)
-        # profile_form = ProfileUpdateForm(instance=request.user.profile)
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
 
-        # context = {
-        #    'user_form': user_form,
-        #    'profile_form': profile_form
-        # }
-        context = {}
+        context = {
+            'user_form': user_form,
+            'profile_form': profile_form
+        }
 
         return render(request, "users/profile.html", context)
 
@@ -30,6 +32,8 @@ class Profile(LoginRequiredMixin, View):
 
             return redirect("profile")
         else:
+            print(user_form.errors)
+            print(profile_form.errors)
             context = {"user_form": user_form, "profile_form": profile_form}
             messages.error(request, "Error updating you profile")
 

@@ -32,8 +32,8 @@
                 <div class="d-flex" style="flex-direction: column; height: 100%;">
                     <div class="d-flex">
                         <div class="flex-shrink-0">
-                            <img src="{% static 'images/avatar.png' %}"
-                                 alt="Generic placeholder image" class="img-fluid avatar-img">
+                            <img src="{{ item.profile.avatar.url }}"
+                                 alt="{{ item.user.username }}'s avatar" class="img-fluid avatar-img">
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.username }}</h6>
@@ -156,11 +156,7 @@
 </script>
 
 <style>
-    .avatar-img {
-        width: 100px;
-        border-radius: 10px;
-        background-color: darkslateblue;
-    }
+
 
     .progress-bar {
       height: auto !important;

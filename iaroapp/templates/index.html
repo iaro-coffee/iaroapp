@@ -170,7 +170,7 @@
                             </div>
                             <div class="shift">
                                 <span class="time">{{ shift.start }} – {{ shift.end }}</span>
-                                <span class="location">iaro, Sophienstraße</span>
+                                <span class="location">{{ branch_address }}</span>
                             </div>
                         </li>
                         {% endfor %}
@@ -193,6 +193,7 @@
                         </p>
                     </div>
                 </div>
+
                 <div class="card-body p-3">
                     <div class="text-bold align-center justify-content-center gap-1 d-flex" id="chartLegend">
                     </div>
@@ -211,18 +212,21 @@
                 </div>
 
                 <form class="d-flex justify-content-center gap-2 mb-4" method="GET"
-                    action="{% url 'index' %}#popular-times">
-                    <input type="hidden" name="formatted_address" id="formatted_address" value="{{ formatted_address }}">
+                      action="{% url 'index' %}#popular-times">
+                    <input type="hidden" name="formatted_address" id="formatted_address"
+                           value="{{ formatted_address }}">
 
                     <button
-                        class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro Ost' %}btn-active{% else %}btn-default{% endif %}"
-                        type="submit" onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
+                            class="h6 text-bold mt-3 w-35 {% if formatted_address == 'Iaro Ost Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
+                            type="submit"
+                            onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
                         Iaro Ost
                     </button>
 
                     <button
-                        class="h6 text-bold mt-3 w-35 {% if branch == 'Iaro West' %}btn-active{% else %}btn-default{% endif %}"
-                        type="submit" onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
+                            class="h6 text-bold mt-3 w-35 {% if formatted_address == 'Iaro West Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
+                            type="submit"
+                            onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
                         Iaro West
                     </button>
                 </form>
