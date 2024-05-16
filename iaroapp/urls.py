@@ -32,7 +32,6 @@ urlpatterns = [
     path("ratings/", include("ratings.urls")),
     path("tasks/", include("tasks.urls")),
     path("users/", include("users.urls")),
-    path("registration/", include("registration.urls")),
     path("accounts/login/", views.login),
     path("accounts/", include("django.contrib.auth.urls")),
 ]

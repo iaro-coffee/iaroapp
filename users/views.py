@@ -1,9 +1,15 @@
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, render, reverse
 from django.views import View
 
 from users.forms import UserUpdateForm, ProfileUpdateForm
+
+from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth.models import Group
+from django.shortcuts import redirect, render
+
+from .forms import NewUserForm
+from .no_planday_email_exception import NoPlandayEmailException
 
 
 class Profile(LoginRequiredMixin, View):
@@ -16,7 +22,7 @@ class Profile(LoginRequiredMixin, View):
             'profile_form': profile_form
         }
 
-        return render(request, "users/profile.html", context)
+        return render(request, "users/templates/profile.html", context)
 
     def post(self, request):
         user_form = UserUpdateForm(request.POST, instance=request.user)
@@ -37,4 +43,37 @@ class Profile(LoginRequiredMixin, View):
             context = {"user_form": user_form, "profile_form": profile_form}
             messages.error(request, "Error updating you profile")
 
-            return render(request, "users/profile.html", context)
+            return render(request, "users/templates/profile.html", context)
+
+
+def index(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            try:
+                user, employeeGroups = form.save(request)
+            except NoPlandayEmailException:
+                messages.error(
+                    request,
+                    "Provided E-Mail does not match any existing planday E-Mail",
+                )
+            except:
+                messages.error(
+                    request, "Unsuccessful registration. Invalid information."
+                )
+            else:
+                for group in employeeGroups:
+                    if group == 272480:  # Barista
+                        user.groups.add(Group.objects.get(name="Barista"))
+                    elif group == 274170:  # Kitchen
+                        user.groups.add(Group.objects.get(name="Kitchen"))
+                    elif group == 275780:  # Service
+                        user.groups.add(Group.objects.get(name="Service"))
+                user.save()
+                login(request, user)
+                messages.success(request, "Registration successful.")
+                return redirect("/")
+    form = NewUserForm()
+    return render(
+        request=request, template_name="register.html", context={"register_form": form}
+    )

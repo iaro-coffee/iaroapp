@@ -20,8 +20,6 @@ class Profile(models.Model):
     def __str__(self):
         return f"{self.user.username} Profile"
 
-
-
     def save(self, *args, **kwargs):
         # save the profile first
         super().save(*args, **kwargs)
@@ -39,15 +37,3 @@ class Profile(models.Model):
             new_img = Image.new("RGB", max_size, (255, 255, 255))
             new_img.paste(img, (int((max_size[0] - img.size[0]) / 2), int((max_size[1] - img.size[1]) / 2)))
             new_img.save(self.avatar.path)
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        default_branch = Branch.objects.get(name='iaro West')
-        Profile.objects.create(user=instance, branch=default_branch)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
