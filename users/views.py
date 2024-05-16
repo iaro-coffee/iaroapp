@@ -22,7 +22,11 @@ class Profile(LoginRequiredMixin, View):
             'profile_form': profile_form
         }
 
-        return render(request, "users/templates/profile.html", context)
+        return render(
+            request=request,
+            template_name="profile.html",
+            context=context
+        )
 
     def post(self, request):
         user_form = UserUpdateForm(request.POST, instance=request.user)
@@ -40,10 +44,17 @@ class Profile(LoginRequiredMixin, View):
         else:
             print(user_form.errors)
             print(profile_form.errors)
-            context = {"user_form": user_form, "profile_form": profile_form}
-            messages.error(request, "Error updating you profile")
+            context = {
+                "user_form": user_form,
+                "profile_form": profile_form
+            }
+            messages.error(request, "Error updating your profile")
 
-            return render(request, "users/templates/profile.html", context)
+            return render(
+                request=request,
+                template_name="profile.html",
+                context=context
+            )
 
 
 def index(request):
