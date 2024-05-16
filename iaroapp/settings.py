@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "procedures.apps.ProceduresConfig",
     "inventory.apps.InventoryConfig",
     "registration.apps.RegistrationConfig",
+    "users.apps.UsersConfig",
     "ckeditor",
     "crispy_forms",
     "crispy_bootstrap5",
