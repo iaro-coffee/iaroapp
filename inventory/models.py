@@ -30,21 +30,26 @@ class Storage(BaseModel):
 
 
 class Branch(BaseModel):
-    """Model representing a storage location."""
+    """Model representing iaro department and storages location associated with it"""
 
     name = models.CharField(max_length=500)
-    storages = models.ManyToManyField(Storage)
-    departmentId = models.CharField(max_length=500, default="")
-    technical_name = models.CharField(max_length=500, blank=True)
+    storages = models.ManyToManyField(Storage, related_name='branches', help_text="Storages associated with this branch.")
+    departmentId = models.CharField(max_length=500, default="", help_text="Department ID associated with the branch.")
+    technical_name = models.CharField(max_length=500, blank=True, help_text="Technical name for internal use.")
+
+    street_address = models.CharField(max_length=500, default="Sophienstraße 108", help_text="Street address of the branch.")
+    city = models.CharField(max_length=500, default="Karlsruhe", help_text="City where the branch is located.")
 
     class Meta:
         verbose_name_plural = "Branches"
 
     @property
     def get_storages(self):
+        """Returns all storages associated with this branch."""
         return self.storages.all()
 
     def display_storages(self):
+        """Displays a comma-separated list of storage names for admin interface."""
         return ", ".join([storage.name for storage in self.storages.all()])
 
     display_storages.short_description = "Storages"
@@ -54,6 +59,7 @@ class Branch(BaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
+        """Override the save method to set the technical name if not provided."""
         if not self.technical_name:
             self.technical_name = slugify(self.name)
         super().save(*args, **kwargs)
