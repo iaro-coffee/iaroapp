@@ -1,3 +1,4 @@
+from inventory.models import Branch
 from .models import Profile
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -38,3 +39,17 @@ class NewUserForm(UserCreationForm):
                     user.save()
                 return user, employee["employeeGroups"]
         raise NoPlandayEmailException
+
+
+class UserCreationFormWithBranch(UserCreationForm):
+    branch = forms.ModelChoiceField(queryset=Branch.objects.all(), required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'password1', 'password2', 'branch')
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.save()
+        Profile.objects.create(user=user, branch=self.cleaned_data['branch'])
+        return user
