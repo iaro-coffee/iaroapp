@@ -10,7 +10,7 @@ class Profile(models.Model):
 
     avatar = models.ImageField(
         default="profile_avatars/avatar.png",  # default avatar
-        upload_to="profile_avatars",  # dir to store the image
+        upload_to="profile_avatars",           # dir to store the image
     )
 
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, default=None)

@@ -1,18 +1,56 @@
 {% extends "base_generic.html" %}
-
-{% block content %}
-
 {% load crispy_forms_tags %}
 
-<!--Register-->
-<div class="container py-5">
-	<h1>Register</h1>
-	<form method="POST">
-		{% csrf_token %}
-		{{ register_form|crispy }}
-		<button class="w-100 btn bg-gradient-primary" type="submit">Register</button>
-	</form>
-	<p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>
-</div>
+{% block content %}
+<div class="center">
+    <form method="POST" enctype="multipart/form-data" class="card p-4">
+        {% csrf_token %}
 
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="id_username" name="username" value="{{ user_form.username.value }}" required>
+            {% if user_form.username.errors %}
+                <div class="text-danger">
+                    {% for error in user_form.username.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_email" class="form-label">Email address</label>
+            {{ form.email }}
+            <small class="form-text text-muted">Your Email address should correspond to your Planday Email.</small>
+            {% if form.email.errors %}
+                <div class="text-danger">
+                    {% for error in form.email.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        {{ form.password1|as_crispy_field }}
+        {{ form.password2|as_crispy_field }}
+
+        <div class="mb-3">
+            <label for="{{ form.branch.id_for_label }}" class="form-label">{{ form.branch.label }}*</label>
+            <select class="form-control" style="color: #495057 !important;" id="{{ form.branch.id_for_label }}" name="branch">
+                {% for branch in form.branch.field.queryset %}
+                    <option value="{{ branch.id }}" {% if branch.id == form.branch.value %}selected{% endif %}>{{ branch.name }}</option>
+                {% endfor %}
+            </select>
+            {% if form.branch.errors %}
+                <div class="text-danger">
+                    {% for error in form.branch.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="w-100 btn bg-gradient-primary">Register</button>
+    </form>
+    <p class="text-center">If you already have an account, <a href="{% url 'login' %}">login</a> instead.</p>
+</div>
 {% endblock %}

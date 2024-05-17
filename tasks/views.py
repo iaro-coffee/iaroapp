@@ -37,7 +37,7 @@ class TasksView(LoginRequiredMixin, ListView):
         branches = list(Branch.objects.exclude(name=branch).order_by("name")) + ["All"]
 
         formset = self.formset_class(queryset=tasks)
-        for form in fяormset:
+        for form in formset:
             if form.instance.pk and branch != "All":
                 form.instance.done_for_branch = form.instance.is_done(branch)
 

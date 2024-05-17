@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from .models import Profile
-from .forms import UserCreationFormWithBranch
+from .forms import UserAdminCreationForm
 
 
 class ProfileInline(admin.StackedInline):
@@ -13,7 +13,7 @@ class ProfileInline(admin.StackedInline):
 
 
 class CustomUserAdmin(BaseUserAdmin):
-    add_form = UserCreationFormWithBranch
+    add_form = UserAdminCreationForm
     add_fieldsets = (
         (None, {
             'classes': ('wide',),

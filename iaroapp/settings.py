@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     "procedures.apps.ProceduresConfig",
     "inventory.apps.InventoryConfig",
     "users.apps.UsersConfig",
-    "ckeditor",
+    "django_ckeditor_5",
     "crispy_forms",
     "crispy_bootstrap5",
     "colorful",

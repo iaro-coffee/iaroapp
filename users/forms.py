@@ -20,13 +20,14 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['avatar', 'branch']
 
 
-class NewUserForm(UserCreationForm):
+class UserClientCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     planday = planday.Planday()
+    branch = forms.ModelChoiceField(queryset=Branch.objects.all(), required=True)
 
     class Meta:
         model = User
-        fields = ("username", "email", "password1", "password2")
+        fields = ("username", "email", "password1", "password2", "branch")
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -37,11 +38,12 @@ class NewUserForm(UserCreationForm):
             if user.email == employee["email"]:
                 if commit:
                     user.save()
+                    Profile.objects.create(user=user, branch=self.cleaned_data['branch'])
                 return user, employee["employeeGroups"]
         raise NoPlandayEmailException
 
 
-class UserCreationFormWithBranch(UserCreationForm):
+class UserAdminCreationForm(UserCreationForm):
     branch = forms.ModelChoiceField(queryset=Branch.objects.all(), required=True)
 
     class Meta:
