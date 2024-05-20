@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>iaroapp - Log in</title>
+    {% load static %}
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+    <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link id="pagestyle" href="{% static 'softTheme/css/soft-ui-dashboard.css' %}" rel="stylesheet"/>
+    <link rel="icon" href="{% static 'images/favicon.png' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+</head>
+
+<body>
+<div class="container-fluid">
+    <form method="post" action="{% url 'login' %}" class="card p-4">
+        {% csrf_token %}
+        <div class="logo-container text-center">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
+        </div>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-light" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <p class="text-sm">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        <div class="input-group input-group-outline mb-3">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input type="text" name="{{ form.username.name }}" class="form-control" id="id_username"
+                   placeholder="Username" required>
+        </div>
+
+        <div class="input-group input-group-outline mb-3">
+            <span class="input-group-text"><i class="bi bi-key"></i></span>
+            <input type="password" name="{{ form.password.name }}" class="form-control" id="id_password"
+                   placeholder="Password" required>
+        </div>
+
+        <button class="btn bg-gradient-primary" type="submit">Log In</button>
+
+        <div class="remember-forgot mb-1">
+            <div class="form-check d-flex align-items-center">
+                <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">Remember me</label>
+            </div>
+            <label class="form-check-label">
+                <a href="{% url 'register' %}" class="link-secondary text-decoration-none">Forgot Password?</a>
+            </label>
+        </div>
+
+        <hr class="my-2">
+
+        <div class="text-center">
+            <label class="form-check-label" style="cursor: auto">
+                Don't have an account?
+                <a href="{% url 'register' %}" class="link-secondary text-decoration-none">Sign Up</a>
+            </label>
+        </div>
+
+    </form>
+</div>
+
+<script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'softTheme/js/soft-ui-dashboard.min.js' %}"></script>
+</body>
+
+<style>
+    .input-group-outline:focus-within {
+        box-shadow: 0 0 0 2px rgba(103, 116, 142, 0.15) !important;
+        border-radius: 8px !important;
+    }
+    .focused .input-group-text {
+        border-color: rgba(52, 71, 103, 0.4) !important;
+
+    }
+    .focused .input-group-text i {
+        scale: 1.1;
+        transition: scale 0.15s ease-in-out;
+    }
+    .input-group .form-control:focus {
+        border-color: rgba(52, 71, 103, 0.4) !important;
+        box-shadow: none !important;
+        border-radius: 0 8px 8px 0 !important;
+    }
+</style>
+
+</html>

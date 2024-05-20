@@ -40,7 +40,7 @@ class UserClientCreationForm(UserCreationForm):
                     user.save()
                     Profile.objects.create(user=user, branch=self.cleaned_data['branch'])
                 return user, employee["employeeGroups"]
-        raise NoPlandayEmailException
+        raise NoPlandayEmailException("Email should correspond to your Planday Email.")
 
 
 class UserAdminCreationForm(UserCreationForm):

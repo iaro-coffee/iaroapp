@@ -205,10 +205,3 @@ def index(request):
             "branch_address": branch_address,
         },
     )
-
-
-def login(request, *args, **kwargs):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse("index"))
-    else:
-        return auth_views.LoginView.as_view()(request, *args, **kwargs)

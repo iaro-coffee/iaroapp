@@ -29,7 +29,7 @@ body.dark-page .navbar-brand-img {
 
 .bg-gradient-primary {
   /*background-image: linear-gradient(310deg, #ebede8 0%, #d4cac8 100%);*/
-  background-image: linear-gradient(310deg, #67748e 0%, #67748e 100%); /* temporally changed for better readability before full recolor*/
+  background-image: linear-gradient(310deg, #67748e 0%, #67748e 100%) !important; /* temporally changed for better readability before full recolor*/
 }
 
 .navbar-vertical .navbar-nav > .nav-item .nav-link.active .icon {
