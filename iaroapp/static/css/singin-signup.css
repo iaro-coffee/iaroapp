@@ -5,15 +5,25 @@ body {
     align-items: center;
     height: 100vh;
     font-family: Inter, serif !important;
+    overflow: hidden;
 }
 
 .container-fluid {
     display: flex;
     justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto !important;
+    padding: 40px 20px;
+    box-sizing: border-box;
 }
 
 .card {
-    width: 400px !important;
+    width: 500px;
+    max-width: 100%;
+    padding: 20px;
+    margin: auto !important;
 }
 
 .logo-container {
