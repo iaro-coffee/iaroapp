@@ -35,6 +35,7 @@ body {
 }
 
 .input-group-text {
+    background-color: rgba(231, 233, 228, 0.35) !important;
     border-right: 1px solid #d0d4d8 !important;
     width: 40px !important;
     justify-content: center;
