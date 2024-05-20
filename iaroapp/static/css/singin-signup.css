@@ -81,3 +81,19 @@ hr.my-2 {
     margin-top: 0.5rem !important;
     margin-bottom: 0.5rem !important;
 }
+
+.hidden_text {
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: max-height 0.6s ease, opacity 0.6s ease, visibility 0.6s;
+}
+
+.visible_text {
+    max-height: 300px;
+    opacity: 1;
+    visibility: visible;
+    transition: max-height 0.6s ease, opacity 0.6s ease;
+}
+
