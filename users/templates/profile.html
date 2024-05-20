@@ -17,7 +17,8 @@
                         {% endif %}
                     </div>
                     <h2 class="text-center">{{ user.username | title }}</h2>
-                    <p class="text-center"><a style="color: black;" href="mailto:{{ user.email }}">{{ user.email }}</a></p>
+                    <p class="text-center"><a style="color: black;" href="mailto:{{ user.email }}">{{ user.email }}</a>
+                    </p>
                     <hr>
 
                     <div class="mb-3">
@@ -134,19 +135,20 @@
         .card {
             max-width: 500px;
         }
+
         .text-error {
             border-radius: 0.5rem !important;
         }
 
     </style>
 
-            <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var passwordChangeForm = document.getElementById('passwordChangeForm');
-                var passwordFields = passwordChangeForm.querySelectorAll('input[type="password"]');
-                passwordFields.forEach(function (field) {
-                    field.value = '';
-                });
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var passwordChangeForm = document.getElementById('passwordChangeForm');
+            var passwordFields = passwordChangeForm.querySelectorAll('input[type="password"]');
+            passwordFields.forEach(function (field) {
+                field.value = '';
             });
-        </script>
+        });
+    </script>
 {% endblock content %}

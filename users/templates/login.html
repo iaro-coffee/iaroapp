@@ -28,13 +28,13 @@
             <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
         </div>
 
-            {% if form.non_field_errors %}
-                <div class="alert alert-light" role="alert">
-                    {% for error in form.non_field_errors %}
-                        <p class="text-sm">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
+        {% if form.non_field_errors %}
+            <div class="alert alert-light" role="alert">
+                {% for error in form.non_field_errors %}
+                    <p class="text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <div class="input-group input-group-outline mb-3">
             <span class="input-group-text"><i class="bi bi-person"></i></span>
@@ -81,14 +81,17 @@
         box-shadow: 0 0 0 2px rgba(103, 116, 142, 0.15) !important;
         border-radius: 8px !important;
     }
+
     .focused .input-group-text {
         border-color: rgba(52, 71, 103, 0.4) !important;
 
     }
+
     .focused .input-group-text i {
         scale: 1.1;
         transition: scale 0.15s ease-in-out;
     }
+
     .input-group .form-control:focus {
         border-color: rgba(52, 71, 103, 0.4) !important;
         box-shadow: none !important;
