@@ -32,8 +32,7 @@ urlpatterns = [
     path("ratings/", include("ratings.urls")),
     path("tasks/", include("tasks.urls")),
     path("users/", include("users.urls")),
-    # path("accounts/login/", views.login),
-    # path("accounts/", include("django.contrib.auth.urls")),
+    path("accounts/", include("allauth.urls"))
 ]
 
 # Use static() to add url mapping to serve static files during development (only)

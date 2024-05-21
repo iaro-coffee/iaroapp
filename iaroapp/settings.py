@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.contrib.sites',
     "widget_tweaks",
     "tasks.apps.TasksConfig",
     "shifts.apps.ShiftsConfig",
@@ -53,6 +54,11 @@ INSTALLED_APPS = [
     "procedures.apps.ProceduresConfig",
     "inventory.apps.InventoryConfig",
     "users.apps.UsersConfig",
+    "customers",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "django_ckeditor_5",
     "crispy_forms",
     "crispy_bootstrap5",
@@ -68,6 +74,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "login_required.middleware.LoginRequiredMiddleware",
@@ -123,6 +130,20 @@ TIME_ZONE = 'Europe/Berlin'
 USE_I18N = True
 USE_TZ = True
 
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+# Custom Allauth settings
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
@@ -133,6 +154,7 @@ LOGIN_REQUIRED_IGNORE_PATHS = [
     r"/users/login/$",
     r"/users/register",
 ]
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Update database configuration from $DATABASE_URL environment variable (if defined)
