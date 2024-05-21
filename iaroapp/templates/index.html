@@ -368,13 +368,16 @@
     }
 
     async function fetchHolidays() {
-        const apiKey = 'MeYQvpe54kuDl2qePYB8JxzgTh7JEtFM';
+        const apiKey = 'ld8geT4B1imhxWfWBsroIJGwqfBYhrnI';
         const country = 'DE';
         const year = new Date().getFullYear();
         let url = `https://calendarific.com/api/v2/holidays?&api_key=${apiKey}&country=${country}&year=${year}`;
 
         try {
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
             const holidays = data.response.holidays;
             const today = new Date();
@@ -401,6 +404,7 @@
 
     fetchHolidays();
 </script>
+
 
 
     <script>
