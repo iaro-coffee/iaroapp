@@ -167,15 +167,22 @@ def index(request):
     user_profile = get_object_or_404(Profile, user=request.user)
     branch_address = None
     formatted_address = None
+    branch_name = None
+
     if user_profile.branch:
-        branch_address = f"{user_profile.branch.street_address}, {user_profile.branch.city}"
-        print(f'branch_address: {branch_address}')
-        formatted_address = f"{user_profile.branch.name} Karlsruhe"
+        branch_address = f"{user_profile.branch.street_address}, {user_profile.branch.city}"  # Check db value
+        if user_profile.branch.name == "iaro Space":
+            formatted_address = "iaro West Karlsruhe"
+            branch_name = "iaro West"
+        else:
+            formatted_address = f"{user_profile.branch.name} Karlsruhe"
+            branch_name = user_profile.branch.name
 
     # Override formatted_address if provided in GET request
     if 'formatted_address' in request.GET:
         formatted_address = request.GET.get("formatted_address")
 
+    # Ensure formatted_address is a string
     formatted_address_str = formatted_address if formatted_address else ""
 
     populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address_str)
@@ -195,11 +202,11 @@ def index(request):
             "today": today,
             "ongoingShift": ongoingShift[0],
             "shiftStart": ongoingShift[1],
-            "formatted_address": formatted_address_str,
+            "formatted_address": formatted_address_str,  # Pass the original string, not bytes
             "populartimes": populartimes_data.get("populartimes", []),
             "time_spent": time_spent,
             "current_popularity": populartimes_data.get("current_popularity", []),
-            "branch": user_profile.branch.name if user_profile.branch else None,
+            "branch": branch_name if branch_name else None,
             "branch_address": branch_address,
         },
     )
