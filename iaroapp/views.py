@@ -170,10 +170,7 @@ def index(request):
     branch_name = None
 
     if user_profile.branch:
-        print(f'user_profile.branch: {user_profile.branch}')
         branch_address = f"{user_profile.branch.street_address}, {user_profile.branch.city}"  # Check db value
-        print(f'branch_address: {branch_address}')
-
         if user_profile.branch.name == "iaro Space":
             formatted_address = "iaro West Karlsruhe"
             branch_name = "iaro West"
