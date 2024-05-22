@@ -58,15 +58,6 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {% if '/tasks/baking' == request.path %} active {% endif %} " href=" {% url 'tasks_baking' %}">
-                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
-                        <span data-feather="trello" class="align-text-bottom"></span>
-                    </div>
-                    <span class="nav-link-text ms-1">Baking plan</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
                 <a class="nav-link {% if '/inventory/populate' == request.path %} active {% endif %} " href=" {% url 'inventory_populate' %}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center" style="padding: 8px">
                         <span data-feather="layers" class="align-text-bottom"></span>

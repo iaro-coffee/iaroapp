@@ -18,4 +18,6 @@ django-colorful
 pymemcache
 pre-commit
 livepopulartimes
+Pillow
 django-allauth
+django_ckeditor_5
