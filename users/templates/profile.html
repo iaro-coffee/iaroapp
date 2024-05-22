@@ -88,9 +88,57 @@
 
         <div class="col-lg-4 mb-4">
             <div class="card h-100 p-4">
+                <h6>Personal Iaro Card</h6>
+                {% if customer_profile %}
+                    <h4 class="customer-name text-center">{{ customer_profile.first_name }} {{ customer_profile.last_name }}</h4>
+                {% else %}
+                    <p>No customer profile available.</p>
+                {% endif %}
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="customer_profile_form" value="customer_profile_form">
+
+                    {% if user.customerprofile %}
+                        <div class="mb-3">
+                            <label for="id_first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="id_first_name" name="first_name"
+                                   value="{{ customer_profile_form.first_name.value }}">
+                            {% if customer_profile_form.first_name.errors %}
+                                <div class="text-danger">
+                                    {% for error in customer_profile_form.first_name.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="id_last_name" name="last_name"
+                                   value="{{ customer_profile_form.last_name.value }}">
+                            {% if customer_profile_form.last_name.errors %}
+                                <div class="text-danger">
+                                    {% for error in customer_profile_form.last_name.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="w-100 btn bg-gradient-primary">Update iaro Card</button>
+                    {% else %}
+                        <p>No customer profile available.</p>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 p-4">
                 <h6>Change Password</h6>
                 <form method="post" id="passwordChangeForm">
                     {% csrf_token %}
+                    <input type="hidden" name="password_change_form" value="password_change_form">
 
                     {% if password_form.non_field_errors %}
                         <div class="alert alert-light">
@@ -101,27 +149,48 @@
                     {% endif %}
 
                     <div class="form-group">
+                        {% if password_form.old_password.errors %}
+                            <div class="alert alert-secondary p-2 px-0 mb-1 mt-2" style="border-radius: 0.5rem" role="alert">
+                                <ul class="text-danger m-0 text-xxs">
+                                    {% for error in password_form.old_password.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
                         {{ password_form.old_password.label_tag }}
                         {{ password_form.old_password }}
-                        {% for error in password_form.old_password.errors %}
-                            <div class="alert alert-secondary text-danger text-sm mt-2 p-2 text-error">{{ error }}</div>
-                        {% endfor %}
                     </div>
 
                     <div class="form-group">
+                        {% if password_form.new_password1.errors %}
+                            <div class="alert alert-secondary p-2 px-0 mb-1 mt-2" style="border-radius: 0.5rem"
+                                 role="alert">
+                                <ul class="text-danger m-0 text-xxs">
+                                    {% for error in password_form.new_password1.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
                         {{ password_form.new_password1.label_tag }}
                         {{ password_form.new_password1 }}
-                        {% for error in password_form.new_password1.errors %}
-                            <div class="alert alert-secondary text-danger text-sm mt-2 p-2 text-error">{{ error }}</div>
-                        {% endfor %}
                     </div>
 
+
                     <div class="form-group">
+                        {% if password_form.new_password2.errors %}
+                            <div class="alert alert-secondary p-2 px-0 mb-1" style="border-radius: 0.5rem"
+                                 role="alert">
+                                <ul class="text-danger m-0 text-xxs">
+                                    {% for error in password_form.new_password2.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
                         {{ password_form.new_password2.label_tag }}
                         {{ password_form.new_password2 }}
-                        {% for error in password_form.new_password2.errors %}
-                            <div class="alert alert-secondary text-danger text-sm mt-2 p-2 text-error">{{ error }}</div>
-                        {% endfor %}
                     </div>
 
                     <button type="submit" class="w-100 btn bg-gradient-primary" name="password_form">Change Password
@@ -129,6 +198,8 @@
                 </form>
             </div>
         </div>
+
+
     </div>
 
     <style>

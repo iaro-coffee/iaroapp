@@ -153,6 +153,7 @@ LOGIN_REQUIRED_IGNORE_PATHS = [
     r"/users/signup/$",
     r"/users/login/$",
     r"/users/register",
+    r"/accounts/",
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -195,3 +196,31 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Allow only XLSX and CSV formats
 
 IMPORT_EXPORT_FORMATS = [XLSX, CSV]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'info.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'iaroapp': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

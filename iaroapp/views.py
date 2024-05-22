@@ -2,20 +2,29 @@ import json
 from datetime import datetime, timedelta
 
 import livepopulartimes
-import urllib.parse
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Avg
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
+from customers.models import CustomerProfile
+from inventory.views import get_current_branch
 from lib import planday
 from ratings.views import EmployeeRating
 from shifts.models import Shift
 from tasks.models import TaskInstance
 from tasks.views import get_my_tasks
 from users.models import Profile
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 planday = planday.Planday()
 run_once_day = {}
@@ -156,6 +165,7 @@ def getStatistics(request):
     return statistics, statisticsSum
 
 
+@login_required
 def index(request):
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
@@ -164,13 +174,24 @@ def index(request):
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
     statistics, statisticsSum = getStatistics(request)
 
-    user_profile = get_object_or_404(Profile, user=request.user)
     branch_address = None
     formatted_address = None
     branch_name = None
 
-    if user_profile.branch:
-        branch_address = f"{user_profile.branch.street_address}, {user_profile.branch.city}"  # Check db value
+    try:
+        user_profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        logger.info(f"User {request.user.username} does not have a profile.")
+        user_profile = None
+
+    try:
+        customer_profile = request.user.customerprofile
+    except CustomerProfile.DoesNotExist:
+        logger.info(f"User {request.user.username} does not have a customer profile.")
+        customer_profile = None
+
+    if user_profile and user_profile.branch:
+        branch_address = f"{user_profile.branch.street_address}, {user_profile.branch.city}"
         if user_profile.branch.name == "iaro Space":
             formatted_address = "iaro West Karlsruhe"
             branch_name = "iaro West"
@@ -185,7 +206,7 @@ def index(request):
     # Ensure formatted_address is a string
     formatted_address_str = formatted_address if formatted_address else ""
 
-    populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address_str)
+    populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address) if formatted_address else {}
     time_spent = populartimes_data.get("time_spent", [15, 45])
 
     return render(
@@ -202,11 +223,14 @@ def index(request):
             "today": today,
             "ongoingShift": ongoingShift[0],
             "shiftStart": ongoingShift[1],
-            "formatted_address": formatted_address_str,  # Pass the original string, not bytes
+            "formatted_address": formatted_address_str,
             "populartimes": populartimes_data.get("populartimes", []),
             "time_spent": time_spent,
             "current_popularity": populartimes_data.get("current_popularity", []),
             "branch": branch_name if branch_name else None,
             "branch_address": branch_address,
+            "user_profile": user_profile,
+            "customer_profile": customer_profile,
         },
     )
+

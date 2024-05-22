@@ -32,7 +32,7 @@ urlpatterns = [
     path("ratings/", include("ratings.urls")),
     path("tasks/", include("tasks.urls")),
     path("users/", include("users.urls")),
-    path("accounts/", include("allauth.urls"))
+    path("", include("customers.urls")),
 ]
 
 # Use static() to add url mapping to serve static files during development (only)

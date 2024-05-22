@@ -21,6 +21,7 @@ class CustomUserAdmin(BaseUserAdmin):
         }),
     )
     inlines = (ProfileInline,)
+    search_fields = ('username', 'email')
 
     def get_inline_instances(self, request, obj=None):
         if not obj:
@@ -34,7 +35,7 @@ admin.site.register(User, CustomUserAdmin)
 
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'branch', 'avatar')
+    search_fields = ('user__username__icontains', 'user__email__icontains', 'branch__name__icontains')
 
 
 admin.site.register(Profile, ProfileAdmin)
-
