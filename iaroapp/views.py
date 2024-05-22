@@ -2,17 +2,14 @@ import json
 from datetime import datetime, timedelta
 
 import livepopulartimes
-from django.contrib.auth import views as auth_views
+import urllib.parse
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Avg
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
-from inventory.views import get_current_branch
 from lib import planday
 from ratings.views import EmployeeRating
 from shifts.models import Shift
@@ -171,14 +168,17 @@ def index(request):
     branch_address = None
     formatted_address = None
     if user_profile.branch:
-        branch_address = user_profile.branch.street_address + ", " + user_profile.branch.city
+        branch_address = f"{user_profile.branch.street_address}, {user_profile.branch.city}"
+        print(f'branch_address: {branch_address}')
         formatted_address = f"{user_profile.branch.name} Karlsruhe"
 
     # Override formatted_address if provided in GET request
     if 'formatted_address' in request.GET:
         formatted_address = request.GET.get("formatted_address")
 
-    populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address)
+    formatted_address_str = formatted_address if formatted_address else ""
+
+    populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address_str)
     time_spent = populartimes_data.get("time_spent", [15, 45])
 
     return render(
@@ -186,10 +186,8 @@ def index(request):
         "index.html",
         context={
             "pageTitle": "Dashboard",
-            "nextShifts": userShifts[
-                0 : len(userShifts) if len(userShifts) <= 5 else 5
-            ],
-            "task_list": myTasks[0 : len(myTasks) if len(myTasks) <= 5 else 5],
+            "nextShifts": userShifts[:5],
+            "task_list": myTasks[:5],
             "tasks_done_last_month": tasksDoneLastMonth,
             "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
             "statistics": statistics,
@@ -197,7 +195,7 @@ def index(request):
             "today": today,
             "ongoingShift": ongoingShift[0],
             "shiftStart": ongoingShift[1],
-            "formatted_address": formatted_address,
+            "formatted_address": formatted_address_str,
             "populartimes": populartimes_data.get("populartimes", []),
             "time_spent": time_spent,
             "current_popularity": populartimes_data.get("current_popularity", []),
