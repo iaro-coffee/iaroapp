@@ -1,29 +1,39 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .forms import CustomerProfileUpdateForm
-from .models import CustomerProfile
+from allauth.account.views import LoginView, SignupView
+from django.urls import reverse_lazy
+from customers.forms import CustomLoginForm
+
+class UserLoginView(LoginView):
+    template_name = 'account/login_signup.html'
+    success_url = reverse_lazy('index')
+
+    def get_form_class(self):
+        return CustomLoginForm
+
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        context['form_login'] = form
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_login'] = True
+        context['form_login'] = kwargs.get('form', self.get_form_class()())
+        context['form_signup'] = SignupView.form_class()
+        return context
 
 
-# @login_required
-# def update_customer_profile(request):
-#     try:
-#         customer_profile = request.user.customerprofile
-#     except CustomerProfile.DoesNotExist:
-#         customer_profile = CustomerProfile(user=request.user)
-#
-#     if request.method == 'POST':
-#         form = CustomerProfileUpdateForm(request.POST, instance=customer_profile)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, 'Your customer profile has been updated successfully.')
-#             return redirect('update_customer_profile')
-#         else:
-#             messages.error(request, 'Please correct the error below.')
-#     else:
-#         form = CustomerProfileUpdateForm(instance=customer_profile)
-#
-#     context = {
-#         'form': form
-#     }
-#     return render(request, 'customers/update_customer_profile.html', context)
+class UserSignupView(SignupView):
+    template_name = 'account/login_signup.html'
+    success_url = reverse_lazy('index')
+
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        context['form_signup'] = form
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_login'] = False
+        context['form_signup'] = kwargs.get('form', self.get_form_class()())
+        context['form_login'] = LoginView.form_class()
+        return context

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>iaroapp - Sign In / Sign up</title>
+    {% load static %}
+    {% load i18n %}
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/singin-signup.css' %}">
+    <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link id="pagestyle" href="{% static 'softTheme/css/soft-ui-dashboard.css' %}" rel="stylesheet"/>
+    <link rel="icon" href="{% static 'images/favicon.png' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <style>
+        .card-container {
+            perspective: 1000px;
+        }
+
+        .card {
+            transition: transform 0.6s ease-in-out;
+            transform-style: preserve-3d;
+            position: relative;
+
+        }
+
+        .card.rotate-to-signup .card-content {
+            transform: rotateY(180deg);
+        }
+
+        .form-container {
+            position: relative;
+            width: 100%;
+
+        }
+
+        .form-container.hidden {
+            display: none;
+        }
+
+        .form-container.visible {
+            display: block;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .rotate-to-signup {
+            transform: rotateY(180deg);
+        }
+
+        .rotate-to-login {
+            transform: rotateY(0deg);
+        }
+
+        .logo-container img {
+            margin-bottom: 20px;
+        }
+
+        .text-center label {
+            font-size: 0.9rem;
+        }
+
+        .input-group-outline .input-group-text {
+            width: 42px;
+            display: flex;
+            justify-content: center;
+        }
+
+
+        .remember-forgot, .social-login {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remember-forgot {
+            margin-top: 10px;
+        }
+
+        .text-danger {
+            color: #ff6b6b;
+        }
+
+        .hidden_text {
+            display: none;
+        }
+
+        .visible_text {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid card-container">
+    <div class="card p-4 rotate-to-login" style="max-width: 400px; margin: auto; border-radius: 15px;">
+        <div class="card-content">
+            <div class="logo-container text-center">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
+            </div>
+
+            <div class="form-container" id="form-container">
+                <form id="login-form"
+                      class="form-card {% if not form_login.errors %}visible{% else %}hidden{% endif %} fade-in"
+                      method="post" action="{% url 'customer_login' %}">
+                    {% csrf_token %}
+                    {% if form_login.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form_login.non_field_errors %}
+                                <p class="text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="input-group input-group-outline mb-3">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" name="{{ form_login.login.name }}" class="form-control" id="id_username"
+                               placeholder="Username" required autocomplete="username">
+                    </div>
+                    {% if form_login.login.errors %}
+                        <div class="text-danger mb-0 text-xxs">
+                            <ul>
+                                {% for error in form_login.login.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <div class="input-group input-group-outline mb-3">
+                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <input type="password" name="{{ form_login.password.name }}" class="form-control"
+                               id="id_password" placeholder="Password" required autocomplete="current-password">
+                    </div>
+                    {% if form_login.password.errors %}
+                        <div class="text-danger mb-0 text-xxs">
+                            <ul>
+                                {% for error in form_login.password.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="form-check d-flex align-items-center">
+        <input class="form-check-input" type="checkbox" name="{{ form_login.remember.name }}" id="rememberMe" checked>
+        <label class="form-check-label ms-2" for="rememberMe">{{ form_login.remember.label }}</label>
+    </div>
+    <a href="{% url 'account_reset_password' %}" class="link-secondary text-decoration-none">Forgot Password?</a>
+</div>
+
+                    <button class="btn bg-gradient-primary w-100" type="submit">Sign In</button>
+
+
+                    <div class="text-center">
+                        <label class="form-check-label" style="cursor: auto">
+                            Don't have an account?
+                            <a href="#" class="link-primary text-decoration-none" id="show-signup">Sign Up</a>
+                        </label>
+                    </div>
+                </form>
+
+                <form id="signup-form"
+                      class="form-card {% if form_signup.errors %}visible{% else %}hidden{% endif %} fade-in"
+                      method="post" action="{% url 'customer_register' %}">
+                    {% csrf_token %}
+                    {% if form_signup.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in form_signup.non_field_errors %}
+                                <p class="text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="input-group input-group-outline mb-3">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" name="{{ form_signup.username.name }}" class="form-control"
+                               id="id_signup_username"
+                               placeholder="Username" required autocomplete="new-username">
+                    </div>
+                    {% if form_signup.username.errors %}
+                        <div class="text-danger mb-0 text-xxs">
+                            <ul>
+                                {% for error in form_signup.username.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <div id="help_username" class="text-xxs mt-0 p-0 hidden_text">
+                        <ul>
+                            <li>Required. Letters, digits and @/./+/-/_ only.</li>
+                        </ul>
+                    </div>
+
+                    <div class="input-group input-group-outline mb-3">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input type="email" name="{{ form_signup.email.name }}" class="form-control"
+                               id="id_signup_email"
+                               placeholder="Email" required autocomplete="new-email">
+                    </div>
+                    {% if form_signup.email.errors %}
+                        <div class="text-danger mb-0 text-xxs">
+                            <ul>
+                                {% for error in form_signup.email.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <div id="help_email" class="text-xxs p-0 hidden_text">
+                        <ul>
+                            <li>Required. Your Email address should be same as Planday Email.</li>
+                        </ul>
+                    </div>
+
+                    <div class="input-group input-group-outline mb-3">
+                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <input type="password" name="{{ form_signup.password1.name }}" class="form-control"
+                               id="id_signup_password1"
+                               placeholder="Password" required autocomplete="new-password">
+                    </div>
+                    {% if form_signup.password1.errors %}
+                        <div class="text-danger mb-0 text-xxs">
+                            <ul>
+                                {% for error in form_signup.password1.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <div id="help_password1" class="text-xxs p-0 hidden_text">
+                        {% if form_signup.password1.help_text %}
+                            {{ form_signup.password1.help_text }}
+                        {% endif %}
+                    </div>
+
+                    <div class="input-group input-group-outline mb-3">
+                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <input type="password" name="{{ form_signup.password2.name }}" class="form-control"
+                               id="id_signup_password2"
+                               placeholder="Confirm Password" required autocomplete="new-password">
+                    </div>
+                    {% if form_signup.password2.errors %}
+                        <div class="text-danger mb-0 text-xxs">
+                            <ul>
+                                {% for error in form_signup.password2.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <button class="btn bg-gradient-primary w-100" type="submit">Sign Up</button>
+                    <hr class="my-2">
+                    <div class="text-center">
+                        <label class="form-check-label" style="cursor: auto">
+                            Already have an account?
+                            <a href="#" class="link-success text-bold text-decoration-none" id="show-login">Sign In</a>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <hr class="my-2">
+            <div class="social-login text-center">
+                {% if SOCIALACCOUNT_ENABLED %}
+                    {% load socialaccount %}
+                    {% get_providers as socialaccount_providers %}
+                    {% if socialaccount_providers %}
+                        {% if not SOCIALACCOUNT_ONLY %}
+                            <hr>
+                            <h6 class="mt-3 mb-3">
+                                {% translate "Or login using social account:" %}
+                            </h6>
+                        {% endif %}
+                        {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                        {% include "socialaccount/snippets/login_extra.html" %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'softTheme/js/soft-ui-dashboard.min.js' %}"></script>
+<script>
+    document.getElementById('show-signup').addEventListener('click', function (e) {
+        e.preventDefault();
+        const card = document.querySelector('.card');
+        card.classList.add('rotate-to-signup');
+        card.classList.remove('rotate-to-login');
+        setTimeout(function () {
+            document.querySelector('.card-content').style.transform = 'rotateY(180deg)';
+            document.getElementById('login-form').classList.remove('visible');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.remove('hidden');
+            document.getElementById('signup-form').classList.add('visible');
+        }, 300);
+        localStorage.setItem('formState', 'signup');
+    });
+
+    document.getElementById('show-login').addEventListener('click', function (e) {
+        e.preventDefault();
+        const card = document.querySelector('.card');
+        card.classList.add('rotate-to-login');
+        card.classList.remove('rotate-to-signup');
+        setTimeout(function () {
+            document.querySelector('.card-content').style.transform = 'rotateY(0deg)';
+            document.getElementById('signup-form').classList.remove('visible');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('visible');
+        }, 300);
+        localStorage.setItem('formState', 'login');
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const formState = localStorage.getItem('formState');
+        const card = document.querySelector('.card');
+        if (formState === 'signup') {
+            card.classList.add('rotate-to-signup');
+            card.classList.remove('rotate-to-login');
+            document.getElementById('login-form').classList.remove('visible');
+            document.getElementById('login-form').classList.add('hidden');
+            setTimeout(function () {
+                document.querySelector('.card-content').style.transform = 'rotateY(180deg)';
+                document.getElementById('signup-form').classList.remove('hidden');
+                document.getElementById('signup-form').classList.add('visible');
+            }, 300);
+        } else {
+            card.classList.add('rotate-to-login');
+            card.classList.remove('rotate-to-signup');
+            document.getElementById('signup-form').classList.remove('visible');
+            document.getElementById('signup-form').classList.add('hidden');
+            setTimeout(function () {
+                document.querySelector('.card-content').style.transform = 'rotateY(0deg)';
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('login-form').classList.add('visible');
+            }, 300);
+        }
+    });
+
+</script>
+
+</body>
+</html>

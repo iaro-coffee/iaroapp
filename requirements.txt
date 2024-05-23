@@ -20,4 +20,5 @@ pre-commit
 livepopulartimes
 Pillow
 django-allauth
+django-allauth[socialaccount]
 django_ckeditor_5
