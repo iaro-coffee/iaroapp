@@ -197,7 +197,7 @@
         }
 
         .btn-social span {
-            color: #757575; /* Text color */
+            color: #757575;
         }
 
         .btn-social:hover {
@@ -210,6 +210,10 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
+        .bg-gradient-primary {
+            background-image: linear-gradient(310deg, #344767 0%, #344767 100%) !important;
+        }
+
     </style>
 </head>
 
@@ -217,9 +221,11 @@
 <div class="container-fluid card-container">
     <div class="card p-4 rotate-to-login" style="max-width: 400px; margin: auto; border-radius: 15px;">
         <div class="card-content fade-in">
-            <div class="logo-container text-center">
+            <div class="logo-container text-center mb-2">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
             </div>
+
+            <h5 class="text-center" style="color: black;">Log In</h5>
 
             <div class="form-container" id="form-container">
                 <form id="login-form"
@@ -274,7 +280,7 @@
                         </label>
                     </div>
 
-                    <button class="btn bg-gradient-primary w-100" type="submit"><b>Sign In</b></button>
+                    <button class="btn bg-gradient-primary mb-2 w-100" type="submit"><b>Sign In</b></button>
 
 
                     <div class="text-center">
@@ -375,7 +381,7 @@
                         </div>
                     {% endif %}
 
-                    <button class="btn bg-gradient-primary w-100" type="submit">Sign Up</button>
+                    <button class="btn bg-gradient-primary mb-2 w-100" type="submit">Sign Up</button>
 
                     <div class="text-center">
                         <label class="form-check-label" style="cursor: auto">

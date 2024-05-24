@@ -2,6 +2,7 @@ from allauth.account.views import LoginView, SignupView
 from django.urls import reverse_lazy
 from customers.forms import CustomLoginForm
 
+
 class UserLoginView(LoginView):
     template_name = 'account/login_signup.html'
     success_url = reverse_lazy('index')
@@ -18,6 +19,8 @@ class UserLoginView(LoginView):
         context = super().get_context_data(**kwargs)
         context['is_login'] = True
         context['form_login'] = kwargs.get('form', self.get_form_class()())
+        context['form_signup'] = SignupView.form_class()
+        print(context)
         return context
 
 
@@ -34,4 +37,5 @@ class UserSignupView(SignupView):
         context = super().get_context_data(**kwargs)
         context['is_login'] = False
         context['form_signup'] = kwargs.get('form', self.get_form_class()())
+        context['form_login'] = LoginView.form_class()
         return context
