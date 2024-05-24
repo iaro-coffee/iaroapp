@@ -18,7 +18,6 @@ class UserLoginView(LoginView):
         context = super().get_context_data(**kwargs)
         context['is_login'] = True
         context['form_login'] = kwargs.get('form', self.get_form_class()())
-        context['form_signup'] = SignupView.form_class()
         return context
 
 
@@ -35,5 +34,4 @@ class UserSignupView(SignupView):
         context = super().get_context_data(**kwargs)
         context['is_login'] = False
         context['form_signup'] = kwargs.get('form', self.get_form_class()())
-        context['form_login'] = LoginView.form_class()
         return context

@@ -1,4 +1,3 @@
-from django import forms
 from .models import CustomerProfile
 from allauth.account.forms import LoginForm
 from django import forms

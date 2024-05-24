@@ -7,6 +7,8 @@ class CustomerProfile(models.Model):
     first_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50, null=True, blank=True)
     is_employee = models.BooleanField(default=False)
+    # add id
+    # show qr code
 
     def __str__(self):
         return f'{self.user.username} Customer Profile'

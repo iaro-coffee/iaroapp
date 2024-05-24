@@ -70,10 +70,6 @@
             transform: rotateY(0deg);
         }
 
-        .logo-container img {
-            margin-bottom: 20px;
-        }
-
         .text-center label {
             font-size: 0.9rem;
         }
@@ -106,20 +102,128 @@
         .visible_text {
             display: block;
         }
+
+        .blur-effect {
+            filter: blur(20px);
+            transition: filter 0.6s ease-in-out;
+        }
+
+        .input-group-outline:focus-within {
+            box-shadow: 0 0 0 2px rgba(103, 116, 142, 0.15) !important;
+            border-radius: 8px !important;
+        }
+
+        .focused .input-group-text {
+            border-color: rgba(52, 71, 103, 0.4) !important;
+
+        }
+
+        .focused .input-group-text i {
+            scale: 1.1;
+            transition: scale 0.15s ease-in-out;
+        }
+
+        .input-group .form-control:focus {
+            border-color: rgba(52, 71, 103, 0.4) !important;
+            box-shadow: none !important;
+            border-radius: 0 8px 8px 0 !important;
+        }
+
+        .custom-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #344767;
+        }
+
+        .custom-divider::before,
+        .custom-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .custom-divider:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .custom-divider:not(:empty)::after {
+            margin-left: .25em;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .mb-3 {
+            margin-bottom: 10px !important;
+        }
+        .social-icons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-social {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            width: 100%;
+        }
+
+        .btn-social i {
+            font-size: 14px;
+            color: black;
+        }
+        .fa-apple {
+            font-size: 18px !important;
+        }
+
+        .btn-social .divider {
+            width: 1px;
+            height: 20px;
+            background-color: #ddd;
+            margin: 0 10px;
+        }
+
+        .btn-social span {
+            color: #757575; /* Text color */
+        }
+
+        .btn-social:hover {
+            background-color: #f1f1f1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-social:active {
+            background-color: #e1e1e1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
     </style>
 </head>
 
 <body>
 <div class="container-fluid card-container">
     <div class="card p-4 rotate-to-login" style="max-width: 400px; margin: auto; border-radius: 15px;">
-        <div class="card-content">
+        <div class="card-content fade-in">
             <div class="logo-container text-center">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
             </div>
 
             <div class="form-container" id="form-container">
                 <form id="login-form"
-                      class="form-card {% if not form_login.errors %}visible{% else %}hidden{% endif %} fade-in"
+                      class="form-card {% if not form_login.errors %}visible{% else %}hidden{% endif %}"
                       method="post" action="{% url 'customer_login' %}">
                     {% csrf_token %}
                     {% if form_login.non_field_errors %}
@@ -144,7 +248,7 @@
                         </div>
                     {% endif %}
 
-                    <div class="input-group input-group-outline mb-3">
+                    <div class="input-group input-group-outline mb-2">
                         <span class="input-group-text"><i class="bi bi-key"></i></span>
                         <input type="password" name="{{ form_login.password.name }}" class="form-control"
                                id="id_password" placeholder="Password" required autocomplete="current-password">
@@ -159,21 +263,24 @@
                         </div>
                     {% endif %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="form-check d-flex align-items-center">
-        <input class="form-check-input" type="checkbox" name="{{ form_login.remember.name }}" id="rememberMe" checked>
-        <label class="form-check-label ms-2" for="rememberMe">{{ form_login.remember.label }}</label>
-    </div>
-    <a href="{% url 'account_reset_password' %}" class="link-secondary text-decoration-none">Forgot Password?</a>
-</div>
+                    <div class="remember-forgot mt-0 mb-2">
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <label class="form-check-label">
+                            <a href="{% url 'customer_register' %}" class="link-secondary text-decoration-none"><b>Forgot
+                                Password?</b></a>
+                        </label>
+                    </div>
 
-                    <button class="btn bg-gradient-primary w-100" type="submit">Sign In</button>
+                    <button class="btn bg-gradient-primary w-100" type="submit"><b>Sign In</b></button>
 
 
                     <div class="text-center">
-                        <label class="form-check-label" style="cursor: auto">
+                        <label class="form-check-label text-sm" style="cursor: auto">
                             Don't have an account?
-                            <a href="#" class="link-primary text-decoration-none" id="show-signup">Sign Up</a>
+                            <a href="#" class="link-secondary  text-decoration-none" id="show-signup"><b>Sign Up</b></a>
                         </label>
                     </div>
                 </form>
@@ -269,32 +376,55 @@
                     {% endif %}
 
                     <button class="btn bg-gradient-primary w-100" type="submit">Sign Up</button>
-                    <hr class="my-2">
+
                     <div class="text-center">
                         <label class="form-check-label" style="cursor: auto">
                             Already have an account?
-                            <a href="#" class="link-success text-bold text-decoration-none" id="show-login">Sign In</a>
+                            <a href="#" class="link-secondary text-bold text-decoration-none" id="show-login">Sign
+                                In</a>
                         </label>
                     </div>
                 </form>
             </div>
-            <hr class="my-2">
+            <div class="custom-divider">
+                <span class="text-sm">or</span>
+            </div>
+
+
             <div class="social-login text-center">
                 {% if SOCIALACCOUNT_ENABLED %}
                     {% load socialaccount %}
                     {% get_providers as socialaccount_providers %}
                     {% if socialaccount_providers %}
-                        {% if not SOCIALACCOUNT_ONLY %}
-                            <hr>
-                            <h6 class="mt-3 mb-3">
-                                {% translate "Or login using social account:" %}
-                            </h6>
-                        {% endif %}
-                        {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                        <div class="social-icons">
+                            {% for provider in socialaccount_providers %}
+                                {#                                {% if provider.id == "apple" %}#}
+                                <a href="{% provider_login_url provider.id %}" class="btn-social">
+                                    <i class="fab fa-apple"></i>
+                                    <div class="divider"></div>
+                                    <span>Continue with Apple</span>
+                                </a>
+                                {#                                    {% elif provider.id == "google" %}#}
+                                <a href="{% provider_login_url provider.id %}" class="btn-social">
+                                    <i class="fab fa-google"></i>
+                                    <div class="divider"></div>
+                                    <span>Continue with Google</span>
+                                </a>
+                                {#                                    {% elif provider.id == "facebook" %}#}
+                                <a href="{% provider_login_url provider.id %}" class="btn-social">
+                                    <i class="fab fa-facebook"></i>
+                                    <div class="divider"></div>
+                                    <span>Continue with Facebook</span>
+                                </a>
+                                {#                                {% endif %}#}
+                            {% endfor %}
+                        </div>
                         {% include "socialaccount/snippets/login_extra.html" %}
                     {% endif %}
                 {% endif %}
             </div>
+
+
         </div>
     </div>
 </div>
@@ -306,14 +436,17 @@
     document.getElementById('show-signup').addEventListener('click', function (e) {
         e.preventDefault();
         const card = document.querySelector('.card');
+        const cardContent = document.querySelector('.card-content');
         card.classList.add('rotate-to-signup');
         card.classList.remove('rotate-to-login');
+        cardContent.classList.add('blur-effect');
         setTimeout(function () {
-            document.querySelector('.card-content').style.transform = 'rotateY(180deg)';
+            cardContent.style.transform = 'rotateY(180deg)';
             document.getElementById('login-form').classList.remove('visible');
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('signup-form').classList.remove('hidden');
             document.getElementById('signup-form').classList.add('visible');
+            cardContent.classList.remove('blur-effect');
         }, 300);
         localStorage.setItem('formState', 'signup');
     });
@@ -321,14 +454,17 @@
     document.getElementById('show-login').addEventListener('click', function (e) {
         e.preventDefault();
         const card = document.querySelector('.card');
+        const cardContent = document.querySelector('.card-content');
         card.classList.add('rotate-to-login');
         card.classList.remove('rotate-to-signup');
+        cardContent.classList.add('blur-effect');
         setTimeout(function () {
-            document.querySelector('.card-content').style.transform = 'rotateY(0deg)';
+            cardContent.style.transform = 'rotateY(0deg)';
             document.getElementById('signup-form').classList.remove('visible');
             document.getElementById('signup-form').classList.add('hidden');
             document.getElementById('login-form').classList.remove('hidden');
             document.getElementById('login-form').classList.add('visible');
+            cardContent.classList.remove('blur-effect');
         }, 300);
         localStorage.setItem('formState', 'login');
     });
