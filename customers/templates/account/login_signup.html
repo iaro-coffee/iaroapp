@@ -225,7 +225,7 @@
                 <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
             </div>
 
-            <h5 class="text-center" style="color: black;">Log In</h5>
+            <h6 class="text-center" style="color: #344767;">Log In</h6>
 
             <div class="form-container" id="form-container">
                 <form id="login-form"
@@ -233,9 +233,9 @@
                       method="post" action="{% url 'customer_login' %}">
                     {% csrf_token %}
                     {% if form_login.non_field_errors %}
-                        <div class="alert alert-danger" role="alert">
+                        <div class="alert alert-light" role="alert">
                             {% for error in form_login.non_field_errors %}
-                                <p class="text-sm">{{ error }}</p>
+                                <p class="text-sm mb-0">{{ error }}</p>
                             {% endfor %}
                         </div>
                     {% endif %}
@@ -439,67 +439,74 @@
 <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'softTheme/js/soft-ui-dashboard.min.js' %}"></script>
 <script>
-    document.getElementById('show-signup').addEventListener('click', function (e) {
-        e.preventDefault();
-        const card = document.querySelector('.card');
-        const cardContent = document.querySelector('.card-content');
+document.getElementById('show-signup').addEventListener('click', function (e) {
+    e.preventDefault();
+    const card = document.querySelector('.card');
+    const cardContent = document.querySelector('.card-content');
+    const header = document.querySelector('h6.text-center');
+    card.classList.add('rotate-to-signup');
+    card.classList.remove('rotate-to-login');
+    cardContent.classList.add('blur-effect');
+    setTimeout(function () {
+        cardContent.style.transform = 'rotateY(180deg)';
+        document.getElementById('login-form').classList.remove('visible');
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('signup-form').classList.remove('hidden');
+        document.getElementById('signup-form').classList.add('visible');
+        cardContent.classList.remove('blur-effect');
+        header.textContent = 'Register';
+    }, 300);
+    localStorage.setItem('formState', 'signup');
+});
+
+document.getElementById('show-login').addEventListener('click', function (e) {
+    e.preventDefault();
+    const card = document.querySelector('.card');
+    const cardContent = document.querySelector('.card-content');
+    const header = document.querySelector('h6.text-center');
+    card.classList.add('rotate-to-login');
+    card.classList.remove('rotate-to-signup');
+    cardContent.classList.add('blur-effect');
+    setTimeout(function () {
+        cardContent.style.transform = 'rotateY(0deg)';
+        document.getElementById('signup-form').classList.remove('visible');
+        document.getElementById('signup-form').classList.add('hidden');
+        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('login-form').classList.add('visible');
+        cardContent.classList.remove('blur-effect');
+        header.textContent = 'Log In';
+    }, 300);
+    localStorage.setItem('formState', 'login');
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const formState = localStorage.getItem('formState');
+    const card = document.querySelector('.card');
+    const header = document.querySelector('h6.text-center');
+    if (formState === 'signup') {
         card.classList.add('rotate-to-signup');
         card.classList.remove('rotate-to-login');
-        cardContent.classList.add('blur-effect');
+        document.getElementById('login-form').classList.remove('visible');
+        document.getElementById('login-form').classList.add('hidden');
         setTimeout(function () {
-            cardContent.style.transform = 'rotateY(180deg)';
-            document.getElementById('login-form').classList.remove('visible');
-            document.getElementById('login-form').classList.add('hidden');
+            document.querySelector('.card-content').style.transform = 'rotateY(180deg)';
             document.getElementById('signup-form').classList.remove('hidden');
             document.getElementById('signup-form').classList.add('visible');
-            cardContent.classList.remove('blur-effect');
+            header.textContent = 'Register';
         }, 300);
-        localStorage.setItem('formState', 'signup');
-    });
-
-    document.getElementById('show-login').addEventListener('click', function (e) {
-        e.preventDefault();
-        const card = document.querySelector('.card');
-        const cardContent = document.querySelector('.card-content');
+    } else {
         card.classList.add('rotate-to-login');
         card.classList.remove('rotate-to-signup');
-        cardContent.classList.add('blur-effect');
+        document.getElementById('signup-form').classList.remove('visible');
+        document.getElementById('signup-form').classList.add('hidden');
         setTimeout(function () {
-            cardContent.style.transform = 'rotateY(0deg)';
-            document.getElementById('signup-form').classList.remove('visible');
-            document.getElementById('signup-form').classList.add('hidden');
+            document.querySelector('.card-content').style.transform = 'rotateY(0deg)';
             document.getElementById('login-form').classList.remove('hidden');
             document.getElementById('login-form').classList.add('visible');
-            cardContent.classList.remove('blur-effect');
+            header.textContent = 'Log In';
         }, 300);
-        localStorage.setItem('formState', 'login');
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const formState = localStorage.getItem('formState');
-        const card = document.querySelector('.card');
-        if (formState === 'signup') {
-            card.classList.add('rotate-to-signup');
-            card.classList.remove('rotate-to-login');
-            document.getElementById('login-form').classList.remove('visible');
-            document.getElementById('login-form').classList.add('hidden');
-            setTimeout(function () {
-                document.querySelector('.card-content').style.transform = 'rotateY(180deg)';
-                document.getElementById('signup-form').classList.remove('hidden');
-                document.getElementById('signup-form').classList.add('visible');
-            }, 300);
-        } else {
-            card.classList.add('rotate-to-login');
-            card.classList.remove('rotate-to-signup');
-            document.getElementById('signup-form').classList.remove('visible');
-            document.getElementById('signup-form').classList.add('hidden');
-            setTimeout(function () {
-                document.querySelector('.card-content').style.transform = 'rotateY(0deg)';
-                document.getElementById('login-form').classList.remove('hidden');
-                document.getElementById('login-form').classList.add('visible');
-            }, 300);
-        }
-    });
+    }
+});
 
 </script>
 
