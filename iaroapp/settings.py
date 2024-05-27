@@ -159,9 +159,9 @@ LOGIN_REQUIRED_IGNORE_PATHS = [
     r"/card/",
 ]
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # Email configuration
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')  # 587 for TLS, 465 for SSL
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')  # Use TLS or SSL

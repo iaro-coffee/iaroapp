@@ -1,91 +1,46 @@
-document.getElementById('show-signup').addEventListener('click', function (e) {
-    e.preventDefault();
-    const card = document.querySelector('.card');
-    const cardContent = document.querySelector('.card-content');
-    const header = document.querySelector('h6.text-center');
-    const logo = document.querySelector('.logo-container');
-
-    card.classList.add('rotate-to-signup');
-    card.classList.remove('rotate-to-login');
-    cardContent.classList.add('blur-effect');
-
-    setTimeout(function () {
-        cardContent.style.transform = 'rotateY(180deg)';
-        logo.style.transform = 'rotateY(180deg)';
-
-        document.getElementById('login-form').classList.remove('visible');
-        document.getElementById('login-form').classList.add('hidden');
-        document.getElementById('signup-form').classList.remove('hidden');
-        document.getElementById('signup-form').classList.add('visible');
-        cardContent.classList.remove('blur-effect');
-        header.textContent = 'Register';
-    }, 300);
-
-    localStorage.setItem('formState', 'signup');
-});
-
-document.getElementById('show-login').addEventListener('click', function (e) {
-    e.preventDefault();
-    const card = document.querySelector('.card');
-    const cardContent = document.querySelector('.card-content');
-    const header = document.querySelector('h6.text-center');
-    const logo = document.querySelector('.logo-container');
-
-    card.classList.add('rotate-to-login');
-    card.classList.remove('rotate-to-signup');
-    cardContent.classList.add('blur-effect');
-
-    setTimeout(function () {
-        cardContent.style.transform = 'rotateY(0deg)';
-        logo.style.transform = 'rotateY(0deg)';
-
-        document.getElementById('signup-form').classList.remove('visible');
-        document.getElementById('signup-form').classList.add('hidden');
-        document.getElementById('login-form').classList.remove('hidden');
-        document.getElementById('login-form').classList.add('visible');
-        cardContent.classList.remove('blur-effect');
-        header.textContent = 'Log In';
-    }, 300);
-
-    localStorage.setItem('formState', 'login');
-});
-
 document.addEventListener("DOMContentLoaded", function () {
-    const formState = localStorage.getItem('formState');
     const card = document.querySelector('.card');
+    const cardContent = document.querySelector('.card-content');
     const header = document.querySelector('h6.text-center');
     const logo = document.querySelector('.logo-container');
 
-    if (formState === 'signup') {
-        card.classList.add('rotate-to-signup');
-        card.classList.remove('rotate-to-login');
-        document.getElementById('login-form').classList.remove('visible');
-        document.getElementById('login-form').classList.add('hidden');
+    function switchToForm(state) {
+        const isSignup = state === 'signup';
+        card.classList.toggle('rotate-to-signup', isSignup);
+        card.classList.toggle('rotate-to-login', !isSignup);
+        cardContent.classList.add('blur-effect');
+        logo.classList.add('blur-effect');
 
         setTimeout(function () {
-            document.querySelector('.card-content').style.transform = 'rotateY(180deg)';
-            logo.style.transform = 'rotateY(180deg)';
-            document.getElementById('signup-form').classList.remove('hidden');
-            document.getElementById('signup-form').classList.add('visible');
-            header.textContent = 'Register';
-        }, 300);
-    } else {
-        card.classList.add('rotate-to-login');
-        card.classList.remove('rotate-to-signup');
-        document.getElementById('signup-form').classList.remove('visible');
-        document.getElementById('signup-form').classList.add('hidden');
+            cardContent.style.transform = `rotateY(${isSignup ? '180deg' : '0deg'})`;
+            logo.style.transform = `rotateY(${isSignup ? '180deg' : '0deg'})`;
 
-        setTimeout(function () {
-            document.querySelector('.card-content').style.transform = 'rotateY(0deg)';
-            logo.style.transform = 'rotateY(0deg)';
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('login-form').classList.add('visible');
-            header.textContent = 'Log In';
+            document.getElementById('signup-form').classList.toggle('hidden', !isSignup);
+            document.getElementById('signup-form').classList.toggle('visible', isSignup);
+            document.getElementById('login-form').classList.toggle('hidden', isSignup);
+            document.getElementById('login-form').classList.toggle('visible', !isSignup);
+
+            cardContent.classList.remove('blur-effect');
+            logo.classList.remove('blur-effect');
+            header.textContent = isSignup ? 'Register' : 'Log In';
         }, 300);
+
+        localStorage.setItem('formState', state);
     }
-});
 
-document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('show-signup').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchToForm('signup');
+    });
+
+    document.getElementById('show-login').addEventListener('click', function (e) {
+        e.preventDefault();
+        switchToForm('login');
+    });
+
+    const formState = localStorage.getItem('formState') || 'login';
+    switchToForm(formState);
+
     const fields = [
         {input: document.getElementById('id_signup_username'), helpText: document.getElementById('help_username')},
         {input: document.getElementById('id_signup_email'), helpText: document.getElementById('help_email')},

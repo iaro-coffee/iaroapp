@@ -33,19 +33,22 @@
                    {% if field.field.widget.attrs.readonly %}readonly{% endif %}
                    {% if field.field.widget.attrs.autocomplete %}autocomplete="{{ field.field.widget.attrs.autocomplete }}"{% endif %}>
         {% endif %}
-        {% if field.help_text %}
-            <span>{{ field.help_text }}</span>
-        {% endif %}
+
     </div>
+    {% if field.help_text %}
+        <div id="heeeeelp" class="text-xxs p-0 hidden_text">
+            {{ field.help_text }}
+        </div>
+    {% endif %}
 {% endfor %}
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.input-group-outline .form-control').forEach(function(input) {
-            input.addEventListener('focus', function() {
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.input-group-outline .form-control').forEach(function (input) {
+            input.addEventListener('focus', function () {
                 this.closest('.input-group-outline').classList.add('focused');
             });
-            input.addEventListener('blur', function() {
+            input.addEventListener('blur', function () {
                 this.closest('.input-group-outline').classList.remove('focused');
             });
         });
