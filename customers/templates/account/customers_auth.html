@@ -1,229 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>iaroapp - Sign In / Sign up</title>
-    {% load static %}
-    {% load i18n %}
+{% extends "customers_base.html" %}
+{% load static %}
+{% load i18n %}
+{% block extra_import %}
+    <link href="{% static 'css/customers_auth.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/employee_auth.css' %}" rel="stylesheet"/>
 
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/singin-signup.css' %}">
-    <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
-    <link id="pagestyle" href="{% static 'softTheme/css/soft-ui-dashboard.css' %}" rel="stylesheet"/>
-    <link rel="icon" href="{% static 'images/favicon.png' %}">
-    <link rel="manifest" href="{% static 'manifest.json' %}">
-
-    <style>
-        .card-container {
-            perspective: 1000px;
-        }
-
-        .card {
-            transition: transform 0.6s ease-in-out;
-            transform-style: preserve-3d;
-            position: relative;
-
-        }
-
-        .card.rotate-to-signup .card-content {
-            transform: rotateY(180deg);
-        }
-
-        .form-container {
-            position: relative;
-            width: 100%;
-
-        }
-
-        .form-container.hidden {
-            display: none;
-        }
-
-        .form-container.visible {
-            display: block;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s;
-        }
-
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-
-        .rotate-to-signup {
-            transform: rotateY(180deg);
-        }
-
-        .rotate-to-login {
-            transform: rotateY(0deg);
-        }
-
-        .text-center label {
-            font-size: 0.9rem;
-        }
-
-        .input-group-outline .input-group-text {
-            width: 42px;
-            display: flex;
-            justify-content: center;
-        }
+{% endblock %}
 
 
-        .remember-forgot, .social-login {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+{% block content %}
 
-        .remember-forgot {
-            margin-top: 10px;
-        }
+    <body>
 
-        .text-danger {
-            color: #ff6b6b;
-        }
-
-        .hidden_text {
-            display: none;
-        }
-
-        .visible_text {
-            display: block;
-        }
-
-        .blur-effect {
-            filter: blur(20px);
-            transition: filter 0.6s ease-in-out;
-        }
-
-        .input-group-outline:focus-within {
-            box-shadow: 0 0 0 2px rgba(103, 116, 142, 0.15) !important;
-            border-radius: 8px !important;
-        }
-
-        .focused .input-group-text {
-            border-color: rgba(52, 71, 103, 0.4) !important;
-
-        }
-
-        .focused .input-group-text i {
-            scale: 1.1;
-            transition: scale 0.15s ease-in-out;
-        }
-
-        .input-group .form-control:focus {
-            border-color: rgba(52, 71, 103, 0.4) !important;
-            box-shadow: none !important;
-            border-radius: 0 8px 8px 0 !important;
-        }
-
-        .custom-divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: #344767;
-        }
-
-        .custom-divider::before,
-        .custom-divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .custom-divider:not(:empty)::before {
-            margin-right: .25em;
-        }
-
-        .custom-divider:not(:empty)::after {
-            margin-left: .25em;
-        }
-
-        .social-login {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .mb-3 {
-            margin-bottom: 10px !important;
-        }
-        .social-icons {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .btn-social {
-            display: flex;
-            align-items: center;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            width: 100%;
-        }
-
-        .btn-social i {
-            font-size: 14px;
-            color: black;
-        }
-        .fa-apple {
-            font-size: 18px !important;
-        }
-
-        .btn-social .divider {
-            width: 1px;
-            height: 20px;
-            background-color: #ddd;
-            margin: 0 10px;
-        }
-
-        .btn-social span {
-            color: #757575;
-        }
-
-        .btn-social:hover {
-            background-color: #f1f1f1;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-social:active {
-            background-color: #e1e1e1;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .bg-gradient-primary {
-            background-image: linear-gradient(310deg, #344767 0%, #344767 100%) !important;
-        }
-
-    </style>
-</head>
-
-<body>
-<div class="container-fluid card-container">
-    <div class="card p-4 rotate-to-login" style="max-width: 400px; margin: auto; border-radius: 15px;">
+    <div class="rotate-to-login">
         <div class="card-content fade-in">
-            <div class="logo-container text-center mb-2">
-                <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
-            </div>
 
             <h6 class="text-center" style="color: #344767;">Log In</h6>
 
@@ -239,7 +29,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <div class="input-group input-group-outline mb-3">
+                    <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-person"></i></span>
                         <input type="text" name="{{ form_login.login.name }}" class="form-control" id="id_username"
                                placeholder="Username" required autocomplete="username">
@@ -275,7 +65,8 @@
                             <label class="form-check-label" for="rememberMe">Remember me</label>
                         </div>
                         <label class="form-check-label">
-                            <a href="{% url 'customer_register' %}" class="link-secondary text-decoration-none"><b>Forgot
+                            <a href="{% url 'customer_password_reset' %}"
+                               class="link-secondary text-decoration-none"><b>Forgot
                                 Password?</b></a>
                         </label>
                     </div>
@@ -302,7 +93,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <div class="input-group input-group-outline mb-3">
+                    <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-person"></i></span>
                         <input type="text" name="{{ form_signup.username.name }}" class="form-control"
                                id="id_signup_username"
@@ -323,7 +114,7 @@
                         </ul>
                     </div>
 
-                    <div class="input-group input-group-outline mb-3">
+                    <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                         <input type="email" name="{{ form_signup.email.name }}" class="form-control"
                                id="id_signup_email"
@@ -340,11 +131,11 @@
                     {% endif %}
                     <div id="help_email" class="text-xxs p-0 hidden_text">
                         <ul>
-                            <li>Required. Your Email address should be same as Planday Email.</li>
+                            <li>Required. Example@domain.com</li>
                         </ul>
                     </div>
 
-                    <div class="input-group input-group-outline mb-3">
+                    <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-key"></i></span>
                         <input type="password" name="{{ form_signup.password1.name }}" class="form-control"
                                id="id_signup_password1"
@@ -365,7 +156,7 @@
                         {% endif %}
                     </div>
 
-                    <div class="input-group input-group-outline mb-3">
+                    <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-key"></i></span>
                         <input type="password" name="{{ form_signup.password2.name }}" class="form-control"
                                id="id_signup_password2"
@@ -433,82 +224,11 @@
 
         </div>
     </div>
-</div>
 
 
-<script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'softTheme/js/soft-ui-dashboard.min.js' %}"></script>
-<script>
-document.getElementById('show-signup').addEventListener('click', function (e) {
-    e.preventDefault();
-    const card = document.querySelector('.card');
-    const cardContent = document.querySelector('.card-content');
-    const header = document.querySelector('h6.text-center');
-    card.classList.add('rotate-to-signup');
-    card.classList.remove('rotate-to-login');
-    cardContent.classList.add('blur-effect');
-    setTimeout(function () {
-        cardContent.style.transform = 'rotateY(180deg)';
-        document.getElementById('login-form').classList.remove('visible');
-        document.getElementById('login-form').classList.add('hidden');
-        document.getElementById('signup-form').classList.remove('hidden');
-        document.getElementById('signup-form').classList.add('visible');
-        cardContent.classList.remove('blur-effect');
-        header.textContent = 'Register';
-    }, 300);
-    localStorage.setItem('formState', 'signup');
-});
+    <script src="{% static 'js/customers_auth.js' %}"></script>
+    <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'softTheme/js/soft-ui-dashboard.min.js' %}"></script>
 
-document.getElementById('show-login').addEventListener('click', function (e) {
-    e.preventDefault();
-    const card = document.querySelector('.card');
-    const cardContent = document.querySelector('.card-content');
-    const header = document.querySelector('h6.text-center');
-    card.classList.add('rotate-to-login');
-    card.classList.remove('rotate-to-signup');
-    cardContent.classList.add('blur-effect');
-    setTimeout(function () {
-        cardContent.style.transform = 'rotateY(0deg)';
-        document.getElementById('signup-form').classList.remove('visible');
-        document.getElementById('signup-form').classList.add('hidden');
-        document.getElementById('login-form').classList.remove('hidden');
-        document.getElementById('login-form').classList.add('visible');
-        cardContent.classList.remove('blur-effect');
-        header.textContent = 'Log In';
-    }, 300);
-    localStorage.setItem('formState', 'login');
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const formState = localStorage.getItem('formState');
-    const card = document.querySelector('.card');
-    const header = document.querySelector('h6.text-center');
-    if (formState === 'signup') {
-        card.classList.add('rotate-to-signup');
-        card.classList.remove('rotate-to-login');
-        document.getElementById('login-form').classList.remove('visible');
-        document.getElementById('login-form').classList.add('hidden');
-        setTimeout(function () {
-            document.querySelector('.card-content').style.transform = 'rotateY(180deg)';
-            document.getElementById('signup-form').classList.remove('hidden');
-            document.getElementById('signup-form').classList.add('visible');
-            header.textContent = 'Register';
-        }, 300);
-    } else {
-        card.classList.add('rotate-to-login');
-        card.classList.remove('rotate-to-signup');
-        document.getElementById('signup-form').classList.remove('visible');
-        document.getElementById('signup-form').classList.add('hidden');
-        setTimeout(function () {
-            document.querySelector('.card-content').style.transform = 'rotateY(0deg)';
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('login-form').classList.add('visible');
-            header.textContent = 'Log In';
-        }, 300);
-    }
-});
-
-</script>
-
-</body>
-</html>
+    </body>
+{% endblock %}

@@ -19,6 +19,23 @@ body {
     box-sizing: border-box;
 }
 
+.input-group-text {
+    background-color: rgba(231, 233, 228, 0.35) !important;
+    border-right: 1px solid #d0d4d8 !important;
+    width: 40px !important;
+    justify-content: center;
+    border-radius: 8px 0 0 8px !important;
+}
+
+.input-group {
+    margin-bottom: 10px;
+}
+
+.form-control {
+    padding-left: 1rem !important;
+    border-radius: 0 8px 8px 0 !important;
+}
+
 .card {
     width: 500px;
     max-width: 100%;
@@ -33,21 +50,6 @@ body {
     border-image-slice: 1;
     border-image-source: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0) 100%);
 }
-
-.input-group-text {
-    background-color: rgba(231, 233, 228, 0.35) !important;
-    border-right: 1px solid #d0d4d8 !important;
-    width: 40px !important;
-    justify-content: center;
-    border-radius: 8px 0 0 8px !important;
-}
-
-.form-control {
-
-    padding-left: 1rem !important;
-    border-radius: 0 8px 8px 0 !important;
-}
-
 
 .remember-forgot {
     display: flex;

@@ -7,7 +7,7 @@
     {% load static %}
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/singin-signup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/employee_auth.css' %}">
 
     <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link rel="stylesheet"
@@ -36,13 +36,13 @@
             </div>
         {% endif %}
 
-        <div class="input-group input-group-outline mb-3">
+        <div class="input-group input-group-outline">
             <span class="input-group-text"><i class="bi bi-person"></i></span>
             <input type="text" name="{{ form.username.name }}" class="form-control" id="id_username"
                    placeholder="Username" required>
         </div>
 
-        <div class="input-group input-group-outline mb-3">
+        <div class="input-group input-group-outline">
             <span class="input-group-text"><i class="bi bi-key"></i></span>
             <input type="password" name="{{ form.password.name }}" class="form-control" id="id_password"
                    placeholder="Password" required>

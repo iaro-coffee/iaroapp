@@ -1,1 +1,53 @@
-{{ attrs.form.as_p }}
+{% load allauth %}
+{% for field in attrs.form %}
+    <div class="input-group input-group-outline mb-3">
+        <span class="input-group-text">
+            {% if field.field.widget.input_type == 'email' %}
+                <i class="bi bi-envelope"></i>
+            {% elif field.field.widget.input_type == 'password' %}
+                <i class="bi bi-lock"></i>
+            {% else %}
+                <i class="bi bi-person"></i>
+            {% endif %}
+        </span>
+        {% if field.field.widget.input_type == "textarea" %}
+            <textarea class="form-control"
+                      name="{{ field.name }}"
+                      id="{{ field.id_for_label }}"
+                      placeholder="{{ field.field.widget.attrs.placeholder }}"
+                      {% if field.field.required %}required{% endif %}
+                      {% if field.field.widget.attrs.rows %}rows="{{ field.field.widget.attrs.rows }}"{% endif %}
+                      {% if field.field.widget.attrs.disabled %}disabled{% endif %}
+                      {% if field.field.widget.attrs.readonly %}readonly{% endif %}>
+                {{ field.value }}
+            </textarea>
+        {% else %}
+            <input class="form-control"
+                   type="{{ field.field.widget.input_type }}"
+                   name="{{ field.name }}"
+                   id="{{ field.id_for_label }}"
+                   placeholder="{{ field.field.widget.attrs.placeholder }}"
+                   value="{{ field.value|default_if_none:'' }}"
+                   {% if field.field.required %}required{% endif %}
+                   {% if field.field.widget.attrs.disabled %}disabled{% endif %}
+                   {% if field.field.widget.attrs.readonly %}readonly{% endif %}
+                   {% if field.field.widget.attrs.autocomplete %}autocomplete="{{ field.field.widget.attrs.autocomplete }}"{% endif %}>
+        {% endif %}
+        {% if field.help_text %}
+            <span>{{ field.help_text }}</span>
+        {% endif %}
+    </div>
+{% endfor %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.input-group-outline .form-control').forEach(function(input) {
+            input.addEventListener('focus', function() {
+                this.closest('.input-group-outline').classList.add('focused');
+            });
+            input.addEventListener('blur', function() {
+                this.closest('.input-group-outline').classList.remove('focused');
+            });
+        });
+    });
+</script>

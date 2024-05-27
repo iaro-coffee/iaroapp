@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from customers.forms import CustomLoginForm
 
 
-class UserLoginView(LoginView):
-    template_name = 'account/login_signup.html'
+class CustomerLoginView(LoginView):
+    template_name = 'account/customers_auth.html'
     success_url = reverse_lazy('index')
 
     def get_form_class(self):
@@ -24,8 +24,8 @@ class UserLoginView(LoginView):
         return context
 
 
-class UserSignupView(SignupView):
-    template_name = 'account/login_signup.html'
+class CustomerSignupView(SignupView):
+    template_name = 'account/customers_auth.html'
     success_url = reverse_lazy('index')
 
     def form_invalid(self, form):
@@ -39,3 +39,4 @@ class UserSignupView(SignupView):
         context['form_signup'] = kwargs.get('form', self.get_form_class()())
         context['form_login'] = LoginView.form_class()
         return context
+

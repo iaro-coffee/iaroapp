@@ -160,6 +160,16 @@ LOGIN_REQUIRED_IGNORE_PATHS = [
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# Email configuration
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')  # 587 for TLS, 465 for SSL
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')  # Use TLS or SSL
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL')  # Use SSL (alternative to TLS)
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # Update database configuration from $DATABASE_URL environment variable (if defined)
 # Commented out for now, as we are using sqlite3 for development

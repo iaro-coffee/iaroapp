@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+{% load i18n %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>
+        {% block head_title %}
+        {% endblock head_title %}
+    </title>
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/customers_base.css' %}">
+
+    {% block extra_import %}{% endblock %}
+
+    <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link id="pagestyle" href="{% static 'softTheme/css/soft-ui-dashboard.css' %}" rel="stylesheet"/>
+    <link rel="icon" href="{% static 'images/favicon.png' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <style>
+        .input-group-outline:focus-within {
+            box-shadow: 0 0 0 2px rgba(103, 116, 142, 0.15) !important;
+            border-radius: 8px !important;
+        }
+
+        .focused .input-group-text {
+            border-color: rgba(52, 71, 103, 0.4) !important;
+
+        }
+
+        .focused .input-group-text i {
+            scale: 1.1;
+            transition: scale 0.15s ease-in-out;
+        }
+
+        .input-group .form-control:focus {
+            border-color: rgba(52, 71, 103, 0.4) !important;
+            box-shadow: none !important;
+            border-radius: 0 8px 8px 0 !important;
+        }
+    </style>
+</head>
+
+<div class="container-fluid card-container">
+    <div class="card p-4" style="max-width: 400px; margin: auto; border-radius: 15px;">
+        <div class="logo-container text-center mb-2">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
+        </div>
+
+    {% block content %}{% endblock %}
+</div>
+
+</div>

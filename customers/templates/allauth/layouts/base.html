@@ -1,16 +1,18 @@
+{% extends "customers_base.html" %}
+
 {% load i18n %}
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>
-            {% block head_title %}
-            {% endblock head_title %}
-        </title>
-        {% block extra_head %}
-        {% endblock extra_head %}
-    </head>
+{#    <head>#}
+{#        <meta http-equiv="X-UA-Compatible" content="IE=edge">#}
+{#        <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#        <title>#}
+{#            {% block head_title %}#}
+{#            {% endblock head_title %}#}
+{#        </title>#}
+{#        {% block extra_head %}#}
+{#        {% endblock extra_head %}#}
+{#    </head>#}
     <body>
         {% block body %}
             {% if messages %}
