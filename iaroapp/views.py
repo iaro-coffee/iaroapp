@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
 from customers.models import CustomerProfile
+from iaroapp.decorators import employee_required
 from inventory.views import get_current_branch
 from lib import planday
 from ratings.views import EmployeeRating
@@ -165,6 +166,7 @@ def getStatistics(request):
     return statistics, statisticsSum
 
 
+@employee_required
 @login_required
 def index(request):
     today = datetime.today().date()

@@ -11,4 +11,9 @@
     {% element p %}
         {% translate "This account is inactive." %}
     {% endelement %}
+    {% element p %}
+        {% blocktrans %}Get back to{% endblocktrans %}
+        <a href="{% url 'customer_login' %}?form=login" class="link-secondary text-decoration-none" id="show-login"><b>Login
+            -></b></a>
+    {% endelement %}
 {% endblock content %}

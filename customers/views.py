@@ -1,5 +1,8 @@
 from allauth.account.views import LoginView, SignupView
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+
 from customers.forms import CustomLoginForm
 
 
@@ -28,6 +31,11 @@ class CustomerSignupView(SignupView):
     template_name = 'account/customers_auth.html'
     success_url = reverse_lazy('index')
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        email = form.cleaned_data['email']
+        return HttpResponseRedirect(f"{reverse_lazy('account_email_verification_sent')}?email={email}")
+
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
         context['form_signup'] = form
@@ -37,6 +45,5 @@ class CustomerSignupView(SignupView):
         context = super().get_context_data(**kwargs)
         context['is_login'] = False
         context['form_signup'] = kwargs.get('form', self.get_form_class()())
-        context['form_login'] = LoginView.form_class()
+        context['form_login'] = LoginView.form_class()()
         return context
-

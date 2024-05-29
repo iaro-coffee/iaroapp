@@ -11,4 +11,9 @@
     {% element p %}
         {% trans "We are sorry, but the sign up is currently closed." %}
     {% endelement %}
+    {% element p %}
+        {% blocktrans %}Get back to{% endblocktrans %}
+        <a href="{% url 'customer_login' %}?form=login" class="link-secondary text-decoration-none" id="show-login"><b>Login
+            -></b></a>
+    {% endelement %}
 {% endblock content %}

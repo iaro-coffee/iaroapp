@@ -13,9 +13,10 @@ from .models import CustomerProfile
 @receiver(post_save, sender=User)
 def save_customer_profile(sender, instance, created, **kwargs):
     if created:
-        CustomerProfile.objects.create(user=instance)
+        CustomerProfile.objects.create(user=instance, is_employee=False)
     else:
         try:
             instance.customerprofile.save()
         except CustomerProfile.DoesNotExist:
             pass
+

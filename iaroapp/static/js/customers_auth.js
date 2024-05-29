@@ -38,7 +38,12 @@ document.addEventListener("DOMContentLoaded", function () {
         switchToForm('login');
     });
 
-    const formState = localStorage.getItem('formState') || 'login';
+    function getQueryParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+    const queryFormState = getQueryParameter('form');
+    const formState = queryFormState || localStorage.getItem('formState') || 'login';
     switchToForm(formState);
 
     const fields = [
