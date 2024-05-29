@@ -1,14 +1,18 @@
-from allauth.account.views import LoginView, SignupView
+from allauth.account.views import LoginView, SignupView, LogoutView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
-from customers.forms import CustomLoginForm
+from customers.forms import CustomLoginForm, CustomSignupForm
+from customers.models import CustomerProfile
 
 
 class CustomerLoginView(LoginView):
     template_name = 'account/customers_auth.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('customer_index')
 
     def get_form_class(self):
         return CustomLoginForm
@@ -29,7 +33,10 @@ class CustomerLoginView(LoginView):
 
 class CustomerSignupView(SignupView):
     template_name = 'account/customers_auth.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('customer_index')
+
+    def get_form_class(self):
+        return CustomSignupForm
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -47,3 +54,23 @@ class CustomerSignupView(SignupView):
         context['form_signup'] = kwargs.get('form', self.get_form_class()())
         context['form_login'] = LoginView.form_class()()
         return context
+
+
+class CustomLogoutView(LogoutView):
+    template_name = 'account/logout.html'
+
+
+class CustomerIndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'customers_index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            first_name = self.request.user.customerprofile.first_name
+            if not first_name:
+                first_name = 'Guest'
+        except CustomerProfile.DoesNotExist:
+            first_name = 'Guest'
+        context['first_name'] = first_name
+        return context
+

@@ -7,8 +7,8 @@
         <div class="collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
             <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             </div>
-{#            <form id="logout_form" method="post" action="{% url 'logout' %}">#}
-                {% csrf_token %}
+            {#            <form id="logout_form" method="post" action="{% url 'logout' %}">#}
+            {% csrf_token %}
             </form>
             <ul class="navbar-nav justify-content-end">
                 <li class="nav-item px-3 d-flex align-items-center">
@@ -21,24 +21,30 @@
                     <li class="nav-item d-flex align-items-center">
 
                     <li class="nav-item dropdown d-flex align-items-center">
-                        <a class="nav-link text-body font-weight-bold px-0" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link text-body font-weight-bold px-0" href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-user me-sm-1"></i>
-                            <span class="d-sm-inline d-none me-3">Account <span style="opacity: 0.75;">({{ user }})</span></span>
+                            <span class="d-sm-inline d-none me-3">Account <span
+                                    style="opacity: 0.75;">({{ user }})</span></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                            <li>
-                                <form id="logout_form" action="{% url 'logout' %}" method="post" style="display: none;">
-                                    {% csrf_token %}
-                                </form>
-                                <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout_form').submit();">Logout</a>
-                            </li>
+                            {#                            <li>#}
+                            {#                                <form id="logout_form" action="{% url 'user_logout' %}" method="post"#}
+                            {#                                      style="display: none;">#}
+                            {#                                    {% csrf_token %}#}
+                            {#                                </form>#}
+                            {#                                <a class="dropdown-item" href="#"#}
+                            {#                                   onclick="event.preventDefault(); document.getElementById('logout_form').submit();">Logout</a>#}
+                            {#                            </li>#}
+                            {% csrf_token %}
+                            <li><a class="dropdown-item" href="{% url 'user_logout' %}">Log Out</a></li>
                             {% if request.user.is_superuser %}
                                 <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a></li>
                             {% endif %}
                         </ul>
                     </li>
-                    {% else %}
+                {% else %}
                     <li class="nav-item d-flex align-items-center">
                         <a href="{% url 'login' %}" class="nav-link text-body font-weight-bold px-0">
                             <i class="fa fa-user me-sm-1"></i>
@@ -64,17 +70,17 @@
 <!-- End Navbar -->
 
 <style>
-*:focus {
-    outline: none !important;
-    box-shadow: none !important;
-}
+    *:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
 
-.nav-link:focus .fa-user {
-    outline: none !important;
-    box-shadow: none !important;
-}
+    .nav-link:focus .fa-user {
+        outline: none !important;
+        box-shadow: none !important;
+    }
 
-.nav-link[aria-expanded="true"] .fa-user {
-    color: #82d616;
-}
+    .nav-link[aria-expanded="true"] .fa-user {
+        color: #82d616;
+    }
 </style>

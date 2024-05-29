@@ -130,7 +130,7 @@ TIME_ZONE = 'Europe/Berlin'
 USE_I18N = True
 USE_TZ = True
 
-SITE_ID = 1
+SITE_ID = 2
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -147,9 +147,8 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 
 # ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
 
-LOGIN_URL = '/users/login/'
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = '/card/login/'
+LOGIN_REDIRECT_URL = "/card/dashboard"
 
 LOGIN_REQUIRED_IGNORE_PATHS = [
     r"/users/logout/$",

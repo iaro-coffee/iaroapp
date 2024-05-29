@@ -1,0 +1,13 @@
+{% extends "customers_base.html" %}
+
+{% block head_title %}
+    Card Dashboard
+{% endblock head_title %}
+
+{% block content %}
+    <div class="container">
+        <h6 class="text-center">Welcome to the Card Dashboard, {{ first_name }}!</h6>
+        <p>This is the main page for customers.
+        <p>{{ customers.profile.first_name }}</p>
+    </div>
+{% endblock content %}
