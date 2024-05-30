@@ -1,11 +1,11 @@
-from allauth.account.views import LoginView, SignupView, LogoutView
+from allauth.account.views import LoginView, SignupView, LogoutView, ConfirmEmailView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
@@ -28,10 +28,10 @@ class CustomerLoginView(LoginView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['form_state'] = self.request.GET.get('form', 'login')
         context['is_login'] = True
         context['form_login'] = kwargs.get('form', self.get_form_class()())
         context['form_signup'] = SignupView.form_class()
-        print(context)
         return context
 
 
@@ -85,3 +85,12 @@ class CustomerIndexView(LoginRequiredMixin, TemplateView):
             first_name = 'Guest'
         context['first_name'] = first_name
         return context
+
+
+class CustomerEmailVerificationView(ConfirmEmailView):
+    template_name = 'account/verification_sent.html'
+
+    def get(self, request, *args, **kwargs):
+        self.key = kwargs.get('key')
+        return super().get(request, *args, **kwargs)
+

@@ -90,8 +90,8 @@
 
                     {#                SIGNUP ERRORS  #}
                     <div id="form-errors" class="alert alert-light text-sm hidden_text"></div>
-                    <div id="urls" data-register-url='{% url "customer_register" %}'
-                         data-index-url='{% url "customer_index" %}'></div>
+                    <div id="urls" data-register-url="{% url 'customer_register' %}"
+                         data-index-url="{% url 'verify_email' key='key' %}"></div>
 
                     {#                EMAIL FIELD  #}
                     <div class="input-group input-group-outline">

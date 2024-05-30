@@ -26,8 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
             logo.classList.remove('blur-effect');
             header.textContent = isSignup ? 'Register' : 'Log In';
         }, 300);
-
-        localStorage.setItem('formState', state);
     }
 
     document.getElementById('show-signup').addEventListener('click', function (e) {
@@ -39,14 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         switchToForm('login');
     });
-
-    function getQueryParameter(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-    }
-    const queryFormState = getQueryParameter('form');
-    const formState = queryFormState || localStorage.getItem('formState') || 'login';
-    switchToForm(formState);
 
 
 
@@ -60,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fields.forEach(field => {
         field.input.addEventListener('focus', function () {
-            // console.log('Focus event fired');
             field.helpText.classList.remove('hidden_text');
             field.helpText.classList.add('visible_text');
         });
@@ -82,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let csrfToken = formData.get('csrfmiddlewaretoken');
         let urlData = document.getElementById('urls');
         let registerUrl = urlData.dataset.registerUrl;
-        let indexUrl = urlData.dataset.indexUrl;
+        let confimUrl = urlData.dataset.indexUrl;
 
         fetch(registerUrl, {
             method: 'POST',
@@ -111,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     errorContainer.classList.remove('visible_text');
                     errorContainer.classList.add('hidden_text');
 
-                    window.location.href = indexUrl;
+                    window.location.href = confimUrl;
                 }
             })
             .catch(error => {
@@ -119,4 +108,3 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 });
-
