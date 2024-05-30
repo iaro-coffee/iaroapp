@@ -1,9 +1,13 @@
 from allauth.account.views import LoginView, SignupView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from customers.forms import CustomLoginForm, CustomSignupForm
@@ -31,6 +35,7 @@ class CustomerLoginView(LoginView):
         return context
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CustomerSignupView(SignupView):
     template_name = 'account/customers_auth.html'
     success_url = reverse_lazy('customer_index')
@@ -39,14 +44,21 @@ class CustomerSignupView(SignupView):
         return CustomSignupForm
 
     def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            form.add_error(None, ValidationError(
+                'An account with this email address already exists. '
+                'Please use the password recovery procedure if you forgot your password.',
+                code='email_exists'
+            ))
+            return self.form_invalid(form)
+
         response = super().form_valid(form)
-        email = form.cleaned_data['email']
-        return HttpResponseRedirect(f"{reverse_lazy('account_email_verification_sent')}?email={email}")
+        return JsonResponse({'success': True})
 
     def form_invalid(self, form):
-        context = self.get_context_data(form=form)
-        context['form_signup'] = form
-        return self.render_to_response(context)
+        errors = form.errors.as_json()
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -73,4 +85,3 @@ class CustomerIndexView(LoginRequiredMixin, TemplateView):
             first_name = 'Guest'
         context['first_name'] = first_name
         return context
-

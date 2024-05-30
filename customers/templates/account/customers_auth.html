@@ -18,10 +18,14 @@
             <h6 class="text-center" style="color: #344767;">Log In</h6>
 
             <div class="form-container" id="form-container">
+                {#                    LOGIN FORM  #}
                 <form id="login-form"
                       class="form-card {% if not form_login.errors %}visible{% else %}hidden{% endif %}"
                       method="post" action="{% url 'customer_login' %}">
+
                     {% csrf_token %}
+
+                    {#                LOGIN ERRORS  #}
                     {% if form_login.non_field_errors %}
                         <div class="alert alert-light" role="alert">
                             {% for error in form_login.non_field_errors %}
@@ -29,50 +33,28 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-{#                    <div class="input-group input-group-outline">#}
-{#                        <span class="input-group-text"><i class="bi bi-person"></i></span>#}
-{#                        <input type="text" name="{{ form_login.login.name }}" class="form-control" id="id_username"#}
-{#                               placeholder="Username" required autocomplete="username">#}
-{#                    </div>#}
-{#                    {% if form_login.login.errors %}#}
-{#                        <div class="text-danger mb-0 text-xxs">#}
-{#                            <ul>#}
-{#                                {% for error in form_login.login.errors %}#}
-{#                                    <li>{{ error }}</li>#}
-{#                                {% endfor %}#}
-{#                            </ul>#}
-{#                        </div>#}
-{#                    {% endif %}#}
-{#                #}
+
+                    {#                EMAIL FIELD  #}
                     <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                        <input type="text" name="{{ form_login.login.name }}" class="form-control" id="id_email"
-                               placeholder="Email" required autocomplete="email">
+                        <input type="text" name="{{ form_login.login.name }}"
+                               class="form-control"
+                               id="id_email"
+                               placeholder="Email"
+                               required
+                               autocomplete="email">
                     </div>
-                    {% if form_login.login.errors %}
-                        <div class="text-danger mb-0 text-xxs">
-                            <ul>
-                                {% for error in form_login.login.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
 
+                    {#                PASS FIELD  #}
                     <div class="input-group input-group-outline mb-2">
                         <span class="input-group-text"><i class="bi bi-key"></i></span>
-                        <input type="password" name="{{ form_login.password.name }}" class="form-control"
-                               id="id_password" placeholder="Password" required autocomplete="current-password">
+                        <input type="password" name="{{ form_login.password.name }}"
+                               class="form-control"
+                               id="id_password"
+                               placeholder="Password"
+                               required
+                               autocomplete="current-password">
                     </div>
-                    {% if form_login.password.errors %}
-                        <div class="text-danger mb-0 text-xxs">
-                            <ul>
-                                {% for error in form_login.password.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
 
                     <div class="remember-forgot mt-0 mb-2">
                         <div class="form-check d-flex align-items-center">
@@ -81,13 +63,13 @@
                         </div>
                         <label class="form-check-label">
                             <a href="{% url 'customer_password_reset' %}"
-                               class="link-secondary text-decoration-none"><b>Forgot
-                                Password?</b></a>
+                               class="link-secondary text-decoration-none">
+                                <b>Forgot Password?</b>
+                            </a>
                         </label>
                     </div>
 
                     <button class="btn bg-gradient-primary mb-2 w-100" type="submit"><b>Sign In</b></button>
-
 
                     <div class="text-center">
                         <label class="form-check-label text-sm" style="cursor: auto">
@@ -97,95 +79,55 @@
                     </div>
                 </form>
 
+
+                {#                    SIGNUP FORM  #}
                 <form id="signup-form"
                       class="form-card {% if form_signup.errors %}visible{% else %}hidden{% endif %} fade-in"
-                      method="post" action="{% url 'customer_register' %}">
-                    {% csrf_token %}
-                    {% if form_signup.non_field_errors %}
-                        <div class="alert alert-danger" role="alert">
-                            {% for error in form_signup.non_field_errors %}
-                                <p class="text-sm">{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-{#                    <div class="input-group input-group-outline">#}
-{#                        <span class="input-group-text"><i class="bi bi-person"></i></span>#}
-{#                        <input type="text" name="{{ form_signup.username.name }}" class="form-control"#}
-{#                               id="id_signup_username"#}
-{#                               placeholder="Username" required autocomplete="new-username">#}
-{#                    </div>#}
-{#                    {% if form_signup.username.errors %}#}
-{#                        <div class="text-danger mb-0 text-xxs">#}
-{#                            <ul>#}
-{#                                {% for error in form_signup.username.errors %}#}
-{#                                    <li>{{ error }}</li>#}
-{#                                {% endfor %}#}
-{#                            </ul>#}
-{#                        </div>#}
-{#                    {% endif %}#}
-{#                    <div id="help_username" class="text-xxs mt-0 p-0 hidden_text">#}
-{#                        <ul>#}
-{#                            <li>Required. Letters, digits and @/./+/-/_ only.</li>#}
-{#                        </ul>#}
-{#                    </div>#}
+                      method="post"
+                      action="{% url 'customer_register' %}">
 
+                    {% csrf_token %}
+
+                    {#                SIGNUP ERRORS  #}
+                    <div id="form-errors" class="alert alert-light text-sm hidden_text"></div>
+                    <div id="urls" data-register-url='{% url "customer_register" %}'
+                         data-index-url='{% url "customer_index" %}'></div>
+
+                    {#                EMAIL FIELD  #}
                     <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                         <input type="email" name="{{ form_signup.email.name }}" class="form-control"
                                id="id_signup_email"
-                               placeholder="Email" required autocomplete="new-email">
+                               placeholder="Email"
+                               required
+                               autocomplete="new-email">
                     </div>
-                    {% if form_signup.email.errors %}
-                        <div class="text-danger mb-0 text-xxs">
-                            <ul>
-                                {% for error in form_signup.email.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
                     <div id="help_email" class="text-xxs p-0 hidden_text">
                         <ul>
                             <li>Required. Example@domain.com</li>
                         </ul>
                     </div>
 
+                    {#                PASS1 FIELD  #}
                     <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-key"></i></span>
                         <input type="password" name="{{ form_signup.password1.name }}" class="form-control"
                                id="id_signup_password1"
                                placeholder="Password" required autocomplete="new-password">
                     </div>
-                    {% if form_signup.password1.errors %}
-                        <div class="text-danger mb-0 text-xxs">
-                            <ul>
-                                {% for error in form_signup.password1.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
                     <div id="help_password1" class="text-xxs p-0 hidden_text">
                         {% if form_signup.password1.help_text %}
                             {{ form_signup.password1.help_text }}
                         {% endif %}
                     </div>
 
+                    {#                PASS2 FIELD  #}
                     <div class="input-group input-group-outline">
                         <span class="input-group-text"><i class="bi bi-key"></i></span>
                         <input type="password" name="{{ form_signup.password2.name }}" class="form-control"
                                id="id_signup_password2"
                                placeholder="Confirm Password" required autocomplete="new-password">
                     </div>
-                    {% if form_signup.password2.errors %}
-                        <div class="text-danger mb-0 text-xxs">
-                            <ul>
-                                {% for error in form_signup.password2.errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
 
                     <button class="btn bg-gradient-primary mb-2 w-100" type="submit">Sign Up</button>
 
@@ -198,10 +140,10 @@
                     </div>
                 </form>
             </div>
+
             <div class="custom-divider">
                 <span class="text-sm">or</span>
             </div>
-
 
             <div class="social-login text-center">
                 {% if SOCIALACCOUNT_ENABLED %}
