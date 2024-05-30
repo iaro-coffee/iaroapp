@@ -52,7 +52,7 @@ class CustomerSignupView(SignupView):
         context = super().get_context_data(**kwargs)
         context['is_login'] = False
         context['form_signup'] = kwargs.get('form', self.get_form_class()())
-        context['form_login'] = LoginView.form_class()()
+        context['form_login'] = LoginView.form_class()
         return context
 
 
