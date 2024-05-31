@@ -3,13 +3,12 @@ import logging
 import os
 
 import requests
+from dotenv import find_dotenv, load_dotenv
 
 from lib.model.customer_card import CustomerCard
 from lib.pos_system import POSSystem
 
 logger = logging.getLogger(__name__)
-
-from dotenv import find_dotenv, load_dotenv
 
 load_dotenv(find_dotenv())
 
