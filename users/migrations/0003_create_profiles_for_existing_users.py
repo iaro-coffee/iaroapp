@@ -6,18 +6,18 @@ from django.db import migrations
 def create_profiles_for_existing_users(apps, schema_editor):
     User = apps.get_model('auth', 'User')
     Profile = apps.get_model('users', 'Profile')
-    Branch = apps.get_model('inventory', 'Branch')
+    # Branch = apps.get_model('inventory', 'Branch')
 
-    try:
-        default_branch = Branch.objects.get(name='iaro West')
-    except Branch.DoesNotExist:
-        default_branch = None
+    # try:
+    #     default_branch = Branch.objects.get(name='iaro West')
+    # except Branch.DoesNotExist:
+    #     default_branch = None
 
     for user in User.objects.all():
         profile, created = Profile.objects.get_or_create(user=user)
-        if not profile.branch:
-            profile.branch = default_branch
-            profile.save()
+        # if not profile.branch:
+        #     profile.branch = default_branch
+        profile.save()
 
 
 class Migration(migrations.Migration):

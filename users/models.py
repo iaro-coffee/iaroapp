@@ -5,6 +5,10 @@ from PIL import Image
 from inventory.models import Branch
 
 
+def get_first_branch_id():
+    return Branch.objects.first().id
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -13,7 +17,7 @@ class Profile(models.Model):
         upload_to="profile_avatars",           # dir to store the image
     )
 
-    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, default=get_first_branch_id)
 
     def __str__(self):
         return f"{self.user.username} Profile"
