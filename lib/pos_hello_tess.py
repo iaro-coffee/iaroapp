@@ -48,10 +48,8 @@ class POSHelloTess(POSSystem):
         return self.set_customer_card_balance(card_id, balance)
 
     def get_customer_card(self, card_id) -> CustomerCard:
-        # TODO(Rapha): does not work yet. Jalil said this API endpoint should work but it does not, I wait for email
-        #  from him to clarify
         response = self.session.request(
-            "GET", self.base_url + "/cards/" + card_id, headers=self.auth_headers
+            "GET", self.base_url + "/cards/id/" + card_id, headers=self.auth_headers
         )
 
         if response.status_code != 200:
