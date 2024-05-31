@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django.contrib.sites',
+    "django.contrib.sites",
     "widget_tweaks",
     "tasks.apps.TasksConfig",
     "shifts.apps.ShiftsConfig",
@@ -126,29 +126,29 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = 'Europe/Berlin'
+TIME_ZONE = "Europe/Berlin"
 USE_I18N = True
 USE_TZ = True
 
 SITE_ID = 3
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 )
 
 # Custom Allauth settings
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 SOCIALACCOUNT_LOGIN_ON_GET = True
-SOCIALACCOUNT_ADAPTER = 'customers.adapters.CustomSocialAccountAdapter'
+SOCIALACCOUNT_ADAPTER = "customers.adapters.CustomSocialAccountAdapter"
 
 # ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
 
-LOGIN_URL = '/card/login/'
+LOGIN_URL = "/card/login/"
 LOGIN_REDIRECT_URL = "/card/dashboard"
 
 LOGIN_REQUIRED_IGNORE_PATHS = [
@@ -161,13 +161,13 @@ LOGIN_REQUIRED_IGNORE_PATHS = [
 
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # Email configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')  # 587 for TLS, 465 for SSL
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')  # Use TLS or SSL
-EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL')  # Use SSL (alternative to TLS)
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")  # 587 for TLS, 465 for SSL
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")  # Use TLS or SSL
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL")  # Use SSL (alternative to TLS)
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
@@ -180,7 +180,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 # The absolute path to the directory where collectstatic will collect static files for deployment.
 
-STATIC_ROOT = "/var/www/iaro-project/static"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # The URL to use when referring to static files (where they will be served from)
 STATIC_URL = "/static/"
@@ -197,9 +197,9 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Media files
 MEDIA_URL = "/media/"
 if DEBUG:
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 else:
-    MEDIA_ROOT = '/var/www/iaro-project/media'
+    MEDIA_ROOT = "/var/www/iaro-project/media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -211,29 +211,29 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 IMPORT_EXPORT_FORMATS = [XLSX, CSV]
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'level': 'INFO',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
         },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'info.log',
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "info.log",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
         },
-        'iaroapp': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
+        "iaroapp": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
         },
     },
 }

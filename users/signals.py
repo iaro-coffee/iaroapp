@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 from customers.models import CustomerProfile
 from users.models import Profile
 
