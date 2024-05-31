@@ -13,7 +13,7 @@ class Profile(models.Model):
         upload_to="profile_avatars",           # dir to store the image
     )
 
-    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, default=1)
 
     def __str__(self):
         return f"{self.user.username} Profile"
