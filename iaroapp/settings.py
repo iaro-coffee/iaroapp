@@ -149,7 +149,7 @@ SOCIALACCOUNT_ADAPTER = "customers.adapters.CustomSocialAccountAdapter"
 # ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
 
 LOGIN_URL = "/card/login/"
-LOGIN_REDIRECT_URL = "/card/dashboard"
+LOGIN_REDIRECT_URL = "/card/dashboard/"
 
 LOGIN_REQUIRED_IGNORE_PATHS = [
     r"/users/logout/$",
@@ -176,7 +176,8 @@ SOCIALACCOUNT_PROVIDERS = {
             'client_id': os.environ.get("GOOGLE_CLIENT_ID"),
             'secret': os.environ.get("GOOGLE_SECRET"),
             'key': ''
-        }
+        },
+        'REDIRECT_URL': '/card/dashboard/'
     }
 }
 
