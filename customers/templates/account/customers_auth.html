@@ -26,13 +26,7 @@
                     {% csrf_token %}
 
                     {#                LOGIN ERRORS  #}
-                    {% if form_login.non_field_errors %}
-                        <div class="alert alert-light" role="alert">
-                            {% for error in form_login.non_field_errors %}
-                                <p class="text-sm mb-0">{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                    <div id="form-login-errors" class="alert alert-light text-sm hidden_text"></div>
 
                     {#                EMAIL FIELD  #}
                     <div class="input-group input-group-outline">
@@ -89,7 +83,7 @@
                     {% csrf_token %}
 
                     {#                SIGNUP ERRORS  #}
-                    <div id="form-errors" class="alert alert-light text-sm hidden_text"></div>
+                    <div id="form-signup-errors" class="alert alert-light text-sm hidden_text"></div>
                     <div id="urls" data-register-url="{% url 'customer_register' %}"
                          data-index-url="{% url 'verify_email' key='key' %}"></div>
 

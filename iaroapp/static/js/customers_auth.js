@@ -39,13 +39,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-
     // handle help text for register form
     const fields = [
-        {input: document.getElementById('id_signup_email'),
-            helpText: document.getElementById('help_email')},
-        {input: document.getElementById('id_signup_password1'),
-            helpText: document.getElementById('help_password1')}
+        {
+            input: document.getElementById('id_signup_email'),
+            helpText: document.getElementById('help_email')
+        },
+        {
+            input: document.getElementById('id_signup_password1'),
+            helpText: document.getElementById('help_password1')
+        }
     ];
 
     fields.forEach(field => {
@@ -61,11 +64,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-
-    // handle field and non-field errors for register form
+    // handle register form errors
     document.getElementById('signup-form').addEventListener('submit', function (event) {
         event.preventDefault();
-        let errorContainer = document.getElementById('form-errors');
+        let errorContainer = document.getElementById('form-signup-errors');
         let form = event.target;
         let formData = new FormData(form);
         let csrfToken = formData.get('csrfmiddlewaretoken');
@@ -107,4 +109,49 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error('Error:', error);
             });
     });
+
+    // handle login form errors
+    document.getElementById('login-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        let errorContainer = document.getElementById('form-login-errors');
+        let form = event.target;
+        let formData = new FormData(form);
+        let csrfToken = formData.get('csrfmiddlewaretoken');
+        let loginUrl = form.action;
+
+        fetch(loginUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    errorContainer.classList.remove('hidden_text');
+                    errorContainer.classList.add('visible_text');
+                    let errors = JSON.parse(data.errors);
+                    let errorHtml = '<ul class="mb-0">';
+                    for (let key in errors) {
+                        if (errors.hasOwnProperty(key)) {
+                            errors[key].forEach(error => {
+                                errorHtml += `<li>${error.message}</li>`;
+                            });
+                        }
+                    }
+                    errorHtml += '</ul>';
+                    errorContainer.innerHTML = errorHtml;
+                } else {
+                    errorContainer.classList.add('hidden_text');
+                    errorContainer.classList.remove('visible_text');
+                    window.location.href = data.redirectUrl;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+
 });

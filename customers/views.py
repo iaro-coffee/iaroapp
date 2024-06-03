@@ -1,10 +1,9 @@
-from allauth.account.views import LoginView, SignupView, LogoutView, ConfirmEmailView
-from django.contrib.auth.decorators import login_required
+from allauth.account.models import EmailAddress
+from allauth.account.views import LoginView, SignupView, LogoutView, ConfirmEmailView, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -13,6 +12,11 @@ from django.views.generic import TemplateView
 from customers.forms import CustomLoginForm, CustomSignupForm
 from customers.models import CustomerProfile
 
+# from allauth.account.utils import send_email_confirmation
+
+
+# def send_verification_email(user, request):
+#     pass
 
 class CustomerLoginView(LoginView):
     template_name = 'account/customers_auth.html'
@@ -21,10 +25,21 @@ class CustomerLoginView(LoginView):
     def get_form_class(self):
         return CustomLoginForm
 
+    def form_valid(self, form):
+        login(self.request, form.user)
+        user = form.user
+
+        # check if email is verified
+        if EmailAddress.objects.filter(user=user, verified=True).exists():
+            return JsonResponse({'success': True, 'redirectUrl': self.success_url})
+        else:
+            # redirect to verify-email url if it's not verified
+            verify_url = reverse('verify_email', kwargs={'key': "key"})  # TODO: get the correct key
+            return JsonResponse({'success': True, 'redirectUrl': verify_url})
+
     def form_invalid(self, form):
-        context = self.get_context_data(form=form)
-        context['form_login'] = form
-        return self.render_to_response(context)
+        errors = form.errors.as_json()
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
