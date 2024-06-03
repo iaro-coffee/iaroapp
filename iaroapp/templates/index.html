@@ -3,406 +3,414 @@
 {% load json_filters %}
 
 {% block extra_css %}
-<link href="{% static 'css/dashboard.css' %}" rel="stylesheet"/>
-<link href="{% static 'css/charts.css' %}" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/charts.css' %}" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock extra_css %}
 
 {% block content %}
 
-<div class="alert alert-success hidden" role="alert">
-    Rating submitted successfully.
-</div>
+    <div class="alert alert-success hidden" role="alert">
+        Rating submitted successfully.
+    </div>
 
-<div class="alert alert-danger hidden" role="alert">
-    Punching in/out failed.
-</div>
+    <div class="alert alert-danger hidden" role="alert">
+        Punching in/out failed.
+    </div>
 
-<div class="main__blocks">
-    <div class="row">
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header pb-0">
-                    <h6>{% if ongoingShift %} End your shift? {% else %} Start shift? {% endif %}</h6>
-                    <p class="text-sm mb-0">
-                        <i class="fa fa-clock text-info" aria-hidden="true"></i>
+    <div class="main__blocks">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>{% if ongoingShift %} End your shift? {% else %} Start shift? {% endif %}</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-clock text-info" aria-hidden="true"></i>
+                            {% if ongoingShift %}
+                                Punch out to end your shift {% else %} Punch in to start your shift
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="card-body text-center py-1">
                         {% if ongoingShift %}
-                        Punch out to end your shift {% else %} Punch in to start your shift
+                            <span id="clock"></span>
                         {% endif %}
-                    </p>
+                        <div class="d-flex justify-content-center">
+                            <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
+                                {% if ongoingShift %} Punch out {% else %} Punch in {% endif %}
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body text-center py-1">
-                    {% if ongoingShift %}
-                    <span id="clock"></span>
-                    {% endif %}
-                    <div class="d-flex justify-content-center">
-                        <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
-                            {% if ongoingShift %} Punch out {% else %} Punch in {% endif %}
-                        </a>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Are you opening the store?</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-bell text-info" aria-hidden="true"></i>
+                            <strong>Reminder:</strong> make sure you completed all the steps.
+                        </p>
+
+                    </div>
+                    <div class="card-body text-center py-1">
+                        <div class="d-flex justify-content-center">
+                            <a class="btn bg-gradient-primary mt-3 w-100"
+                               href="/procedures/opening">
+                                Check tasks
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div>
+                                <h6>Are you closing the store later?</h6>
+                                <p class="text-sm mb-0">
+                                    <i class="fa fa-bell text-info" aria-hidden="true"></i>
+                                    <strong>Reminder:</strong> make sure you completed all the steps.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body text-center py-1">
+                        <div class="d-flex justify-content-center">
+                            <a class="btn bg-gradient-primary mt-3 w-100"
+                               href="/procedures/closing">
+                                Check tasks
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header pb-0">
-                    <h6>Are you opening the store?</h6>
-                    <p class="text-sm mb-0">
-                        <i class="fa fa-bell text-info" aria-hidden="true"></i>
-                        <strong>Reminder:</strong> make sure you completed all the steps.
-                    </p>
-    
-                </div>
-                <div class="card-body text-center py-1">
-                    <div class="d-flex justify-content-center">
-                        <a class="btn bg-gradient-primary mt-3 w-100"
-                            href="/procedures/opening">
-                            Check tasks
-                        </a>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Your Tasks</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-check text-info" aria-hidden="true"></i>
+                            <span class="font-weight-bold ms-1">{{ tasks_done_last_month }} done</span> in the last 30
+                            days
+                        </p>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-2">
+                                <tbody>
+                                {% for task in task_list %}
+                                    {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex px-2 py-1">
+                                                    <div class="d-flex px-4" style="align-items:center;">
+                                                        <i class="fa fa-thumbtack cursor-pointer"
+                                                           aria-hidden="true"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="d-flex px-2 py-1">
+                                                            <div class="d-flex flex-column justify-content-center">
+                                                                <h6 class="mb-0 text-sm">{{ task.title }}</h6>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex">
+                                                            <small class="d-block text-xs opacity-7"
+                                                                   style="margin: 0.1rem 0; padding-left: 0.5rem;">
+                                                        <span data-feather="tag" class="align-text-bottom"
+                                                              style="height: 16px"></span>
+                                                                {{ task.get_types|join:", " }}
+                                                                {% if task.assignees %}
+                                                                    <span data-feather="user" class="align-text-bottom"
+                                                                          style="margin-left: 0.2rem; height: 16px"></span>
+                                                                    {{ task.assignees }}
+                                                                {% endif %}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mb-3">
+                            <a class="text-body text-sm font-weight-bold icon-move-right mt-auto px-4" href="/tasks">
+                                See all tasks
+                                <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header pb-0">
-                    <div class="row">
-                        <div>
-                            <h6>Are you closing the store later?</h6>
-                            <p class="text-sm mb-0">
-                                <i class="fa fa-bell text-info" aria-hidden="true"></i>
-                                <strong>Reminder:</strong> make sure you completed all the steps.
+
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Your next shifts</h6>
+                        <p class="text-sm mb-0">
+                            <i class="fa fa-dumbbell text-info" aria-hidden="true"></i>
+                            you can do this!
+                        </p>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <ul class="shifts">
+                            {% for shift in nextShifts %}
+                                <li>
+                                    <div class="date px-4">
+                                        {{ shift.day }}
+                                        <span class="weekday">{{ shift.weekday }}</span>
+                                    </div>
+                                    <div class="shift">
+                                        <span class="time">{{ shift.start }} – {{ shift.end }}</span>
+                                        <span class="location">{{ branch_address }}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100" id="popular-times">
+                    <div class="card-header pb-0">
+                        <h6>Popular Times</h6>
+                        <div class="live__container d-flex align-left">
+                            <div class="video__icon">
+                                <div class="circle--outer"></div>
+                                <div class="circle--inner"></div>
+                            </div>
+                            <p class="text-sm">
+                                <span class="predict__info"></span>
                             </p>
                         </div>
                     </div>
-                </div>
-                <div class="card-body text-center py-1">
-                    <div class="d-flex justify-content-center">
-                        <a class="btn bg-gradient-primary mt-3 w-100"
-                            href="/procedures/closing">
-                            Check tasks
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header pb-0">
-                    <h6>Your Tasks</h6>
-                    <p class="text-sm mb-0">
-                        <i class="fa fa-check text-info" aria-hidden="true"></i>
-                        <span class="font-weight-bold ms-1">{{ tasks_done_last_month }} done</span> in the last 30
-                        days
-                    </p>
-                </div>
-                <div class="card-body px-0 pb-2">
-                    <div class="table-responsive">
-                        <table class="table align-items-center mb-2">
-                            <tbody>
-                                {% for task in task_list %}
-                                {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
-                                <tr>
-                                    <td>
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex px-4" style="align-items:center;">
-                                                <i class="fa fa-thumbtack cursor-pointer" aria-hidden="true"></i>
-                                            </div>
-                                            <div>
-                                                <div class="d-flex px-2 py-1">
-                                                    <div class="d-flex flex-column justify-content-center">
-                                                        <h6 class="mb-0 text-sm">{{ task.title }}</h6>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex">
-                                                    <small class="d-block text-xs opacity-7"
-                                                        style="margin: 0.1rem 0; padding-left: 0.5rem;">
-                                                        <span data-feather="tag" class="align-text-bottom"
-                                                            style="height: 16px"></span>
-                                                        {{ task.get_types|join:", " }}
-                                                        {% if task.assignees %}
-                                                        <span data-feather="user" class="align-text-bottom"
-                                                            style="margin-left: 0.2rem; height: 16px"></span>
-                                                        {{ task.assignees }}
-                                                        {% endif %}
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="mb-3">
-                        <a class="text-body text-sm font-weight-bold icon-move-right mt-auto px-4" href="/tasks">
-                            See all tasks
-                            <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header pb-0">
-                    <h6>Your next shifts</h6>
-                    <p class="text-sm mb-0">
-                        <i class="fa fa-dumbbell text-info" aria-hidden="true"></i>
-                        you can do this!
-                    </p>
-                </div>
-                <div class="card-body px-0 pb-2">
-                    <ul class="shifts">
-                        {% for shift in nextShifts %}
-                        <li>
-                            <div class="date px-4">
-                                {{ shift.day }}
-                                <span class="weekday">{{ shift.weekday }}</span>
-                            </div>
-                            <div class="shift">
-                                <span class="time">{{ shift.start }} – {{ shift.end }}</span>
-                                <span class="location">{{ branch_address }}</span>
-                            </div>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100" id="popular-times">
-                <div class="card-header pb-0">
-                    <h6>Popular Times</h6>
-                    <div class="live__container d-flex align-left">
-                        <div class="video__icon">
-                            <div class="circle--outer"></div>
-                            <div class="circle--inner"></div>
+                    <div class="card-body p-3">
+                        <div class="text-bold align-center justify-content-center gap-1 d-flex" id="chartLegend">
                         </div>
+                        <div class="chart">
+                            <canvas id="populartimesChart" class="chart-canvas" height="300"></canvas>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <span data-feather="clock" class="align-text-bottom" style="height: 15px"></span>
+
+                            <div class="d-flex">
+                                &nbsp;People spend
+                                <span class="text-bold">&nbsp;{{ time_spent.0 }}-{{ time_spent.1 }} min&nbsp;</span>
+                                today
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="d-flex justify-content-center gap-2 mb-4" method="GET"
+                          action="{% url 'index' %}#popular-times">
+                        <input type="hidden" name="formatted_address" id="formatted_address"
+                               value="{{ formatted_address }}">
+
+                        <button
+                                class="h6 text-bold mt-3 w-35 {% if formatted_address == 'Iaro Ost Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
+                                type="submit"
+                                onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
+                            Iaro Ost
+                        </button>
+
+                        <button
+                                class="h6 text-bold mt-3 w-35 {% if formatted_address == 'Iaro West Karlsruhe' or formatted_address == 'iaro Space Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
+                                type="submit"
+                                onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
+                            Iaro West
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100" id="holidays">
+                    <div class="card-header pb-0">
+                        <h6>Holidays</h6>
+                        <p class="text-sm"><i class="fas fa-calendar-day pe-2 text-success"></i>Here’s a peek at special
+                            days coming up!</p>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="d-flex gap-4 justify-content-center" id="holiday-info">
+                            <div class="w-45">
+                                <h6 id="today-date"><b>Loading date...</b></h6>
+                                <p class="text-sm" id="today-holidays">Loading...</p>
+                            </div>
+                            <div class="w-45">
+                                <h6 id="tomorrow-date"><b>Loading date...</b></h6>
+                                <p class="text-sm" id="tomorrow-holidays">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Your work hours: last 7 days</h6>
                         <p class="text-sm">
-                            <span class="predict__info"></span>
+                            <i class="fa fa-clock text-success"></i>
+                            <span class="font-weight-bold">{{ statistics_sum.workHours }}h</span>
                         </p>
                     </div>
-                </div>
-
-                <div class="card-body p-3">
-                    <div class="text-bold align-center justify-content-center gap-1 d-flex" id="chartLegend">
-                    </div>
-                    <div class="chart">
-                        <canvas id="populartimesChart" class="chart-canvas" height="300"></canvas>
-                    </div>
-                    <div class="d-flex justify-content-center align-items-center">
-                        <span data-feather="clock" class="align-text-bottom" style="height: 15px"></span>
-
-                        <div class="d-flex">
-                            &nbsp;People spend
-                            <span class="text-bold">&nbsp;{{ time_spent.0 }}-{{ time_spent.1 }} min&nbsp;</span>
-                            today
+                    <div class="card-body p-3">
+                        <div class="chart">
+                            <canvas id="chart-line1" class="chart-canvas" height="300"></canvas>
                         </div>
                     </div>
                 </div>
-
-<form class="d-flex justify-content-center gap-2 mb-4" method="GET" action="{% url 'index' %}#popular-times">
-    <input type="hidden" name="formatted_address" id="formatted_address" value="{{ formatted_address }}">
-
-    <button
-        class="h6 text-bold mt-3 w-35 {% if formatted_address == 'Iaro Ost Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
-        type="submit"
-        onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
-        Iaro Ost
-    </button>
-
-    <button
-        class="h6 text-bold mt-3 w-35 {% if formatted_address == 'Iaro West Karlsruhe' or formatted_address == 'iaro Space Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
-        type="submit"
-        onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
-        Iaro West
-    </button>
-</form>
-
             </div>
-        </div>
 
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100" id="holidays">
-                <div class="card-header pb-0">
-                    <h6>Holidays</h6>
-                    <p class="text-sm"><i class="fas fa-calendar-day pe-2 text-success"></i>Here’s a peek at special days coming up!</p>
-                </div>
-                <div class="card-body p-3">
-                    <div class="d-flex gap-4 justify-content-center" id="holiday-info">
-                        <div class="w-45">
-                            <h6 id="today-date"><b>Loading date...</b></h6>
-                            <p class="text-sm" id="today-holidays">Loading...</p>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Your tasks done: last 7 days</h6>
+                        <p class="text-sm">
+                            <i class="fa fa-thumbtack text-success"></i>
+                            <span class="font-weight-bold">{{ statistics_sum.tasks }}</span>
+                        </p>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="chart">
+                            <canvas id="chart-line2" class="chart-canvas" height="300"></canvas>
                         </div>
-                        <div class="w-45">
-                            <h6 id="tomorrow-date"><b>Loading date...</b></h6>
-                            <p class="text-sm" id="tomorrow-holidays">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>How your shifts went: last 7 days</h6>
+                        <p class="text-sm">
+                            <i class="fa fa-star text-success"></i>
+                            <span class="font-weight-bold">{{ statistics_sum.ratings }}</span>
+                        </p>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="chart">
+                            <canvas id="chart-line3" class="chart-canvas" height="300"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-
     </div>
 
-    <div class="row">
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header pb-0">
-                    <h6>Your work hours: last 7 days</h6>
-                    <p class="text-sm">
-                        <i class="fa fa-clock text-success"></i>
-                        <span class="font-weight-bold">{{ statistics_sum.workHours }}h</span>
-                    </p>
-                </div>
-                <div class="card-body p-3">
-                    <div class="chart">
-                        <canvas id="chart-line1" class="chart-canvas" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header pb-0">
-                    <h6>Your tasks done: last 7 days</h6>
-                    <p class="text-sm">
-                        <i class="fa fa-thumbtack text-success"></i>
-                        <span class="font-weight-bold">{{ statistics_sum.tasks }}</span>
-                    </p>
-                </div>
-                <div class="card-body p-3">
-                    <div class="chart">
-                        <canvas id="chart-line2" class="chart-canvas" height="300"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header pb-0">
-                    <h6>How your shifts went: last 7 days</h6>
-                    <p class="text-sm">
-                        <i class="fa fa-star text-success"></i>
-                        <span class="font-weight-bold">{{ statistics_sum.ratings }}</span>
-                    </p>
-                </div>
-                <div class="card-body p-3">
-                    <div class="chart">
-                        <canvas id="chart-line3" class="chart-canvas" height="300"></canvas>
-                    </div>
+    <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content card card-body rounded-4 shadow">
+                <div class="modal-body p-5">
+                    <h2 class="fw-bold mb-0">Error</h2>
+                    <br>
+                    <span class="errorModalContent">Sorry, you forgot to rate your shift.</span>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content card card-body rounded-4 shadow">
-            <div class="modal-body p-5">
-                <h2 class="fw-bold mb-0">Error</h2>
-                <br>
-                <span class="errorModalContent">Sorry, you forgot to rate your shift.</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content card card-body rounded-4 shadow">
-            <div class="modal-body p-5">
-                <h2 class="fw-bold mb-0">
-                    {% if ongoingShift %} Submit rating and punch out {% else %} Start your shift? {% endif%}
-                </h2>
-                <br>
-                <form id="ratingForm" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="user" value="{{user.id}}" style="display: none;" />
-                    {% if ongoingShift %}
-                    <h5>How was todays shift for you?</h5>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="stars">
-                                <input class="star star-5" id="star-5" type="radio" name="star" value="5" />
-                                <label class="star star-5" for="star-5"></label>
-                                <input class="star star-4" id="star-4" type="radio" name="star" value="4" />
-                                <label class="star star-4" for="star-4"></label>
-                                <input class="star star-3" id="star-3" type="radio" name="star" value="3" />
-                                <label class="star star-3" for="star-3"></label>
-                                <input class="star star-2" id="star-2" type="radio" name="star" value="2" />
-                                <label class="star star-2" for="star-2"></label>
-                                <input class="star star-1" id="star-1" type="radio" name="star" value="1" />
-                                <label class="star star-1" for="star-1"></label>
+    <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content card card-body rounded-4 shadow">
+                <div class="modal-body p-5">
+                    <h2 class="fw-bold mb-0">
+                        {% if ongoingShift %} Submit rating and punch out {% else %} Start your shift? {% endif %}
+                    </h2>
+                    <br>
+                    <form id="ratingForm" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="user" value="{{ user.id }}" style="display: none;"/>
+                        {% if ongoingShift %}
+                            <h5>How was todays shift for you?</h5>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="stars">
+                                        <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
+                                        <label class="star star-5" for="star-5"></label>
+                                        <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
+                                        <label class="star star-4" for="star-4"></label>
+                                        <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
+                                        <label class="star star-3" for="star-3"></label>
+                                        <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
+                                        <label class="star star-2" for="star-2"></label>
+                                        <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
+                                        <label class="star star-1" for="star-1"></label>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    <input type="submit" class="w-100 mt-2 btn btn-lg bg-gradient-primary" value="Submit"
-                        data-bs-dismiss="modal" />
-                </form>
+                        {% endif %}
+                        <input type="submit" class="w-100 mt-2 btn btn-lg bg-gradient-primary" value="Submit"
+                               data-bs-dismiss="modal"/>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<script>
-    function formatDate(date) {
-        const options = { day: 'numeric', month: 'long' };
-        return date.toLocaleDateString('en-US', options);
-    }
-
-    async function fetchHolidays() {
-        const apiKey = 'ld8geT4B1imhxWfWBsroIJGwqfBYhrnI';
-        const country = 'DE';
-        const year = new Date().getFullYear();
-        let url = `https://calendarific.com/api/v2/holidays?&api_key=${apiKey}&country=${country}&year=${year}`;
-
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            const holidays = data.response.holidays;
-            const today = new Date();
-            const tomorrow = new Date(today.getTime() + 86400000);
-
-            const todayFormatted = formatDate(today);
-            const tomorrowFormatted = formatDate(tomorrow);
-
-            const todayHolidays = holidays.filter(holiday => holiday.date.iso === today.toISOString().split('T')[0]);
-            const tomorrowHolidays = holidays.filter(holiday => holiday.date.iso === tomorrow.toISOString().split('T')[0]);
-
-            document.getElementById('today-date').innerHTML = `<b>${todayFormatted}</b>`;
-            document.getElementById('today-holidays').innerHTML = todayHolidays.map(h => h.name).join(', ') || 'No holidays today.';
-            document.getElementById('tomorrow-date').innerHTML = `<b>${tomorrowFormatted}</b>`;
-            document.getElementById('tomorrow-holidays').innerHTML = tomorrowHolidays.map(h => h.name).join(', ') || 'No holidays tomorrow.';
-        } catch (error) {
-            console.error('Failed to fetch holidays:', error);
-            document.getElementById('today-date').innerHTML = '<b>Error loading date</b>';
-            document.getElementById('tomorrow-date').innerHTML = '<b>Error loading date</b>';
-            document.getElementById('today-holidays').innerHTML = 'Failed to load holidays.';
-            document.getElementById('tomorrow-holidays').innerHTML = 'Failed to load holidays.';
+    <style>
+        .title {
+            margin-top: 0 !important;
         }
-    }
+    </style>
+    <script>
+        function formatDate(date) {
+            const options = {day: 'numeric', month: 'long'};
+            return date.toLocaleDateString('en-US', options);
+        }
 
-    fetchHolidays();
-</script>
+        async function fetchHolidays() {
+            const apiKey = 'ld8geT4B1imhxWfWBsroIJGwqfBYhrnI';
+            const country = 'DE';
+            const year = new Date().getFullYear();
+            let url = `https://calendarific.com/api/v2/holidays?&api_key=${apiKey}&country=${country}&year=${year}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                const holidays = data.response.holidays;
+                const today = new Date();
+                const tomorrow = new Date(today.getTime() + 86400000);
+
+                const todayFormatted = formatDate(today);
+                const tomorrowFormatted = formatDate(tomorrow);
+
+                const todayHolidays = holidays.filter(holiday => holiday.date.iso === today.toISOString().split('T')[0]);
+                const tomorrowHolidays = holidays.filter(holiday => holiday.date.iso === tomorrow.toISOString().split('T')[0]);
+
+                document.getElementById('today-date').innerHTML = `<b>${todayFormatted}</b>`;
+                document.getElementById('today-holidays').innerHTML = todayHolidays.map(h => h.name).join(', ') || 'No holidays today.';
+                document.getElementById('tomorrow-date').innerHTML = `<b>${tomorrowFormatted}</b>`;
+                document.getElementById('tomorrow-holidays').innerHTML = tomorrowHolidays.map(h => h.name).join(', ') || 'No holidays tomorrow.';
+            } catch (error) {
+                console.error('Failed to fetch holidays:', error);
+                document.getElementById('today-date').innerHTML = '<b>Error loading date</b>';
+                document.getElementById('tomorrow-date').innerHTML = '<b>Error loading date</b>';
+                document.getElementById('today-holidays').innerHTML = 'Failed to load holidays.';
+                document.getElementById('tomorrow-holidays').innerHTML = 'Failed to load holidays.';
+            }
+        }
+
+        fetchHolidays();
+    </script>
 
 
 
@@ -417,6 +425,6 @@
     <script src="{% static 'js/shifts.js' %}"></script>
     <script src="{% static 'js/charts_populartimes.js' %}"></script>
     <script src="{% static 'js/charts_user-stats.js' %}"></script>
-   
+
 
 {% endblock %}
