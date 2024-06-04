@@ -52,9 +52,9 @@
     </div>
     {% if messages %}
 
-    <div class="container-fluid d-flex flex-column" style="gap: 10px;">
+    <div class="container-fluid mt-4 d-flex flex-column" style="gap: 10px;">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" role="alert" style="margin-bottom: 0; border-radius: 0.5rem;">
+        <div class="alert alert-{{ message.tags }} mb-0 border-radius-2xl" role="alert">
             {{ message }}
         </div>
         {% endfor %}
