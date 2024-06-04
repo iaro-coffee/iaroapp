@@ -20,11 +20,14 @@
             <div class="logo-container text-center mb-3">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
             </div>
-            <div class="container">
-                <h6 class="text-center">Welcome to your personal iaro Card Dashboard!</h6>
-                <p>Menu</p>
-                <p>Log Out</p>
-                <p>for staff*: Enter Staff Dashboard</p>
+            <div class="container text-center">
+                {{ user.email }}
+                <h6 class="text-center">Welcome to your personal iaro Card!</h6>
+
+                <a class="text-center">Staff Dashboard</a>
+                <br>
+                <a class="text-center" href="{% url 'user_logout' %}">Log Out</a>
+
             </div>
         </div>
 
@@ -59,24 +62,25 @@
 
                 <g mask="url(#cardMask)">
 
-                    <rect class="bg" fill="#fff" width="100%" height="100%"/>
+                    <rect class="bg" fill="#ece8e1" width="100%" height="100%"/>
 
-                    <g fill="none" stroke="#000" stroke-width="1" stroke-dasharray="6 2 4 2.5 4 3 3.5 3">
+                    <g fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="6 2 4 2.5 4 3 3.5 3">
                         <path class="coil" d="M306.1,671.4C62.6,602.5-79.4,350.4-10.9,108.3s295.2-372.5,538.7-303.6"/>
-                        <path id="midC" class="coil"
-                              d="M352.7,333.4c-79.2-30.9-137.8-142.9-100.6-235.7S386.5-16.5,449.6-11.7"/>
+                        <path id="midC" class="coil" d="M352.7,333.4c-79.2-30.9-137.8-142.9-100.6-235.7S386.5-16.5,449.6-11.7"/>
+
                         <path id="innerC" class="coil"
-                              d="M404.4,221c-39.6-7.4-65.7-45.6-58.3-85.2s41.6-63.7,81.2-56.3"/>
-                    </g>
-                    <polygon id="tri1" fill="#d7e9cf" points="0,47 0,0 44,22"/>
-                    <polygon id="tri2" fill="#d7e9cf" points="0,47 0,0 44,22"/>
+                              d="M404.4,221 c-39.6-7.4-65.7-45.6-58.3-85.2 s41.6-63.7,81.2-56.3 c39.6,7.4,65.7,45.6,58.3,85.2 s-41.6,63.7,-81.2,56.3 Z"/>
 
-                    <g fill="#c1c0a3">
-{#                        <circle id="orb1" cx="123" cy="410" r="105"/>#}
-                        <circle id="orb2" cx="540" cy="45" r="134"/>
                     </g>
+                    <polygon id="tri1" fill="#fff" points="0,47 0,0 44,22"/>
+                    <polygon id="tri2" fill="#fff" points="0,47 0,0 44,22"/>
 
-                    <g fill="#d4cac8">
+                    {#                    <g fill="#fff">#}
+                    {#                        <circle id="orb1" cx="123" cy="410" r="105"/>#}
+                    {#                        <circle id="orb2" cx="540" cy="45" r="134"/>#}
+                    {#                    </g>#}
+
+                    <g fill="rgb(212, 202, 200, 0.75">
                         <path id="wave2"
                               d="M-941,1510c89-58,147-115,211-201s142-153,210-195s144-42,208-86s69-130,70-173s5-129,38-193 c0,0,17.5-27.5,30.9-40.1C-159.6,609.4-137,593-137,593c89-58,147-115,211-201s142-153,210-195s144-42,208-86s69-130,70-173 s5-129,38-193v1765H-941z"/>
                     </g>
@@ -100,12 +104,12 @@
                             <text x="45" y="320" font-size="21" fill="#000">Holder Name</text>
                             <text x="470" y="320" font-size="26" fill="#000">02/30</text>
 
-                        <img style="width: 80px; position: absolute; left: 25px; top: 70px;"
-                             src="https://genqrcode.com/embedded?style=0&inner_eye_style=0&outer_eye_style=0&logo=null&color=%23000000&inner_eye_color=%23000000&outer_eye_color=%23000000&imageformat=svg&language=en&frame_style=0&frame_text=SCAN%20ME&frame_color=%23000000&invert_colors=false&gradient_style=0&gradient_color_start=%23FF0000&gradient_color_end=%237F007F&gradient_start_offset=5&gradient_end_offset=95&stl_type=1&logo_remove_background=null&stl_size=100&stl_qr_height=1.5&stl_base_height=2&stl_qr_magnet_type=3&stl_qr_magnet_count=0&type=0&text=app.iaro.co&width=500&height=500&bordersize=2"
-                             alt="qr code"/>
+                            <img style="width: 80px; position: absolute; left: 25px; top: 70px;"
+                                 src="{% static '/images/iaro-card-qr.png' %}"
+                                 alt="iaro card"/>
 
+                        </g>
                     </g>
-                </g>
 
             </svg>
         </div>

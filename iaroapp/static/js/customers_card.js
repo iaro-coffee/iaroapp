@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 autoRotate: true,
                 start: 0,
                 end: 1
-            }, duration: 5, repeat: -1, ease: 'none', repeatDelay: 1
+            }, duration: 5, repeat: -1, ease: 'none', repeatDelay: 0
         }, 1.5)
         .from('.coil', {
             attr: {'stroke-dashoffset': (i) => (i == 1) ? -28 : 28},
