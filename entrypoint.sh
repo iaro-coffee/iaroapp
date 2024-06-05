@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# start Memcached
+memcached -d -u django
+
 # apply database migrations
 python manage.py migrate --noinput
 

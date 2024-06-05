@@ -3,7 +3,7 @@ FROM python:3.11-slim
 
 # install npm
 RUN apt-get update && \
-    apt-get install -y npm && \
+    apt-get install -y npm telnet procps dnsutils && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -41,6 +41,11 @@ RUN touch /var/log/nginx/error.log /var/log/nginx/access.log && \
 # redirect Nginx logs to stdout and stderr
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
+
+# install memcached
+RUN apt-get update && \
+    apt-get install -y memcached libmemcached-tools && \
+    apt-get clean
 
 # create non-root user and adjust permissions
 RUN adduser --disabled-password --gecos '' django
