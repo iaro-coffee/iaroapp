@@ -8,7 +8,7 @@ ENV DOMAIN=app.iaro.co
 RUN rm /etc/nginx/conf.d/default.conf
 
 # copy iaro nginx configuration
-COPY nginx/default.conf /etc/nginx/conf.d/
+COPY default.conf /etc/nginx/conf.d/
 
 # set non-root user for better security
 RUN chown -R nginx:nginx /usr/share/nginx/html && \

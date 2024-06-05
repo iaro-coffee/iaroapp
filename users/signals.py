@@ -11,4 +11,8 @@ def create_user_profile(sender, instance, created, **kwargs):
         return
 
     if instance.is_employee and not Profile.objects.filter(user=instance.user).exists():
+        # pos = POSHelloTess()
+        # request = pos.create_customer_card(instance.user.id)
+        # if not request:
+        #    print("error")
         Profile.objects.create(user=instance.user)

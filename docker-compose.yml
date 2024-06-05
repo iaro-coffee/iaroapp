@@ -10,13 +10,10 @@ services:
       - ./.env           # environment variables for django
     build:
       context: .         # context for build (current directory)
-    ports:
-      - "8000:8000"      # expose port 8000 for django app
+    expose:
+      - "8000"      # expose port 8000 for django app
     depends_on:
       - memcached        # ensure memcached starts before django_gunicorn
-    environment:
-      - DJANGO_CACHE_BACKEND=django.core.cache.backends.memcached.PyMemcacheCache
-      - DJANGO_CACHE_LOCATION=memcached:11211
 
   nginx:
     build: ./nginx       # build nginx from specified directory
@@ -25,14 +22,16 @@ services:
       - media_volume:/var/www/iaro-project/media     # share media volume with nginx
       - ./host/path/nginx/logs:/var/log/nginx        # nginx logs
     ports:
-      - "80:80"          # expose port 80 for nginx
+      - "1337:80"          # expose port 80 for nginx
     depends_on:
       - django_gunicorn  # start after django_gunicorn
 
   memcached:
     image: memcached:alpine
     ports:
-      - "11211:11211"           # expose port 11211 for memcached
+      - "11213:11213"           # expose port 11211 for memcached
+    command:
+      - '-m 128'
 
 volumes:
   static_volume:                # define volume for static files
