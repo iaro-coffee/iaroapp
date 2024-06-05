@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
-import dj_database_url
 from dotenv import load_dotenv
 from import_export.formats.base_formats import CSV, XLSX
 
@@ -171,13 +170,13 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': os.environ.get("GOOGLE_CLIENT_ID"),
-            'secret': os.environ.get("GOOGLE_SECRET"),
-            'key': ''
+    "google": {
+        "APP": {
+            "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
+            "secret": os.environ.get("GOOGLE_SECRET"),
+            "key": "",
         },
-        'REDIRECT_URL': '/card/dashboard/'
+        "REDIRECT_URL": "/card/dashboard/",
     }
 }
 
@@ -197,6 +196,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "iaroapp", "static"),
     os.path.join(BASE_DIR, "node_modules"),
+    "/var/www/iaro-project/static",  # correct?
     # add theme here
 ]
 

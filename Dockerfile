@@ -44,4 +44,3 @@ ENTRYPOINT ["entrypoint.sh"]
 # expose port 8000
 EXPOSE 8000
 EXPOSE 80
-EXPOSE 1337

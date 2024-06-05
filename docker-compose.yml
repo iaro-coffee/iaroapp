@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   django_gunicorn:
     volumes:
@@ -11,7 +9,7 @@ services:
     build:
       context: .         # context for build (current directory)
     expose:
-      - "8000"      # expose port 8000 for django app
+      - "8000"           # expose port 8000 for django app inside docker for other services
     depends_on:
       - memcached        # ensure memcached starts before django_gunicorn
 
@@ -20,16 +18,16 @@ services:
     volumes:
       - static_volume:/var/www/iaro-project/static   # share static volume with nginx
       - media_volume:/var/www/iaro-project/media     # share media volume with nginx
-      - ./host/path/nginx/logs:/var/log/nginx        # nginx logs
+      #- ./host/path/nginx/logs:/var/log/nginx        # nginx logs
     ports:
-      - "1337:80"          # expose port 80 for nginx
+      - "1337:80"          # expose port 1337 for nginx outside of docker
     depends_on:
       - django_gunicorn  # start after django_gunicorn
 
   memcached:
     image: memcached:alpine
-    ports:
-      - "11213:11213"           # expose port 11211 for memcached
+    ports: # maybe just use expose?
+      - "11213:11213"           # expose port 11213 for memcached
     command:
       - '-m 128'
 
