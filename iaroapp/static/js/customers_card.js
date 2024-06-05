@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+
     const tl = gsap.timeline()
         .set('svg', {opacity: 1})
         // .set('.scratches', {rotation: 70, x: 450, y: -10})
@@ -41,15 +42,24 @@ document.addEventListener('DOMContentLoaded', function () {
         .from('.logoPt', {x: (i) => [18, -10][i], duration: 1.2, ease: 'expo.inOut'}, 0.9)
         .from('svg text', {x: -40, duration: 1.1, ease: 'expo.inOut', stagger: 0.2}, 1)
         .from('.txtBox', {scaleX: 0, transformOrigin: '100% 0', duration: 1.1, ease: 'expo.inOut', stagger: 0.2}, 1)
-        .fromTo('#wave1', {x: 0, y: 0}, {duration: 6, x: -701, y: 815, repeat: -1, ease: 'none'}, 0)
+        .fromTo('#wave1', {x: 0, y: 0}, {duration: 7, x: -701, y: 815, repeat: -1, ease: 'none'}, 0)
         .fromTo('#wave2', {x: 0, y: 0}, {
-            duration: 6,
+            duration: 7,
             x: 804,
             y: -917,
             repeat: -1,
             ease: 'none',
             onRepeat: () => starShine.play(0)
-        }, 0);
+        }, 0)
+        .from("#qr-code", {
+            duration: 0.8,
+            opacity: 0,
+            x: -30,
+            scale: 0.3,
+            rotation: 180,
+            ease: "power2.out",
+            delay: 0.6
+        }, 1);
 
     starShine = gsap.timeline()
         .set('#star', {scale: 0, transformOrigin: '50% 50%', x: 2, y: 10})
