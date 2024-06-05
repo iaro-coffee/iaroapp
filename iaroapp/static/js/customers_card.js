@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     const tl = gsap.timeline()
         .set('svg', {opacity: 1})
-        .set('.scratches', {rotation: 70, x: 450, y: -10})
-        .set('#tri2', {scale: 0.5})
+        // .set('.scratches', {rotation: 70, x: 450, y: -10})
+        .set('#tri2', {scale: 0.45})
+        .set('#tri1', {scale: 0.65})
         .from('#cardMask rect', {
             scale: 0,
             rotation: -20,
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 autoRotate: true,
                 start: 1,
                 end: 0
-            }, duration: 6, repeat: -1, ease: 'none', repeatDelay: 0
+            }, duration: 8, repeat: -1, ease: 'none', repeatDelay: 0
         }, 0.5)
         .to('#tri2', {
             motionPath: {
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 autoRotate: true,
                 start: 0,
                 end: 1
-            }, duration: 5, repeat: -1, ease: 'none', repeatDelay: 0
+            }, duration: 6, repeat: -1, ease: 'none', repeatDelay: 0
         }, 1.5)
         .from('.coil', {
             attr: {'stroke-dashoffset': (i) => (i == 1) ? -28 : 28},
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .from('.logoPt', {x: (i) => [18, -10][i], duration: 1.2, ease: 'expo.inOut'}, 0.9)
         .from('svg text', {x: -40, duration: 1.1, ease: 'expo.inOut', stagger: 0.2}, 1)
         .from('.txtBox', {scaleX: 0, transformOrigin: '100% 0', duration: 1.1, ease: 'expo.inOut', stagger: 0.2}, 1)
-        .fromTo('#wave1', {x: 0, y: 0}, {duration: 5, x: -701, y: 815, repeat: -1, ease: 'none'}, 0)
+        .fromTo('#wave1', {x: 0, y: 0}, {duration: 6, x: -701, y: 815, repeat: -1, ease: 'none'}, 0)
         .fromTo('#wave2', {x: 0, y: 0}, {
             duration: 6,
             x: 804,

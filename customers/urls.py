@@ -3,7 +3,7 @@ from allauth.account import views as allauth_views
 from . import views
 
 urlpatterns = [
-    path('card/dashboard/', views.CustomerIndexView.as_view(), name='customer_index'),
+    path('card/', views.CustomerIndexView.as_view(), name='customer_index'),
 
     path('card/login/', views.CustomerLoginView.as_view(), name='customer_login'),
     path('card/register/', views.CustomerSignupView.as_view(), name='customer_register'),
