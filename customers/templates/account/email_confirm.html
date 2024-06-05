@@ -32,6 +32,12 @@
                 {% blocktrans %}Unable to confirm {{ email }} because it is already confirmed by a different account.
                 {% endblocktrans %}
             {% endelement %}
+            {% element p %}
+                {% blocktrans %}Get back to{% endblocktrans %}
+                <a href="{% url 'customer_login' %}?form=login" class="link-secondary text-decoration-none"
+                   id="show-login"><b>Login
+                    -></b></a>
+            {% endelement %}
         {% endif %}
     {% else %}
         {% url 'account_email' as email_url %}
@@ -39,10 +45,11 @@
             {% blocktrans %}This email confirmation link expired or is invalid. Please
                 <a href="{{ email_url }}">issue a new email confirmation request</a>.{% endblocktrans %}
         {% endelement %}
+        {% element p %}
+            {% blocktrans %}Get back to{% endblocktrans %}
+            <a href="{% url 'customer_login' %}?form=login" class="link-secondary text-decoration-none" id="show-login"><b>Login
+                -></b></a>
+        {% endelement %}
     {% endif %}
-    {% element p %}
-        {% blocktrans %}Get back to{% endblocktrans %}
-        <a href="{% url 'customer_login' %}?form=login" class="link-secondary text-decoration-none" id="show-login"><b>Login
-            -></b></a>
-    {% endelement %}
+
 {% endblock content %}

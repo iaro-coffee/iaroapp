@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 autoRotate: true,
                 start: 1,
                 end: 0
-            }, duration: 6, repeat: -1, ease: 'none', repeatDelay: 1
+            }, duration: 6, repeat: -1, ease: 'none', repeatDelay: 0
         }, 0.5)
         .to('#tri2', {
             motionPath: {
@@ -55,5 +55,5 @@ document.addEventListener('DOMContentLoaded', function () {
         .to('#star', {scale: 1, repeat: 1, yoyo: true, yoyoEase: true, duration: 0.4, ease: 'power4'}, 0)
         .fromTo('#star', {rotate: -20}, {rotate: 120, duration: 0.8, ease: 'none'}, 0);
 
-    window.onclick = () => tl.play(0);
+    // window.onclick = () => tl.play(0);
 });
