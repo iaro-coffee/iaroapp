@@ -190,15 +190,13 @@ SOCIALACCOUNT_PROVIDERS = {
 # The absolute path to the directory where collectstatic will collect static files for deployment.
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static") # correct?
-STATIC_ROOT = "/var/www/iaro-project/static" # or better this?
+# STATIC_ROOT = "/var/www/iaro-project/static" # or better this?
 
 # The URL to use when referring to static files (where they will be served from)
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "iaroapp", "static"),
     os.path.join(BASE_DIR, "node_modules"),
-    "/var/www/iaro-project/static",  # correct?
-    # add theme here
 ]
 
 # Static file serving.
