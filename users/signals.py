@@ -2,17 +2,31 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from customers.models import CustomerProfile
+from lib.pos_hello_tess import POSHelloTess
 from users.models import Profile
 
 
 @receiver(post_save, sender=CustomerProfile)
 def create_user_profile(sender, instance, created, **kwargs):
+    print(f"Function create_user_profile called with:\n sender={sender},"
+          f"\n instance={instance},\n created={created},\n kwargs={kwargs}")
+
+    pos = POSHelloTess()
+    request = pos.create_customer_card(instance.user.id)
+
+    if not request:
+        print("Error: Failed to create customer card.")
+    else:
+        print("Customer card created successfully.")
+
     if created:
+        print("Instance was just created, exit function.")
         return
 
     if instance.is_employee and not Profile.objects.filter(user=instance.user).exists():
-        # pos = POSHelloTess()
-        # request = pos.create_customer_card(instance.user.id)
-        # if not request:
-        #    print("error")
+        print("Instance is an employee and profile does not exist.")
         Profile.objects.create(user=instance.user)
+        print("Profile created successfully for user.")
+    else:
+        print("No action needed, profile already exists.")
+
