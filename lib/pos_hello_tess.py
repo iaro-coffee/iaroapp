@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 import os
@@ -11,6 +12,10 @@ from lib.pos_system import POSSystem
 logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
+
+
+def get_card_id_from_user(user) -> str:
+    return hashlib.sha256((str(user.id) + user.email).encode("utf-8")).hexdigest()
 
 
 class POSHelloTess(POSSystem):
@@ -34,7 +39,8 @@ class POSHelloTess(POSSystem):
             json=payload,
         )
 
-        if response.status_code != 200:
+        if response.status_code != 201:
+            logger.error(response.content)
             logger.error(
                 f"Creating Card failed with statuscode: {response.status_code}"
             )
@@ -64,7 +70,7 @@ class POSHelloTess(POSSystem):
             card_id=card_id,
             user_group_id=response["userGroupId"],
             card_type=response["type"],
-            balance=0,
+            balance=0,  # response["balance"]
             active=response["active"],
         )
 
