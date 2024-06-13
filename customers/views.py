@@ -61,13 +61,17 @@ class CustomerLoginView(LoginView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CustomerSignupView(SignupView):
+    """View to handle customer sign up."""
+
     template_name = "account/customers_auth.html"
     success_url = reverse_lazy("customer_index")
 
     def get_form_class(self):
+        """Return the form class to use in this view."""
         return CustomSignupForm
 
     def form_valid(self, form):
+        """Validate form, save user and return appropriate JsonResponse."""
         email = form.cleaned_data.get("email")
         if User.objects.filter(email=email).exists():
             form.add_error(
@@ -81,14 +85,15 @@ class CustomerSignupView(SignupView):
             return self.form_invalid(form)
 
         super().form_valid(form)
-
         return JsonResponse({"success": True})
 
     def form_invalid(self, form):
+        """Return JsonResponse with errors when form is invalid."""
         errors = form.errors.as_json()
         return JsonResponse({"success": False, "errors": errors}, status=400)
 
     def get_context_data(self, **kwargs):
+        """Return the context data for this view."""
         context = super().get_context_data(**kwargs)
         context["is_login"] = False
         context["form_signup"] = kwargs.get("form", self.get_form_class()())
