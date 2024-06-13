@@ -1,3 +1,4 @@
+import qrcode
 from allauth.account.models import EmailAddress
 from allauth.account.views import (
     ConfirmEmailView,
@@ -17,6 +18,7 @@ from django.views.generic import TemplateView
 
 from customers.forms import CustomLoginForm, CustomSignupForm
 from customers.models import CustomerProfile
+from lib.pos_hello_tess import get_card_id_from_user
 
 # from allauth.account.utils import send_email_confirmation
 
@@ -125,6 +127,10 @@ class CustomerIndexView(LoginRequiredMixin, TemplateView):
         except CustomerProfile.DoesNotExist:
             first_name = "Guest"
         context["first_name"] = first_name
+
+        qr_code_img = qrcode.make(get_card_id_from_user(self.request.user))
+        print("QRCODE: ", qr_code_img)
+
         return context
 
 

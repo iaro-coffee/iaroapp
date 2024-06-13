@@ -21,7 +21,7 @@
                 {#                    LOGIN FORM  #}
                 <form id="login-form"
                       class="form-card {% if not form_login.errors %}visible{% else %}hidden{% endif %}"
-                      method="post" action="{% url 'customer_login' %}">
+                      method="post" action="{% url 'customer_login' %}" onsubmit="showLoading();">
 
                     {% csrf_token %}
 
@@ -78,7 +78,7 @@
                 <form id="signup-form"
                       class="form-card {% if form_signup.errors %}visible{% else %}hidden{% endif %} fade-in"
                       method="post"
-                      action="{% url 'customer_register' %}">
+                      action="{% url 'customer_register' %}" onsubmit="showLoading();">
 
                     {% csrf_token %}
 

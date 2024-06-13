@@ -12,6 +12,9 @@
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/customers_base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loader_animation.css' %}">
+
+    <script src="{% static '/js/loader_animation.js' %}"></script>
 
     {% block extra_import %}{% endblock %}
 
@@ -55,3 +58,7 @@
 
     {% endblock main %}
 </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>

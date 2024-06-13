@@ -63,6 +63,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    function hideLoading() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
 
     // handle register form errors
     document.getElementById('signup-form').addEventListener('submit', function (event) {
@@ -98,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     errorHtml += '</ul>';
                     errorContainer.innerHTML = errorHtml;
+                    hideLoading();
                 } else {
                     errorContainer.classList.remove('visible_text');
                     errorContainer.classList.add('hidden_text');
@@ -142,6 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     errorHtml += '</ul>';
                     errorContainer.innerHTML = errorHtml;
+                    hideLoading();
                 } else {
                     errorContainer.classList.add('hidden_text');
                     errorContainer.classList.remove('visible_text');
