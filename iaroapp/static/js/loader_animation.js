@@ -17,3 +17,10 @@ document.addEventListener("DOMContentLoaded", function () {
 window.addEventListener("beforeunload", function () {
     showLoading();
 });
+
+window.addEventListener("pageshow", function (event) {
+    // Ensure the loading animation is hidden when the page is loaded from the bfcache
+    if (event.persisted) {
+        hideLoading();
+    }
+});
