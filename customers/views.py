@@ -80,7 +80,8 @@ class CustomerSignupView(SignupView):
             )
             return self.form_invalid(form)
 
-        # response = super().form_valid(form)
+        super().form_valid(form)
+
         return JsonResponse({"success": True})
 
     def form_invalid(self, form):

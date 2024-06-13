@@ -146,24 +146,18 @@
                     {% if socialaccount_providers %}
                         <div class="social-icons">
                             {% for provider in socialaccount_providers %}
-                                {#                                {% if provider.id == "apple" %}#}
-                                <a href="{% provider_login_url provider.id %}" class="btn-social">
-                                    <i class="fab fa-apple"></i>
-                                    <div class="divider"></div>
-                                    <span>Continue with Apple</span>
-                                </a>
-                                {#                                    {% elif provider.id == "google" %}#}
+                                {#                                    {% if provider.id == "google" %}#}
                                 <a href="{% provider_login_url provider.id %}" class="btn-social">
                                     <i class="fab fa-google"></i>
                                     <div class="divider"></div>
                                     <span>Continue with Google</span>
                                 </a>
                                 {#                                    {% elif provider.id == "facebook" %}#}
-                                <a href="{% provider_login_url provider.id %}" class="btn-social">
-                                    <i class="fab fa-facebook"></i>
-                                    <div class="divider"></div>
-                                    <span>Continue with Facebook</span>
-                                </a>
+{#                                <a href="{% provider_login_url provider.id %}" class="btn-social">#}
+{#                                    <i class="fab fa-facebook"></i>#}
+{#                                    <div class="divider"></div>#}
+{#                                    <span>Continue with Facebook</span>#}
+{#                                </a>#}
                                 {#                                {% endif %}#}
                             {% endfor %}
                         </div>
