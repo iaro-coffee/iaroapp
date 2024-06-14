@@ -19,7 +19,7 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             {% for branch in branches %}
-            <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+            <li><a class="dropdown-item" href="?branch={{ branch }}" id="show-loading">{{ branch }}</a></li>
             {% endfor %}
         </ul>
     </div>

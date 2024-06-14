@@ -24,11 +24,15 @@
                 <h6 class="text-center">Welcome to your personal iaro Card!</h6>
 
                 {% if user.customerprofile.is_employee %}
-                    <a class="text-center" href="{% url 'index' %}">Staff Dashboard</a>
+                    <a class="text-center" href="{% url 'index' %}" id="show-loading">Staff Dashboard</a>
+                    <br>
+                {% endif %}
+                {% if request.user.is_superuser %}
+                    <a class="text-center" href="{% url 'admin:index' %}" id="show-loading">Staff Admin</a>
                     <br>
                 {% endif %}
 
-                <a class="text-center" href="{% url 'user_logout' %}">Log Out</a>
+                <a class="text-center" href="{% url 'user_logout' %}" id="show-loading">Log Out</a>
 
             </div>
         </div>

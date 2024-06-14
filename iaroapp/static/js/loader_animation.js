@@ -10,17 +10,40 @@ function hideLoading() {
     document.body.style.overflow = 'auto';
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+
+
+window.addEventListener("load", function () {
     hideLoading();
 });
 
-window.addEventListener("beforeunload", function () {
-    showLoading();
-});
+// window.addEventListener("beforeunload", function (event) {  // unfortunately deprecated
+//     showLoading();
+// });
+//
 
 window.addEventListener("pageshow", function (event) {
-    // Ensure the loading animation is hidden when the page is loaded from the bfcache
     if (event.persisted) {
         hideLoading();
     }
 });
+
+function handleNavigationEvents() {
+    document.querySelectorAll('#show-loading').forEach(element => {
+        element.addEventListener('click', function (event) {
+            showLoading();
+            setTimeout(() => {
+                window.location.href = element.href;
+            }, 100);
+            event.preventDefault();
+        });
+        element.addEventListener('touchstart', function (event) {
+            showLoading();
+            setTimeout(() => {
+                window.location.href = element.href;
+            }, 100);
+            event.preventDefault();
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', handleNavigationEvents);

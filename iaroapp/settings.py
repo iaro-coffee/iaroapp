@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "ckeditor",
     "django_ckeditor_5",
     "crispy_forms",
     "crispy_bootstrap5",
@@ -189,7 +190,7 @@ SOCIALACCOUNT_PROVIDERS = {
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 # The absolute path to the directory where collectstatic will collect static files for deployment.
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static") # correct?
+STATIC_ROOT = os.path.join(BASE_DIR, "static")  # correct?
 # STATIC_ROOT = "/var/www/iaro-project/static" # or better this?
 
 # The URL to use when referring to static files (where they will be served from)

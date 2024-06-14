@@ -7,7 +7,7 @@
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
         {% for weekday_selection in weekdays %}
-        <li><a class="dropdown-item" href="?weekday={{ weekday_selection }}">{{ weekday_selection }}</a></li>
+        <li><a class="dropdown-item" href="?weekday={{ weekday_selection }}" id="show-loading">{{ weekday_selection }}</a></li>
         {% endfor %}
     </ul>
 </div>
