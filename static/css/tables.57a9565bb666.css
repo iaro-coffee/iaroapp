@@ -1,0 +1,189 @@
+.form-check-input {
+    appearance: none;
+    scale: 0.85;
+}
+
+table tr.entry:hover {
+    background-color: rgba(20,23,39,0.05);
+    cursor: pointer;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+    border-color: #949db0;
+}
+
+.form-check-input:disabled[type="checkbox"] {
+    background-image: linear-gradient(310deg, #17ad37 0%, #84dc14 100%);
+}
+.table-collapse {
+    border-collapse: collapse;
+}
+
+/* Tasks specific */
+.entry td {
+    padding: 0.4rem 0;
+}
+.descriptionLink {
+    width: 100px;
+}
+
+.descriptionLink svg {
+    transition: transform 0.2s ease-in-out;
+    scale: 1.05;
+    stroke-width: 1;
+}
+
+.descriptionLink svg:hover {
+    transform: scale(1.25);
+    cursor: pointer;
+}
+.task-description {
+    width: 100%;
+    background-color: var(--bs-secondary);
+    flex-wrap: wrap;
+    flex-direction: column;
+    word-wrap: break-word;
+    white-space: normal;
+    align-items: flex-start;
+    align-content: flex-start;
+    text-align: left;
+    padding: 0.4rem;
+}
+.task-description table {
+    width: 266px !important;
+}
+.task-description table td {
+    padding: 8px;
+}
+.task-description h1 {
+    display: none; /* todo: fix styles in editor and remove this property */
+}
+.task-description p {
+    scale: 0.85;
+    transform-origin: left center;
+    margin: 0;
+}
+.descriptionLink svg {
+    scale: 1.25;
+}
+.task-description table tbody tr {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+}
+.task-description table tbody tr td {
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+    min-width: 60px;
+}
+
+/* Packaging/Shopping storage badges */
+.responsive__show {
+    display: none;
+}
+.badge-wrap {
+    height: 20px;
+}
+.badge {
+    background-color: rgba(58, 65, 111, 0.10);
+    padding: 0.2rem 0.4rem;
+    font-size: 10px;
+    gap: 0.5rem;
+}
+.badge-wrap.d-flex {
+    gap: 0.5rem;
+}
+
+.no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+    .responsive__badges {
+        flex-wrap: wrap;
+        display: flex;
+        gap: 5px;
+    }
+
+
+    @media (max-width: 1199px) {
+        .responsive__hide {
+            display: none;
+        }
+        .responsive__show {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .badge {
+            font-size: 9px;
+            padding: 0.15rem 0.25rem;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+        .badge svg {
+            margin-bottom: 1px;
+        }
+        .responsive__product {
+            width: 100%;
+        }
+        .w-responsive__product {
+            width: 100% !important;
+        }
+
+        .units-column, .units-wrap {
+            display: block !important;
+            justify-content: center !important;
+        }
+        .units-column .value, .units-column .unit {
+            display: block;
+            text-align: center;
+            margin: 0 !important;
+            scale: 0.85;
+        }
+    }
+
+    @media (max-width: 629px) {
+        .table thead th  {
+            max-width: 200px !important;
+        }
+        .table td {
+            max-width: 200px !important;
+        }
+    }
+    @media (max-width: 539px) {
+        .responsive__mobile-3 {
+            width: 260px;!important;
+            word-wrap: break-word;!important;
+            white-space: normal;!important;
+        }
+    }
+
+    @media (max-width: 419px) {
+        .responsive__mobile-3{
+            width: 240px !important;
+        }
+
+        .responsive__break {
+            display: block !important;
+        }
+    }
+
+    @media (max-width: 392px) {
+        .responsive__mobile-1 {
+            padding: 0.6rem !important;
+            width: 36px !important;
+        }
+
+        .responsive__mobile-2 {
+            padding: 0.6rem !important;
+        }
+    }

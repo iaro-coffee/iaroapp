@@ -1,6 +1,5 @@
 from datetime import date
 
-from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User  # Required to assign User as a user
 from django.contrib.auth.models import Group
 from django.db import models, transaction
@@ -8,6 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
+from django_ckeditor_5.fields import CKEditor5Field
 
 from iaroapp.base_model import BaseModel
 from inventory.models import Branch, Product
@@ -25,20 +25,51 @@ class Task(BaseModel):
     """Model representing a task (but not a specific copy of a task)."""
 
     title = models.CharField(max_length=200)
-    users = models.ManyToManyField(User, help_text="Select which users should be assigned for the task. <br>", blank=True)
-    groups = models.ManyToManyField(Group, help_text="Select which groups should be assigned for the task. <br>", blank=True)
-    weekdays = models.ManyToManyField(Weekdays, help_text="Select weekdays for this task. <br>", blank=True)
-    types = models.ManyToManyField(TaskTypes, help_text="Select a type for this task. <br>")
-    summary = RichTextField(max_length=1000, help_text="Enter a brief description of the task. <br>", blank=True)
-    branch = models.ManyToManyField("inventory.Branch", related_name="tasks", help_text="Select which branches should be assigned for the task. <br>", blank=True)
-    parent_task = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="subtasks")
+    users = models.ManyToManyField(
+        User,
+        help_text="Select which users should be assigned for the task. <br>",
+        blank=True,
+    )
+    groups = models.ManyToManyField(
+        Group,
+        help_text="Select which groups should be assigned for the task. <br>",
+        blank=True,
+    )
+    weekdays = models.ManyToManyField(
+        Weekdays, help_text="Select weekdays for this task. <br>", blank=True
+    )
+    types = models.ManyToManyField(
+        TaskTypes, help_text="Select a type for this task. <br>"
+    )
+    summary = CKEditor5Field(
+        max_length=1000,
+        help_text="Enter a brief description of the task. <br>",
+        null=True,
+        blank=True,
+        config_name="extends",
+    )
+    branch = models.ManyToManyField(
+        "inventory.Branch",
+        related_name="tasks",
+        help_text="Select which branches should be assigned for the task. <br>",
+        blank=True,
+    )
+    parent_task = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="subtasks",
+    )
 
     def is_done(self, branch):
         if self.subtasks.all():
             return all(subtask.is_done(branch) for subtask in self.subtasks.all())
         else:
             today = timezone.now().date()
-            return self.taskinstance_set.filter(date_done__date=today, branch=branch).exists()
+            return self.taskinstance_set.filter(
+                date_done__date=today, branch=branch
+            ).exists()
 
     @property
     def get_types(self):

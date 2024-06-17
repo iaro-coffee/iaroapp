@@ -26,6 +26,7 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("admin/", admin.site.urls),
+    path("ckeditor5/", include("django_ckeditor_5.urls")),
     path("inventory/", include("inventory.urls")),
     path("procedures/", include("procedures.urls")),
     path("shifts/", include("shifts.urls")),
