@@ -131,6 +131,10 @@ function updatePredictions() {
 
 // Live status logic
 function getLiveStatus(currentLivePopularity, usualPopularity) {
+    if (currentLivePopularity === 0) {
+        return 'Waiting for more data';
+    }
+
     if (currentLivePopularity === usualPopularity) {
         return 'As busy as usual';
     } else if (currentLivePopularity > usualPopularity) {
@@ -153,6 +157,7 @@ function getLiveStatus(currentLivePopularity, usualPopularity) {
         }
     }
 }
+
 
 // Usual Status logic
 function getUsualStatus(value) {
@@ -311,7 +316,3 @@ const sortedDays = daySummaries.sort((a, b) => a.total - b.total);
 sortedDays.forEach(daySummary => {
     //console.log(`${daySummary.day}: ${daySummary.total}`);
 });
-
-
-
-

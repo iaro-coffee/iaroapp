@@ -1,3 +1,6 @@
+from base64 import b64encode
+from io import BytesIO
+
 import qrcode
 from allauth.account.models import EmailAddress
 from allauth.account.views import (
@@ -11,6 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -107,29 +111,48 @@ class CustomLogoutView(LogoutView):
     template_name = "account/logout.html"
 
 
+def generate_qr_code_base64(data: str) -> str:
+    # Generate qr code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=10,
+        border=0,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    # Remove bg
+    img = qr.make_image(fill_color="black", back_color="transparent")
+
+    # Save to buffer
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+    encoded_img = b64encode(buffer.read()).decode()
+
+    return f"data:image/png;base64,{encoded_img}"
+
+
 class CustomerIndexView(LoginRequiredMixin, TemplateView):
     template_name = "customers_index.html"
 
-    # todo add qr-code data
-    # qr_code_img = qrcode.make(get_card_id_from_user(instance.user))  # This should be the device for which you want to generate the QR code
-    # buffer = BytesIO()
-    # qr_code_img.save(buffer)
-    # buffer.seek(0)
-    # encoded_img = b64encode(buffer.read()).decode()
-    # qr_code_data = f'data:image/png;base64,{encoded_img}' # send this to index
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        try:
-            first_name = self.request.user.customerprofile.first_name
-            if not first_name:
-                first_name = "Guest"
-        except CustomerProfile.DoesNotExist:
-            first_name = "Guest"
-        context["first_name"] = first_name
+        customer_profile = get_object_or_404(CustomerProfile, user=self.request.user)
 
-        qr_code_img = qrcode.make(get_card_id_from_user(self.request.user))
-        print("QRCODE: ", qr_code_img)
+        # Check if code is already stored in db, if not - create it
+        if not customer_profile.card_qr_code:
+            qr_code_data = generate_qr_code_base64(
+                get_card_id_from_user(self.request.user)
+            )
+            customer_profile.card_qr_code = qr_code_data
+            customer_profile.save()
+        else:
+            qr_code_data = customer_profile.card_qr_code
+
+        # Add qr to context
+        context["qr_code_data"] = qr_code_data
 
         return context
 

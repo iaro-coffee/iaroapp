@@ -81,8 +81,8 @@
                     <text x="45" y="320" font-size="22" fill="#000">{{ user.email }}</text>
                     <text x="470" y="320" font-size="22" fill="#000">02/30</text>
 
-                    <img id="qr-code" style="width: 70px; position: absolute; left: 20px; top: 70px;"
-                         src="{% static '/images/iaro-card-qr.png' %}"
+                    <img id="qr-code" style="width: 70px; position: absolute; left: 30px; top: 70px;"
+                         src="{{ qr_code_data }}"
                          alt="iaro card"/>
                 </g>
             </g>
