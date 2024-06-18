@@ -21,6 +21,9 @@ WORKDIR /app
 # create static files and media dir
 RUN mkdir -p /var/www/iaro-project/static /var/www/iaro-project/media
 
+# copy default media files
+COPY media /var/www/iaro-project/media
+
 # install npm dependencies
 COPY package.json /app/
 RUN npm ci
@@ -30,6 +33,9 @@ RUN adduser --disabled-password --gecos '' django
 
 # change ownership of the /app, static and mediafiles dir
 RUN chown -R django:django /app /var/www/iaro-project/static /var/www/iaro-project/media
+
+# set correct permissions for the media directory
+RUN chmod -R 755 /var/www/iaro-project/media
 
 # copy and set entrypoint script
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
