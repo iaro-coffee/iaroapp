@@ -24,8 +24,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             cardContent.classList.remove('blur-effect');
             logo.classList.remove('blur-effect');
+            cardContent.classList.add('fade-in');
+            logo.classList.add('fade-in');
             header.textContent = isSignup ? 'Register' : 'Log In';
+
+            setTimeout(function () {
+                cardContent.classList.remove('fade-in');
+                logo.classList.remove('fade-in');
+            }, 700); // duration of the fade-in animation
         }, 300);
+
     }
 
     document.getElementById('show-signup').addEventListener('click', function (e) {

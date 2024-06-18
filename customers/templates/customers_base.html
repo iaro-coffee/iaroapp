@@ -47,10 +47,10 @@
     </style>
 </head>
 
-<div class="container-fluid card-container">
+<div class="container-fluid fade-in card-container">
     {% block main %}
         <div class="card p-4" style="max-width: 400px; margin: auto; border-radius: 15px;">
-            <div class="logo-container text-center mb-3">
+            <div class="logo-container fade-in text-center mb-3">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" width="175" height="57">
             </div>
         {% block content %}{% endblock content%}
