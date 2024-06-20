@@ -3,27 +3,28 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.db.models import Count
-from django.shortcuts import redirect, render, reverse
+from django.shortcuts import redirect, render, reverse, get_object_or_404
 
+from users.models import Profile
 from .forms import ProductFormset
 from .models import Branch, Product, ProductStorage, Storage
 
 
-def get_current_branch(request):
-    branch = request.GET.get("branch")
-    if branch == "All":
-        return branch
-    if not branch:
-        departmentId = request.session.get("departmentId", None)
-        if departmentId:
-            branch = Branch.objects.filter(departmentId=departmentId).first()
-            if branch:
-                return branch
-    else:
-        branch = Branch.objects.filter(name=branch).first()
-        if branch:
-            return branch
-    return Branch.objects.first()
+# def get_current_branch(request):
+#     branch = request.GET.get("branch")
+#     if branch == "All":
+#         return branch
+#     if not branch:
+#         departmentId = request.session.get("departmentId", None)
+#         if departmentId:
+#             branch = Branch.objects.filter(departmentId=departmentId).first()
+#             if branch:
+#                 return branch
+#     else:
+#         branch = Branch.objects.filter(name=branch).first()
+#         if branch:
+#             return branch
+#     return Branch.objects.first()
 
 
 def getAvailableBranchesFiltered(branch):
@@ -204,14 +205,36 @@ def inventory_evaluation(request):
     )
 
 
+def get_current_branch(request):
+    profile = get_object_or_404(Profile, user=request.user)
+    return profile.branch
+
+
 def inventory_shopping(request):
-    products = Product.objects.filter(seller__internal=False)
+    branches = Branch.objects.all()
+    branch_id = request.GET.get('branch')
+    current_branch = get_current_branch(request)
+
+    if branch_id == 'all':
+        selected_branch = None
+    elif branch_id:
+        try:
+            selected_branch = branches.get(id=branch_id)
+        except Branch.DoesNotExist:
+            selected_branch = current_branch
+    else:
+        selected_branch = current_branch
+
+    if selected_branch:
+        products = Product.objects.filter(seller__internal=False, branch=selected_branch)
+    else:
+        products = Product.objects.filter(seller__internal=False)
+
     sellers = []
     for prod in products:
         if (prod.display_seller() not in sellers) and prod.has_shortage:
             sellers.append(prod.display_seller())
 
-    # Get last product modification date
     modified_date = getInventoryModifiedDate()
 
     return render(
@@ -222,6 +245,8 @@ def inventory_shopping(request):
             "products": products,
             "modifiedDate": modified_date,
             "sellers": sellers,
+            "branches": branches,
+            "selected_branch": selected_branch,
         },
     )
 

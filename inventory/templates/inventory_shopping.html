@@ -5,6 +5,20 @@
     <link rel="stylesheet" href="{% static 'css/tables.css' %}" type="text/css">
 {% endblock extra_css %}
 
+{% block widgets %}
+<div class="dropdown">
+    <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {% if selected_branch %}{{ selected_branch.name }}{% else %}All Branches{% endif %}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="?branch=all" id="show-loading">All Branches</a></li>
+        {% for branch in branches %}
+        <li><a class="dropdown-item" href="?branch={{ branch.id }}" id="show-loading">{{ branch.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
 
 {% block content %}
 {% for seller in sellers %}

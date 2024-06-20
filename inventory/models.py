@@ -96,6 +96,7 @@ class Product(BaseModel):
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name="products")
 
     @property
     def has_main_storage(self):
@@ -134,7 +135,7 @@ class Product(BaseModel):
         )["total_value_intended"]
         if total_value is None or total_value_intended is None:
             return 0
-        return abs(float(total_value_intended - total_value))
+        return float(total_value_intended - total_value)
 
     def get_oos_value_shipping(self):
         product_storage_dict = {}
