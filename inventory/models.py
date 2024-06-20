@@ -230,9 +230,9 @@ class ProductStorage(BaseModel):
     storage = models.ForeignKey(Storage, on_delete=models.CASCADE)
     value = models.FloatField()
     value_intended = models.FloatField()
-    threshold = models.IntegerField(
-        default=30,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    threshold = models.FloatField(
+        default=30.0,
+        validators=[MinValueValidator(0.0)],
         help_text="Enter the amount of the item, when it needs to get bought.",
     )
     main_storage = models.BooleanField(default=False)
