@@ -33,6 +33,7 @@ urlpatterns = [
     path("ratings/", include("ratings.urls")),
     path("tasks/", include("tasks.urls")),
     path("users/", include("users.urls")),
+    path("notes/", include("interactions.urls")),  # Updated path
     path("", include("customers.urls")),
 ]
 

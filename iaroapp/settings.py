@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "inventory.apps.InventoryConfig",
     "users.apps.UsersConfig",
     "customers",
+    "interactions",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
