@@ -218,7 +218,11 @@ def index(request: HttpRequest):
         else {}
     )
     time_spent = populartimes_data.get("time_spent", [15, 45])
-    print(formatted_address)
+
+    # Notes functionality
+    received_notes = request.user.received_notes.all()
+    print(received_notes)
+
     context = {
         "pageTitle": "Dashboard",
         "nextShifts": userShifts[:5],
@@ -236,6 +240,7 @@ def index(request: HttpRequest):
         "formatted_address": formatted_address,
         "user_profile": user_profile,
         "customer_profile": customer_profile,
+        "received_notes": received_notes,
     }
 
     return render(request, "index.html", context=context)

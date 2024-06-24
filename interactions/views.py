@@ -23,6 +23,7 @@ def send_note_view(request):
 def view_notes_view(request):
     received_notes = request.user.received_notes.all()
     sent_notes = request.user.sent_notes.all()
+    print(received_notes)
     return render(
         request,
         "view_notes.html",
