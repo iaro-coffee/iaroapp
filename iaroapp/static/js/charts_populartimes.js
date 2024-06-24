@@ -14,8 +14,14 @@ const currentTime = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit
 const currentHour = new Date().getHours();
 const jsDayOfWeek  = new Date().getDay(); // JS day, 0-Sunday, 1-Monday, ..., 6-Saturday
 const dayIndex = jsDayOfWeek === 0 ? 6 : jsDayOfWeek - 1; // API day, 0-Monday, ..., 6-Sunday
-const todayData = populartimesData[dayIndex];
+let todayData = undefined;
+if (Array.isArray(populartimesData) && populartimesData[dayIndex]) {
+    todayData = populartimesData[dayIndex];
+}
 
+// if (!todayData) {
+//     console.error('Today data is not defined for day index:', dayIndex);
+// }
 // console.log('Current hour:', currentHour);
 // console.log('Current day:', dayIndex);
 // console.log('Today data:', todayData);

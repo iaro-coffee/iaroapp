@@ -1,21 +1,19 @@
 import json
+import logging
 from datetime import datetime, timedelta
 
 import livepopulartimes
-from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Avg
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
+from django.http import HttpRequest
+from django.shortcuts import render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
 from customers.models import CustomerProfile
 from iaroapp.decorators import employee_required
-from inventory.views import get_current_branch
 from lib import planday
 from ratings.views import EmployeeRating
 from shifts.models import Shift
@@ -23,7 +21,6 @@ from tasks.models import TaskInstance
 from tasks.views import get_my_tasks
 from users.models import Profile
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -166,73 +163,79 @@ def getStatistics(request):
     return statistics, statisticsSum
 
 
+def get_user_profile(user):
+    try:
+        return Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        logger.info(f"User {user.username} does not have a profile.")
+        print(f"User {user.username} does not have a profile.")
+        return None
+
+
+def get_customer_profile(user):
+    try:
+        return user.customerprofile
+    except CustomerProfile.DoesNotExist:
+        logger.info(f"User {user.username} does not have a customer profile.")
+        print(f"User {user.username} does not have a customer profile.")
+        return None
+
+
 @employee_required
 @login_required
-def index(request):
+def index(request: HttpRequest):
+    """
+    Render the dashboard page for the user with relevant data including shifts,
+    tasks, and popular times data based on the user's branch address.
+    """
     today = datetime.today().date()
     userShifts = getNextShiftsByUser(request)
     myTasks = get_my_tasks(request)
     ongoingShift = hasOngoingShift(request)
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
     statistics, statisticsSum = getStatistics(request)
+    user_profile = get_user_profile(request.user)
+    customer_profile = get_customer_profile(request.user)
 
-    branch_address = None
-    formatted_address = None
-    branch_name = None
-
-    try:
-        user_profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
-        logger.info(f"User {request.user.username} does not have a profile.")
-        user_profile = None
-
-    try:
-        customer_profile = request.user.customerprofile
-    except CustomerProfile.DoesNotExist:
-        logger.info(f"User {request.user.username} does not have a customer profile.")
-        customer_profile = None
-
+    # Set formatted address based on user profile and branch
     if user_profile and user_profile.branch:
-        branch_address = f"{user_profile.branch.street_address}, {user_profile.branch.city}"
-        if user_profile.branch.name == "iaro Space":
-            formatted_address = "iaro West Karlsruhe"
-            branch_name = "iaro West"
+        if user_profile.branch.tech_name not in ["iaro-ost", "iaro-west"]:
+            formatted_address = "iaro Sophienstraße 108, Karlsruhe"
         else:
-            formatted_address = f"{user_profile.branch.name} Karlsruhe"
-            branch_name = user_profile.branch.name
+            formatted_address = (
+                f"iaro {user_profile.branch.street_address}, {user_profile.branch.city}"
+            )
+    else:
+        formatted_address = "iaro Sophienstraße 108, Karlsruhe"
 
     # Override formatted_address if provided in GET request
-    if 'formatted_address' in request.GET:
-        formatted_address = request.GET.get("formatted_address")
+    formatted_address = request.GET.get("formatted_address", formatted_address)
 
-    # Ensure formatted_address is a string
-    formatted_address_str = formatted_address if formatted_address else ""
-
-    populartimes_data = livepopulartimes.get_populartimes_by_address(formatted_address) if formatted_address else {}
-    time_spent = populartimes_data.get("time_spent", [15, 45])
-
-    return render(
-        request,
-        "index.html",
-        context={
-            "pageTitle": "Dashboard",
-            "nextShifts": userShifts[:5],
-            "task_list": myTasks[:5],
-            "tasks_done_last_month": tasksDoneLastMonth,
-            "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
-            "statistics": statistics,
-            "statistics_sum": statisticsSum,
-            "today": today,
-            "ongoingShift": ongoingShift[0],
-            "shiftStart": ongoingShift[1],
-            "formatted_address": formatted_address_str,
-            "populartimes": populartimes_data.get("populartimes", []),
-            "time_spent": time_spent,
-            "current_popularity": populartimes_data.get("current_popularity", []),
-            "branch": branch_name if branch_name else None,
-            "branch_address": branch_address,
-            "user_profile": user_profile,
-            "customer_profile": customer_profile,
-        },
+    # Retrieve populartimes data
+    populartimes_data = (
+        livepopulartimes.get_populartimes_by_address(formatted_address)
+        if formatted_address
+        else {}
     )
+    time_spent = populartimes_data.get("time_spent", [15, 45])
+    print(formatted_address)
+    context = {
+        "pageTitle": "Dashboard",
+        "nextShifts": userShifts[:5],
+        "task_list": myTasks[:5],
+        "tasks_done_last_month": tasksDoneLastMonth,
+        "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
+        "statistics": statistics,
+        "statistics_sum": statisticsSum,
+        "today": today,
+        "ongoingShift": ongoingShift[0] if ongoingShift else None,
+        "shiftStart": ongoingShift[1] if ongoingShift else None,
+        "populartimes": populartimes_data.get("populartimes", []),
+        "time_spent": time_spent,
+        "current_popularity": populartimes_data.get("current_popularity", []),
+        "formatted_address": formatted_address,
+        "user_profile": user_profile,
+        "customer_profile": customer_profile,
+    }
 
+    return render(request, "index.html", context=context)

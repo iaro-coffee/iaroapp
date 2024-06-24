@@ -1,5 +1,5 @@
 from colorful.fields import RGBColorField
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Sum
 from django.template import Library
@@ -33,12 +33,29 @@ class Branch(BaseModel):
     """Model representing iaro department and storages location associated with it"""
 
     name = models.CharField(max_length=500)
-    storages = models.ManyToManyField(Storage, related_name='branches', help_text="Storages associated with this branch.")
-    departmentId = models.CharField(max_length=500, default="", help_text="Department ID associated with the branch.")
-    technical_name = models.CharField(max_length=500, blank=True, help_text="Technical name for internal use.")
-
-    street_address = models.CharField(max_length=500, default="Sophienstraße 108", help_text="Street address of the branch.")
-    city = models.CharField(max_length=500, default="Karlsruhe", help_text="City where the branch is located.")
+    tech_name = models.CharField(
+        max_length=500, blank=True, help_text="Technical name for internal use."
+    )
+    storages = models.ManyToManyField(
+        Storage,
+        related_name="branches",
+        help_text="Storages associated with this branch.",
+    )
+    departmentId = models.CharField(
+        max_length=500,
+        default="",
+        help_text="Department ID associated with the branch.",
+    )
+    street_address = models.CharField(
+        max_length=500,
+        default="Sophienstraße 108",
+        help_text="Street address of the branch.",
+    )
+    city = models.CharField(
+        max_length=500,
+        default="Karlsruhe",
+        help_text="City where the branch is located.",
+    )
 
     class Meta:
         verbose_name_plural = "Branches"
@@ -60,8 +77,8 @@ class Branch(BaseModel):
 
     def save(self, *args, **kwargs):
         """Override the save method to set the technical name if not provided."""
-        if not self.technical_name:
-            self.technical_name = slugify(self.name)
+        if not self.tech_name:
+            self.tech_name = slugify(self.name)
         super().save(*args, **kwargs)
 
 
@@ -96,7 +113,9 @@ class Product(BaseModel):
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
     seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
     modified_date = models.DateTimeField(auto_now=True)
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name="products")
+    branch = models.ForeignKey(
+        Branch, on_delete=models.CASCADE, related_name="products"
+    )
 
     @property
     def has_main_storage(self):

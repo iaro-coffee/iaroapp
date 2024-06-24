@@ -212,22 +212,21 @@
                         </div>
                     </div>
 
+                    {#    check if hardcoded formatted_address correspond to DB    #}
                     <form class="d-flex justify-content-center gap-2 mb-4" method="GET"
                           action="{% url 'index' %}#popular-times">
                         <input type="hidden" name="formatted_address" id="formatted_address"
                                value="{{ formatted_address }}">
 
-                        <button
-                                class="h6 text-bold mt-3 w-35 {% if formatted_address == 'Iaro Ost Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
+                        <button class="h6 text-bold mt-3 w-35 {% if formatted_address == 'iaro Rintheimer 1, Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
                                 type="submit"
-                                onclick="document.getElementById('formatted_address').value='Iaro Ost Karlsruhe';">
+                                onclick="document.getElementById('formatted_address').value='iaro Rintheimer 1, Karlsruhe';">
                             Iaro Ost
                         </button>
 
-                        <button
-                                class="h6 text-bold mt-3 w-35 {% if formatted_address == 'Iaro West Karlsruhe' or formatted_address == 'iaro Space Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
+                        <button class="h6 text-bold mt-3 w-35 {% if formatted_address != 'iaro Rintheimer 1, Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
                                 type="submit"
-                                onclick="document.getElementById('formatted_address').value='Iaro West Karlsruhe';">
+                                onclick="document.getElementById('formatted_address').value='iaro Sophienstraße 108, Karlsruhe';">
                             Iaro West
                         </button>
                     </form>
