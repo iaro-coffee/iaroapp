@@ -213,20 +213,20 @@
                     </div>
 
                     {#    check if hardcoded formatted_address correspond to DB    #}
-                    <form class="d-flex justify-content-center gap-2 mb-4" method="GET"
+                    <form id="anchorForTimes" class="d-flex justify-content-center gap-2 mb-4" method="GET"
                           action="{% url 'index' %}#popular-times">
                         <input type="hidden" name="formatted_address" id="formatted_address"
                                value="{{ formatted_address }}">
 
                         <button class="h6 text-bold mt-3 w-35 {% if formatted_address == 'iaro Rintheimer 1, Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
                                 type="submit"
-                                onclick="document.getElementById('formatted_address').value='iaro Rintheimer 1, Karlsruhe';">
+                                onclick="document.getElementById('formatted_address').value='iaro Rintheimer 1, Karlsruhe'; showLoading();">
                             Iaro Ost
                         </button>
 
                         <button class="h6 text-bold mt-3 w-35 {% if formatted_address != 'iaro Rintheimer 1, Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
                                 type="submit"
-                                onclick="document.getElementById('formatted_address').value='iaro Sophienstraße 108, Karlsruhe';">
+                                onclick="document.getElementById('formatted_address').value='iaro Sophienstraße 108, Karlsruhe'; showLoading();">
                             Iaro West
                         </button>
                     </form>
@@ -435,7 +435,28 @@
         fetchHolidays();
     </script>
 
+    <script>
+        // scroll down for mobile devices
+        window.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('anchorForTimes');
 
+            function updateFormAction() {
+                if (window.innerWidth < 992) {
+                    form.action = "{% url 'index' %}#popular-times";
+                    setTimeout(function () {
+                        window.scrollBy(0, -90);
+                    }, 100);
+                } else {
+                    form.action = "{% url 'index' %}";
+                }
+            }
+
+            updateFormAction();
+
+            // Update action whenever the window is resized
+            window.addEventListener('resize', updateFormAction);
+        });
+    </script>
 
     <script>
         // Charts parsing
