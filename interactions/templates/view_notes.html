@@ -1,33 +1,153 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>View Notes</title>
-</head>
-<body>
-    <h1>Received Notes</h1>
-    <ul>
-        {% for note in received_notes %}
-        <li>
-            <img src="{{ note.sender.profile.avatar.url }}" alt="{{ note.sender.username }}'s avatar" style="width: 50px; height: 50px; border-radius: 50%;">
-            {{ note.timestamp }} - From {{ note.sender.username }}: {{ note.content }}
-        </li>
-        {% endfor %}
-    </ul>
+{% extends "base_generic.html" %}
+{% load static %}
 
-    <h1>Sent Notes</h1>
-    <ul>
-        {% for note in sent_notes %}
-        <li>
-            {{ note.timestamp }} - To
-            {% for receiver in note.receivers.all %}
-                <img src="{{ receiver.profile.avatar.url }}" alt="{{ receiver.username }}'s avatar" style="width: 50px; height: 50px; border-radius: 50%;">
-                {{ receiver.username }}
-                {% if not forloop.last %}, {% endif %}
-            {% endfor %}:
-            {{ note.content }}
-        </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% block extra_head %}
+	<title>iaroapp - Notes</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100" id="notes">
+                <div class="card-header pb-0">
+                    <h6>Send a Note</h6>
+                </div>
+                <div class="card-body p-3">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="w-100 btn bg-gradient-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100" id="notes">
+
+                <div class="card-body p-3">
+                    <h6>Archive Received Notes</h6>
+
+                    {% for note in received_notes %}
+                        <div class="d-flex justify-content-between">
+                            <div class="user__info w-75">
+                                <ul>
+                                    <li>
+                                        From
+                                        <img src="
+
+                                                {% if note.sender.profile.avatar.url %}{{ note.sender.profile.avatar.url }}
+                                                  {% else %} {% static 'images/avatar.png' %} {% endif %}"
+                                             alt="{{ note.sender.username }}'s avatar"
+                                             style="width: 32px; height: 32px; border-radius: 50%; background-color: #2C009F">
+                                        {{ note.sender.username }}:
+                                        {{ note.content }}
+
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="note__time text-xs text-secondary align-content-center">
+                                {{ note.timestamp|date:"F j" }}<br>
+                                {{ note.timestamp|time }}
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100" id="notes">
+
+                <div class="card-body p-3">
+                    <h6>Archive Sent Notes</h6>
+                    {% for note in sent_notes %}
+                        <div class="d-flex justify-content-between">
+                            <div class="user__info w-75">
+                                <ul>
+
+                                    <li>
+                                        To
+                                        {% if note.branches.exists %}
+                                            {% for branch in note.branches.all %}
+                                                {{ branch.name }}
+                                                {% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            {% for receiver in note.receivers.all %}
+                                                <img src="
+
+                                                        {% if receiver.profile.avatar.url %}{{ receiver.profile.avatar.url }}
+                                                      {% else %} {% static 'images/avatar.png' %} {% endif %}"
+                                                     alt="{{ receiver.username }}'s avatar"
+                                                     style="width: 32px; height: 32px; border-radius: 50%; background-color: #2C009F">
+                                                {{ receiver.username }}
+                                                {% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% endif %}:
+                                        {{ note.content }}
+                                        <br><br>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="note__time text-xs text-secondary align-content-center">
+                                {{ note.timestamp|date:"F j" }}<br>
+                                {{ note.timestamp|time }}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <style>
+    .title {
+        display: none !important;
+    }
+    body.dark-page textarea {
+        background-color: #323b55 !important;
+    }
+    .select2-results__options {
+        color: #323b55 !important;
+    }
+
+    .select2-selection__choice {
+        color: #323b55 !important;
+        padding-left: 1.6rem !important;
+        padding-right: 0.8rem !important;
+    }
+    .select2-container {
+        background-color: #323b55 !important;
+    }
+    .select2 {
+        width: 100%;
+    }
+    </style>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#id_receivers').select2({
+            placeholder: "Select users",
+            allowClear: true
+        });
+        $('#id_branches').select2({
+            placeholder: "Select branches",
+            allowClear: true
+        });
+    });
+</script>
+{% endblock extra_js %}

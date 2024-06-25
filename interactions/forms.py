@@ -10,14 +10,13 @@ class NoteForm(forms.ModelForm):
     branches = forms.ModelMultipleChoiceField(
         queryset=Branch.objects.all(), required=False, label="Send to Branches"
     )
+    receivers = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(), required=False, label="Send to Users"
+    )
 
     class Meta:
         model = Note
         fields = ["content", "receivers", "branches"]
-        widgets = {
-            "receivers": forms.CheckboxSelectMultiple(),
-            "branches": forms.CheckboxSelectMultiple(),
-        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -31,13 +30,14 @@ class NoteForm(forms.ModelForm):
 
         return cleaned_data
 
-    def save(self, commit=True):
+    def save(self, commit=True, sender=None):
         note = super().save(commit=False)
+        if sender:
+            note.sender = sender
+
+        note.save()  # Ensure the note instance is saved to the database and has an ID
+
         branches = self.cleaned_data.get("branches")
-
-        if commit:
-            note.save()
-
         if branches:
             users_in_branches = User.objects.filter(
                 profile__branch__in=branches
@@ -45,7 +45,6 @@ class NoteForm(forms.ModelForm):
             note.receivers.add(*users_in_branches)
 
         if commit:
-            note.save()
             self.save_m2m()
 
         return note

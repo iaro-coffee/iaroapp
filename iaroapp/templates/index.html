@@ -238,21 +238,35 @@
                 <div class="card h-100" id="notes">
                     <div class="card-header pb-0">
                         <h6>Your Notes</h6>
-                        <p class="text-sm"><i class="fas fa-sticky-note pe-2 text-success"></i>Stay on top of things!
-                            Add and view your notes here.</p>
+                        <p class="text-sm"><i class="fas fa-sticky-note pe-2 text-success"></i>Stay on top of things, check your last notes.</p>
                     </div>
                     <div class="card-body p-3">
-                        <h6>Received Today</h6>
-                        <ul>
-                            {% for note in received_notes %}
-                                <li>
+                        {% for note in received_notes %}
+                            <div class="d-flex justify-content-between">
+                                <div class="user__info w-75">
                                     <img src="{{ note.sender.profile.avatar.url }}"
                                          alt="{{ note.sender.username }}'s avatar"
-                                         style="width: 40px; height: 40px; border-radius: 50%; background-color: #3acaeb">
-                                    {{ note.timestamp|time }} - From {{ note.sender.username }}: {{ note.content }}
-                                </li>
-                            {% endfor %}
-                        </ul>
+                                         style="width: 32px; height: 32px; border-radius: 50%; background-color: #3acaeb">
+                                    {{ note.sender.username }}:
+                                    {% if note.content|length > 140 %}
+                                        {{ note.content|slice:":140" }}...
+                                    {% else %}
+                                        {{ note.content }}
+                                    {% endif %}
+                                    <br><br>
+                                </div>
+                                <div class="note__time text-xs text-secondary align-content-center">
+                                    {{ note.timestamp|date:"F j" }}<br>
+                                    {{ note.timestamp|time }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="d-flex justify-content-center">
+                            <a class="btn bg-gradient-primary mt-3 w-100"
+                               href="/notes">
+                                Manage notes
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

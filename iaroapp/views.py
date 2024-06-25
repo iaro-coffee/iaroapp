@@ -6,7 +6,7 @@ import livepopulartimes
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Avg
+from django.db.models import Avg, Q
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.utils import timezone
@@ -14,6 +14,7 @@ from django.utils.dateparse import parse_datetime
 
 from customers.models import CustomerProfile
 from iaroapp.decorators import employee_required
+from interactions.models import Note
 from lib import planday
 from ratings.views import EmployeeRating
 from shifts.models import Shift
@@ -219,9 +220,20 @@ def index(request: HttpRequest):
     )
     time_spent = populartimes_data.get("time_spent", [15, 45])
 
-    # Notes functionality
-    received_notes = request.user.received_notes.all()
-    print(received_notes)
+    # Retrieve Notes
+    user_branch = user_profile.branch if user_profile else None
+    if user_branch:
+        combined_notes = (
+            Note.objects.filter(Q(receivers=request.user) | Q(branches=user_branch))
+            .distinct()
+            .order_by("-timestamp")[:5]
+        )
+    else:
+        combined_notes = (
+            Note.objects.filter(receivers=request.user)
+            .distinct()
+            .order_by("-timestamp")[:5]
+        )
 
     context = {
         "pageTitle": "Dashboard",
@@ -240,7 +252,7 @@ def index(request: HttpRequest):
         "formatted_address": formatted_address,
         "user_profile": user_profile,
         "customer_profile": customer_profile,
-        "received_notes": received_notes,
+        "received_notes": combined_notes,
     }
 
     return render(request, "index.html", context=context)
