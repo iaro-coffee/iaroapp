@@ -223,6 +223,12 @@ def index(request: HttpRequest):
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
 
+    # Display address for shifts
+    if user_profile and user_profile.branch:
+        branch_address = (
+            f"{user_profile.branch.street_address}, {user_profile.branch.city}"
+        )
+
     combined_notes = (
         Note.objects.filter(Q(receivers=request.user) | Q(branches=user_branch))
         .distinct()
@@ -244,6 +250,7 @@ def index(request: HttpRequest):
         "time_spent": time_spent,
         "current_popularity": populartimes_data.get("current_popularity", []),
         "formatted_address": formatted_address,
+        "branch_address": branch_address,
         "user_profile": user_profile,
         "customer_profile": customer_profile,
         "received_notes": combined_notes,
