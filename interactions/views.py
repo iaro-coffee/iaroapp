@@ -24,7 +24,7 @@ class NoteView(LoginRequiredMixin, TemplateView):
         received_notes = (
             Note.objects.filter(Q(receivers=user) | Q(branches=user_branch))
             .distinct()
-            .order_by("-timestamp")[:5]
+            .order_by("-timestamp")[:10]
         )
 
         # Mark notes as read for the current user
@@ -37,7 +37,7 @@ class NoteView(LoginRequiredMixin, TemplateView):
                 read_status.save()
 
         # Fetch sent notes
-        sent_notes = self.request.user.sent_notes.all().order_by("-timestamp")[:5]
+        sent_notes = self.request.user.sent_notes.all().order_by("-timestamp")[:10]
 
         context["received_notes"] = received_notes
         context["sent_notes"] = sent_notes
@@ -89,21 +89,30 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
         )
 
         data = {
-            "received_notes": [self.note_to_dict(note) for note in received_notes],
-            "sent_notes": [self.note_to_dict(note) for note in sent_notes],
+            "received_notes": [
+                self.note_to_dict(note, user_branch) for note in received_notes
+            ],
+            "sent_notes": [self.note_to_dict(note, user_branch) for note in sent_notes],
         }
 
         return JsonResponse(data)
 
-    def note_to_dict(self, note):
+    def note_to_dict(self, note, user_branch):
         return {
-            "sender_username": note.sender.username,
+            "sender_username": note.sender.username if note.sender else None,
             "sender_avatar": (
-                note.sender.profile.avatar.url if note.sender.profile.avatar else ""
+                note.sender.profile.avatar.url
+                if note.sender and note.sender.profile.avatar
+                else ""
             ),
             "content": note.content,
             "timestamp_date": note.timestamp.strftime("%B %d"),
             "timestamp_time": note.timestamp.strftime("%H:%M"),
+            "branches": (
+                [{"name": branch.name} for branch in note.branches.all()]
+                if note.branches.exists()
+                else None
+            ),
         }
 
 
