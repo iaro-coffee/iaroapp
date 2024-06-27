@@ -12,6 +12,7 @@ class Note(models.Model):
     branches = models.ManyToManyField(Branch, related_name="branch_notes", blank=True)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
 
     class Meta:
         indexes = [

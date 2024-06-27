@@ -19,12 +19,17 @@ class NoteView(LoginRequiredMixin, TemplateView):
         user = self.request.user
         user_branch = user.profile.branch
 
-        # Fetch received notes (combine by user and by user's branch)
+        # Fetch received notes (combine by user and by user's branch) - init load, first 5
         received_notes = (
             Note.objects.filter(Q(receivers=user) | Q(branches=user_branch))
             .distinct()
             .order_by("-timestamp")[:5]
         )
+
+        # Mark notes as read
+        Note.objects.filter(
+            Q(receivers=user) | Q(branches=user_branch), is_read=False
+        ).update(is_read=True)
 
         # Fetch sent notes
         sent_notes = self.request.user.sent_notes.all().order_by("-timestamp")[:5]
@@ -82,3 +87,20 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
             "timestamp_date": note.timestamp.strftime("%B %d"),
             "timestamp_time": note.timestamp.strftime("%H:%M"),
         }
+
+
+class UnreadCountView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        user_branch = user.profile.branch
+
+        unread_count = (
+            Note.objects.filter(
+                Q(receivers=user) | Q(branches=user_branch), is_read=False
+            )
+            .distinct()
+            .count()
+        )
+
+        return JsonResponse({"unread_count": unread_count})
