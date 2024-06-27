@@ -40,7 +40,8 @@
                                     <span class="text-secondary text-xs">From</span>
                                     <img src="{% if note.sender.profile.avatar.url %}{{ note.sender.profile.avatar.url }}
                                                 {% else %}{% static 'images/avatar.png' %}{% endif %}"
-                                         alt="{{ note.sender.username }}'s avatar">
+                                         alt="{{ note.sender.username }}'s avatar"
+                                         class="avatar">
                                         <span class="text-bolder">
                                             {{ note.sender.username }}:
                                         </span>
@@ -70,7 +71,8 @@
                 {% with total_receivers=note.branches.count|add:note.receivers.count %}
                     {% for branch in note.branches.all %}
                         <img src="{% static 'images/avatar.png' %}"
-                             alt="{{ branch.name }}'s avatar">
+                             alt="{{ branch.name }}'s avatar"
+                             class="avatar">
                         <span class="text-bolder">
                             {{ branch.name }}{% if not forloop.last or note.receivers.exists %}, {% endif %}
                         </span>
@@ -78,7 +80,8 @@
                     {% for receiver in note.receivers.all %}
                         <img src="{% if receiver.profile.avatar.url %}{{ receiver.profile.avatar.url }}
                                 {% else %}{% static 'images/avatar.png' %}{% endif %}"
-                             alt="{{ receiver.username }}'s avatar">
+                             alt="{{ receiver.username }}'s avatar"
+                             class="avatar">
                         <span class="text-bolder">
                             {{ receiver.username }}{% if not forloop.last %}, {% endif %}
                         </span>
@@ -103,7 +106,7 @@
 
 
     <style>
-        img {
+        .avatar {
             background-color: #483d8b;
             width: 32px;
             height: 32px;
