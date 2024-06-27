@@ -222,18 +222,12 @@ def index(request: HttpRequest):
 
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
-    if user_branch:
-        combined_notes = (
-            Note.objects.filter(Q(receivers=request.user) | Q(branches=user_branch))
-            .distinct()
-            .order_by("-timestamp")[:4]
-        )
-    else:
-        combined_notes = (
-            Note.objects.filter(receivers=request.user)
-            .distinct()
-            .order_by("-timestamp")[:4]
-        )
+
+    combined_notes = (
+        Note.objects.filter(Q(receivers=request.user) | Q(branches=user_branch))
+        .distinct()
+        .order_by("-timestamp")[:4]
+    )
 
     context = {
         "pageTitle": "Dashboard",

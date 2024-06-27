@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import redirect
@@ -6,7 +7,7 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from .forms import NoteForm
-from .models import Note
+from .models import Note, NoteReadStatus
 
 
 class NoteView(LoginRequiredMixin, TemplateView):
@@ -26,10 +27,14 @@ class NoteView(LoginRequiredMixin, TemplateView):
             .order_by("-timestamp")[:5]
         )
 
-        # Mark notes as read
-        Note.objects.filter(
-            Q(receivers=user) | Q(branches=user_branch), is_read=False
-        ).update(is_read=True)
+        # Mark notes as read for the current user
+        for note in received_notes:
+            read_status, created = NoteReadStatus.objects.get_or_create(
+                note=note, user=user
+            )
+            if not read_status.is_read:
+                read_status.is_read = True
+                read_status.save()
 
         # Fetch sent notes
         sent_notes = self.request.user.sent_notes.all().order_by("-timestamp")[:5]
@@ -45,6 +50,19 @@ class NoteView(LoginRequiredMixin, TemplateView):
             note = form.save(commit=False, sender=request.user)
             note.save()
             form.save_m2m()
+
+            # Create NoteReadStatus entries for each recipient
+            receivers = form.cleaned_data["receivers"]
+            branches = form.cleaned_data["branches"]
+            all_recipients = set(receivers)
+
+            # Add all users in the specified branches
+            for branch in branches:
+                all_recipients.update(User.objects.filter(profile__branch=branch))
+
+            for recipient in all_recipients:
+                NoteReadStatus.objects.create(note=note, user=recipient, is_read=False)
+
             return redirect("view_notes")
         else:
             context = self.get_context_data()
@@ -95,12 +113,10 @@ class UnreadCountView(LoginRequiredMixin, View):
         user = request.user
         user_branch = user.profile.branch
 
-        unread_count = (
-            Note.objects.filter(
-                Q(receivers=user) | Q(branches=user_branch), is_read=False
-            )
-            .distinct()
-            .count()
-        )
+        unread_count = NoteReadStatus.objects.filter(
+            Q(user=user)
+            & Q(is_read=False)
+            & (Q(note__receivers=user) | Q(note__branches=user_branch))
+        ).count()
 
         return JsonResponse({"unread_count": unread_count})

@@ -12,7 +12,6 @@ class Note(models.Model):
     branches = models.ManyToManyField(Branch, related_name="branch_notes", blank=True)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    is_read = models.BooleanField(default=False)
 
     class Meta:
         indexes = [
@@ -21,3 +20,20 @@ class Note(models.Model):
 
     def __str__(self):
         return f"Note from {self.sender.username} at {self.timestamp}"
+
+
+class NoteReadStatus(models.Model):
+    note = models.ForeignKey(
+        Note, related_name="read_statuses", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User, related_name="note_read_statuses", on_delete=models.CASCADE
+    )
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("note", "user")
+        indexes = [
+            models.Index(fields=["user", "is_read"]),
+            models.Index(fields=["note", "user"]),
+        ]
