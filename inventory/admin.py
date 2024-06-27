@@ -69,4 +69,6 @@ class StoragesAdmin(admin.ModelAdmin):
 
 @admin.register(Seller)
 class SellerAdmin(admin.ModelAdmin):
-    list_display = ("name",)
+    list_display = ["name", "visibility"]
+    list_filter = ["visibility"]
+    search_fields = ["name"]

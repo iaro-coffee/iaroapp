@@ -6,7 +6,7 @@ from django.db.models import Count
 from django.shortcuts import redirect, render, reverse
 
 from .forms import ProductFormset
-from .models import Branch, Product, ProductStorage, Storage
+from .models import Branch, Product, ProductStorage, Seller, Storage
 
 
 def get_current_branch(request):
@@ -232,10 +232,13 @@ def inventory_shopping(request):
 
     if selected_branch:
         products = Product.objects.filter(
-            seller__internal=False, branch=selected_branch
+            seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST,
+            branch=selected_branch,
         )
     else:
-        products = Product.objects.filter(seller__internal=False)
+        products = Product.objects.filter(
+            seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST
+        )
 
     sellers = []
     for prod in products:
@@ -259,7 +262,9 @@ def inventory_shopping(request):
 
 
 def inventory_production(request):
-    products = Product.objects.filter(seller__internal=True)
+    products = Product.objects.filter(
+        seller__visibility=Seller.VisibilityChoices.PRODUCTION
+    )
     sellers = []
     for prod in products:
         if (prod.display_seller() not in sellers) and prod.has_shortage:

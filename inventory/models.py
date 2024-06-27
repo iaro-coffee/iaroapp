@@ -90,14 +90,21 @@ class Units(BaseModel):
 
 
 class Seller(BaseModel):
+    class VisibilityChoices(models.TextChoices):
+        SHOPPING_LIST = "shopping_list", "Shopping List"
+        PRODUCTION = "production", "Production"
+        NOWHERE = "nowhere", "Nowhere"
+
     name = models.CharField(max_length=200, help_text="Enter seller for product.")
-    internal = models.BooleanField(
-        default=False,
-        help_text="If this is checked the products will not show up on the shopping list but instead in production.",
+    visibility = models.CharField(
+        max_length=20,
+        choices=VisibilityChoices.choices,
+        default=VisibilityChoices.NOWHERE,
+        help_text="Controls where products from this seller appear.",
     )
 
     class Meta:
-        verbose_name_plural = "Seller"
+        verbose_name_plural = "Sellers"
 
     def __str__(self):
         return self.name
