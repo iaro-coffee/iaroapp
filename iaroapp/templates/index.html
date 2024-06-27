@@ -243,19 +243,18 @@
                     <div class="card-body p-3">
                         {% for note in received_notes %}
                             <div class="d-flex justify-content-between">
-                                <div class="user__info w-75">
+                                <div class="user__info mb-3 w-75">
                                     <img src="{{ note.sender.profile.avatar.url }}"
                                          alt="{{ note.sender.username }}'s avatar"
-                                         style="width: 32px; height: 32px; border-radius: 50%; background-color: #3acaeb">
+                                         style="width: 32px; height: 32px; border-radius: 50%; background-color: #483d8b">
                                     {{ note.sender.username }}:
                                     {% if note.content|length > 140 %}
                                         {{ note.content|slice:":140" }}...
                                     {% else %}
                                         {{ note.content }}
                                     {% endif %}
-                                    <br><br>
                                 </div>
-                                <div class="note__time text-xs text-secondary align-content-center">
+                                <div class="note__time text-xs text-secondary">
                                     {{ note.timestamp|date:"F j" }}<br>
                                     {{ note.timestamp|time }}
                                 </div>

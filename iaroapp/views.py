@@ -226,13 +226,13 @@ def index(request: HttpRequest):
         combined_notes = (
             Note.objects.filter(Q(receivers=request.user) | Q(branches=user_branch))
             .distinct()
-            .order_by("-timestamp")[:5]
+            .order_by("-timestamp")[:4]
         )
     else:
         combined_notes = (
             Note.objects.filter(receivers=request.user)
             .distinct()
-            .order_by("-timestamp")[:5]
+            .order_by("-timestamp")[:4]
         )
 
     context = {

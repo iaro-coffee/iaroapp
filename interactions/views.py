@@ -1,5 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.views import View
 from django.views.generic import TemplateView
 
 from .forms import NoteForm
@@ -13,20 +16,22 @@ class NoteView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["form"] = NoteForm()
 
-        # Fetch received notes
-        received_notes = Note.objects.filter(receivers=self.request.user)
+        user = self.request.user
+        user_branch = user.profile.branch
 
-        # Fetch the branch of the current user
-        user_branch = self.request.user.profile.branch
-        if user_branch:
-            branch_notes = Note.objects.filter(branches=user_branch)
-        else:
-            branch_notes = Note.objects.none()
+        # Fetch received notes (combine by user and by user's branch)
+        received_notes = (
+            Note.objects.filter(Q(receivers=user) | Q(branches=user_branch))
+            .distinct()
+            .order_by("-timestamp")[:5]
+        )
 
-        combined_notes = list(set(received_notes) | set(branch_notes))
+        # Fetch sent notes
+        sent_notes = self.request.user.sent_notes.all().order_by("-timestamp")[:5]
 
-        context["received_notes"] = combined_notes
-        context["sent_notes"] = self.request.user.sent_notes.all()
+        context["received_notes"] = received_notes
+        context["sent_notes"] = sent_notes
+        context["pageTitle"] = "Notes"
         return context
 
     def post(self, request, *args, **kwargs):
@@ -40,3 +45,40 @@ class NoteView(LoginRequiredMixin, TemplateView):
             context = self.get_context_data()
             context["form"] = form
             return self.render_to_response(context)
+
+
+class LoadMoreNotesView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        offset = int(request.GET.get("offset", 0))
+        limit = 5
+        user = request.user
+        user_branch = user.profile.branch
+
+        received_notes = list(
+            Note.objects.filter(Q(receivers=user) | Q(branches=user_branch))
+            .distinct()
+            .order_by("-timestamp")[offset : offset + limit]
+        )
+
+        sent_notes = list(
+            user.sent_notes.all().order_by("-timestamp")[offset : offset + limit]
+        )
+
+        data = {
+            "received_notes": [self.note_to_dict(note) for note in received_notes],
+            "sent_notes": [self.note_to_dict(note) for note in sent_notes],
+        }
+
+        return JsonResponse(data)
+
+    def note_to_dict(self, note):
+        return {
+            "sender_username": note.sender.username,
+            "sender_avatar": (
+                note.sender.profile.avatar.url if note.sender.profile.avatar else ""
+            ),
+            "content": note.content,
+            "timestamp_date": note.timestamp.strftime("%B %d"),
+            "timestamp_time": note.timestamp.strftime("%H:%M"),
+        }
