@@ -20,15 +20,13 @@ services:
       - media_volume:/var/www/iaro-project/media     # share media volume with nginx
       #- ./host/path/nginx/logs:/var/log/nginx        # nginx logs
       #- ./nginx/nginx.conf:/etc/nginx/nginx.conf       # certbot ssl certificates
-      - ./certbot/www/:/var/www/certbot/:rw
-      - /etc/letsencrypt:/etc/letsencrypt:rw
+      - ./certbot/www/:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/letsencrypt:ro
     ports:
       - "80:80"          # expose port 1337 for nginx outside of docker
       - "443:443"
     depends_on:
       - django_gunicorn  # start after django_gunicorn
-    environment:
-      - DOMAIN=igors.dev
     restart: always
 
   memcached:
@@ -44,7 +42,7 @@ services:
     volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
-   # command: certonly --webroot -w /var/www/certbot --force-renewal --email igor@iaro.co -d igors.dev --agree-tos
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email igor@iaro.co -d app.iaro.co --agree-tos
     depends_on:
       - nginx
 
