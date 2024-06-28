@@ -235,6 +235,7 @@ def inventory_shopping(request):
             seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST,
             branch=selected_branch,
         )
+        print(products)
     else:
         products = Product.objects.filter(
             seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST

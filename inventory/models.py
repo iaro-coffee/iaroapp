@@ -1,7 +1,7 @@
 from colorful.fields import RGBColorField
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import SET_NULL, Sum
 from django.template import Library
 from django.urls import reverse
 from django.utils.html import format_html
@@ -118,7 +118,12 @@ class Product(BaseModel):
 
     name = models.CharField(max_length=500, unique=True)
     unit = models.ManyToManyField(Units, help_text="Select unit for this product")
-    seller = models.ManyToManyField(Seller, help_text="Select seller for this product")
+    seller = models.ForeignKey(
+        Seller,
+        help_text="Select seller for this product",
+        on_delete=SET_NULL,
+        null=True,
+    )
     modified_date = models.DateTimeField(auto_now=True)
     branch = models.ForeignKey(
         Branch, on_delete=models.CASCADE, related_name="products"
