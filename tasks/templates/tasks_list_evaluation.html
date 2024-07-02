@@ -5,20 +5,20 @@
     <link rel="stylesheet" href="{% static 'css/tables.css' %}" type="text/css">
 {% endblock extra_css %}
 
-{#{% block widgets %}#}
-{#<div class="d-flex justify-content-between flex-wrap gap-2">#}
-{#    <div class="dropdown">#}
-{#        <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">#}
-{#            {{ branch }}#}
-{#        </button>#}
-{#        <ul class="dropdown-menu dropdown-menu-end">#}
-{#            {% for branch in branches %}#}
-{#            <li><a class="dropdown-item" href="?branch={{ branch }}" id="show-loading">{{ branch }}</a></li>#}
-{#            {% endfor %}#}
-{#        </ul>#}
-{#    </div>#}
-{#</div>#}
-{#{% endblock widgets %}#}
+{% block widgets %}
+<div class="d-flex justify-content-between flex-wrap gap-2">
+    <div class="dropdown">
+        <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ branch }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            {% for branch in branches %}
+            <li><a class="dropdown-item" href="?branch={{ branch }}" id="show-loading">{{ branch }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock widgets %}
 
 
 {% block content %}
@@ -43,7 +43,7 @@
                                         <h6 class="mb-0 mx-2 text-sm responsive__mobile-3">
                                             {{ weekday }}
                                         </h6>
-                                        <span class="feather-icon" data-feather="chevron-down"></span>
+{#                                        <span class="feather-icon" data-feather="chevron-down"></span>#}
                                     </div>
                                 </a>
                                 <div id="collapse{{ weekday }}" class="collapse {% if weekday == today %}show{% endif %}" data-bs-parent="#accordion">
@@ -51,7 +51,7 @@
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-uppercase text-secondary w-100 text-xxs font-weight-bolder align-middle responsive__mobile-1">
+                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
                                                         Task
                                                     </th>
                                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder ">
@@ -60,32 +60,31 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            {% for key, tasks in tasks.items %}
-                                                {% if key == weekday %}
-                                                    {% for task in tasks %}
-                                                        <tr class="{% if weekday in task.done.keys %}done{% else %}open{% endif %} p-4">
-                                                            <td style="vertical-align: middle;">
-                                                            <p class="text-xs m-0 p-2">
-                                                                {{ task.title }}
-                                                            </p>
-
-                                                            </td>
-                                                            <td style="vertical-align: middle;">
-                                                                <p class="m-0 p-2 text-xs">
-                                                                    {% if weekday in task.done.keys %}
-                                                                        {% for key, value in task.done.items %}
-                                                                            {% if key == weekday %}
-                                                                                {{ value.done_datetime }} - Done by
-                                                                                <b>
-                                                                                {{ value.done_persons|join:", " }}{% endif %}</b>
-                                                                        {% endfor %}
-                                                                    {% endif %}
-                                                                </p>
-                                                            </td>
-                                                        </tr>
-                                                    {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
+                                                {% for key, tasks in tasks.items %}
+                                                    {% if key == weekday %}
+                                                        {% for task in tasks %}
+                                                            <tr class="{% if weekday in task.done.keys %}done{% else %}open{% endif %} p-4">
+                                                                <td class="text-break w-70" style="word-wrap: break-word; white-space: normal;">
+                                                                    <p class="text-xs m-0 p-2" style="word-wrap: break-word; white-space: normal;">
+                                                                        {{ task.title }}
+                                                                    </p>
+                                                                </td>
+                                                                <td class="text-break w-100" style="word-wrap: break-word; white-space: normal;">
+                                                                    <p class="m-0 p-2 text-xs" style="word-wrap: break-word; white-space: normal;">
+                                                                        {% if weekday in task.done.keys %}
+                                                                            {% for key, value in task.done.items %}
+                                                                                {% if key == weekday %}
+                                                                                    {{ value.done_datetime }} <br>Done by
+                                                                                    <b>
+                                                                                    {{ value.done_persons|join:", " }}{% endif %}</b>
+                                                                            {% endfor %}
+                                                                        {% endif %}
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
                                             </tbody>
                                         </table>
                                     </div>
