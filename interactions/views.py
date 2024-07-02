@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -6,6 +8,7 @@ from django.shortcuts import redirect
 from django.views import View
 from django.views.generic import TemplateView
 
+from iaroapp import settings
 from .forms import NoteForm
 from .models import Note, NoteReadStatus
 
@@ -24,7 +27,7 @@ class NoteView(LoginRequiredMixin, TemplateView):
         received_notes = (
             Note.objects.filter(Q(receivers=user) | Q(branches=user_branch))
             .distinct()
-            .order_by("-timestamp")[:10]
+            .order_by("-timestamp")[:4]
         )
 
         # Mark notes as read for the current user
@@ -37,7 +40,7 @@ class NoteView(LoginRequiredMixin, TemplateView):
                 read_status.save()
 
         # Fetch sent notes
-        sent_notes = self.request.user.sent_notes.all().order_by("-timestamp")[:10]
+        sent_notes = self.request.user.sent_notes.all().order_by("-timestamp")[:4]
 
         context["received_notes"] = received_notes
         context["sent_notes"] = sent_notes
@@ -98,6 +101,7 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
         return JsonResponse(data)
 
     def note_to_dict(self, note, user_branch):
+        local_time = timezone.localtime(note.timestamp)
         return {
             "sender_username": note.sender.username if note.sender else None,
             "sender_avatar": (
@@ -106,11 +110,16 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
                 else ""
             ),
             "content": note.content,
-            "timestamp_date": note.timestamp.strftime("%B %d"),
-            "timestamp_time": note.timestamp.strftime("%H:%M"),
+            "timestamp_date": local_time.strftime("%B %d"),
+            "timestamp_time": local_time.strftime("%H:%M"),
             "branches": (
                 [{"name": branch.name} for branch in note.branches.all()]
                 if note.branches.exists()
+                else None
+            ),
+            "receivers": (
+                [{"username": receiver.username, "avatar": receiver.profile.avatar.url if receiver.profile.avatar else None} for receiver in note.receivers.all()]
+                if note.receivers.exists()
                 else None
             ),
         }

@@ -37,7 +37,6 @@
                                     {{ note.timestamp|time:"H:i" }}
                                 </div>
                                 <div class="user__info mb-2">
-                                    <span class="text-secondary text-xs">From</span>
                                     <img src="{% if note.sender.profile.avatar.url %}{{ note.sender.profile.avatar.url }}
                                                 {% else %}{% static 'images/avatar.png' %}{% endif %}"
                                          alt="{{ note.sender.username }}'s avatar"
@@ -50,7 +49,7 @@
                             </div>
                         {% endfor %}
                     </div>
-{#                    <button id="show-more-received" class="w-100 btn mt-4 bg-gradient-primary" data-type="received">Show More</button>#}
+                    <button id="show-more-received" class="w-100 btn mt-4 bg-gradient-primary" data-type="received">Show More</button>
                 </div>
             </div>
         </div>
@@ -59,45 +58,42 @@
             <div class="card h-100" id="notes">
                 <div class="card-body p-3">
                     <h6>Sent Notes</h6>
-<div id="sent-notes">
-    {% for note in sent_notes %}
-        <div class="note-item">
-            <div class="note__time d-flex justify-content-center mt-4 text-xxs text-secondary">
-                {{ note.timestamp|date:"F j" }},
-                {{ note.timestamp|time:"H:i" }}
-            </div>
-            <div class="user__info mb-2">
-                <span class="text-secondary text-xs">To</span>
-                {% with total_receivers=note.branches.count|add:note.receivers.count %}
-                    {% for branch in note.branches.all %}
-                        <img src="{% static 'images/avatar.png' %}"
-                             alt="{{ branch.name }}'s avatar"
-                             class="avatar">
-                        <span class="text-bolder">
+                    <div id="sent-notes">
+                        {% for note in sent_notes %}
+                            <div class="note-item">
+                                <div class="note__time d-flex justify-content-center mt-4 text-xxs text-secondary">
+                                    {{ note.timestamp|date:"F j" }},
+                                    {{ note.timestamp|time:"H:i" }}
+                                </div>
+                                <div class="user__info mb-2">
+                                    {% with total_receivers=note.branches.count|add:note.receivers.count %}
+                                        {% for branch in note.branches.all %}
+                                            <img src="{% static 'images/avatar.png' %}"
+                                                 alt="{{ branch.name }}'s avatar"
+                                                 class="avatar">
+                                            <span class="text-bolder">
                             {{ branch.name }}{% if not forloop.last or note.receivers.exists %}, {% endif %}
                         </span>
-                    {% endfor %}
-                    {% for receiver in note.receivers.all %}
-                        <img src="{% if receiver.profile.avatar.url %}{{ receiver.profile.avatar.url }}
+                                        {% endfor %}
+                                        {% for receiver in note.receivers.all %}
+                                            <img src="
+                                                    {% if receiver.profile.avatar.url %}{{ receiver.profile.avatar.url }}
                                 {% else %}{% static 'images/avatar.png' %}{% endif %}"
-                             alt="{{ receiver.username }}'s avatar"
-                             class="avatar">
-                        <span class="text-bolder">
+                                                 alt="{{ receiver.username }}'s avatar"
+                                                 class="avatar">
+                                            <span class="text-bolder">
                             {{ receiver.username }}{% if not forloop.last %}, {% endif %}
                         </span>
-                    {% endfor %}
-                {% endwith %}
-                <span class="text-bolder" style="margin-left: -4px;">:</span>
-                {{ note.content }}
-            </div>
-        </div>
-    {% endfor %}
-</div>
-
-
-
-
-                    {#                    <button id="show-more-sent" class="w-100 btn bg-gradient-primary" data-type="sent">Show More</button>#}
+                                        {% endfor %}
+                                    {% endwith %}
+                                    <span class="text-bolder" style="margin-left: -4px;">:</span>
+                                    {{ note.content }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button id="show-more-sent" class="w-100 btn mt-4 bg-gradient-primary" data-type="sent">Show More
+                    </button>
                 </div>
             </div>
         </div>
@@ -108,8 +104,8 @@
     <style>
         .avatar {
             background-color: #483d8b;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
         }
         .title {
@@ -238,52 +234,48 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (type === 'received') {
                             noteInfo = noteTime + `
                                 <div class="user__info mb-2">
-                                    <span class="text-secondary text-xs">From</span>
                                     <img src="${note.sender_avatar ? note.sender_avatar : '{% static "images/avatar.png" %}'}"
                                          alt="${note.sender_username}'s avatar"
                                          style="width: 32px; height: 32px; border-radius: 50%; background-color: #483d8b">
                                     <span class="text-bolder">${note.sender_username}</span>
-                                    : ${note.content}
+                                    <span class="text-bolder" style="margin-left: -4px;">:</span>
+                                    ${note.content}
                                 </div>
                             `;
                         } else {
-                            let recipientsInfo = '<span class="text-secondary text-xs">To</span>';
-                            const userInfos = [];
-                            const branchInfos = [];
-
-                            if (note.sender_username) {
-                                userInfos.push(`
-                                    <img src="${note.sender_avatar ? note.sender_avatar : '{% static "images/avatar.png" %}'}"
-                                         alt="${note.sender_username}'s avatar"
-                                         style="width: 32px; height: 32px; border-radius: 50%; background-color: #483d8b">
-                                    <span class="text-bolder">${note.sender_username}</span>
-                                `);
-                            }
-
+                            let recipientsArray = [];
                             if (note.branches) {
                                 note.branches.forEach(branch => {
-                                    branchInfos.push(`
+                                    recipientsArray.push(`
                                         <img src="{% static 'images/avatar.png' %}"
                                              alt="${branch.name}'s avatar"
-                                             style="width: 32px; height: 32px; border-radius: 50%; background-color: #483d8b">
+                                             style="width: 30px; height: 30px; border-radius: 50%; background-color: #483d8b">
                                         <span class="text-bolder">${branch.name}</span>
                                     `);
                                 });
                             }
 
-                            if (userInfos.length > 0) {
-                                recipientsInfo += userInfos.join(', ') + (branchInfos.length > 0 ? ', ' : '');
+                            if (note.receivers) {
+                                note.receivers.forEach(receiver => {
+                                    recipientsArray.push(`
+                                        <img src="${receiver.avatar ? receiver.avatar : '{% static "images/avatar.png" %}'}"
+                                             alt="${receiver.username}'s avatar"
+                                             style="width: 30px; height: 30px; border-radius: 50%; background-color: #483d8b">
+                                        <span class="text-bolder">${receiver.username}</span>
+                                    `);
+                                });
                             }
 
-                            if (branchInfos.length > 0) {
-                                recipientsInfo += branchInfos.join(', ');
-                            }
+                            let recipientsInfo = recipientsArray.join(', ');
+                            recipientsInfo += '<span class="text-bolder" style="margin-left: -4px;">:</span> ';
 
-                            recipientsInfo += ': ';
+                            let contentInfo = `<span>${note.content}</span>`;
 
-                            let contentInfo = `<div>${note.content}</div>`;
-
-                            noteInfo = noteTime + recipientsInfo + contentInfo;
+                            noteInfo = noteTime + `
+                                <div class="user__info mb-2">
+                                    ${recipientsInfo}${contentInfo}
+                                </div>
+                            `;
                         }
 
                         noteDiv.innerHTML = noteInfo;
@@ -294,6 +286,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
 </script>
 
 
