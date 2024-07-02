@@ -59,6 +59,7 @@ def getInventoryModifiedDate():
 
 
 def inventory_populate(request):
+    current_branch = get_current_branch(request)
     if request.method == "POST":
         ProductFormset(request.POST)
 
@@ -78,7 +79,9 @@ def inventory_populate(request):
                     product_storage_instance.save()
 
         messages.success(request, "Inventory submitted successfully.")
-        return redirect(reverse("inventory_populate"))
+        return redirect(
+            f"{reverse('inventory_populate')}?branch={current_branch.name if current_branch != 'All' else 'All'}"
+        )
 
     else:
         User = get_user_model()
@@ -150,6 +153,7 @@ def inventory_populate(request):
         )
 
 
+
 def check_admin(user):
     return user.is_superuser
 
@@ -208,11 +212,6 @@ def inventory_evaluation(request):
             "branch": branch,
         },
     )
-
-
-# def get_current_branch(request):
-#     profile = get_object_or_404(Profile, user=request.user)
-#     return profile.branch
 
 
 def inventory_shopping(request):
