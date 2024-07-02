@@ -194,8 +194,7 @@ class Product(BaseModel):
         ]
 
     def display_seller(self):
-        seller = next((s for s in self.seller.all()), None)
-        return seller.name if seller else None
+        return self.seller.name if self.seller else None
 
     display_seller.short_description = "Seller"
 
