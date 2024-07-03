@@ -35,7 +35,10 @@ RUN adduser --disabled-password --gecos '' django
 RUN chown -R django:django /app /var/www/iaro-project/static /var/www/iaro-project/media
 
 # set correct permissions for the media directory
-RUN chmod -R 755 /var/www/iaro-project/media /app/db
+RUN chmod -R 755 /var/www/iaro-project/media
+
+# set correct permissions for the db directory
+RUN chmod -R 755 /app/db
 
 # copy and set entrypoint script
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
