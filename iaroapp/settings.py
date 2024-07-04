@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: the internet should never see this. Read .env or set default values here:
-DEBUG = os.environ.get("DJANGO_DEBUG", "False") is True
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
@@ -102,10 +102,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "iaroapp.wsgi.application"
 
+# if DEBUG:
+#    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# else:
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db/db.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -189,10 +193,10 @@ SOCIALACCOUNT_PROVIDERS = {
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 # The absolute path to the directory where collectstatic will collect static files for deployment.
 
-# if DEBUG:
-#    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-# else:
-STATIC_ROOT = "/var/www/iaro-project/static"
+if DEBUG:
+    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+else:
+    STATIC_ROOT = "/var/www/iaro-project/static"
 
 # The URL to use when referring to static files (where they will be served from)
 STATIC_URL = "/static/"
@@ -206,10 +210,10 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files
 MEDIA_URL = "/media/"
-# if DEBUG:
-#    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-# else:
-MEDIA_ROOT = "/var/www/iaro-project/media"
+if DEBUG:
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+else:
+    MEDIA_ROOT = "/var/www/iaro-project/media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
