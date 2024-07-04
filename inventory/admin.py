@@ -14,10 +14,10 @@ class BranchesInline(admin.TabularInline):
 
 @admin.register(Branch)
 class BranchesAdmin(admin.ModelAdmin):
-    """Administration object for Task models.
+    """Administration object for Branch models.
     Defines:
      - fields to be displayed in list view (list_display)
-     - adds inline addition of task instances in task view (inlines)
+     - adds inline addition of branch instances in branch view (inlines)
     """
 
     list_display = ("name", "display_storages", "departmentId")
@@ -36,32 +36,34 @@ class ProductsInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductsAdmin(ImportExportModelAdmin):
-    """Administration object for Task models.
+    """Administration object for Product models.
     Defines:
      - fields to be displayed in list view (list_display)
-     - adds inline addition of task instances in task view (inlines)
+     - adds inline addition of product instances in product view (inlines)
     """
 
     list_display = ("name", "display_availability", "display_unit", "storages")
     readonly_fields = ("modified_date",)
     inlines = [ProductStorageInline]
-    # resource_classes = [BookResource]
-
-    list_filter = ("product_storages__storage",)
+    search_fields = ("name",)
+    list_filter = (
+        "product_storages__storage__branches",
+        "product_storages__storage",
+    )
 
 
 class StoragesInline(admin.TabularInline):
-    """Defines format of inline task insertion (used in AuthorAdmin)"""
+    """Defines format of inline storage insertion (used in StorageAdmin)"""
 
     model = Storage
 
 
 @admin.register(Storage)
 class StoragesAdmin(admin.ModelAdmin):
-    """Administration object for Task models.
+    """Administration object for Storage models.
     Defines:
      - fields to be displayed in list view (list_display)
-     - adds inline addition of task instances in task view (inlines)
+     - adds inline addition of storage instances in storage view (inlines)
     """
 
     list_display = ("name", "display_color")
@@ -69,6 +71,12 @@ class StoragesAdmin(admin.ModelAdmin):
 
 @admin.register(Seller)
 class SellerAdmin(admin.ModelAdmin):
+    """Administration object for Seller models.
+    Defines:
+     - fields to be displayed in list view (list_display)
+     - adds search fields and list filters (search_fields, list_filter)
+    """
+
     list_display = ["name", "visibility"]
     list_filter = ["visibility"]
     search_fields = ["name"]
