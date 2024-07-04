@@ -1,10 +1,13 @@
 import json
 import logging
+import os
 from datetime import datetime, timedelta
 
 import livepopulartimes
+import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Avg, Q
 from django.http import HttpRequest
@@ -190,6 +193,7 @@ def index(request: HttpRequest):
     tasks, and popular times data based on the user's branch address.
     """
     today = datetime.today().date()
+    tomorrow = today + timedelta(days=1)
     userShifts = getNextShiftsByUser(request)
     myTasks = get_my_tasks(request)
     ongoingShift = hasOngoingShift(request)
@@ -235,6 +239,44 @@ def index(request: HttpRequest):
         .order_by("-timestamp")[:4]
     )
 
+    # HOLIDAYS API
+    holidays_cache_key = f"holidays_{today}"
+
+    # Check if the holiday data for today is already in the cache
+    holiday_data = cache.get(holidays_cache_key)
+    if holiday_data is None:
+        # If not, fetch the holiday data from the API
+        calendarific_api_key = os.getenv("CALENDARIFIC_API_KEY")
+        country = "DE"
+        year = today.year
+        url = f"https://calendarific.com/api/v2/holidays?&api_key={calendarific_api_key}&country={country}&year={year}"
+
+        response = requests.get(
+            url, timeout=10
+        )  # Timeout 10sec to avoid potential indefinite load
+        if response.status_code == 200:
+            data = response.json()
+            holidays = data.get("response", {}).get("holidays", [])
+            # Save the data to the cache
+            cache.set(
+                holidays_cache_key, holidays, timeout=24 * 60 * 60
+            )  # Cache for 1 day
+            holiday_data = holidays
+        else:
+            holiday_data = []
+
+    # Filter holidays for today and tomorrow
+    today_holidays = [
+        holiday
+        for holiday in holiday_data
+        if holiday["date"]["iso"] == today.isoformat()
+    ]
+    tomorrow_holidays = [
+        holiday
+        for holiday in holiday_data
+        if holiday["date"]["iso"] == tomorrow.isoformat()
+    ]
+
     context = {
         "pageTitle": "Dashboard",
         "nextShifts": userShifts[:5],
@@ -243,7 +285,6 @@ def index(request: HttpRequest):
         "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
         "statistics": statistics,
         "statistics_sum": statisticsSum,
-        "today": today,
         "ongoingShift": ongoingShift[0] if ongoingShift else None,
         "shiftStart": ongoingShift[1] if ongoingShift else None,
         "populartimes": populartimes_data.get("populartimes", []),
@@ -254,6 +295,10 @@ def index(request: HttpRequest):
         "user_profile": user_profile,
         "customer_profile": customer_profile,
         "received_notes": combined_notes,
+        "today": today,
+        "tomorrow": tomorrow,
+        "today_holidays": today_holidays,
+        "tomorrow_holidays": tomorrow_holidays,
     }
 
     return render(request, "index.html", context=context)
