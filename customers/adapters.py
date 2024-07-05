@@ -1,7 +1,8 @@
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.account.utils import user_email
 from allauth.account.models import EmailAddress
+from allauth.account.utils import user_email
+from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.shortcuts import reverse
+
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):
@@ -24,4 +25,4 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def get_login_redirect_url(self, request):
         """Specify the redirect URL after a successful social login."""
-        return reverse('customer_index')
+        return reverse("customer_index")

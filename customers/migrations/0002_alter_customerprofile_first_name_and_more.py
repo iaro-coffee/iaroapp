@@ -6,18 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customers', '0001_initial'),
+        ("customers", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customerprofile',
-            name='first_name',
-            field=models.CharField(blank=True, default='Cardholder', max_length=50, null=True),
+            model_name="customerprofile",
+            name="first_name",
+            field=models.CharField(
+                blank=True, default="Cardholder", max_length=50, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='customerprofile',
-            name='last_name',
-            field=models.CharField(blank=True, default='Name', max_length=50, null=True),
+            model_name="customerprofile",
+            name="last_name",
+            field=models.CharField(
+                blank=True, default="Name", max_length=50, null=True
+            ),
         ),
     ]

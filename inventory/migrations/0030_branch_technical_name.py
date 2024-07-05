@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0029_remove_product_internally_produced'),
+        ("inventory", "0029_remove_product_internally_produced"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='branch',
-            name='technical_name',
+            model_name="branch",
+            name="technical_name",
             field=models.CharField(blank=True, max_length=500),
         ),
     ]

@@ -1,6 +1,5 @@
 import datetime
 import json
-import profile
 from math import floor
 
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -54,7 +53,9 @@ def ratings_evaluation(request):
 
     userDicts = []
     for user in users:
-        rating = EmployeeRating.objects.filter(user=user).aggregate(Avg("rating"))["rating__avg"]
+        rating = EmployeeRating.objects.filter(user=user).aggregate(Avg("rating"))[
+            "rating__avg"
+        ]
         if rating:
             rating = floor(rating * 10) / 10.0
             ratingBar = int(round(rating / 5 * 100, -1))
@@ -64,21 +65,25 @@ def ratings_evaluation(request):
 
         try:
             profile = user.profile  # check profile to avoid RelatedObject not found
-            userDicts.append({
-                "user": model_to_dict(user),
-                "profile": model_to_dict(profile),
-                "avg_rating": rating,
-                "avg_rating_bar": ratingBar,
-            })
+            userDicts.append(
+                {
+                    "user": model_to_dict(user),
+                    "profile": model_to_dict(profile),
+                    "avg_rating": rating,
+                    "avg_rating_bar": ratingBar,
+                }
+            )
         except User.profile.RelatedObjectDoesNotExist:
-            userDicts.append({
-                "user": model_to_dict(user),
-                "profile": None,
-                "avg_rating": rating,
-                "avg_rating_bar": ratingBar,
-            })
+            userDicts.append(
+                {
+                    "user": model_to_dict(user),
+                    "profile": None,
+                    "avg_rating": rating,
+                    "avg_rating_bar": ratingBar,
+                }
+            )
 
-    userDicts.sort(key=lambda x: (x["avg_rating"] is 0, x["avg_rating"]), reverse=False)
+    userDicts.sort(key=lambda x: (x["avg_rating"] == 0, x["avg_rating"]), reverse=False)
     return render(
         request,
         "ratings_evaluation.html",

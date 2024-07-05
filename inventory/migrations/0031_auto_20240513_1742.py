@@ -3,17 +3,19 @@
 from django.db import migrations
 from django.utils.text import slugify
 
+
 def populate_technical_names(apps, schema_editor):
-    Branch = apps.get_model('inventory', 'Branch')
+    Branch = apps.get_model("inventory", "Branch")
     for branch in Branch.objects.all():
         if not branch.technical_name:
             branch.technical_name = slugify(branch.name)
             branch.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0030_branch_technical_name'),
+        ("inventory", "0030_branch_technical_name"),
     ]
 
     operations = [

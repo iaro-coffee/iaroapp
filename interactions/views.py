@@ -1,14 +1,12 @@
-from django.utils import timezone
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
 
-from iaroapp import settings
 from .forms import NoteForm
 from .models import Note, NoteReadStatus
 
@@ -118,7 +116,17 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
                 else None
             ),
             "receivers": (
-                [{"username": receiver.username, "avatar": receiver.profile.avatar.url if receiver.profile.avatar else None} for receiver in note.receivers.all()]
+                [
+                    {
+                        "username": receiver.username,
+                        "avatar": (
+                            receiver.profile.avatar.url
+                            if receiver.profile.avatar
+                            else None
+                        ),
+                    }
+                    for receiver in note.receivers.all()
+                ]
                 if note.receivers.exists()
                 else None
             ),

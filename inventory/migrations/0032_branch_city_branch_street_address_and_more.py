@@ -6,33 +6,51 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0031_auto_20240513_1742'),
+        ("inventory", "0031_auto_20240513_1742"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='branch',
-            name='city',
-            field=models.CharField(default='Karlsruhe', help_text='City where the branch is located.', max_length=500),
+            model_name="branch",
+            name="city",
+            field=models.CharField(
+                default="Karlsruhe",
+                help_text="City where the branch is located.",
+                max_length=500,
+            ),
         ),
         migrations.AddField(
-            model_name='branch',
-            name='street_address',
-            field=models.CharField(default='Sophienstraße 108', help_text='Street address of the branch.', max_length=500),
+            model_name="branch",
+            name="street_address",
+            field=models.CharField(
+                default="Sophienstraße 108",
+                help_text="Street address of the branch.",
+                max_length=500,
+            ),
         ),
         migrations.AlterField(
-            model_name='branch',
-            name='departmentId',
-            field=models.CharField(default='', help_text='Department ID associated with the branch.', max_length=500),
+            model_name="branch",
+            name="departmentId",
+            field=models.CharField(
+                default="",
+                help_text="Department ID associated with the branch.",
+                max_length=500,
+            ),
         ),
         migrations.AlterField(
-            model_name='branch',
-            name='storages',
-            field=models.ManyToManyField(help_text='Storages associated with this branch.', related_name='branches', to='inventory.storage'),
+            model_name="branch",
+            name="storages",
+            field=models.ManyToManyField(
+                help_text="Storages associated with this branch.",
+                related_name="branches",
+                to="inventory.storage",
+            ),
         ),
         migrations.AlterField(
-            model_name='branch',
-            name='technical_name',
-            field=models.CharField(blank=True, help_text='Technical name for internal use.', max_length=500),
+            model_name="branch",
+            name="technical_name",
+            field=models.CharField(
+                blank=True, help_text="Technical name for internal use.", max_length=500
+            ),
         ),
     ]

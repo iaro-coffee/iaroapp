@@ -7,13 +7,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0033_alter_productstorage_threshold'),
+        ("inventory", "0033_alter_productstorage_threshold"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='productstorage',
-            name='threshold',
-            field=models.FloatField(default=30.0, help_text='Enter the amount of the item, when it needs to get bought.', validators=[django.core.validators.MinValueValidator(0.0)]),
+            model_name="productstorage",
+            name="threshold",
+            field=models.FloatField(
+                default=30.0,
+                help_text="Enter the amount of the item, when it needs to get bought.",
+                validators=[django.core.validators.MinValueValidator(0.0)],
+            ),
         ),
     ]

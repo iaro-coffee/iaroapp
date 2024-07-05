@@ -14,10 +14,16 @@ class Profile(models.Model):
 
     avatar = models.ImageField(
         default="profile_avatars/avatar.png",  # default avatar
-        upload_to="profile_avatars",           # dir to store the image
+        upload_to="profile_avatars",  # dir to store the image
     )
 
-    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, default=get_first_branch_id)
+    branch = models.ForeignKey(
+        Branch,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=get_first_branch_id,
+    )
 
     def __str__(self):
         return f"{self.user.username} Profile"
@@ -31,11 +37,24 @@ class Profile(models.Model):
         max_size = (300, 300)
         img.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-        if img.format == 'PNG':
+        if img.format == "PNG":
             new_img = Image.new("RGBA", max_size, (255, 255, 255, 0))
-            new_img.paste(img, (int((max_size[0] - img.size[0]) / 2), int((max_size[1] - img.size[1]) / 2)), img.convert("RGBA"))
+            new_img.paste(
+                img,
+                (
+                    int((max_size[0] - img.size[0]) / 2),
+                    int((max_size[1] - img.size[1]) / 2),
+                ),
+                img.convert("RGBA"),
+            )
             new_img.save(self.avatar.path)
         else:
             new_img = Image.new("RGB", max_size, (255, 255, 255))
-            new_img.paste(img, (int((max_size[0] - img.size[0]) / 2), int((max_size[1] - img.size[1]) / 2)))
+            new_img.paste(
+                img,
+                (
+                    int((max_size[0] - img.size[0]) / 2),
+                    int((max_size[1] - img.size[1]) / 2),
+                ),
+            )
             new_img.save(self.avatar.path)

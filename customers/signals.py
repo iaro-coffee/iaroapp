@@ -1,8 +1,7 @@
+from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth.models import User
 
-from users.models import Profile
 from .models import CustomerProfile
 
 
@@ -15,4 +14,3 @@ def save_customer_profile(sender, instance, created, **kwargs):
             instance.customerprofile.save()
         except CustomerProfile.DoesNotExist:
             pass
-

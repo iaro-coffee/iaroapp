@@ -4,13 +4,14 @@ from django.db import migrations
 
 
 def fill_branch_id(apps, schema_editor):
-    TaskInstance = apps.get_model('tasks', 'TaskInstance')
+    TaskInstance = apps.get_model("tasks", "TaskInstance")
     TaskInstance.objects.update(branch_id=1)
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tasks', '0068_taskinstance_branch'),
+        ("tasks", "0068_taskinstance_branch"),
     ]
 
     operations = [

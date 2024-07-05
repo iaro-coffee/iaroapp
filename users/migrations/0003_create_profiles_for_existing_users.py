@@ -4,8 +4,8 @@ from django.db import migrations
 
 
 def create_profiles_for_existing_users(apps, schema_editor):
-    User = apps.get_model('auth', 'User')
-    Profile = apps.get_model('users', 'Profile')
+    User = apps.get_model("auth", "User")
+    Profile = apps.get_model("users", "Profile")
     # Branch = apps.get_model('inventory', 'Branch')
 
     # try:
@@ -23,8 +23,8 @@ def create_profiles_for_existing_users(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_profile_branch'),
-        ('inventory', '0001_initial'),
+        ("users", "0002_profile_branch"),
+        ("inventory", "0001_initial"),
     ]
 
     operations = [

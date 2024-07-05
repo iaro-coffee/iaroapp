@@ -7,13 +7,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0032_branch_city_branch_street_address_and_more'),
+        ("inventory", "0032_branch_city_branch_street_address_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='productstorage',
-            name='threshold',
-            field=models.IntegerField(default=30, help_text='Enter the amount of the item, when it needs to get bought.', validators=[django.core.validators.MinValueValidator(0)]),
+            model_name="productstorage",
+            name="threshold",
+            field=models.IntegerField(
+                default=30,
+                help_text="Enter the amount of the item, when it needs to get bought.",
+                validators=[django.core.validators.MinValueValidator(0)],
+            ),
         ),
     ]

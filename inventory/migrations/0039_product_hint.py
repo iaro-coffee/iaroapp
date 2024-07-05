@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0038_remove_product_seller_product_seller'),
+        ("inventory", "0038_remove_product_seller_product_seller"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='hint',
-            field=models.TextField(help_text='Enter hint for doing inventory. (e.g. Only count 6 packs)', null=True),
+            model_name="product",
+            name="hint",
+            field=models.TextField(
+                help_text="Enter hint for doing inventory. (e.g. Only count 6 packs)",
+                null=True,
+            ),
         ),
     ]

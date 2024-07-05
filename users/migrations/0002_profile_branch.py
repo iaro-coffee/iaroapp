@@ -7,14 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0032_branch_city_branch_street_address_and_more'),
-        ('users', '0001_initial'),
+        ("inventory", "0032_branch_city_branch_street_address_and_more"),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='branch',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='inventory.branch'),
+            model_name="profile",
+            name="branch",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="inventory.branch",
+            ),
         ),
     ]

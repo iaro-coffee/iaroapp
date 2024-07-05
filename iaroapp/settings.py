@@ -191,7 +191,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-ACCOUNT_DEFAULT_HTTP_PROTOCOL="https"
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 # Update database configuration from $DATABASE_URL environment variable (if defined)
 # Commented out for now, as we are using sqlite3 for development

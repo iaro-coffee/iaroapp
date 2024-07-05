@@ -7,14 +7,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0034_alter_productstorage_threshold'),
+        ("inventory", "0034_alter_productstorage_threshold"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='branch',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='products', to='inventory.branch'),
+            model_name="product",
+            name="branch",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="products",
+                to="inventory.branch",
+            ),
             preserve_default=False,
         ),
     ]

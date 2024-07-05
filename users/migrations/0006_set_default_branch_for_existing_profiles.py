@@ -2,8 +2,8 @@ from django.db import migrations
 
 
 def update_branches(apps, schema_editor):
-    Profile = apps.get_model('users', 'Profile')
-    Branch = apps.get_model('inventory', 'Branch')
+    Profile = apps.get_model("users", "Profile")
+    Branch = apps.get_model("inventory", "Branch")
 
     branch = Branch.objects.first()
 
@@ -14,7 +14,7 @@ def update_branches(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0005_alter_profile_branch'),
+        ("users", "0005_alter_profile_branch"),
     ]
 
     operations = [

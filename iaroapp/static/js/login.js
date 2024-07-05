@@ -59,6 +59,3 @@ document.addEventListener('DOMContentLoaded', (event) => {
     element.style.opacity = 1;
   }
 });
-
-
-

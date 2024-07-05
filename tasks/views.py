@@ -1,5 +1,5 @@
+import logging
 from datetime import datetime, time, timedelta
-from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -17,8 +17,6 @@ from inventory.views import get_current_branch
 
 from .forms import BakingPlanForm, TaskForm, TaskFormset
 from .models import BakingPlanInstance, Recipe, Task, TaskInstance, Weekdays
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -41,14 +39,16 @@ class TasksView(LoginRequiredMixin, ListView):
             if form.instance.pk and branch != "All":
                 form.instance.done_for_branch = form.instance.is_done(branch)
 
-        context.update({
-            "pageTitle": "Tasks",
-            "task_list": tasks,
-            "today": today,
-            "formset": formset,
-            "branches": branches,
-            "branch": branch,
-        })
+        context.update(
+            {
+                "pageTitle": "Tasks",
+                "task_list": tasks,
+                "today": today,
+                "formset": formset,
+                "branches": branches,
+                "branch": branch,
+            }
+        )
         return context
 
     def get(self, request, *args, **kwargs):
@@ -63,28 +63,35 @@ class TasksView(LoginRequiredMixin, ListView):
         date_done = timezone.now()
         branch = get_current_branch(request)
 
-        print("user:", user)               # debug
-        print("branch:", branch)           # debug
+        print("user:", user)  # debug
+        print("branch:", branch)  # debug
         print("post data:", request.POST)  # debug
 
         if task_formset.is_valid():
-            print("Formset is valid")      # debug
+            print("Formset is valid")  # debug
             for form in task_formset:
                 if form.instance.pk:
                     done_field = f"done_{form.instance.id}"
                     done_value = request.POST.get(done_field)  # debug
-                    print(f"Processing form: {form.instance.id}, done_field: {done_field}, value: {done_value}")  # debug
-                    if done_field in request.POST and request.POST[done_field] == 'on':
+                    print(
+                        f"Processing form: {form.instance.id}, done_field: {done_field}, value: {done_value}"
+                    )  # debug
+                    if done_field in request.POST and request.POST[done_field] == "on":
                         TaskInstance.objects.create(
                             user=user,
                             date_done=date_done,
                             task=form.instance,
-                            branch=branch
+                            branch=branch,
                         )
-                        print(f"Task {form.instance.id} marked as done and TaskInstance created")  # debug
+                        print(
+                            f"Task {form.instance.id} marked as done and TaskInstance created"
+                        )  # debug
             messages.success(request, "Tasks submitted successfully.")
         else:
-            messages.error(request, "There was an error with your submission. Please check the form and try again.")
+            messages.error(
+                request,
+                "There was an error with your submission. Please check the form and try again.",
+            )
 
         return redirect(reverse("tasks"))
 

@@ -6,18 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0029_remove_product_internally_produced'),
-        ('tasks', '0066_alter_task_branch'),
+        ("inventory", "0029_remove_product_internally_produced"),
+        ("tasks", "0066_alter_task_branch"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='task',
-            name='branch',
+            model_name="task",
+            name="branch",
         ),
         migrations.AddField(
-            model_name='task',
-            name='branch',
-            field=models.ManyToManyField(blank=True, related_name='tasks', to='inventory.branch'),
+            model_name="task",
+            name="branch",
+            field=models.ManyToManyField(
+                blank=True, related_name="tasks", to="inventory.branch"
+            ),
         ),
     ]

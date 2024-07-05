@@ -7,17 +7,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0037_alter_seller_options_remove_seller_internal_and_more'),
+        ("inventory", "0037_alter_seller_options_remove_seller_internal_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='product',
-            name='seller',
+            model_name="product",
+            name="seller",
         ),
         migrations.AddField(
-            model_name='product',
-            name='seller',
-            field=models.ForeignKey(help_text='Select seller for this product', null=True, on_delete=django.db.models.deletion.SET_NULL, to='inventory.seller'),
+            model_name="product",
+            name="seller",
+            field=models.ForeignKey(
+                help_text="Select seller for this product",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="inventory.seller",
+            ),
         ),
     ]

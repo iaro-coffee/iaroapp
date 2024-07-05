@@ -6,5 +6,5 @@ profile = "black"
 
 [tool.ruff]
 # Enable Pyflakes `E` and `F` codes by default.
-select = ["E", "F"]
-ignore = ["E501", "E741", "E722"]
+lint.select = ["E", "F"]
+lint.ignore = ["E501", "E741", "E722"]
