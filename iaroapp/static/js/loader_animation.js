@@ -36,13 +36,6 @@ function handleNavigationEvents() {
             }, 100);
             event.preventDefault();
         });
-        element.addEventListener('touchstart', function (event) {
-            showLoading();
-            setTimeout(() => {
-                window.location.href = element.href;
-            }, 100);
-            event.preventDefault();
-        });
     });
 }
 
