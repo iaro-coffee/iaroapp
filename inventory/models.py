@@ -128,6 +128,9 @@ class Product(BaseModel):
     branch = models.ForeignKey(
         Branch, on_delete=models.CASCADE, related_name="products"
     )
+    hint = models.TextField(
+        null=True, help_text="Enter hint for doing inventory. (e.g. Only count 6 packs)"
+    )
 
     @property
     def has_main_storage(self):
