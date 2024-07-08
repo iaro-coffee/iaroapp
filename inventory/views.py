@@ -215,21 +215,21 @@ def inventory_evaluation(request):
 
 def inventory_shopping(request):
     branches = Branch.objects.all()
-    branch_id = request.GET.get("branch")
-    current_branch = get_current_branch(request)
-    is_weekly = request.GET.get("weekly")
-    if is_weekly is None:
+    branch_id = request.GET.get("branch", "all")
+    is_weekly_param = request.GET.get("weekly", "False")
+
+    if is_weekly_param is None or is_weekly_param.lower() == "false":
         is_weekly = False
+    else:
+        is_weekly = True
 
     if branch_id == "all":
         selected_branch = None
-    elif branch_id:
+    else:
         try:
             selected_branch = branches.get(id=branch_id)
         except Branch.DoesNotExist:
-            selected_branch = current_branch
-    else:
-        selected_branch = current_branch
+            selected_branch = None
 
     if selected_branch:
         products = Product.objects.filter(
@@ -237,7 +237,6 @@ def inventory_shopping(request):
             seller__is_weekly=is_weekly,
             branch=selected_branch,
         )
-        print(products)
     else:
         products = Product.objects.filter(
             seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST,
@@ -261,6 +260,8 @@ def inventory_shopping(request):
             "sellers": sellers,
             "branches": branches,
             "selected_branch": selected_branch,
+            "branch_id": branch_id,
+            "is_weekly": is_weekly,
         },
     )
 
