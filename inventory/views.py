@@ -217,6 +217,9 @@ def inventory_shopping(request):
     branches = Branch.objects.all()
     branch_id = request.GET.get("branch")
     current_branch = get_current_branch(request)
+    is_weekly = request.GET.get("weekly")
+    if is_weekly is None:
+        is_weekly = False
 
     if branch_id == "all":
         selected_branch = None
@@ -231,12 +234,14 @@ def inventory_shopping(request):
     if selected_branch:
         products = Product.objects.filter(
             seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST,
+            seller__is_weekly=is_weekly,
             branch=selected_branch,
         )
         print(products)
     else:
         products = Product.objects.filter(
-            seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST
+            seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST,
+            seller__is_weekly=is_weekly,
         )
 
     sellers = []

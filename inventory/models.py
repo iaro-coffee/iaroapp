@@ -95,12 +95,31 @@ class Seller(BaseModel):
         PRODUCTION = "production", "Production"
         NOWHERE = "nowhere", "Nowhere"
 
+    class WeekdayChoices(models.TextChoices):
+        MONDAY = "monday", "Monday"
+        TUESDAY = "tuesday", "Tuesday"
+        WEDNESDAY = "wednesday", "Wednesday"
+        THURSDAY = "thursday", "Thursday"
+        FRIDAY = "friday", "Friday"
+        SATURDAY = "saturday", "Saturday"
+        SUNDAY = "sunday", "Sunday"
+
     name = models.CharField(max_length=200, help_text="Enter seller for product.")
     visibility = models.CharField(
         max_length=20,
         choices=VisibilityChoices.choices,
         default=VisibilityChoices.NOWHERE,
         help_text="Controls where products from this seller appear.",
+    )
+    is_weekly = models.BooleanField(
+        default=False,
+        help_text="Check if the products of this seller are ordered weekly",
+    )
+    order_weekday = models.CharField(
+        max_length=20,
+        choices=WeekdayChoices.choices,
+        default=WeekdayChoices.MONDAY,
+        help_text="If you checked previous option, specify the day on which you order at this seller",
     )
 
     class Meta:
@@ -132,7 +151,9 @@ class Product(BaseModel):
         help_text="Select the branch to define on which shopping list this product should appear",
     )
     hint = models.TextField(
-        null=True, help_text="Enter hint for doing inventory. (e.g. Only count 6 packs)"
+        null=True,
+        blank=True,
+        help_text="Enter hint for doing inventory. (e.g. Only count 6 packs)",
     )
 
     @property
@@ -172,7 +193,11 @@ class Product(BaseModel):
         )["total_value_intended"]
         if total_value is None or total_value_intended is None:
             return 0
-        return float(total_value_intended - total_value)
+
+        if self.seller.is_weekly:
+            return total_value_intended
+        else:
+            return float(total_value_intended - total_value)
 
     def get_oos_value_shipping(self):
         product_storage_dict = {}
@@ -200,7 +225,11 @@ class Product(BaseModel):
         ]
 
     def display_seller(self):
-        return self.seller.name if self.seller else None
+        return (
+            {"name": self.seller.name, "order_weekday": self.seller.order_weekday}
+            if self.seller
+            else None
+        )
 
     display_seller.short_description = "Seller"
 
