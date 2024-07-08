@@ -302,6 +302,7 @@ class ProductStorage(BaseModel):
         help_text="Enter the amount of the item, when it needs to get bought.",
     )
     main_storage = models.BooleanField(default=False)
+    last_updated = models.DateTimeField(auto_now=True)
 
     @property
     def value_needed(self):

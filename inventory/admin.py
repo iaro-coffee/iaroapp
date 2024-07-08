@@ -25,6 +25,7 @@ class BranchesAdmin(admin.ModelAdmin):
 
 class ProductStorageInline(admin.TabularInline):
     model = ProductStorage
+    readonly_fields = ("last_updated",)
     extra = 1
 
 
@@ -77,6 +78,6 @@ class SellerAdmin(admin.ModelAdmin):
      - adds search fields and list filters (search_fields, list_filter)
     """
 
-    list_display = ["name", "visibility"]
+    list_display = ["name", "visibility", "is_weekly"]
     list_filter = ["visibility"]
     search_fields = ["name"]
