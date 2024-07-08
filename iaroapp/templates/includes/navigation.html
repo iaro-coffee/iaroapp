@@ -16,8 +16,8 @@
                 </li>
                 {% if request.user.is_authenticated %}
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link align-content-center d-flex align-items-center" href="{% url 'view_notes' %}">
-                            <i class="fa fa-bell me-sm-1" style="margin-top: 1px" ></i>
+                        <a class="nav-link text-body align-content-center d-flex align-items-center" href="{% url 'view_notes' %}">
+                            <i class="fa fa-bell me-sm-1" style="margin-bottom: 2px; margin-right: 2px;"></i>
                             <div class="custom-badge">
                                 <span id="unread-count" data-toggle="tooltip" title="You have unread messages"></span>
                             </div>
@@ -79,6 +79,14 @@
 
     .nav-link[aria-expanded="true"] .fa-user {
         color: #82d616;
+    }
+
+    .nav-link i {
+        font-size: 1rem;
+    }
+
+    .navbar-nav {
+        gap: 8px;
     }
 
     .custom-badge {

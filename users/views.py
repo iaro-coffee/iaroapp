@@ -40,6 +40,7 @@ class Profile(LoginRequiredMixin, View):
             customer_profile = None
 
         context = {
+            "pageTitle": "Profile",
             "user_form": user_form,
             "profile_form": profile_form,
             "password_form": password_form,
