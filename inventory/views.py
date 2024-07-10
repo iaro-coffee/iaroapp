@@ -296,47 +296,67 @@ def inventory_production(request):
 
 
 def inventory_packaging(request):
-    # Get current branch by GET parameter or Planday query
     branch = get_current_branch(request)
 
-    # Get source branches
-    main_storage_branches = set()
-    for product in Product.objects.all():
-        for product_storage in product.product_storages.all():
-            if product_storage.main_storage and product_storage.has_shortage:
-                main_storage_branches.add(product_storage.branch)
-    branches = list(main_storage_branches)
-    branches = list(set(branches) - {branch})
+    # Get branches with main storage having shortages
+    main_storage_branches = {
+        ps.storage.branches.first()
+        for product in Product.objects.all()
+        for ps in product.product_storages.all()
+        if ps.main_storage and ps.has_shortage
+    }
+    branches = list(main_storage_branches.difference({branch}))
     if branch != "All":
         branches.append("All")
 
-    # Get target branches
-    target_branches = Branch.objects.all()
-    product_storages_set = set()
-    for product_storage in ProductStorage.objects.all():
-        if (
-            product_storage.has_shortage is True
-            and product_storage.main_storage is False
-        ):
-            product_storages_set.add(product_storage)
-    branch_counts = {}
-    for product_storage in product_storages_set:
-        if product_storage.branch not in branch_counts:
-            branch_counts[product_storage.branch] = []
-        branch_counts[product_storage.branch].append(product_storage)
-    target_branches_set = set()
-    for product_branch, product_storages in branch_counts.items():
-        if len(product_storages) > 1:
-            target_branches_set.add(product_branch)
-    target_branches = list(target_branches_set)
-    target_branches = list(set(target_branches) - {branch})
+    # Determine the target branches
+    product_storages_with_shortage = [
+        ps
+        for ps in ProductStorage.objects.filter(main_storage=False)
+        if ps.has_shortage
+    ]
+    target_branches_set = {
+        ps.storage.branches.first() for ps in product_storages_with_shortage
+    }
 
-    # Get storages which require packaging
-    products = Product.objects.all()
-    product_storages = ProductStorage.objects.filter(product__in=products)
+    # Handle the case when a specific branch is selected
+    if branch != "All":
+        target_branches = [branch]
+    else:
+        target_branches = list(target_branches_set.difference({branch}))
 
-    # Get last product modification date
+    # Get products and related storages
+    products = Product.objects.prefetch_related("product_storages", "unit")
+
+    # Dictionary to track deliverable products for each target branch
+    branch_deliveries = {}
+    for target_branch in target_branches:
+        deliverable_products = []
+        for product in products:
+            if (
+                product.needs_packaging()
+                and target_branch in product.get_storage_branches
+            ):
+                oos_value_shipping = product.get_oos_value_shipping()
+                for product_storage, data in oos_value_shipping.items():
+                    if product_storage == target_branch and data["value_needed"] > 0:
+                        deliverable_products.append(product)
+                        break
+        if deliverable_products:
+            branch_deliveries[target_branch] = deliverable_products
+
+    # Filter out empty branches
+    branch_deliveries = {k: v for k, v in branch_deliveries.items() if v}
+
     modified_date = getInventoryModifiedDate()
+
+    # Debugging
+    print(f"Selected Branch: {branch}")
+    print(f"Target Branches: {target_branches}")
+    for target_branch, deliverable_products in branch_deliveries.items():
+        print(
+            f"Branch: {target_branch} has {len(deliverable_products)} products to deliver"
+        )
 
     return render(
         request,
@@ -344,10 +364,10 @@ def inventory_packaging(request):
         context={
             "pageTitle": "Packaging",
             "products": products,
-            "product_storages": product_storages,
+            "product_storages": product_storages_with_shortage,
             "modifiedDate": modified_date,
             "branches": branches,
             "branch": branch,
-            "target_branches": target_branches,
+            "branch_deliveries": branch_deliveries,
         },
     )
