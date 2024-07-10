@@ -25,22 +25,24 @@
         </tr>
         <tr class="header thead-dark">
           <th scope="col" class="name-column">Name</th>
+          <th scope="col" class="name-column">Submitted on</th>
           <th scope="col" style="white-space: nowrap;">Availability</th>
         </tr>
         {% for product in products %}
-          {% for product_storage in product.storages %}
-            {% if product_storage == storage %}
+          {% for product_storage in product.product_storages.all %}
+            {% if product_storage.storage == storage %}
             <tr>
               <td>{{ product.name }}</td>
+                <td>{{ product_storage.last_updated|date:"d-F-y H:i" }}</td>
               <td>
-                {% for product_storage, data in product.get_product_storage.items %}
-                  {% if product_storage == storage %}
-                    {% if data.has_shortage %}
+                {% for ps in product.product_storages.all %}
+                  {% if ps.storage == storage %}
+                    {% if ps.has_shortage %}
                     <span class="warning">
                     {% else %}
                     <span>
                     {% endif %}
-                    {{ data.value|floatformat:2 }} / {{ data.value_intended|floatformat:2 }} {{ product.unit.all|join:", " }}
+                    {{ ps.value|floatformat:2 }} / {{ ps.value_intended|floatformat:2 }} {{ product.unit.all|join:", " }}
                     </span>
                   {% endif %}
                 {% endfor %}

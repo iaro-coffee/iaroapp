@@ -6,16 +6,23 @@ document.addEventListener("DOMContentLoaded", function () {
     var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
     var rows = document.querySelectorAll('tbody tr');
 
-    // Func to update row bg-color based on checkbox state
+    // Func to update row bg-color and text color based on checkbox state
     function updateRowColor(checkbox) {
         var row = checkbox.closest('tr');
         var checkboxWrapper = checkbox.closest('.checkbox-wrapper');
         var isDarkPage = body.classList.contains('dark-page');
+        var badges = row.querySelectorAll('.badge');
 
         if (checkboxWrapper && checkbox.checked) {
             row.style.backgroundColor = isDarkPage ? "var(--bs-success-dark)" : "var(--bs-success)";
+            badges.forEach(function (badge) {
+                badge.style.cssText = "color: white !important";
+            });
         } else {
             row.style.backgroundColor = '';
+            badges.forEach(function (badge) {
+                badge.style.cssText = "";
+            });
         }
     }
 
@@ -27,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Initially trigger
         updateRowColor(checkbox);
     });
-
 
     rows.forEach(row => {
         row.addEventListener('click', function (event) {

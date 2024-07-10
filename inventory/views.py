@@ -61,7 +61,7 @@ def getInventoryModifiedDate():
 def inventory_populate(request):
     current_branch = get_current_branch(request)
     if request.method == "POST":
-        ProductFormset(request.POST)
+        ProductFormset(request.POST).save()  # Ensure the formset is saved
 
         for key, value in request.POST.items():
             if "value" in key and value:
@@ -149,6 +149,7 @@ def inventory_populate(request):
                 "branches": branches,
                 "branch": branch,
                 "formset": formset,
+                "product_storages": product_storages,  # Ensure product_storages is in context
             },
         )
 
@@ -199,6 +200,7 @@ def inventory_evaluation(request):
     storages_sorted = storages_queryset.order_by("name")
     storages = [storage for storage in storages_sorted]
 
+    print(product_storages)
     return render(
         request,
         "inventory_evaluation.html",
@@ -209,6 +211,7 @@ def inventory_evaluation(request):
             "storages": storages,
             "branches": branches,
             "branch": branch,
+            "product_storages": product_storages,
         },
     )
 
