@@ -61,7 +61,7 @@ def getInventoryModifiedDate():
 def inventory_populate(request):
     current_branch = get_current_branch(request)
     if request.method == "POST":
-        ProductFormset(request.POST).save()  # Ensure the formset is saved
+        ProductFormset(request.POST).save()
 
         for key, value in request.POST.items():
             if "value" in key and value:
@@ -149,7 +149,7 @@ def inventory_populate(request):
                 "branches": branches,
                 "branch": branch,
                 "formset": formset,
-                "product_storages": product_storages,  # Ensure product_storages is in context
+                "product_storages": product_storages,
             },
         )
 
@@ -351,12 +351,12 @@ def inventory_packaging(request):
     modified_date = getInventoryModifiedDate()
 
     # Debugging
-    print(f"Selected Branch: {branch}")
-    print(f"Target Branches: {target_branches}")
-    for target_branch, deliverable_products in branch_deliveries.items():
-        print(
-            f"Branch: {target_branch} has {len(deliverable_products)} products to deliver"
-        )
+    # print(f"Selected Branch: {branch}")
+    # print(f"Target Branches: {target_branches}")
+    # for target_branch, deliverable_products in branch_deliveries.items():
+    #     print(
+    #         f"Branch: {target_branch} has {len(deliverable_products)} products to deliver"
+    #     )
 
     return render(
         request,

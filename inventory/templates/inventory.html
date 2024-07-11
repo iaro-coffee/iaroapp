@@ -62,10 +62,17 @@
                                                                     <input type="number" name="product_{{ form.instance.id }}" value="{{ form.instance.id }}" style="display: none;"/>
                                                                     <input type="number" name="storage_{{ storage.id }}" value="{{ storage.id }}" style="display: none;"/>
                                                                     <p class="text-sm mb-0 w-100 wrap text-break">
-                                                                        {{ form.name.value }}<br>
-                                                                        <span class="text-secondary text-xxs d-none date-field">{{ product_storage.last_updated|date:"d/F/y H:i" }}</span>
+                                                                        {{ form.name.value }}
+                                                                        <br>
+                                                                        <span class="text-secondary text-xxs d-none date-field">Updated on: {{ product_storage.last_updated|date:"d/F/y H:i" }}</span>
+                                                                        <span class="text-secondary text-xxs d-none amount-field"><br>Last submitted amount: {{ product_storage.value }}</span>
+                                                                        {% if form.instance.hint %}
+                                                                            <span class="text-secondary text-xxs d-none hint-field" style="width: 120px;"><br>Hint: {{ form.instance.hint }}</span>
+                                                                        {% endif %}
                                                                     </p>
-                                                                    <input name="value_{{ form.instance.id }}_{{ storage.id }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control value-input" id="value" value="" placeholder="{{ form.instance.unit.all | join:", " }}" style="width: 100px; height: 34px; padding: 0.4rem; font-size: 16px; scale: 0.9;">
+                                                                    <div class="d-flex flex-column">
+                                                                        <input name="value_{{ form.instance.id }}_{{ storage.id }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control value-input" id="value" value="" placeholder="{{ form.instance.unit.all | join:", " }}" style="width: 100px; height: 34px; padding: 0.4rem; font-size: 16px; scale: 0.9;">
+                                                                    </div>
                                                                 </a>
                                                             {% endif %}
                                                         {% endfor %}
@@ -87,88 +94,88 @@
     </div>
 
 
-    <div class="modal fade" id="submitInventoryModal" tabindex="-1" role="dialog"
-         aria-labelledby="submitInventoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content card card-body">
-                <div class="modal-header">
-                    <h6 class="modal-title" id="submitInventoryModalLabel">Warning</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Inventory have already been submitted for today. Are you sure you want to update it?
-                </div>
-                <div class="modal-footer gap-2">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn bg-gradient-primary" id="confirmSubmit">Update inventory</button>
-                </div>
-            </div>
-        </div>
-    </div>
+{#    <div class="modal fade" id="submitInventoryModal" tabindex="-1" role="dialog"#}
+{#         aria-labelledby="submitInventoryModalLabel" aria-hidden="true">#}
+{#        <div class="modal-dialog modal-dialog-centered" role="document">#}
+{#            <div class="modal-content card card-body">#}
+{#                <div class="modal-header">#}
+{#                    <h6 class="modal-title" id="submitInventoryModalLabel">Warning</h6>#}
+{#                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
+{#                </div>#}
+{#                <div class="modal-body">#}
+{#                    Inventory have already been submitted for today. Are you sure you want to update it?#}
+{#                </div>#}
+{#                <div class="modal-footer gap-2">#}
+{#                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>#}
+{#                    <button type="button" class="btn bg-gradient-primary" id="confirmSubmit">Update inventory</button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
 
-    <script>
-        var isSubmittedToday = ('{{ isSubmittedToday | safe }}' === 'True');
-
-        /* Submit inventory */
-        function submitForm() {
-          var form = document.querySelector('#product_form');
-          form.submit()
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-
-          var elements = document.querySelectorAll('.collapse');
-          elements.forEach(function(element) {
-            element.addEventListener('shown.bs.collapse', function (event) {
-              var triggeredElement = event.currentTarget;
-              var parentElement = triggeredElement.parentNode;
-              var rect = parentElement.getBoundingClientRect();
-              var header = document.querySelector('nav');
-              var headerHeight = header.offsetHeight;
-              var scrollPosition = window.pageYOffset + rect.top - headerHeight - 5;
-              window.scrollTo({
-                top: scrollPosition,
-                behavior: 'smooth'
-              });
-            });
-          });
-
-          var submitInventoryModal = new bootstrap.Modal(document.getElementById("submitInventoryModal"), {});
-
-          document.getElementById('confirmSubmit').onclick = function() {
-            submitForm();
-            submitInventoryModal.hide();
-          }
-
-          document.getElementById('product_form').onsubmit = function (evt) {
-
-            evt.preventDefault();
-
-            if (isSubmittedToday) {
-              submitInventoryModal.show();
-            } else {
-              submitForm();
-            }
-
-          }
-
-          // Colorize fields as "done" for which a value is supplied
-          let items = document.querySelectorAll("a.list-group-item");
-          items.forEach(item => {
-            let input = item.querySelector("input[name='value']");
-            if (input !== null) {
-              input.addEventListener("input", function() {
-                if (input.value && input.checkValidity()) {
-                  item.classList.add('done');
-                } else {
-                  item.classList.remove('done');
-                }
-              });
-            }
-          });
-
-        });
-    </script>
+{#    <script>#}
+{#        var isSubmittedToday = ('{{ isSubmittedToday | safe }}' === 'True');#}
+{##}
+{#        /* Submit inventory */#}
+{#        function submitForm() {#}
+{#          var form = document.querySelector('#product_form');#}
+{#          form.submit()#}
+{#        }#}
+{##}
+{#        document.addEventListener("DOMContentLoaded", function() {#}
+{##}
+{#          var elements = document.querySelectorAll('.collapse');#}
+{#          elements.forEach(function(element) {#}
+{#            element.addEventListener('shown.bs.collapse', function (event) {#}
+{#              var triggeredElement = event.currentTarget;#}
+{#              var parentElement = triggeredElement.parentNode;#}
+{#              var rect = parentElement.getBoundingClientRect();#}
+{#              var header = document.querySelector('nav');#}
+{#              var headerHeight = header.offsetHeight;#}
+{#              var scrollPosition = window.pageYOffset + rect.top - headerHeight - 5;#}
+{#              window.scrollTo({#}
+{#                top: scrollPosition,#}
+{#                behavior: 'smooth'#}
+{#              });#}
+{#            });#}
+{#          });#}
+{##}
+{#          var submitInventoryModal = new bootstrap.Modal(document.getElementById("submitInventoryModal"), {});#}
+{##}
+{#          document.getElementById('confirmSubmit').onclick = function() {#}
+{#            submitForm();#}
+{#            submitInventoryModal.hide();#}
+{#          }#}
+{##}
+{#          document.getElementById('product_form').onsubmit = function (evt) {#}
+{##}
+{#            evt.preventDefault();#}
+{##}
+{#            if (isSubmittedToday) {#}
+{#              submitInventoryModal.show();#}
+{#            } else {#}
+{#              submitForm();#}
+{#            }#}
+{##}
+{#          }#}
+{##}
+{#          // Colorize fields as "done" for which a value is supplied#}
+{#          let items = document.querySelectorAll("a.list-group-item");#}
+{#          items.forEach(item => {#}
+{#            let input = item.querySelector("input[name='value']");#}
+{#            if (input !== null) {#}
+{#              input.addEventListener("input", function() {#}
+{#                if (input.value && input.checkValidity()) {#}
+{#                  item.classList.add('done');#}
+{#                } else {#}
+{#                  item.classList.remove('done');#}
+{#                }#}
+{#              });#}
+{#            }#}
+{#          });#}
+{##}
+{#        });#}
+{#    </script>#}
 
     <style>
 
@@ -186,15 +193,31 @@
             inputs.forEach(function(input) {
                 input.addEventListener('focus', function () {
                     var dateField = this.closest('a').querySelector('.date-field');
+                    var hintField = this.closest('a').querySelector('.hint-field');
+                    var amountField = this.closest('a').querySelector('.amount-field');
                     if (dateField) {
                         dateField.classList.remove('d-none');
+                    }
+                    if (hintField) {
+                        hintField.classList.remove('d-none');
+                    }
+                    if (amountField) {
+                        amountField.classList.remove('d-none');
                     }
                 });
 
                 input.addEventListener('blur', function () {
                     var dateField = this.closest('a').querySelector('.date-field');
+                    var hintField = this.closest('a').querySelector('.hint-field');
+                    var amountField = this.closest('a').querySelector('.amount-field');
                     if (dateField) {
                         dateField.classList.add('d-none');
+                    }
+                    if (hintField) {
+                        hintField.classList.add('d-none');
+                    }
+                    if (amountField) {
+                        amountField.classList.add('d-none');
                     }
                 });
             });
