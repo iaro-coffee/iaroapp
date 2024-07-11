@@ -26,7 +26,7 @@ class BranchesAdmin(admin.ModelAdmin):
 class ProductStorageInline(admin.TabularInline):
     model = ProductStorage
     readonly_fields = ("last_updated",)
-    extra = 1
+    extra = 0
 
 
 class ProductsInline(admin.TabularInline):

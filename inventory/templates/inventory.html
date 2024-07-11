@@ -14,168 +14,81 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-body px-0 pt-0 pb-2">
-
-                    <table class="table table-responsive p-0 align-items-center mb-2 table-collapse">
-
-                        <thead>
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-body px-0 pt-0 pb-2">
+                <table class="table table-responsive p-0 align-items-center mb-2 table-collapse">
+                    <thead>
                         <tr class="title">
                             <th class="border-bottom-0 d-flex" colspan="4">
-                                <span class="text-sm">Target branch:</span><h6 class="text-sm px-1 font-weight-bold">{{ branch }}</h6>
+                                <span class="text-sm">Target branch:</span>
+                                <h6 class="text-sm px-1 font-weight-bold">{{ branch }}</h6>
                             </th>
                         </tr>
-                        </thead>
-
-                        <thead>
+                    </thead>
+                    <thead>
                         <tr>
                             <th class="w-4 text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
                                 Select Storage
                             </th>
                         </tr>
-                        </thead>
-
-                        <tbody>
-                            <form id="product_form" method="post">
-                                {% csrf_token %}
-                                {{ formset.management_form }}
-                                {% for storage in storages %}
-                                    <tr class="entry">
-                                        <td style="height: 40px; white-space: normal !important;">
-                                            <a data-bs-toggle="collapse" href="#inventoryList_{{ storage.id }}">
-                                                <div class="d-flex align-items-center">
-                                                    <svg class="bi" width="16" height="16">
-                                                        <circle cx="8" cy="8" r="7" fill="{{ storage.color }}" stroke="#cbd3da"></circle>
-                                                    </svg>
-                                                    <h6 class="mb-0 mx-2 text-sm responsive__mobile-3">{{ storage.name }}</h6>
-                                                </div>
-                                            </a>
-                                            <div id="inventoryList_{{ storage.id }}" class="collapse" data-bs-parent="#accordion">
-                                                <div class="card-body p-2">
-                                                    {% for form in formset %}
+                    </thead>
+                    <tbody>
+                        <form id="product_form" method="post">
+                            {% csrf_token %}
+                            {{ formset.management_form }}
+                            {% for storage in storages %}
+                                {% with products_in_storage=product_storages|dictsort:"storage.id"|slice:":1"|first %}
+                                    {% if products_in_storage %}
+                                        <tr class="entry">
+                                            <td style="height: 40px; white-space: normal !important;">
+                                                <a data-bs-toggle="collapse" href="#inventoryList_{{ storage.id }}">
+                                                    <div class="d-flex align-items-center">
+                                                        <svg class="bi" width="16" height="16">
+                                                            <circle cx="8" cy="8" r="7" fill="{{ storage.color }}" stroke="#cbd3da"></circle>
+                                                        </svg>
+                                                        <h6 class="mb-0 mx-2 text-sm responsive__mobile-3">{{ storage.name }}</h6>
+                                                    </div>
+                                                </a>
+                                                <div id="inventoryList_{{ storage.id }}" class="collapse" data-bs-parent="#accordion">
+                                                    <div class="card-body p-2">
                                                         {% for product_storage in product_storages %}
-                                                            {% if product_storage.product == form.instance and product_storage.storage == storage %}
+                                                            {% if product_storage.storage == storage %}
                                                                 <a class="list-group-item align-items-center list-group-item-action d-flex gap-2 py-2" aria-current="true" style="width: 100%; border-bottom: 1px solid rgba(131, 146, 171, 0.2);">
                                                                     <span style="font-size: 1rem">📦</span>
-                                                                    <input type="number" name="product_{{ form.instance.id }}" value="{{ form.instance.id }}" style="display: none;"/>
+                                                                    <input type="number" name="product_{{ product_storage.product.id }}" value="{{ product_storage.product.id }}" style="display: none;"/>
                                                                     <input type="number" name="storage_{{ storage.id }}" value="{{ storage.id }}" style="display: none;"/>
                                                                     <p class="text-sm mb-0 w-100 wrap text-break">
-                                                                        {{ form.name.value }}
+                                                                        {{ product_storage.product.name }}
                                                                         <br>
                                                                         <span class="text-secondary text-xxs d-none date-field">Updated on: {{ product_storage.last_updated|date:"d/F/y H:i" }}</span>
                                                                         <span class="text-secondary text-xxs d-none amount-field"><br>Last submitted amount: {{ product_storage.value }}</span>
-                                                                        {% if form.instance.hint %}
-                                                                            <span class="text-secondary text-xxs d-none hint-field" style="width: 120px;"><br>Hint: {{ form.instance.hint }}</span>
+                                                                        {% if product_storage.product.hint %}
+                                                                            <span class="text-secondary text-xxs d-none hint-field" style="width: 120px;"><br>Hint: {{ product_storage.product.hint }}</span>
                                                                         {% endif %}
                                                                     </p>
                                                                     <div class="d-flex flex-column">
-                                                                        <input name="value_{{ form.instance.id }}_{{ storage.id }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control value-input" id="value" value="" placeholder="{{ form.instance.unit.all | join:", " }}" style="width: 100px; height: 34px; padding: 0.4rem; font-size: 16px; scale: 0.9;">
+                                                                        <input name="value_{{ product_storage.product.id }}_{{ storage.id }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control value-input" id="value" value="" placeholder="{{ product_storage.product.unit.all | join:", " }}" style="width: 100px; height: 34px; padding: 0.4rem; font-size: 16px; scale: 0.9;">
                                                                     </div>
                                                                 </a>
                                                             {% endif %}
                                                         {% endfor %}
-                                                    {% endfor %}
-                                                    <input type="submit" class="btn align-self-center bg-gradient-primary m-2" value="Submit inventory"/>
+                                                        <input type="submit" class="btn align-self-center bg-gradient-primary m-2" value="Submit inventory"/>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </form>
-                        </tbody>
-
-                    </table>
-                </div>
-
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                        </form>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-
-
-{#    <div class="modal fade" id="submitInventoryModal" tabindex="-1" role="dialog"#}
-{#         aria-labelledby="submitInventoryModalLabel" aria-hidden="true">#}
-{#        <div class="modal-dialog modal-dialog-centered" role="document">#}
-{#            <div class="modal-content card card-body">#}
-{#                <div class="modal-header">#}
-{#                    <h6 class="modal-title" id="submitInventoryModalLabel">Warning</h6>#}
-{#                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
-{#                </div>#}
-{#                <div class="modal-body">#}
-{#                    Inventory have already been submitted for today. Are you sure you want to update it?#}
-{#                </div>#}
-{#                <div class="modal-footer gap-2">#}
-{#                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>#}
-{#                    <button type="button" class="btn bg-gradient-primary" id="confirmSubmit">Update inventory</button>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-
-{#    <script>#}
-{#        var isSubmittedToday = ('{{ isSubmittedToday | safe }}' === 'True');#}
-{##}
-{#        /* Submit inventory */#}
-{#        function submitForm() {#}
-{#          var form = document.querySelector('#product_form');#}
-{#          form.submit()#}
-{#        }#}
-{##}
-{#        document.addEventListener("DOMContentLoaded", function() {#}
-{##}
-{#          var elements = document.querySelectorAll('.collapse');#}
-{#          elements.forEach(function(element) {#}
-{#            element.addEventListener('shown.bs.collapse', function (event) {#}
-{#              var triggeredElement = event.currentTarget;#}
-{#              var parentElement = triggeredElement.parentNode;#}
-{#              var rect = parentElement.getBoundingClientRect();#}
-{#              var header = document.querySelector('nav');#}
-{#              var headerHeight = header.offsetHeight;#}
-{#              var scrollPosition = window.pageYOffset + rect.top - headerHeight - 5;#}
-{#              window.scrollTo({#}
-{#                top: scrollPosition,#}
-{#                behavior: 'smooth'#}
-{#              });#}
-{#            });#}
-{#          });#}
-{##}
-{#          var submitInventoryModal = new bootstrap.Modal(document.getElementById("submitInventoryModal"), {});#}
-{##}
-{#          document.getElementById('confirmSubmit').onclick = function() {#}
-{#            submitForm();#}
-{#            submitInventoryModal.hide();#}
-{#          }#}
-{##}
-{#          document.getElementById('product_form').onsubmit = function (evt) {#}
-{##}
-{#            evt.preventDefault();#}
-{##}
-{#            if (isSubmittedToday) {#}
-{#              submitInventoryModal.show();#}
-{#            } else {#}
-{#              submitForm();#}
-{#            }#}
-{##}
-{#          }#}
-{##}
-{#          // Colorize fields as "done" for which a value is supplied#}
-{#          let items = document.querySelectorAll("a.list-group-item");#}
-{#          items.forEach(item => {#}
-{#            let input = item.querySelector("input[name='value']");#}
-{#            if (input !== null) {#}
-{#              input.addEventListener("input", function() {#}
-{#                if (input.value && input.checkValidity()) {#}
-{#                  item.classList.add('done');#}
-{#                } else {#}
-{#                  item.classList.remove('done');#}
-{#                }#}
-{#              });#}
-{#            }#}
-{#          });#}
-{##}
-{#        });#}
-{#    </script>#}
+</div>
 
     <style>
 
@@ -183,6 +96,46 @@
           display: flex;
           flex-direction: column;
         }
+
+        .pagination {
+    text-align: center;
+    padding: 1em 0;
+}
+
+.pagination .step-links {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.pagination .step-links a, .pagination .step-links .current {
+    color: #007bff;
+    text-decoration: none;
+    padding: 0.5em 1em;
+    margin: 0 0.3em;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .step-links a:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pagination .step-links .current {
+    background-color: #007bff;
+    color: #fff;
+    border: 1px solid #007bff;
+    pointer-events: none;
+}
+
+.pagination .step-links a:disabled {
+    color: #6c757d;
+    pointer-events: none;
+}
+
 
     </style>
 

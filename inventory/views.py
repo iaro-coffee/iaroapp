@@ -1,10 +1,15 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.db.models import Count, Prefetch
+from django.db import transaction
+from django.db.models import Count, Exists, OuterRef
 from django.shortcuts import redirect, render, reverse
 
 from .forms import ProductFormset
 from .models import Branch, Product, ProductStorage, Seller, Storage
+
+logger = logging.getLogger(__name__)
 
 
 def get_current_branch(request):
@@ -58,23 +63,28 @@ def getInventoryModifiedDate():
 
 def inventory_populate(request):
     current_branch = get_current_branch(request)
+
     if request.method == "POST":
         ProductFormset(request.POST).save()
 
-        for key, value in request.POST.items():
-            if "value" in key and value:
-                value = float(value.replace(",", "."))
-                product_id = key.split("_")[1]
-                storage_id = key.split("_")[2]
+        with transaction.atomic():
+            updates = []
+            for key, value in request.POST.items():
+                if "value" in key and value:
+                    value = float(value.replace(",", "."))
+                    product_id, storage_id = key.split("_")[1], key.split("_")[2]
 
-                product_instance = Product.objects.get(id=product_id)
-                product_storage_instances = ProductStorage.objects.filter(
-                    product=product_instance, storage_id=storage_id
-                )
-                if product_storage_instances.exists():
-                    product_storage_instance = product_storage_instances.first()
-                    product_storage_instance.value = value
-                    product_storage_instance.save()
+                    product_storage_instance = (
+                        ProductStorage.objects.select_for_update()
+                        .filter(product_id=product_id, storage_id=storage_id)
+                        .first()
+                    )
+                    if product_storage_instance:
+                        product_storage_instance.value = value
+                        updates.append(product_storage_instance)
+
+            if updates:
+                ProductStorage.objects.bulk_update(updates, ["value"])
 
         messages.success(request, "Inventory submitted successfully.")
         return redirect(
@@ -82,62 +92,44 @@ def inventory_populate(request):
         )
 
     else:
-        users = get_user_model().objects.all()
-        products = Product.objects.prefetch_related(
-            Prefetch(
-                "product_storages",
-                queryset=ProductStorage.objects.select_related("storage"),
-            )
-        ).all()
-        branches = Branch.objects.all()
-        storages = []
+        User = get_user_model()
+        users = User.objects.all()
+        branches = list(Branch.objects.all())
+        branches.insert(0, "All")  # Ensure 'All' is at the beginning of the list
 
-        # Get current branch by GET parameter or Planday query
         branch = get_current_branch(request)
-
-        if branch != "All":
-            # Get storages for selected branch
-            branch = branches.filter(name=branch)[0]
-            storages = branch.storages.all()
-            storages = list(storages)
-
-            # Filter products only available in specific storage of branch
-            product_storages = ProductStorage.objects.filter(storage__name__in=storages)
-            product_ids = product_storages.values_list("product_id", flat=True)
-            products = Product.objects.filter(id__in=product_ids)
-
-        # Get list of branches which are not selected
-        branches = getAvailableBranchesFiltered(branch)
-
-        # Populate available non-empty storages of selected branch
-        filtered_storages = []
-        product_ids = products.values_list("id", flat=True)
-        product_storages = ProductStorage.objects.filter(product__id__in=product_ids)
-        if branch != "All":
-            for storage in product_storages:
-                if storage.storage in storages:
-                    filtered_storages.append(storage.storage)
+        if branch == "All":
+            product_storages = ProductStorage.objects.select_related(
+                "storage", "product"
+            ).exclude(product__isnull=True)
+            storage_ids_with_products = product_storages.values_list(
+                "storage_id", flat=True
+            ).distinct()
+            storages = Storage.objects.filter(
+                id__in=storage_ids_with_products
+            ).order_by("name")
         else:
-            filtered_storages = [storage.storage for storage in product_storages]
-        storages = filtered_storages
+            branch_obj = (
+                Branch.objects.prefetch_related("storages").filter(name=branch).first()
+            )
+            if branch_obj:
+                storages = branch_obj.storages.annotate(
+                    has_products=Exists(
+                        ProductStorage.objects.filter(storage=OuterRef("pk")).exclude(
+                            product__isnull=True
+                        )
+                    )
+                ).filter(has_products=True)
+                product_storages = (
+                    ProductStorage.objects.filter(storage__in=storages)
+                    .select_related("storage", "product")
+                    .exclude(product__isnull=True)
+                )
 
-        # Sort storages by name
-        storages_queryset = Storage.objects.filter(
-            id__in=[storage.id for storage in storages]
-        )
-        storages_sorted = storages_queryset.order_by("name")
-        storages = [storage for storage in storages_sorted]
-
-        # Get last product modification date
         modified_date = getInventoryModifiedDate()
-
-        # Check if inventory already submitted for today
-        # isSubmittedToday = False
-        # today = datetime.datetime.today().date()
-        # if modified_date == today:
-        #     isSubmittedToday = True
-
-        formset = ProductFormset(queryset=products)
+        formset = ProductFormset(
+            queryset=Product.objects.none()
+        )  # Empty formset since we're displaying products from storages
 
         return render(
             request,
@@ -146,7 +138,6 @@ def inventory_populate(request):
                 "pageTitle": "Inventory update",
                 "users": users,
                 "storages": storages,
-                # "isSubmittedToday": isSubmittedToday,
                 "modifiedDate": modified_date,
                 "branches": branches,
                 "branch": branch,
@@ -351,14 +342,6 @@ def inventory_packaging(request):
     branch_deliveries = {k: v for k, v in branch_deliveries.items() if v}
 
     modified_date = getInventoryModifiedDate()
-
-    # Debugging
-    # print(f"Selected Branch: {branch}")
-    # print(f"Target Branches: {target_branches}")
-    # for target_branch, deliverable_products in branch_deliveries.items():
-    #     print(
-    #         f"Branch: {target_branch} has {len(deliverable_products)} products to deliver"
-    #     )
 
     return render(
         request,
