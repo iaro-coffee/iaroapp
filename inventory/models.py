@@ -13,7 +13,7 @@ from iaroapp.base_model import BaseModel
 class Storage(BaseModel):
     """Model representing a storage location."""
 
-    name = models.CharField(max_length=500)
+    name = models.CharField(max_length=500, db_index=True)
     color = RGBColorField(default="")
 
     def display_color(self):
@@ -32,9 +32,12 @@ class Storage(BaseModel):
 class Branch(BaseModel):
     """Model representing iaro department and storages location associated with it"""
 
-    name = models.CharField(max_length=500)
+    name = models.CharField(max_length=500, db_index=True)
     tech_name = models.CharField(
-        max_length=500, blank=True, help_text="Technical name for internal use."
+        max_length=500,
+        blank=True,
+        help_text="Technical name for internal use.",
+        db_index=True,
     )
     storages = models.ManyToManyField(
         Storage,
@@ -83,7 +86,9 @@ class Branch(BaseModel):
 
 
 class Units(BaseModel):
-    name = models.CharField(max_length=200, help_text="Enter unit for product.")
+    name = models.CharField(
+        max_length=200, help_text="Enter unit for product.", db_index=True
+    )
 
     def __str__(self):
         return self.name
@@ -104,7 +109,9 @@ class Seller(BaseModel):
         SATURDAY = "saturday", "Saturday"
         SUNDAY = "sunday", "Sunday"
 
-    name = models.CharField(max_length=200, help_text="Enter seller for product.")
+    name = models.CharField(
+        max_length=200, help_text="Enter seller for product.", db_index=True
+    )
     visibility = models.CharField(
         max_length=20,
         choices=VisibilityChoices.choices,
@@ -136,7 +143,9 @@ class Product(BaseModel):
     """Model representing a product."""
 
     name = models.CharField(max_length=500, unique=True)
-    unit = models.ManyToManyField(Units, help_text="Select unit for this product")
+    unit = models.ManyToManyField(
+        Units, help_text="Select unit for this product", db_index=True
+    )
     seller = models.ForeignKey(
         Seller,
         help_text="Select seller for this product",

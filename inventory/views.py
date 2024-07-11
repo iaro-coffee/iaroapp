@@ -1,8 +1,6 @@
-import datetime
-
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.db.models import Count
+from django.db.models import Count, Prefetch
 from django.shortcuts import redirect, render, reverse
 
 from .forms import ProductFormset
@@ -84,9 +82,13 @@ def inventory_populate(request):
         )
 
     else:
-        User = get_user_model()
-        users = User.objects.all()
-        products = Product.objects.all()
+        users = get_user_model().objects.all()
+        products = Product.objects.prefetch_related(
+            Prefetch(
+                "product_storages",
+                queryset=ProductStorage.objects.select_related("storage"),
+            )
+        ).all()
         branches = Branch.objects.all()
         storages = []
 
@@ -130,10 +132,10 @@ def inventory_populate(request):
         modified_date = getInventoryModifiedDate()
 
         # Check if inventory already submitted for today
-        isSubmittedToday = False
-        today = datetime.datetime.today().date()
-        if modified_date == today:
-            isSubmittedToday = True
+        # isSubmittedToday = False
+        # today = datetime.datetime.today().date()
+        # if modified_date == today:
+        #     isSubmittedToday = True
 
         formset = ProductFormset(queryset=products)
 
@@ -144,7 +146,7 @@ def inventory_populate(request):
                 "pageTitle": "Inventory update",
                 "users": users,
                 "storages": storages,
-                "isSubmittedToday": isSubmittedToday,
+                # "isSubmittedToday": isSubmittedToday,
                 "modifiedDate": modified_date,
                 "branches": branches,
                 "branch": branch,
