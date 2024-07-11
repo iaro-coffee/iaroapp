@@ -102,9 +102,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "iaroapp.wsgi.application"
 
-# if DEBUG:
-#    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-# else:
+# Keep user logged in
+# The cached_db session engine is a hybrid approach
+# that combines the advantages of both database-backed sessions and caching.
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+# This setting should be False to allow session expiry management in views
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+ACCOUNT_SESSION_REMEMBER = None
+
+
 if DEBUG:
     DATABASES = {
         "default": {

@@ -42,6 +42,12 @@ class CustomerLoginView(LoginView):
         login(self.request, form.user)
         user = form.user
 
+        # Set session expiry
+        if form.cleaned_data["remember"]:
+            self.request.session.set_expiry(60 * 60 * 24 * 365)  # 1 year
+        else:
+            self.request.session.set_expiry(43200)  # 12 hours
+
         # check if email is verified
         if EmailAddress.objects.filter(user=user, verified=True).exists():
             return JsonResponse({"success": True, "redirectUrl": self.success_url})

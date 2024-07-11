@@ -12,7 +12,9 @@ class CustomerProfileUpdateForm(forms.ModelForm):
 
 
 class CustomLoginForm(LoginForm):
-    remember = forms.BooleanField(label=_("Remember Me"), required=False, initial=True)
+    remember = forms.BooleanField(
+        label=_("Keep me signed in"), required=False, initial=True
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
