@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Branch, Product, ProductStorage, Seller, Storage
+from .models import Branch, Product, ProductStorage, Seller, Storage, Units
 
 # Register your models here.
 
@@ -80,4 +80,16 @@ class SellerAdmin(admin.ModelAdmin):
 
     list_display = ["name", "visibility", "is_weekly"]
     list_filter = ["visibility"]
+    search_fields = ["name"]
+
+
+@admin.register(Units)
+class UnitsAdmin(admin.ModelAdmin):
+    """Administration object for Units models.
+    Defines:
+     - fields to be displayed in list view (list_display)
+     - adds search fields and list filters (search_fields, list_filter)
+    """
+
+    list_display = ["name"]
     search_fields = ["name"]

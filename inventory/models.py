@@ -93,6 +93,9 @@ class Units(BaseModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = "Units"
+
 
 class Seller(BaseModel):
     class VisibilityChoices(models.TextChoices):
