@@ -9,9 +9,9 @@
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2">
     {% if user.is_superuser or user.is_staff %}
-    <a class="btn mb-0 bg-gradient-primary" href="/tasks/add{% if branch %}?branch={{ branch }}{% endif %}">
-        Add task
-    </a>
+        {% if branch != "All" %}
+            <button type="button" id="toggleOrderButton" class="btn bg-gradient-primary mb-0">Edit Order</button>
+        {% endif %}
     {% endif %}
     <div class="dropdown">
         <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -33,18 +33,17 @@
 <form id="tasksForm" method="post">
     {% csrf_token %}
     {{ formset.management_form }}
+    <input type="hidden" name="order" id="taskOrder">
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
                         <div class="table-title d-flex p-3">
-                            <span class="text-sm">Target branch:</span><h6
-                                class="text-sm px-1 font-weight-bold">{{ branch }}</h6>
+                            <span class="text-sm">Target branch:</span><h6 class="text-sm px-1 font-weight-bold">{{ branch }}</h6>
                         </div>
 
                         <table class="table align-items-center mb-2 table-collapse">
-
                             <thead>
                             <tr>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
@@ -58,60 +57,63 @@
                             <tbody>
                             {% for form in formset %}
                             {% if form.instance.id %}
-                                <tr class="entry" {% if form.instance.done_for_branch %} data-bs-toggle="tooltip" data-bs-placement="top" title="Done" {% endif %}>
-                                    <td>
-                                        <div class="d-flex justify-content-center responsive__mobile-2">
-                                            <div class="form-check">
-                                                <div class="checkbox-wrapper {% if form.instance.done_for_branch %} checked-tooltip {% endif %}">
-                                                    <input type="checkbox" class="form-check-input flex-shrink-0"
-                                                           id="checkbox_{{ form.instance.id }}"
-                                                           name="done_{{ form.instance.id }}"
-                                                            {% if form.instance.done_for_branch %} checked
-                                                           disabled {% endif %}/>
-                                                    <input type="hidden" name="{{ form.prefix }}-id"
-                                                           id="id_{{ form.prefix }}-id" value="{{ form.instance.id }}">
-                                                    <input type="hidden" name="{{ form.prefix }}-title"
-                                                           id="id_{{ form.prefix }}-title"
-                                                           value="{{ form.instance.title }}">
-                                                </div>
+                            <tr class="entry" {% if form.instance.done_for_branch %} data-bs-toggle="tooltip" data-bs-placement="top" title="Done" {% endif %}>
+                                <td>
+                                    <div class="d-flex justify-content-center responsive__mobile-2">
+                                        <div class="form-check">
+                                            <div class="checkbox-wrapper {% if form.instance.done_for_branch %} checked-tooltip {% endif %}">
+                                                <input type="checkbox" class="form-check-input flex-shrink-0"
+                                                       id="checkbox_{{ form.instance.id }}"
+                                                       name="done_{{ form.instance.id }}"
+                                                       {% if form.instance.done_for_branch %} checked
+                                                       disabled {% endif %}/>
+                                                <input type="hidden" name="{{ form.prefix }}-id"
+                                                       id="id_{{ form.prefix }}-id" value="{{ form.instance.id }}">
+                                                <input type="hidden" name="{{ form.prefix }}-title"
+                                                       id="id_{{ form.prefix }}-title"
+                                                       value="{{ form.instance.title }}">
                                             </div>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex px-1 py-1">
-                                            <h6 class="mb-0 text-sm responsive__mobile-3">{{ form.instance.title }}</h6>
-
-                                        </div>
-                                        <div class="d-flex">
-                                            <small class="d-block px-1 text-xs opacity-7 responsive__mobile-3">
-                                                <span data-feather="tag" class="align-text-bottom" style="height: 16px"></span>
-                                                {{ form.instance.get_types|join:", " }}
-                                                {% if form.instance.assignees %}
-                                                    <span data-feather="user" class="align-text-bottom" style="height: 16px"></span>
-                                                    {{ form.instance.assignees }}
-                                                {% endif %}
-                                            </small>
-                                        </div>
-                                        {% if form.instance.summary %}
-                                            <div class="d-flex text-sm px-1 py-1 align-items-center no-select descriptionLink">
-                                                <span class="" data-feather="chevron-right"></span>
-                                                Description
-                                                <span class="hidden">{{ form.instance.summary }}</span>
-                                            </div>
-                                        {% endif %}
-                                        <div class="ml-4 card rounded-0 task-description" style="display: none;"></div>
-                                    </td>
-                                </tr>
-                                <!-- Display form errors for debugging -->
-                                {% if form.errors %}
-                                    <tr>
-                                        <td colspan="2">
-                                            <div class="alert alert-danger">
-                                                {{ form.errors }}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex px-1 py-1">
+                                        <h6 class="mb-0 text-sm responsive__mobile-3">{{ form.instance.title }}</h6>
+                                    </div>
+                                    <div class="d-flex">
+                                        <small class="d-block px-1 text-xs opacity-7 responsive__mobile-3">
+                                            <span data-feather="tag" class="align-text-bottom" style="height: 16px"></span>
+                                            {{ form.instance.get_types|join:", " }}
+                                            {% if form.instance.assignees %}
+                                            <span data-feather="user" class="align-text-bottom" style="height: 16px"></span>
+                                            {{ form.instance.assignees }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    {% if form.instance.summary %}
+                                    <div class="d-flex text-sm px-1 py-1 align-items-center no-select descriptionLink">
+                                        <span class="" data-feather="chevron-right"></span>
+                                        Description
+                                        <span class="hidden">{{ form.instance.summary }}</span>
+                                    </div>
+                                    {% endif %}
+                                    <div class="ml-4 card rounded-0 task-description" style="display: none;"></div>
+                                    <span class="text-center move-buttons d-none ">
+                                        <button type="button" class="btn m-1 btn-outline-secondary move-up">↑</button>
+                                        <button type="button" class="btn m-1 btn-outline-secondary move-down">↓</button>
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Display form errors for debugging -->
+                            {% if form.errors %}
+                            <tr>
+                                <td colspan="3">
+                                    <div class="alert alert-danger">
+                                        {{ form.errors }}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
                             {% endif %}
                             {% endfor %}
                             </tbody>
@@ -120,14 +122,16 @@
                 </div>
             </div>
             {% if branch != "All" %}
-                <input type="submit" id="submitTasksBtn" class="w-100 btn bg-gradient-primary" value="Submit tasks" style="float: right; max-width: 200px;"/>
+                <input type="submit" id="submitTasksBtn" class="btn w-100 bg-gradient-primary" value="Submit tasks" style="float: right; max-width: 200px;"/>
+                <a class="btn mb-0 bg-gradient-primary" href="/tasks/add{% if branch %}?branch={{ branch }}{% endif %}">
+                    Add task
+                </a>
             {% else %}
                 <p class="d-flex justify-content-end px-1 text-xs opacity-7 responsive__mobile-3">Please select your working branch to submit a task</p>
             {% endif %}
         </div>
     </div>
 </form>
-
 
 {% else %}
 <p>There are no tasks available.</p>
@@ -166,8 +170,31 @@
     </div>
 </div>
 
+<style>
+    .move-up, .move-down {
+        transition: background-color 0.3s, color 0.3s !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .move-up:hover, .move-down:hover {
+        background-color: mediumslateblue !important;
+        color: white !important;
+    }
+
+    .move-up:active, .move-down:active {
+        background-color: mediumslateblue  !important;
+        color: white !important;
+    }
+
+    .move-up:focus, .move-down:focus {
+        background-color: mediumslateblue !important;
+        color: white !important;
+    }
+</style>
 
 <script src="{% static 'js/tables_appearence.js' %}"></script>
 <script src="{% static 'js/tables_behavior-tasks.js' %}"></script>
+<script src="{% static 'js/task_reorder.js' %}"></script>
 
 {% endblock content %}

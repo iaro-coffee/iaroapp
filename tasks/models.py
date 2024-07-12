@@ -62,6 +62,8 @@ class Task(BaseModel):
         related_name="subtasks",
     )
 
+    order = models.PositiveIntegerField(default=0)
+
     def is_done(self, branch):
         if self.subtasks.all():
             return all(subtask.is_done(branch) for subtask in self.subtasks.all())

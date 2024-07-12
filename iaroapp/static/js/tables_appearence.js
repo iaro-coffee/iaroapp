@@ -1,6 +1,5 @@
 // JS for styling tables
 
-
 document.addEventListener("DOMContentLoaded", function () {
     var body = document.body;
     var checkboxes = document.querySelectorAll('input[type="checkbox"][name^="done_"]');
@@ -37,6 +36,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     rows.forEach(row => {
         row.addEventListener('click', function (event) {
+            // Prevent row click event if move button was clicked
+            if (event.target.classList.contains('move-up') || event.target.classList.contains('move-down')) {
+                return;
+            }
+
             if (event.target.type !== 'checkbox') {
                 var checkbox = this.querySelector('input[type="checkbox"][name^="done_"]');
                 if (!checkbox.disabled) {

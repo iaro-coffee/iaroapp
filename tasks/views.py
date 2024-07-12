@@ -47,6 +47,7 @@ class TasksView(LoginRequiredMixin, ListView):
                 "formset": formset,
                 "branches": branches,
                 "branch": branch,
+                "is_admin": check_admin(self.request.user),
             }
         )
         return context
@@ -63,19 +64,16 @@ class TasksView(LoginRequiredMixin, ListView):
         date_done = timezone.now()
         branch = get_current_branch(request)
 
-        print("user:", user)  # debug
-        print("branch:", branch)  # debug
-        print("post data:", request.POST)  # debug
-
         if task_formset.is_valid():
-            print("Formset is valid")  # debug
+            # Update task order
+            order_data = request.POST.get("order", "").split(",")
+            for idx, task_id in enumerate(order_data):
+                if task_id.isdigit():
+                    Task.objects.filter(pk=task_id).update(order=idx)
+
             for form in task_formset:
                 if form.instance.pk:
                     done_field = f"done_{form.instance.id}"
-                    done_value = request.POST.get(done_field)  # debug
-                    print(
-                        f"Processing form: {form.instance.id}, done_field: {done_field}, value: {done_value}"
-                    )  # debug
                     if done_field in request.POST and request.POST[done_field] == "on":
                         TaskInstance.objects.create(
                             user=user,
@@ -83,9 +81,6 @@ class TasksView(LoginRequiredMixin, ListView):
                             task=form.instance,
                             branch=branch,
                         )
-                        print(
-                            f"Task {form.instance.id} marked as done and TaskInstance created"
-                        )  # debug
             messages.success(request, "Tasks submitted successfully.")
         else:
             messages.error(
@@ -114,7 +109,6 @@ def get_my_tasks(request):
     else:
         branch_filter = Q(branch__name=branch)
 
-    # Filter tasks based on user, groups membership and branch
     filtered_tasks = tasks.filter(
         Q(users=request.user)
         | Q(groups__id__in=user_groups_ids)
@@ -122,7 +116,7 @@ def get_my_tasks(request):
         branch_filter,
     )
 
-    return filtered_tasks.distinct().order_by("title")
+    return filtered_tasks.distinct().order_by("order")
 
 
 def check_admin(user):
