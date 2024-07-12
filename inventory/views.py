@@ -193,7 +193,6 @@ def inventory_evaluation(request):
     storages_sorted = storages_queryset.order_by("name")
     storages = [storage for storage in storages_sorted]
 
-    print(product_storages)
     return render(
         request,
         "inventory_evaluation.html",
