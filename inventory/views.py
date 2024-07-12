@@ -62,18 +62,24 @@ def getInventoryModifiedDate():
 
 
 def inventory_populate(request):
+    # Get the current branch from the request
     current_branch = get_current_branch(request)
 
     if request.method == "POST":
+        # Save the product formset with the posted data
         ProductFormset(request.POST).save()
 
+        # Ensure all database operations within this block are atomic
         with transaction.atomic():
             updates = []
+            # Iterate through posted items to find and update product storage values
             for key, value in request.POST.items():
                 if "value" in key and value:
+                    # Convert the value to float, handling comma as decimal separator
                     value = float(value.replace(",", "."))
                     product_id, storage_id = key.split("_")[1], key.split("_")[2]
 
+                    # Fetch the product storage instance to be updated
                     product_storage_instance = (
                         ProductStorage.objects.select_for_update()
                         .filter(product_id=product_id, storage_id=storage_id)
@@ -83,32 +89,42 @@ def inventory_populate(request):
                         product_storage_instance.value = value
                         updates.append(product_storage_instance)
 
+            # Perform a bulk update if there are any updates collected
             if updates:
                 ProductStorage.objects.bulk_update(updates, ["value"])
 
+        # Set a success message and redirect to the inventory page with the current branch
         messages.success(request, "Inventory submitted successfully.")
         return redirect(
             f"{reverse('inventory_populate')}?branch={current_branch.name if current_branch != 'All' else 'All'}"
         )
 
     else:
+        # Fetch all users and branches, and add 'All' to the list of branches
         User = get_user_model()
         users = User.objects.all()
         branches = list(Branch.objects.all())
-        branches.insert(0, "All")  # Ensure 'All' is at the beginning of the list
+        branches.insert(0, "All")
 
+        # Get the current branch again (could be redundant, consider refactoring)
         branch = get_current_branch(request)
         if branch == "All":
+            # Fetch all product storages excluding those with null products
             product_storages = ProductStorage.objects.select_related(
                 "storage", "product"
             ).exclude(product__isnull=True)
+
+            # Get distinct storage IDs that have products
             storage_ids_with_products = product_storages.values_list(
                 "storage_id", flat=True
             ).distinct()
+
+            # Fetch storages that match the storage IDs
             storages = Storage.objects.filter(
                 id__in=storage_ids_with_products
             ).order_by("name")
         else:
+            # Fetch the branch object and its storages that have products
             branch_obj = (
                 Branch.objects.prefetch_related("storages").filter(name=branch).first()
             )
@@ -120,17 +136,21 @@ def inventory_populate(request):
                         )
                     )
                 ).filter(has_products=True)
+
+                # Fetch product storages that match the storages in the branch
                 product_storages = (
                     ProductStorage.objects.filter(storage__in=storages)
                     .select_related("storage", "product")
                     .exclude(product__isnull=True)
                 )
 
+        # Get the last modified date for the inventory
         modified_date = getInventoryModifiedDate()
-        formset = ProductFormset(
-            queryset=Product.objects.none()
-        )  # Empty formset since we're displaying products from storages
 
+        # Create an empty product formset
+        formset = ProductFormset(queryset=Product.objects.none())
+
+        # Render the inventory template with the context data
         return render(
             request,
             "inventory.html",

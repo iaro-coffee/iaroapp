@@ -11,6 +11,7 @@ class TasksInline(admin.TabularInline):
     """Defines format of inline task insertion (used in AuthorAdmin)"""
 
     model = Task
+    extra = 0
 
 
 class TasksInstanceInline(admin.TabularInline):
@@ -41,7 +42,7 @@ class TaskAdmin(admin.ModelAdmin):
         "branch",
     )
     search_fields = ["title"]
-    inlines = [TasksInstanceInline]
+    # inlines = [TasksInstanceInline] # if we need this - need to add pagination and fix error of toomanyfields on edit
     actions = [duplicate_tasks]
 
 

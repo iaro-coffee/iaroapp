@@ -10,16 +10,9 @@ function hideLoading() {
     document.body.style.overflow = 'auto';
 }
 
-
-
 window.addEventListener("load", function () {
     hideLoading();
 });
-
-// window.addEventListener("beforeunload", function (event) {  // unfortunately deprecated
-//     showLoading();
-// });
-//
 
 window.addEventListener("pageshow", function (event) {
     if (event.persisted) {
@@ -28,7 +21,7 @@ window.addEventListener("pageshow", function (event) {
 });
 
 function handleNavigationEvents() {
-    document.querySelectorAll('#show-loading').forEach(element => {
+    document.querySelectorAll('a#show-loading').forEach(element => {
         element.addEventListener('click', function (event) {
             showLoading();
             setTimeout(() => {
@@ -37,6 +30,13 @@ function handleNavigationEvents() {
             event.preventDefault();
         });
     });
+
+    const form = document.querySelector('form#product_form');
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            showLoading();
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', handleNavigationEvents);
