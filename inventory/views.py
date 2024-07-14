@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Count, Exists, OuterRef
 from django.shortcuts import redirect, render, reverse
+from django.utils import timezone
 
 from .forms import ProductFormset
 from .models import Branch, Product, ProductStorage, Seller, Storage
@@ -87,11 +88,12 @@ def inventory_populate(request):
                     )
                     if product_storage_instance:
                         product_storage_instance.value = value
+                        product_storage_instance.last_updated = timezone.now()
                         updates.append(product_storage_instance)
 
             # Perform a bulk update if there are any updates collected
             if updates:
-                ProductStorage.objects.bulk_update(updates, ["value"])
+                ProductStorage.objects.bulk_update(updates, ["value", "last_updated"])
 
         # Set a success message and redirect to the inventory page with the current branch
         messages.success(request, "Inventory submitted successfully.")
