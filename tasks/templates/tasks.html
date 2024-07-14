@@ -52,6 +52,9 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
                                     Task
                                 </th>
+                                <th class="move-buttons d-none text-uppercase text-secondary text-xxs font-weight-bolder w-100">
+                                    Move
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -98,10 +101,12 @@
                                     </div>
                                     {% endif %}
                                     <div class="ml-4 card rounded-0 task-description" style="display: none;"></div>
-                                    <span class="text-center move-buttons d-none ">
-                                        <button type="button" class="btn m-1 btn-outline-secondary move-up">↑</button>
-                                        <button type="button" class="btn m-1 btn-outline-secondary move-down">↓</button>
-                                    </span>
+                                </td>
+                                <td>
+                                        <div class="d-flex flex-column px-1 py-1 move-buttons justify-content-center d-none">
+                                            <button type="button" class="btn m-1 p-1 btn-secondary move-up">↑</button>
+                                            <button type="button" class="btn m-1 p-1 btn-secondary move-down">↓</button>
+                                        </div>
                                 </td>
                             </tr>
                             <!-- Display form errors for debugging -->
@@ -171,26 +176,23 @@
 </div>
 
 <style>
-    .move-up, .move-down {
-        transition: background-color 0.3s, color 0.3s !important;
-        padding-top: 8px !important;
-        padding-bottom: 8px !important;
-    }
+/* Add to your CSS file or inside a <style> block */
 
-    .move-up:hover, .move-down:hover {
-        background-color: mediumslateblue !important;
-        color: white !important;
-    }
+.move-buttons {
+    align-items: center;
+}
 
-    .move-up:active, .move-down:active {
-        background-color: mediumslateblue  !important;
-        color: white !important;
-    }
+.move-up, .move-down {
+    transition: background-color 0.3s, color 0.3s !important;
+    width: 42px !important;
+    height: 28px !important;
+}
 
-    .move-up:focus, .move-down:focus {
-        background-color: mediumslateblue !important;
-        color: white !important;
-    }
+.highlighted {
+    background-color: rgba(62, 85, 236, 0.65) !important;
+}
+
+
 </style>
 
 <script src="{% static 'js/tables_appearence.js' %}"></script>
