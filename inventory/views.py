@@ -3,7 +3,7 @@ import logging
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Count, Prefetch
+from django.db.models import Prefetch
 from django.shortcuts import redirect, render, reverse
 from django.utils import timezone
 
@@ -41,12 +41,8 @@ def getAvailableBranchesFiltered(branch):
     # Filter selected branch from available branches
     branches = branches.exclude(name=branch)
     # Sort branches by name, filter out empty ones
-    branches = branches.annotate(
-        num_products=Count("storages__productstorage__product")
-    )
-    branches = branches.filter(num_products__gt=0)
     branches = branches.order_by("name")
-    # Add 'All' option to branche selection
+    # Add 'All' option to branch selection
     branches = list(branches)
     if branch != "All":
         branches.append("All")
@@ -109,8 +105,8 @@ def inventory_populate(request):
         branches.insert(0, "All")
 
         # Get the current branch again (could be redundant, consider refactoring)
-        branch = get_current_branch(request)
-        if branch == "All":
+
+        if current_branch == "All":
             storages = Storage.objects.exclude(products=None).prefetch_related(
                 Prefetch(
                     "productstorage_set",
@@ -145,7 +141,7 @@ def inventory_populate(request):
                 "storages": storages,
                 "modifiedDate": modified_date,
                 "branches": branches,
-                "branch": branch,
+                "branch": current_branch,
                 "formset": formset,
             },
         )
@@ -156,58 +152,42 @@ def check_admin(user):
 
 
 def inventory_evaluation(request):
-    products = Product.objects.all()
-    storages = Storage.objects.all()
-
-    # Get current branch by GET parameter or Planday query
-    branch = get_current_branch(request)
+    current_branch = get_current_branch(request)
 
     # Get list of branches which are not selected
-    branches = getAvailableBranchesFiltered(branch)
+    branches = getAvailableBranchesFiltered(current_branch)
 
-    if branch != "All":
-        # Get storages for selected branch
-        storages = branch.storages.all()
-        storages = list(storages)
-
-        # Filter products only available in specific storage of branch
-        product_storages = ProductStorage.objects.filter(storage__name__in=storages)
-        product_ids = product_storages.values_list("product_id", flat=True)
-        products = Product.objects.filter(id__in=product_ids)
+    if current_branch == "All":
+        storages = Storage.objects.exclude(products=None).prefetch_related(
+            Prefetch(
+                "productstorage_set",
+                ProductStorage.objects.select_related("product"),
+            )
+        )
+    else:
+        storages = (
+            Storage.objects.filter(branch=current_branch)
+            .exclude(products=None)
+            .prefetch_related(
+                Prefetch(
+                    "productstorage_set",
+                    ProductStorage.objects.select_related("product"),
+                )
+            )
+        )
 
     # Get last product modification date
     modified_date = getInventoryModifiedDate()
-
-    # Populate available non-empty storages of selected branch
-    filtered_storages = []
-    product_ids = products.values_list("id", flat=True)
-    product_storages = ProductStorage.objects.filter(product__id__in=product_ids)
-    if branch != "All":
-        for storage in product_storages:
-            if storage.storage in storages:
-                filtered_storages.append(storage.storage)
-    else:
-        filtered_storages = [storage.storage for storage in product_storages]
-    storages = filtered_storages
-
-    # Sort storages by name
-    storages_queryset = Storage.objects.filter(
-        id__in=[storage.id for storage in storages]
-    )
-    storages_sorted = storages_queryset.order_by("name")
-    storages = [storage for storage in storages_sorted]
 
     return render(
         request,
         "inventory_evaluation.html",
         context={
             "pageTitle": "Inventory overview",
-            "products": products,
             "modifiedDate": modified_date,
             "storages": storages,
             "branches": branches,
-            "branch": branch,
-            "product_storages": product_storages,
+            "branch": current_branch,
         },
     )
 

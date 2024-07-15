@@ -59,7 +59,7 @@
                                                         <p class="text-sm mb-0 w-100 wrap text-break">
                                                             {{ product_storage.product.name }}
                                                             <br>
-                                                            <span class="text-secondary text-xxs d-none date-field">Updated on: {{ product_storage.last_updated|date:"d/F/y H:i" }}</span>
+                                                            <span class="text-secondary text-xxs d-none date-field">Updated on: {{ product_storage.last_updated|date:"d.m.y H:i" }} Uhr</span>
                                                             <span class="text-secondary text-xxs d-none amount-field"><br>Last submitted amount: {{ product_storage.value }}</span>
                                                             {% if product_storage.product.hint %}
                                                                 <span class="text-secondary text-xxs d-none hint-field" style="width: 120px;"><br>Hint: {{ product_storage.product.hint }}</span>
