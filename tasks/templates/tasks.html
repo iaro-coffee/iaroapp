@@ -38,6 +38,10 @@
             <div class="card mb-4">
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
+                        <div class="table-title d-flex p-3">
+                            <span class="text-sm">Target branch:</span><h6 class="text-sm px-1 font-weight-bold">{{ branch }}</h6>
+                        </div>
+
                         <table class="table align-items-center mb-2 table-collapse">
                             <thead>
                             <tr>
@@ -119,7 +123,10 @@
                 </div>
             </div>
             {% if branch != "All" %}
-                <input type="submit" id="submitTasksBtn" class="w-100 btn bg-gradient-primary" value="Submit tasks" style="float: right; max-width: 200px;"/>
+                <input type="submit" id="submitTasksBtn" class="btn w-100 bg-gradient-primary" value="Submit tasks" style="float: right; max-width: 200px;"/>
+                <a class="btn mb-0 bg-gradient-primary" href="https://app.iaro.co/admin/tasks/task/add/">
+                    Add task
+                </a>
             {% else %}
                 <p class="d-flex justify-content-end px-1 text-xs opacity-7 responsive__mobile-3">Please select your working branch to submit a task</p>
             {% endif %}
