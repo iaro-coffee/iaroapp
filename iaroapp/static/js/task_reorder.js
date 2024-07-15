@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const sibling = direction === 'up' ? row.previousElementSibling : row.nextElementSibling;
         if (sibling) {
             direction === 'up' ? tbody.insertBefore(row, sibling) : tbody.insertBefore(sibling, row);
-            highlightRow(row);  // Highlight the moved row
-            highlightButtons(row); // Highlight buttons of the moved row
+            highlightRow(row);
+            highlightButtons(row);
         }
     }
 

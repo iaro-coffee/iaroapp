@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 from django.db.models import Q
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect, render, reverse
@@ -16,7 +17,14 @@ from inventory.models import Branch
 from inventory.views import get_current_branch
 
 from .forms import BakingPlanForm, TaskForm, TaskFormset
-from .models import BakingPlanInstance, Recipe, Task, TaskInstance, Weekdays
+from .models import (
+    BakingPlanInstance,
+    Recipe,
+    Task,
+    TaskBranchOrder,
+    TaskInstance,
+    Weekdays,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +37,37 @@ class TasksView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        tasks = get_my_tasks(object_list)
+        tasks = get_my_tasks(self.request)
         today = timezone.now().date()
-        branch = get_current_branch(object_list)
+        branch = get_current_branch(self.request)
         branches = list(Branch.objects.exclude(name=branch).order_by("name")) + ["All"]
 
-        formset = self.formset_class(queryset=tasks)
+        ordered_tasks_ids = []
+        if branch != "All":
+            task_orders = (
+                TaskBranchOrder.objects.filter(branch__id=branch.id)
+                .order_by("order")
+                .values_list("task_id", flat=True)
+            )
+
+            ordered_tasks_ids = list(task_orders)
+            unordered_tasks_ids = [
+                task.id for task in tasks if task.id not in ordered_tasks_ids
+            ]
+            ordered_tasks_ids.extend(unordered_tasks_ids)
+
+        # Convert ordered_tasks_ids to a QuerySet
+        ordered_tasks = Task.objects.filter(id__in=ordered_tasks_ids).order_by(
+            models.Case(
+                *[
+                    models.When(id=task_id, then=pos)
+                    for pos, task_id in enumerate(ordered_tasks_ids)
+                ]
+            )
+        )
+
+        # Initialize formset with the original queryset
+        formset = self.formset_class(queryset=ordered_tasks)
         for form in formset:
             if form.instance.pk and branch != "All":
                 form.instance.done_for_branch = form.instance.is_done(branch)
@@ -42,7 +75,7 @@ class TasksView(LoginRequiredMixin, ListView):
         context.update(
             {
                 "pageTitle": "Tasks",
-                "task_list": tasks,
+                "task_list": ordered_tasks,
                 "today": today,
                 "formset": formset,
                 "branches": branches,
@@ -65,11 +98,15 @@ class TasksView(LoginRequiredMixin, ListView):
         branch = get_current_branch(request)
 
         if task_formset.is_valid():
-            # Update task order
             order_data = request.POST.get("order", "").split(",")
             for idx, task_id in enumerate(order_data):
                 if task_id.isdigit():
-                    Task.objects.filter(pk=task_id).update(order=idx)
+                    task = Task.objects.get(pk=task_id)
+                    task_order, created = TaskBranchOrder.objects.get_or_create(
+                        task=task, branch=branch
+                    )
+                    task_order.order = idx
+                    task_order.save()
 
             for form in task_formset:
                 if form.instance.pk:
@@ -87,6 +124,8 @@ class TasksView(LoginRequiredMixin, ListView):
                 request,
                 "There was an error with your submission. Please check the form and try again.",
             )
+            for form in task_formset:
+                print(f"Errors in form {form.instance.pk}: {form.errors}")
 
         return redirect(reverse("tasks"))
 
@@ -114,9 +153,9 @@ def get_my_tasks(request):
         | Q(groups__id__in=user_groups_ids)
         | (Q(users__isnull=True) & Q(groups__isnull=True)),
         branch_filter,
-    )
+    ).distinct()
 
-    return filtered_tasks.distinct().order_by("order")
+    return filtered_tasks
 
 
 def check_admin(user):

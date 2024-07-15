@@ -62,8 +62,6 @@ class Task(BaseModel):
         related_name="subtasks",
     )
 
-    order = models.PositiveIntegerField(default=0)
-
     def is_done(self, branch):
         if self.subtasks.all():
             return all(subtask.is_done(branch) for subtask in self.subtasks.all())
@@ -127,6 +125,16 @@ class TaskInstance(BaseModel):
     def __str__(self):
         """String for representing the Model object."""
         return "{} ({})".format(self.id, self.task.title)
+
+
+class TaskBranchOrder(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ("task", "branch")
+        ordering = ["order"]
 
 
 class Recipe(BaseModel):
