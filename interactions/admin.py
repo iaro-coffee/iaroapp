@@ -7,3 +7,9 @@
 # class NoteAdmin(admin.ModelAdmin):
 #     list_display = ("sender", "content", "timestamp")
 #     search_fields = ("sender__username", "content")
+
+from django.contrib import admin
+
+from .models import Video
+
+admin.site.register(Video)

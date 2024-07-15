@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from inventory.models import Branch
 
-from .models import Note
+from .models import Note, Video
 
 
 class NoteForm(forms.ModelForm):
@@ -48,3 +48,9 @@ class NoteForm(forms.ModelForm):
             self.save_m2m()
 
         return note
+
+
+class VideoUploadForm(forms.ModelForm):
+    class Meta:
+        model = Video
+        fields = ["category", "title", "description", "video_file"]

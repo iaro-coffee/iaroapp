@@ -2,13 +2,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
 
-from .forms import NoteForm
-from .models import Note, NoteReadStatus
+from .forms import NoteForm, VideoUploadForm
+from .models import Note, NoteReadStatus, Video
 
 
 class NoteView(LoginRequiredMixin, TemplateView):
@@ -146,3 +146,27 @@ class UnreadCountView(LoginRequiredMixin, View):
         ).count()
 
         return JsonResponse({"unread_count": unread_count})
+
+
+class VideoUploadView(View):
+    def get(self, request):
+        form = VideoUploadForm()
+        return render(request, "upload_video.html", {"form": form})
+
+    def post(self, request):
+        form = VideoUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("view_videos")
+        return render(request, "upload_video.html", {"form": form})
+
+
+class VideoListView(View):
+    def get(self, request):
+        categories = Video.objects.values_list("category", flat=True).distinct()
+        videos_by_category = {
+            category: Video.objects.filter(category=category) for category in categories
+        }
+        return render(
+            request, "video_list.html", {"videos_by_category": videos_by_category}
+        )

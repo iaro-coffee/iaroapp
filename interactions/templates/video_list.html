@@ -1,0 +1,41 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <title>iaroapp - Video List</title>
+{% endblock %}
+
+{% block widgets %}
+<div class="d-flex justify-content-between flex-wrap gap-2 mb-0">
+    <a href="{% url 'upload_video' %}" class="btn bg-gradient-primary mb-0">Upload Video</a>
+</div>
+{% endblock widgets %}
+
+{% block content %}
+<div class="row">
+    {% for category, videos in videos_by_category.items %}
+        <div class="col-lg-12 mb-4">
+            <div class="card h-100" id="video-list">
+                <div class="card-header pb-0">
+                    <h6>{{ category }}</h6>
+                </div>
+                <div class="card-body p-3">
+                    <ul class="list-unstyled">
+                    {% for video in videos %}
+                        <li class="mb-4">
+                            <h5>{{ video.title }}</h5>
+                            <p>{{ video.description }}</p>
+                            <video width="320" height="240" controls>
+                                <source src="{{ video.video_file.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

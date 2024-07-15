@@ -37,3 +37,13 @@ class NoteReadStatus(models.Model):
             models.Index(fields=["user", "is_read"]),
             models.Index(fields=["note", "user"]),
         ]
+
+
+class Video(models.Model):
+    category = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    video_file = models.FileField(upload_to="videos/")
+
+    def __str__(self):
+        return self.title
