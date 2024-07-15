@@ -42,35 +42,62 @@ class TasksView(LoginRequiredMixin, ListView):
         branch = get_current_branch(self.request)
         branches = list(Branch.objects.exclude(name=branch).order_by("name")) + ["All"]
 
-        ordered_tasks_ids = []
         if branch != "All":
             task_orders = (
                 TaskBranchOrder.objects.filter(branch__id=branch.id)
                 .order_by("order")
                 .values_list("task_id", flat=True)
             )
-
             ordered_tasks_ids = list(task_orders)
             unordered_tasks_ids = [
                 task.id for task in tasks if task.id not in ordered_tasks_ids
             ]
             ordered_tasks_ids.extend(unordered_tasks_ids)
-
-        # Convert ordered_tasks_ids to a QuerySet
-        ordered_tasks = Task.objects.filter(id__in=ordered_tasks_ids).order_by(
-            models.Case(
-                *[
-                    models.When(id=task_id, then=pos)
-                    for pos, task_id in enumerate(ordered_tasks_ids)
-                ]
+            ordered_tasks = Task.objects.filter(id__in=ordered_tasks_ids).order_by(
+                models.Case(
+                    *[
+                        models.When(id=task_id, then=pos)
+                        for pos, task_id in enumerate(ordered_tasks_ids)
+                    ]
+                )
             )
-        )
+        else:
+            ordered_tasks = {}
+            for br in Branch.objects.all():
+                branch_tasks = tasks.filter(branch=br)
+                if branch_tasks.exists():
+                    task_orders = (
+                        TaskBranchOrder.objects.filter(branch__id=br.id)
+                        .order_by("order")
+                        .values_list("task_id", flat=True)
+                    )
+                    ordered_tasks_ids = list(task_orders)
+                    unordered_tasks_ids = [
+                        task.id
+                        for task in branch_tasks
+                        if task.id not in ordered_tasks_ids
+                    ]
+                    ordered_tasks_ids.extend(unordered_tasks_ids)
+                    ordered_tasks[br.name] = Task.objects.filter(
+                        id__in=ordered_tasks_ids
+                    ).order_by(
+                        models.Case(
+                            *[
+                                models.When(id=task_id, then=pos)
+                                for pos, task_id in enumerate(ordered_tasks_ids)
+                            ]
+                        )
+                    )
+                else:
+                    ordered_tasks[br.name] = []
 
-        # Initialize formset with the original queryset
-        formset = self.formset_class(queryset=ordered_tasks)
-        for form in formset:
-            if form.instance.pk and branch != "All":
-                form.instance.done_for_branch = form.instance.is_done(branch)
+        formset = (
+            self.formset_class(queryset=ordered_tasks) if branch != "All" else None
+        )
+        if formset:
+            for form in formset:
+                if form.instance.pk and branch != "All":
+                    form.instance.done_for_branch = form.instance.is_done(branch)
 
         context.update(
             {
