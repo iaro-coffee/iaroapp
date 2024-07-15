@@ -3,7 +3,7 @@ import logging
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Count, Exists, OuterRef
+from django.db.models import Count, Prefetch
 from django.shortcuts import redirect, render, reverse
 from django.utils import timezone
 
@@ -111,40 +111,23 @@ def inventory_populate(request):
         # Get the current branch again (could be redundant, consider refactoring)
         branch = get_current_branch(request)
         if branch == "All":
-            # Fetch all product storages excluding those with null products
-            product_storages = ProductStorage.objects.select_related(
-                "storage", "product"
-            ).exclude(product__isnull=True)
-
-            # Get distinct storage IDs that have products
-            storage_ids_with_products = product_storages.values_list(
-                "storage_id", flat=True
-            ).distinct()
-
-            # Fetch storages that match the storage IDs
-            storages = Storage.objects.filter(
-                id__in=storage_ids_with_products
-            ).order_by("name")
-        else:
-            # Fetch the branch object and its storages that have products
-            branch_obj = (
-                Branch.objects.prefetch_related("storages").filter(name=branch).first()
-            )
-            if branch_obj:
-                storages = branch_obj.storages.annotate(
-                    has_products=Exists(
-                        ProductStorage.objects.filter(storage=OuterRef("pk")).exclude(
-                            product__isnull=True
-                        )
-                    )
-                ).filter(has_products=True)
-
-                # Fetch product storages that match the storages in the branch
-                product_storages = (
-                    ProductStorage.objects.filter(storage__in=storages)
-                    .select_related("storage", "product")
-                    .exclude(product__isnull=True)
+            storages = Storage.objects.exclude(products=None).prefetch_related(
+                Prefetch(
+                    "productstorage_set",
+                    ProductStorage.objects.select_related("product"),
                 )
+            )
+        else:
+            storages = (
+                Storage.objects.filter(branch=current_branch)
+                .exclude(products=None)
+                .prefetch_related(
+                    Prefetch(
+                        "productstorage_set",
+                        ProductStorage.objects.select_related("product"),
+                    )
+                )
+            )
 
         # Get the last modified date for the inventory
         modified_date = getInventoryModifiedDate()
@@ -164,7 +147,6 @@ def inventory_populate(request):
                 "branches": branches,
                 "branch": branch,
                 "formset": formset,
-                "product_storages": product_storages,
             },
         )
 
