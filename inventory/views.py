@@ -53,7 +53,7 @@ def get_available_branches_filtered(branch):
 def get_inventory_modified_date(branch):
     latest_update = (
         ProductStorage.objects.filter(qif(storage__branch=branch, _if=branch != "All"))
-        .order_by("last_updated")
+        .order_by("-last_updated")
         .first()
     )
     if not latest_update:
