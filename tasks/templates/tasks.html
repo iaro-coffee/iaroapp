@@ -6,9 +6,8 @@
 {% endblock extra_css %}
 
 {% block widgets %}
-    <div class="d-flex flex-column gap-2">
 <div class="d-flex justify-content-between flex-wrap gap-2">
-    <!-- admin btn to edit order and filter by branch -->
+    <!-- admin btn to filter by branch -->
     {% if user.is_superuser or user.is_staff %}
     <div class="dropdown">
         <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -21,7 +20,7 @@
         </ul>
     </div>
     {% endif %}
-    <!-- filter by day -->
+    <!-- btn to filter by day -->
     <div class="dropdown">
         <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             {{ selected_day|default:"Select Day" }}
@@ -32,15 +31,6 @@
             {% endfor %}
         </ul>
     </div>
-</div>
-    {% if user.is_superuser or user.is_staff %}
-    <div class="d-flex justify-content-between flex-wrap gap-2" style="align-self: end">
-    <!-- admin btn to edit order and filter by branch -->
-            {% if branch != "All" %}
-            <button type="button" id="toggleOrderButton" class="btn bg-gradient-primary mb-0">Edit Order</button>
-        {% endif %}
-    </div>
-    {% endif %}
 </div>
 {% endblock widgets %}
 
@@ -148,12 +138,28 @@
                     </div>
                 </div>
             </div>
-            {% if selected_day == current_day %}
-            <input type="submit" id="submitTasksBtn" class="btn w-100 bg-gradient-primary" value="Submit tasks" style="float: right; max-width: 200px;"/>
-            {% endif %}
-            <a class="btn mb-0 bg-gradient-primary" href="https://app.iaro.co/admin/tasks/task/add/">
+        <div class="d-flex justify-content-between">
+            <a class="btn mb-0 bg-gradient-primary" href="/admin/tasks/task/add/" style="max-height: 40px">
                 Add task
             </a>
+            <div class="d-flex flex-column align-items-end gap-2">
+                {% if selected_day == current_day %}
+                    <input type="submit" id="submitTasksBtn" class="btn mb-0 w-100 bg-gradient-primary"
+                           value="Submit tasks"
+                           style="float: right; max-width: 200px;"/>
+                {% endif %}
+                {% if user.is_superuser or user.is_staff %}
+                    <div class="d-flex justify-content-between flex-wrap gap-2" style="align-self: end">
+                        <!-- admin btn to edit order -->
+                        {% if branch != "All" %}
+                            <button type="button" id="toggleOrderButton" class="btn bg-gradient-primary mb-0">Edit
+                                Order
+                            </button>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+</div>
         </div>
     </div>
 </form>
