@@ -137,43 +137,51 @@ class TasksView(LoginRequiredMixin, ListView):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        """Process task completion submissions."""
-        task_formset = self.formset_class(request.POST)
-        user = request.user
-        date_done = timezone.now()
-        branch = get_current_branch(request)
-
-        if task_formset.is_valid():
-            order_data = request.POST.get("order", "").split(",")
-            for idx, task_id in enumerate(order_data):
-                if task_id.isdigit():
+        """Process task completion and task ordering submissions."""
+        if "order" in request.POST:
+            order = request.POST.get("order", "")
+            branch = get_current_branch(request)
+            if order:
+                task_ids = order.split(",")
+                for idx, task_id in enumerate(task_ids):
                     task = Task.objects.get(pk=task_id)
                     task_order, created = TaskBranchOrder.objects.get_or_create(
                         task=task, branch=branch
                     )
                     task_order.order = idx
                     task_order.save()
-
-            for form in task_formset:
-                if form.instance.pk:
-                    done_field = f"done_{form.instance.id}"
-                    if done_field in request.POST and request.POST[done_field] == "on":
-                        TaskInstance.objects.create(
-                            user=user,
-                            date_done=date_done,
-                            task=form.instance,
-                            branch=branch,
-                        )
-            messages.success(request, "Tasks submitted successfully.")
+            messages.success(request, "Task order updated successfully.")
+            return redirect(request.path_info)
         else:
-            messages.error(
-                request,
-                "There was an error with your submission. Please check the form and try again.",
-            )
-            for form in task_formset:
-                print(f"Errors in form {form.instance.pk}: {form.errors}")
+            task_formset = self.formset_class(request.POST)
+            user = request.user
+            date_done = timezone.now()
+            branch = get_current_branch(request)
 
-        return redirect(reverse("tasks"))
+            if task_formset.is_valid():
+                for form in task_formset:
+                    if form.instance.pk:
+                        done_field = f"done_{form.instance.id}"
+                        if (
+                            done_field in request.POST
+                            and request.POST[done_field] == "on"
+                        ):
+                            TaskInstance.objects.create(
+                                user=user,
+                                date_done=date_done,
+                                task=form.instance,
+                                branch=branch,
+                            )
+                messages.success(request, "Tasks submitted successfully.")
+            else:
+                messages.error(
+                    request,
+                    "There was an error with your submission. Please check the form and try again.",
+                )
+                for form in task_formset:
+                    print(f"Errors in form {form.instance.pk}: {form.errors}")
+
+            return redirect(request.path_info)
 
 
 def get_my_tasks(request):

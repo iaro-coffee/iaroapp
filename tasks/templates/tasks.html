@@ -5,10 +5,9 @@
     <link rel="stylesheet" href="{% static 'css/tables.css' %}" type="text/css">
 {% endblock extra_css %}
 
-
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2">
-    <!-- admin filter by branch and edit order -->
+    <!-- admin btn to edit order and filter by branch -->
     {% if user.is_superuser or user.is_staff %}
         {% if branch != "All" %}
             <button type="button" id="toggleOrderButton" class="btn bg-gradient-primary mb-0">Edit Order</button>
@@ -19,7 +18,7 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             {% for branch in branches %}
-            <li><a class="dropdown-item" href="?branch={{ branch }}" id="show-loading">{{ branch }}</a></li>
+            <li><a class="dropdown-item" href="?branch={{ branch }}{% if selected_day %}&day={{ selected_day }}{% endif %}" id="show-loading">{{ branch }}</a></li>
             {% endfor %}
         </ul>
     </div>
@@ -38,12 +37,12 @@
 </div>
 {% endblock widgets %}
 
-
 {% block content %}
 
 {% if task_list %}
 {% if branch != "All" %}
-<form id="tasksForm" method="post">
+<!-- Form for submitting task completions -->
+<form id="tasksForm" method="post" action="?branch={{ branch }}{% if selected_day %}&day={{ selected_day }}{% endif %}">
     {% csrf_token %}
     {{ formset.management_form }}
     <div class="row">
@@ -66,12 +65,15 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
                                     Task
                                 </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1 d-none move-header">
+                                    Move
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for form in formset %}
                             {% if form.instance.id %}
-                                <tr class="entry" {% if form.instance.done_for_branch %} data-bs-toggle="tooltip" data-bs-placement="top" title="Done" {% endif %}>
+                                <tr class="entry" data-id="{{ form.instance.id }}" {% if form.instance.done_for_branch %} data-bs-toggle="tooltip" data-bs-placement="top" title="Done" {% endif %}>
                                     {% if selected_day == current_day %}
                                     <td>
                                         <div class="d-flex justify-content-center responsive__mobile-2">
@@ -148,6 +150,12 @@
         </div>
     </div>
 </form>
+
+<!-- Hidden form for submitting task order -->
+<form id="orderForm" method="post" action="?branch={{ branch }}{% if selected_day %}&day={{ selected_day }}{% endif %}">
+    {% csrf_token %}
+    <input type="hidden" name="order" id="orderInput">
+</form>
 {% else %}
     {% for branch_name, tasks in task_list.items %}
         <div class="card mb-4">
@@ -163,11 +171,14 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
                                     Task
                                 </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1 d-none move-header">
+                                    Move
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for task in tasks %}
-                                <tr class="entry">
+                                <tr class="entry" data-id="{{ task.id }}">
                                     <td class="padding-all">
                                         <div class="d-flex px-1 py-1">
                                             <h6 class="mb-0 text-sm responsive__mobile-3">{{ task.title }}</h6>
@@ -191,6 +202,12 @@
                                         {% endif %}
                                         <div class="ml-4 card rounded-0 task-description" style="display: none;"></div>
                                     </td>
+                                    <td>
+                                        <div class="d-flex flex-column px-1 py-1 move-buttons justify-content-center d-none">
+                                            <button type="button" class="btn m-1 p-1 btn-secondary move-up">↑</button>
+                                            <button type="button" class="btn m-1 p-1 btn-secondary move-down">↓</button>
+                                        </div>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -207,39 +224,6 @@
 {% else %}
 <p>There are no tasks available.</p>
 {% endif %}
-
-<div class="modal fade" id="submitTasksModal" tabindex="-1" role="dialog"
-     aria-labelledby="submitTasksModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="submitTasksModalLabel">Warning</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure the selected tasks have been completed for today?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn bg-gradient-primary" id="confirmSubmit">Submit tasks</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade modal-tour" tabindex="-1" role="dialog" id="infoModal">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content rounded-4 shadow">
-            <div class="modal-body p-5">
-                <h2 class="fw-bold mb-0">Task description</h2>
-                <br>
-                <span class="infoModalContent"></span>
-                <button type="button" class="btn btn-lg btn-primary mt-5 w-100" data-bs-dismiss="modal">Okay
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
 .padding-all {
@@ -259,7 +243,6 @@
 .highlighted {
     background-color: rgba(62, 85, 236, 0.65) !important;
 }
-
 
 </style>
 

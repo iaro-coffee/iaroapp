@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const orderForm = document.getElementById('orderForm');
     const tasksForm = document.getElementById('tasksForm');
     const tbody = tasksForm.querySelector('tbody');
     const toggleOrderButton = document.getElementById('toggleOrderButton');
@@ -9,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (sibling) {
             direction === 'up' ? tbody.insertBefore(row, sibling) : tbody.insertBefore(sibling, row);
             highlightRow(row);
-            highlightButtons(row);
         }
     }
 
@@ -21,18 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add highlight to the specified row
         row.classList.add('highlighted');
-    }
-
-    function highlightButtons(row) {
-        // Remove highlight from all buttons
-        tbody.querySelectorAll('.move-buttons button').forEach(button => {
-            button.classList.remove('move-button-highlighted');
-        });
-
-        // Highlight buttons in the moved row
-        row.querySelectorAll('.move-buttons button').forEach(button => {
-            button.classList.add('move-button-highlighted');
-        });
     }
 
     function resetButtonStyles() {
@@ -48,9 +36,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const row = target.closest('tr');
             moveRow(row, target.classList.contains('move-up') ? 'up' : 'down');
             resetButtonStyles();
-            highlightButtons(row);
             target.blur();
         }
+    }
+
+    function adjustPadding(isEditMode) {
+        document.querySelectorAll('td').forEach(td => {
+            td.style.paddingLeft = !isEditMode ? '10px' : '0px';
+        });
     }
 
     tbody.addEventListener('click', handleMoveButtonClick);
@@ -62,17 +55,24 @@ document.addEventListener('DOMContentLoaded', function () {
             button.classList.toggle('d-none', !isEditMode);
             button.classList.toggle('d-table-cell', isEditMode);
         });
+
+        document.querySelectorAll('.move-header').forEach(header => {
+            header.classList.toggle('d-none', !isEditMode);
+            header.classList.toggle('d-table-cell', isEditMode);
+        });
+
+        adjustPadding(isEditMode);
+
         toggleOrderButton.textContent = isEditMode ? 'Submit Order' : 'Edit Order';
 
         if (!isEditMode) {
             const order = Array.from(tbody.querySelectorAll('tr.entry'))
-                .map(row => row.querySelector('input[type="checkbox"]').id.split('_')[1]);
-            tasksForm.appendChild(Object.assign(document.createElement('input'), {
-                type: 'hidden',
-                name: 'order',
-                value: order.join(',')
-            }));
-            tasksForm.submit();
+                .map(row => {
+                    const checkbox = row.querySelector('input[type="checkbox"]');
+                    return checkbox ? checkbox.id.split('_')[1] : row.dataset.id;
+                });
+            document.getElementById('orderInput').value = order.join(',');
+            orderForm.submit();
         }
     });
 
@@ -82,4 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
             toggleOrderButton.click();
         }
     });
+
+    adjustPadding(isEditMode);
 });
