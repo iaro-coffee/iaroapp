@@ -178,17 +178,11 @@ def inventory_shopping(request):
     else:
         is_weekly = True
 
-    if current_branch == "All":
-        products = Product.objects.filter(
-            seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST,
-            seller__is_weekly=is_weekly,
-        )
-    else:
-        products = Product.objects.filter(
-            seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST,
-            seller__is_weekly=is_weekly,
-            branch=current_branch,
-        )
+    products = Product.objects.filter(
+        qif(branch=current_branch, _if=current_branch != "All"),
+        seller__visibility=Seller.VisibilityChoices.SHOPPING_LIST,
+        seller__is_weekly=is_weekly,
+    )
 
     sellers = []
     for prod in products:
