@@ -31,7 +31,7 @@
           {% for product_storage in storage.productstorage_set.all %}
             <tr>
               <td>{{ product_storage.product.name }}</td>
-                <td>{{ product_storage.last_updated|date:"d.m.y H:i" }} Uhr</td>
+                <td>{{ product_storage.last_updated|date:"l n/j" }}</td>
               <td>
                 {% if product_storage.has_shortage %}
                 <span class="warning">
