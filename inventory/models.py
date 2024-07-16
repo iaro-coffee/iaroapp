@@ -181,7 +181,7 @@ class Product(BaseModel):
         else:
             return float(total_value_intended - total_value)
 
-    def get_oos_value_shipping(self):
+    def get_oos_value_shipping(self):  # oos = out of stock?
         product_storage_dict = {}
         for branch in self.get_storage_branches:
             value_needed = 0
@@ -324,7 +324,7 @@ class ProductStorage(BaseModel):
 
     @property
     def branch(self):
-        return Storage.objects.get(pk=self.storage).branch
+        return Storage.objects.get(pk=self.storage.pk).branch
 
     # Update the product item to refresh the modified_date attribute
     def save(self, *args, **kwargs):

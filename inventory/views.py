@@ -35,7 +35,7 @@ def get_current_branch(request):
     return Branch.objects.first()
 
 
-def getAvailableBranchesFiltered(branch):
+def get_available_branches_filtered(branch):
     branches = Branch.objects.all()
     # Filter selected branch from available branches
     branches = branches.exclude(name=branch)
@@ -48,7 +48,7 @@ def getAvailableBranchesFiltered(branch):
     return branches
 
 
-def getInventoryModifiedDate(branch):
+def get_inventory_modified_date(branch):
     branch_filter = {}
     if branch != "All":
         branch_filter["storage__branch"] = branch
@@ -107,7 +107,7 @@ def inventory_populate(request):
         users = get_user_model().objects.all()
         branches = list(Branch.objects.all())
         branches.insert(0, "All")
-        modified_date = getInventoryModifiedDate(current_branch)
+        modified_date = get_inventory_modified_date(current_branch)
 
         storages = get_inventory_data_of_branch(current_branch)
 
@@ -153,12 +153,12 @@ def inventory_evaluation(request):
     current_branch = get_current_branch(request)
 
     # Get list of branches which are not selected
-    branches = getAvailableBranchesFiltered(current_branch)
+    branches = get_available_branches_filtered(current_branch)
 
     storages = get_inventory_data_of_branch(current_branch)
 
     # Get last product modification date
-    modified_date = getInventoryModifiedDate(current_branch)
+    modified_date = get_inventory_modified_date(current_branch)
 
     return render(
         request,
@@ -175,7 +175,7 @@ def inventory_evaluation(request):
 
 def inventory_shopping(request):
     current_branch = get_current_branch(request)
-    branches = getAvailableBranchesFiltered(current_branch)
+    branches = get_available_branches_filtered(current_branch)
     is_weekly_param = request.GET.get("weekly", "False")
 
     if is_weekly_param is None or is_weekly_param.lower() == "false":
@@ -200,7 +200,7 @@ def inventory_shopping(request):
         if (prod.display_seller() not in sellers) and prod.has_shortage:
             sellers.append(prod.display_seller())
 
-    modified_date = getInventoryModifiedDate(current_branch)
+    modified_date = get_inventory_modified_date(current_branch)
 
     return render(
         request,
@@ -229,7 +229,7 @@ def inventory_production(request):
 
     # TODO(Rapha) get product for every branch where it has a shortage. So we can make production/baking plan per branch
 
-    modified_date = getInventoryModifiedDate(current_branch)
+    modified_date = get_inventory_modified_date(current_branch)
 
     return render(
         request,
@@ -244,34 +244,25 @@ def inventory_production(request):
 
 
 def inventory_packaging(request):
-    branch = get_current_branch(request)
-
-    # Get branches with main storage having shortages
-    main_storage_branches = {
-        ps.storage.branches.first()
-        for product in Product.objects.all()
-        for ps in product.product_storages.all()
-        if ps.main_storage and ps.has_shortage
-    }
-    branches = list(main_storage_branches.difference({branch}))
-    if branch != "All":
-        branches.append("All")
+    current_branch = get_current_branch(request)
+    branches = get_available_branches_filtered(current_branch)
 
     # Determine the target branches
     product_storages_with_shortage = [
-        ps
-        for ps in ProductStorage.objects.filter(main_storage=False)
-        if ps.has_shortage
+        product_storage
+        for product_storage in ProductStorage.objects.filter(main_storage=False)
+        if product_storage.has_shortage
     ]
+
     target_branches_set = {
-        ps.storage.branches.first() for ps in product_storages_with_shortage
+        product_storage.storage.branch
+        for product_storage in product_storages_with_shortage
     }
 
-    # Handle the case when a specific branch is selected
-    if branch != "All":
-        target_branches = [branch]
+    if current_branch == "All":
+        target_branches = list(target_branches_set)
     else:
-        target_branches = list(target_branches_set.difference({branch}))
+        target_branches = list(target_branches_set.difference({current_branch}))
 
     # Get products and related storages
     products = Product.objects.prefetch_related("product_storages", "unit")
@@ -296,7 +287,7 @@ def inventory_packaging(request):
     # Filter out empty branches
     branch_deliveries = {k: v for k, v in branch_deliveries.items() if v}
 
-    modified_date = getInventoryModifiedDate()
+    modified_date = get_inventory_modified_date(current_branch)
 
     return render(
         request,
@@ -307,7 +298,7 @@ def inventory_packaging(request):
             "product_storages": product_storages_with_shortage,
             "modifiedDate": modified_date,
             "branches": branches,
-            "branch": branch,
+            "branch": current_branch,
             "branch_deliveries": branch_deliveries,
         },
     )
