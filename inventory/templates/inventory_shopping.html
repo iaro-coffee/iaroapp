@@ -12,18 +12,18 @@
                 {% if is_weekly %}Weekly{% else %}Daily{% endif %}
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="?branch={{ branch_id }}&weekly=True" id="show-loading">Weekly</a></li>
-                <li><a class="dropdown-item" href="?branch={{ branch_id }}&weekly=False" id="show-loading">Daily</a></li>
+                <li><a class="dropdown-item" href="?branch={{ branch }}&weekly=True" id="show-loading">Weekly</a></li>
+                <li><a class="dropdown-item" href="?branch={{ branch }}&weekly=False" id="show-loading">Daily</a></li>
             </ul>
         </div>
         <div class="dropdown">
-            <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {% if selected_branch %}{{ selected_branch.name }}{% else %}All Branches{% endif %}
+            <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                {{ branch }}
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="?branch=all&weekly={{ is_weekly }}" id="show-loading">All Branches</a></li>
                 {% for branch in branches %}
-                <li><a class="dropdown-item" href="?branch={{ branch.id }}&weekly={{ is_weekly }}" id="show-loading">{{ branch.name }}</a></li>
+                    <li><a class="dropdown-item" href="?branch={{ branch }}" id="show-loading">{{ branch }}</a></li>
                 {% endfor %}
             </ul>
         </div>

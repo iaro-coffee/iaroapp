@@ -10,25 +10,6 @@ from django.utils.text import slugify
 from iaroapp.base_model import BaseModel
 
 
-class Storage(BaseModel):
-    """Model representing a storage location."""
-
-    name = models.CharField(max_length=500, db_index=True)
-    color = RGBColorField(default="")
-
-    def display_color(self):
-        return format_html(
-            '<span style="width:15px;height:15px;display:block;background-color:{}"></span>',
-            self.color,
-        )
-
-    display_color.short_description = "Color"
-
-    def __str__(self):
-        """String for representing the Model object."""
-        return self.name
-
-
 class Branch(BaseModel):
     """Model representing iaro department and storages location associated with it"""
 
@@ -38,11 +19,6 @@ class Branch(BaseModel):
         blank=True,
         help_text="Technical name for internal use.",
         db_index=True,
-    )
-    storages = models.ManyToManyField(
-        Storage,
-        related_name="branches",
-        help_text="Storages associated with this branch.",
     )
     departmentId = models.CharField(
         max_length=500,
@@ -67,12 +43,6 @@ class Branch(BaseModel):
     def get_storages(self):
         """Returns all storages associated with this branch."""
         return self.storages.all()
-
-    def display_storages(self):
-        """Displays a comma-separated list of storage names for admin interface."""
-        return ", ".join([storage.name for storage in self.storages.all()])
-
-    display_storages.short_description = "Storages"
 
     def __str__(self):
         """String for representing the Model object."""
@@ -211,7 +181,7 @@ class Product(BaseModel):
         else:
             return float(total_value_intended - total_value)
 
-    def get_oos_value_shipping(self):
+    def get_oos_value_shipping(self):  # oos = out of stock?
         product_storage_dict = {}
         for branch in self.get_storage_branches:
             value_needed = 0
@@ -299,6 +269,32 @@ class Product(BaseModel):
         return self.name
 
 
+class Storage(BaseModel):
+    """Model representing a storage location."""
+
+    name = models.CharField(max_length=500, db_index=True)
+    color = RGBColorField(default="")
+    branch = models.ForeignKey(
+        Branch,
+        help_text="Select a branch for this storage",
+        on_delete=SET_NULL,
+        null=True,
+    )
+    products = models.ManyToManyField(Product, through="ProductStorage")
+
+    def display_color(self):
+        return format_html(
+            '<span style="width:15px;height:15px;display:block;background-color:{}"></span>',
+            self.color,
+        )
+
+    display_color.short_description = "Color"
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
+
+
 class ProductStorage(BaseModel):
     """Model representing the relationship between a product and a storage."""
 
@@ -328,11 +324,7 @@ class ProductStorage(BaseModel):
 
     @property
     def branch(self):
-        branches = Branch.objects.all()
-        for branch in branches:
-            if self.storage in branch.storages.all():
-                return branch
-        return None
+        return Storage.objects.get(pk=self.storage.pk).branch
 
     # Update the product item to refresh the modified_date attribute
     def save(self, *args, **kwargs):

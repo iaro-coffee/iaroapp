@@ -20,7 +20,7 @@ class BranchesAdmin(admin.ModelAdmin):
      - adds inline addition of branch instances in branch view (inlines)
     """
 
-    list_display = ("name", "display_storages", "departmentId")
+    list_display = ("name", "street_address", "city")
 
 
 class ProductStorageInline(admin.TabularInline):
@@ -48,7 +48,7 @@ class ProductsAdmin(ImportExportModelAdmin):
     inlines = [ProductStorageInline]
     search_fields = ("name",)
     list_filter = (
-        "product_storages__storage__branches",
+        "product_storages__storage__branch",
         "product_storages__storage",
     )
 
@@ -67,7 +67,7 @@ class StoragesAdmin(admin.ModelAdmin):
      - adds inline addition of storage instances in storage view (inlines)
     """
 
-    list_display = ("name", "display_color")
+    list_display = ("name", "branch", "display_color")
 
 
 @admin.register(Seller)

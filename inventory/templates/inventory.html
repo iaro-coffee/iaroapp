@@ -39,48 +39,42 @@
                             {% csrf_token %}
                             {{ formset.management_form }}
                             {% for storage in storages %}
-                                {% with products_in_storage=product_storages|dictsort:"storage.id"|slice:":1"|first %}
-                                    {% if products_in_storage %}
-                                        <tr class="entry">
-                                            <td style="height: 40px; white-space: normal !important;">
-                                                <a data-bs-toggle="collapse" href="#inventoryList_{{ storage.id }}">
-                                                    <div class="d-flex align-items-center">
-                                                        <svg class="bi" width="16" height="16">
-                                                            <circle cx="8" cy="8" r="7" fill="{{ storage.color }}" stroke="#cbd3da"></circle>
-                                                        </svg>
-                                                        <h6 class="mb-0 mx-2 text-sm responsive__mobile-3">{{ storage.name }}</h6>
-                                                    </div>
-                                                </a>
-                                                <div id="inventoryList_{{ storage.id }}" class="collapse" data-bs-parent="#accordion">
-                                                    <div class="card-body p-2">
-                                                        {% for product_storage in product_storages %}
-                                                            {% if product_storage.storage == storage %}
-                                                                <a class="list-group-item align-items-center list-group-item-action d-flex gap-2 py-2" aria-current="true" style="width: 100%; border-bottom: 1px solid rgba(131, 146, 171, 0.2);">
-                                                                    <span style="font-size: 1rem">📦</span>
-                                                                    <input type="number" name="product_{{ product_storage.product.id }}" value="{{ product_storage.product.id }}" style="display: none;"/>
-                                                                    <input type="number" name="storage_{{ storage.id }}" value="{{ storage.id }}" style="display: none;"/>
-                                                                    <p class="text-sm mb-0 w-100 wrap text-break">
-                                                                        {{ product_storage.product.name }}
-                                                                        <br>
-                                                                        <span class="text-secondary text-xxs d-none date-field">Updated on: {{ product_storage.last_updated|date:"d/F/y H:i" }}</span>
-                                                                        <span class="text-secondary text-xxs d-none amount-field"><br>Last submitted amount: {{ product_storage.value }}</span>
-                                                                        {% if product_storage.product.hint %}
-                                                                            <span class="text-secondary text-xxs d-none hint-field" style="width: 120px;"><br>Hint: {{ product_storage.product.hint }}</span>
-                                                                        {% endif %}
-                                                                    </p>
-                                                                    <div class="d-flex flex-column">
-                                                                        <input name="value_{{ product_storage.product.id }}_{{ storage.id }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control value-input" id="value" value="" placeholder="{{ product_storage.product.unit.all | join:", " }}" style="width: 100px; height: 34px; padding: 0.4rem; font-size: 16px; scale: 0.9;">
-                                                                    </div>
-                                                                </a>
+                                <tr class="entry">
+                                    <td style="height: 40px; white-space: normal !important;">
+                                        <a data-bs-toggle="collapse" href="#inventoryList_{{ storage.id }}">
+                                            <div class="d-flex align-items-center">
+                                                <svg class="bi" width="16" height="16">
+                                                    <circle cx="8" cy="8" r="7" fill="{{ storage.color }}" stroke="#cbd3da"></circle>
+                                                </svg>
+                                                <h6 class="mb-0 mx-2 text-sm responsive__mobile-3">{{ storage.name }}</h6>
+                                            </div>
+                                        </a>
+                                        <div id="inventoryList_{{ storage.id }}" class="collapse" data-bs-parent="#accordion">
+                                            <div class="card-body p-2">
+                                                {% for product_storage in storage.productstorage_set.all %}
+                                                    <a class="list-group-item align-items-center list-group-item-action d-flex gap-2 py-2" aria-current="true" style="width: 100%; border-bottom: 1px solid rgba(131, 146, 171, 0.2);">
+                                                        <span style="font-size: 1rem">📦</span>
+                                                        <input type="number" name="product_{{ product_storage.product.id }}" value="{{ product_storage.product.id }}" style="display: none;"/>
+                                                        <input type="number" name="storage_{{ storage.id }}" value="{{ storage.id }}" style="display: none;"/>
+                                                        <p class="text-sm mb-0 w-100 wrap text-break">
+                                                            {{ product_storage.product.name }}
+                                                            <br>
+                                                            <span class="text-secondary text-xxs d-none date-field">Updated on: {{ product_storage.last_updated|date:"d.m.y H:i" }} Uhr</span>
+                                                            <span class="text-secondary text-xxs d-none amount-field"><br>Last submitted amount: {{ product_storage.value }}</span>
+                                                            {% if product_storage.product.hint %}
+                                                                <span class="text-secondary text-xxs d-none hint-field" style="width: 120px;"><br>Hint: {{ product_storage.product.hint }}</span>
                                                             {% endif %}
-                                                        {% endfor %}
-                                                        <input type="submit" class="btn align-self-center bg-gradient-primary m-2" value="Submit inventory"/>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-                                {% endwith %}
+                                                        </p>
+                                                        <div class="d-flex flex-column">
+                                                            <input name="value_{{ product_storage.product.id }}_{{ storage.id }}" type="text" pattern="[0-9]+([.,][0-9]+)?" inputmode="decimal" class="form-control value-input" id="value" value="" placeholder="{{ product_storage.product.unit.all | join:", " }}" style="width: 100px; height: 34px; padding: 0.4rem; font-size: 16px; scale: 0.9;">
+                                                        </div>
+                                                    </a>
+                                                {% endfor %}
+                                                <input type="submit" class="btn align-self-center bg-gradient-primary m-2" value="Submit inventory"/>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                             {% endfor %}
                         </form>
                     </tbody>
