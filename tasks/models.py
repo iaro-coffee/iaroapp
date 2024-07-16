@@ -127,14 +127,18 @@ class TaskInstance(BaseModel):
         return "{} ({})".format(self.id, self.task.title)
 
 
-class TaskBranchOrder(models.Model):
+class TaskBranchDayOrder(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    weekday = models.ForeignKey(Weekdays, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ("task", "branch")
+        unique_together = ("task", "branch", "weekday")
         ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.task.title} ({self.branch.name} - {self.weekday.name})"
 
 
 class Recipe(BaseModel):

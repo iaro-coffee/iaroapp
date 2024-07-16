@@ -9,19 +9,20 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
 from django.forms.models import model_to_dict
-from django.shortcuts import redirect, render, reverse
+from django.http import QueryDict
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views.generic import ListView
 
 from inventory.models import Branch
-from inventory.views import get_current_branch
+from users.models import Profile
 
 from .forms import BakingPlanForm, TaskForm, TaskFormset
 from .models import (
     BakingPlanInstance,
     Recipe,
     Task,
-    TaskBranchOrder,
+    TaskBranchDayOrder,
     TaskInstance,
     Weekdays,
 )
@@ -37,154 +38,196 @@ class TasksView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        tasks = get_my_tasks(self.request)
         today = timezone.now().date()
         current_day = today.strftime("%A")
-        branch = get_current_branch(self.request)
-        branches = list(Branch.objects.exclude(name=branch).order_by("name")) + ["All"]
 
-        # Get selected day from request or default to today's day name
-        selected_day = self.request.GET.get("day", current_day)
-        context["selected_day"] = selected_day
-        context["current_day"] = current_day
+        # Check if this is the initial load or if specific parameters are present
+        if "day" in self.request.GET or "branch" in self.request.GET:
+            selected_day = self.request.GET.get("day", current_day)
+            branch_name = self.request.GET.get("branch", "All")
+        else:
+            # Use the user's profile branch if no specific parameters are present
+            user_profile = Profile.objects.get(user=self.request.user)
+            branch_name = user_profile.branch.name if user_profile.branch else "All"
+            selected_day = current_day
 
-        if branch != "All":
-            task_orders = (
-                TaskBranchOrder.objects.filter(branch__id=branch.id)
-                .order_by("order")
-                .values_list("task_id", flat=True)
-            )
-            ordered_tasks_ids = list(task_orders)
-            unordered_tasks_ids = [
-                task.id for task in tasks if task.id not in ordered_tasks_ids
-            ]
-            ordered_tasks_ids.extend(unordered_tasks_ids)
-            ordered_tasks = Task.objects.filter(
-                id__in=ordered_tasks_ids, weekdays__name=selected_day
-            ).order_by(
-                models.Case(
-                    *[
-                        models.When(id=task_id, then=pos)
-                        for pos, task_id in enumerate(ordered_tasks_ids)
-                    ]
-                )
-            )
+        # Update the context with necessary information
+        context.update(
+            {
+                "selected_day": selected_day,
+                "current_day": current_day,
+                "today": today,
+                "branches": self.get_branches(branch_name),
+                "branch": branch_name,
+                "is_admin": check_admin(self.request.user),
+                "days_of_week": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday",
+                ],
+            }
+        )
+
+        # Fetch and order tasks based on the selected day and branch
+        tasks = get_my_tasks(self.request, branch_name)
+        ordered_tasks = self.get_ordered_tasks(tasks, branch_name, selected_day)
+
+        # Create a formset for the tasks if a specific branch is selected
+        formset = (
+            self.formset_class(queryset=ordered_tasks) if branch_name != "All" else None
+        )
+        if formset:
+            for form in formset:
+                if form.instance.pk and branch_name != "All":
+                    form.instance.done_for_branch = form.instance.is_done(
+                        get_object_or_404(Branch, name=branch_name)
+                    )
+
+        # Update the context with task information and formset
+        context.update(
+            {
+                "pageTitle": "Tasks",
+                "task_list": ordered_tasks,
+                "formset": formset,
+            }
+        )
+
+        return context
+
+    def get_branches(self, current_branch_name):
+        # Fetch all branches and add an "All" option
+        branches = list(Branch.objects.all().order_by("name"))
+        branches.append("All")
+        return branches
+
+    # Determine which branches to fetch tasks for and handle the special case when all branches are selected
+    def get_ordered_tasks(self, tasks, branch_name, selected_day):
+        if branch_name != "All":
+            branch_obj = get_object_or_404(Branch, name=branch_name)
+            return self.order_tasks(tasks, branch_obj.id, selected_day)
         else:
             ordered_tasks = {}
             for br in Branch.objects.all():
                 branch_tasks = tasks.filter(branch=br, weekdays__name=selected_day)
                 if branch_tasks.exists():
-                    task_orders = (
-                        TaskBranchOrder.objects.filter(branch__id=br.id)
-                        .order_by("order")
-                        .values_list("task_id", flat=True)
-                    )
-                    ordered_tasks_ids = list(task_orders)
-                    unordered_tasks_ids = [
-                        task.id
-                        for task in branch_tasks
-                        if task.id not in ordered_tasks_ids
-                    ]
-                    ordered_tasks_ids.extend(unordered_tasks_ids)
-                    ordered_tasks[br.name] = Task.objects.filter(
-                        id__in=ordered_tasks_ids
-                    ).order_by(
-                        models.Case(
-                            *[
-                                models.When(id=task_id, then=pos)
-                                for pos, task_id in enumerate(ordered_tasks_ids)
-                            ]
-                        )
+                    ordered_tasks[br.name] = self.order_tasks(
+                        branch_tasks, br.id, selected_day
                     )
                 else:
                     ordered_tasks[br.name] = []
+            return ordered_tasks
 
-        formset = (
-            self.formset_class(queryset=ordered_tasks) if branch != "All" else None
+    # Focus on the task ordering logic for a specific branch and day
+    def order_tasks(self, tasks, branch_id, selected_day):
+        # Fetch task orders for the branch and day
+        task_orders = (
+            TaskBranchDayOrder.objects.filter(
+                branch_id=branch_id, weekday__name=selected_day
+            )
+            .order_by("order")
+            .values_list("task_id", flat=True)
         )
-        if formset:
-            for form in formset:
-                if form.instance.pk and branch != "All":
-                    form.instance.done_for_branch = form.instance.is_done(branch)
-
-        days_of_week = [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday",
+        ordered_tasks_ids = list(task_orders)
+        unordered_tasks_ids = [
+            task.id for task in tasks if task.id not in ordered_tasks_ids
         ]
-
-        context.update(
-            {
-                "pageTitle": "Tasks",
-                "task_list": ordered_tasks,
-                "today": today,
-                "formset": formset,
-                "branches": branches,
-                "branch": branch,
-                "is_admin": check_admin(self.request.user),
-                "days_of_week": days_of_week,
-            }
+        ordered_tasks_ids.extend(unordered_tasks_ids)
+        return Task.objects.filter(
+            id__in=ordered_tasks_ids, weekdays__name=selected_day
+        ).order_by(
+            models.Case(
+                *[
+                    models.When(id=task_id, then=pos)
+                    for pos, task_id in enumerate(ordered_tasks_ids)
+                ]
+            )
         )
-        return context
 
     def get(self, request, *args, **kwargs):
-        """Render the task management page."""
+        # Handle GET request and render the context with the template
         context = self.get_context_data(object_list=request)
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        """Process task completion and task ordering submissions."""
+        # Handle POST request for updating task order or submitting tasks
         if "order" in request.POST:
-            order = request.POST.get("order", "")
-            branch = get_current_branch(request)
-            if order:
-                task_ids = order.split(",")
-                for idx, task_id in enumerate(task_ids):
-                    task = Task.objects.get(pk=task_id)
-                    task_order, created = TaskBranchOrder.objects.get_or_create(
-                        task=task, branch=branch
-                    )
-                    task_order.order = idx
-                    task_order.save()
-            messages.success(request, "Task order updated successfully.")
-            return redirect(request.path_info)
+            self.update_task_order(request)
         else:
-            task_formset = self.formset_class(request.POST)
-            user = request.user
-            date_done = timezone.now()
-            branch = get_current_branch(request)
+            self.submit_tasks(request)
+        return self.redirect_with_query_params(request)
 
-            if task_formset.is_valid():
-                for form in task_formset:
-                    if form.instance.pk:
-                        done_field = f"done_{form.instance.id}"
-                        if (
-                            done_field in request.POST
-                            and request.POST[done_field] == "on"
-                        ):
-                            TaskInstance.objects.create(
-                                user=user,
-                                date_done=date_done,
-                                task=form.instance,
-                                branch=branch,
-                            )
-                messages.success(request, "Tasks submitted successfully.")
-            else:
-                messages.error(
-                    request,
-                    "There was an error with your submission. Please check the form and try again.",
+    def update_task_order(self, request):
+        # Update the order of tasks based on the provided order
+        order = request.POST.get("order", "")
+        branch_name = self.request.GET.get("branch", "All")
+        selected_day = self.request.GET.get("day", timezone.now().strftime("%A"))
+        weekday = Weekdays.objects.get(name=selected_day)
+
+        if branch_name != "All":
+            branch_obj = get_object_or_404(Branch, name=branch_name)
+            branch_id = branch_obj.id
+        else:
+            branch_id = None
+
+        if order:
+            task_ids = order.split(",")
+            for idx, task_id in enumerate(task_ids):
+                task = Task.objects.get(pk=task_id)
+                task_order, created = TaskBranchDayOrder.objects.get_or_create(
+                    task=task, branch_id=branch_id, weekday=weekday
                 )
-                for form in task_formset:
-                    print(f"Errors in form {form.instance.pk}: {form.errors}")
+                task_order.order = idx
+                task_order.save()
+        messages.success(request, "Task order updated successfully.")
 
-            return redirect(request.path_info)
+    def submit_tasks(self, request):
+        # Submit task completion updates
+        task_formset = self.formset_class(request.POST)
+        user = request.user
+        date_done = timezone.now()
+        branch_name = self.request.GET.get("branch", "All")
+
+        if branch_name != "All":
+            branch = get_object_or_404(Branch, name=branch_name)
+        else:
+            branch = None
+
+        if task_formset.is_valid():
+            for form in task_formset:
+                if form.instance.pk:
+                    done_field = f"done_{form.instance.id}"
+                    if done_field in request.POST and request.POST[done_field] == "on":
+                        TaskInstance.objects.create(
+                            user=user,
+                            date_done=date_done,
+                            task=form.instance,
+                            branch=branch,
+                        )
+            messages.success(request, "Tasks submitted successfully.")
+        else:
+            messages.error(
+                request,
+                "There was an error with your submission. Please check the form and try again.",
+            )
+            for form in task_formset:
+                print(f"Errors in form {form.instance.pk}: {form.errors}")
+
+    def redirect_with_query_params(self, request):
+        # Redirect with the current query parameters (branch and day)
+        query_params = QueryDict(mutable=True)
+        branch_param = request.GET.get("branch", "All")
+        query_params["branch"] = branch_param
+        query_params["day"] = request.GET.get("day", timezone.now().strftime("%A"))
+        url = reverse("tasks") + "?" + query_params.urlencode()
+        return redirect(url)
 
 
-def get_my_tasks(request):
+# Function to fetch tasks for the current user based on the day of the week and branch
+def get_my_tasks(request, branch_name=None):
     """
     Fetches tasks for the current user based on the day of the week, user's groups, and selected branch.
     Excludes subtasks and optimizes queries to improve performance.
@@ -194,13 +237,12 @@ def get_my_tasks(request):
         Q(weekdays__name=selected_day) | Q(weekdays__isnull=True), parent_task=None
     ).prefetch_related("users", "groups", "branch")
 
-    branch = get_current_branch(request)
     user_groups_ids = request.user.groups.values_list("id", flat=True)
 
-    if branch == "All":
+    if branch_name == "All" or branch_name is None:
         branch_filter = Q()
     else:
-        branch_filter = Q(branch__name=branch)
+        branch_filter = Q(branch__name=branch_name)
 
     filtered_tasks = tasks.filter(
         Q(users=request.user)
