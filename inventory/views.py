@@ -55,11 +55,10 @@ def get_inventory_modified_date(branch):
         ProductStorage.objects.filter(qif(storage__branch=branch, _if=branch != "All"))
         .order_by("last_updated")
         .first()
-        .last_updated.date()
     )
     if not latest_update:
         return "Unknown"
-    return latest_update
+    return latest_update.last_updated.date()
 
 
 def inventory_populate(request):
