@@ -7,6 +7,8 @@ from django.db.models import Prefetch
 from django.shortcuts import redirect, render, reverse
 from django.utils import timezone
 
+from iaroapp.query_helpers import qif
+
 from .forms import ProductFormset
 from .models import Branch, Product, ProductStorage, Seller, Storage
 
@@ -49,11 +51,8 @@ def get_available_branches_filtered(branch):
 
 
 def get_inventory_modified_date(branch):
-    branch_filter = {}
-    if branch != "All":
-        branch_filter["storage__branch"] = branch
     latest_update = (
-        ProductStorage.objects.filter(**branch_filter)
+        ProductStorage.objects.filter(qif(storage__branch=branch, _if=branch != "All"))
         .order_by("last_updated")
         .first()
         .last_updated.date()
@@ -133,12 +132,8 @@ def check_admin(user):
 
 
 def get_inventory_data_of_branch(branch):
-    branch_filter = {}
-    if branch != "All":
-        branch_filter["branch"] = branch
-
     return (
-        Storage.objects.filter(**branch_filter)
+        Storage.objects.filter(qif(branch=branch, _if=branch != "All"))
         .exclude(products=None)
         .prefetch_related(
             Prefetch(
