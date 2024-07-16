@@ -106,24 +106,20 @@ def inventory_populate(request):
 
         # Get the current branch again (could be redundant, consider refactoring)
 
-        if current_branch == "All":
-            storages = Storage.objects.exclude(products=None).prefetch_related(
+        branch_filter = {}
+        if current_branch != "All":
+            branch_filter["branch"] = current_branch
+
+        storages = (
+            Storage.objects.filter(**branch_filter)
+            .exclude(products=None)
+            .prefetch_related(
                 Prefetch(
                     "productstorage_set",
                     ProductStorage.objects.select_related("product"),
                 )
             )
-        else:
-            storages = (
-                Storage.objects.filter(branch=current_branch)
-                .exclude(products=None)
-                .prefetch_related(
-                    Prefetch(
-                        "productstorage_set",
-                        ProductStorage.objects.select_related("product"),
-                    )
-                )
-            )
+        )
 
         # Get the last modified date for the inventory
         modified_date = getInventoryModifiedDate()
@@ -157,24 +153,20 @@ def inventory_evaluation(request):
     # Get list of branches which are not selected
     branches = getAvailableBranchesFiltered(current_branch)
 
-    if current_branch == "All":
-        storages = Storage.objects.exclude(products=None).prefetch_related(
+    branch_filter = {}
+    if current_branch != "All":
+        branch_filter["branch"] = current_branch
+
+    storages = (
+        Storage.objects.filter(**branch_filter)
+        .exclude(products=None)
+        .prefetch_related(
             Prefetch(
                 "productstorage_set",
                 ProductStorage.objects.select_related("product"),
             )
         )
-    else:
-        storages = (
-            Storage.objects.filter(branch=current_branch)
-            .exclude(products=None)
-            .prefetch_related(
-                Prefetch(
-                    "productstorage_set",
-                    ProductStorage.objects.select_related("product"),
-                )
-            )
-        )
+    )
 
     # Get last product modification date
     modified_date = getInventoryModifiedDate()
