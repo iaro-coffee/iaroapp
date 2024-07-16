@@ -8,11 +8,11 @@
 
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2">
+    <!-- admin filter by branch and edit order -->
     {% if user.is_superuser or user.is_staff %}
         {% if branch != "All" %}
             <button type="button" id="toggleOrderButton" class="btn bg-gradient-primary mb-0">Edit Order</button>
         {% endif %}
-    {% endif %}
     <div class="dropdown">
         <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             {{ branch }}
@@ -20,6 +20,18 @@
         <ul class="dropdown-menu dropdown-menu-end">
             {% for branch in branches %}
             <li><a class="dropdown-item" href="?branch={{ branch }}" id="show-loading">{{ branch }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <!-- filter by day -->
+    <div class="dropdown">
+        <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ selected_day|default:"Select Day" }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            {% for day in days_of_week %}
+            <li><a class="dropdown-item" href="?day={{ day }}{% if branch != "All" %}&branch={{ branch }}{% endif %}">{{ day }}</a></li>
             {% endfor %}
         </ul>
     </div>
@@ -46,9 +58,11 @@
                         <table class="table align-items-center mb-2 table-collapse">
                             <thead>
                             <tr>
+                                {% if selected_day == current_day %}
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
                                     Select
                                 </th>
+                                {% endif %}
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
                                     Task
                                 </th>
@@ -58,6 +72,7 @@
                             {% for form in formset %}
                             {% if form.instance.id %}
                                 <tr class="entry" {% if form.instance.done_for_branch %} data-bs-toggle="tooltip" data-bs-placement="top" title="Done" {% endif %}>
+                                    {% if selected_day == current_day %}
                                     <td>
                                         <div class="d-flex justify-content-center responsive__mobile-2">
                                             <div class="form-check">
@@ -70,12 +85,13 @@
                                                     <input type="hidden" name="{{ form.prefix }}-id"
                                                            id="id_{{ form.prefix }}-id" value="{{ form.instance.id }}">
                                                     <input type="hidden" name="{{ form.prefix }}-title"
-                                                           id="id_{{ form.prefix }}-title"
+                                                           id="id_{{ form.prefix }}-title }}"
                                                            value="{{ form.instance.title }}">
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
+                                    {% endif %}
                                     <td>
                                         <div class="d-flex px-1 py-1">
                                             <h6 class="mb-0 text-sm responsive__mobile-3">{{ form.instance.title }}</h6>
@@ -123,7 +139,9 @@
                     </div>
                 </div>
             </div>
+            {% if selected_day == current_day %}
             <input type="submit" id="submitTasksBtn" class="btn w-100 bg-gradient-primary" value="Submit tasks" style="float: right; max-width: 200px;"/>
+            {% endif %}
             <a class="btn mb-0 bg-gradient-primary" href="https://app.iaro.co/admin/tasks/task/add/">
                 Add task
             </a>

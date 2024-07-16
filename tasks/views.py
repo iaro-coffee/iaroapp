@@ -39,8 +39,14 @@ class TasksView(LoginRequiredMixin, ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         tasks = get_my_tasks(self.request)
         today = timezone.now().date()
+        current_day = today.strftime("%A")
         branch = get_current_branch(self.request)
         branches = list(Branch.objects.exclude(name=branch).order_by("name")) + ["All"]
+
+        # Get selected day from request or default to today's day name
+        selected_day = self.request.GET.get("day", current_day)
+        context["selected_day"] = selected_day
+        context["current_day"] = current_day
 
         if branch != "All":
             task_orders = (
@@ -53,7 +59,9 @@ class TasksView(LoginRequiredMixin, ListView):
                 task.id for task in tasks if task.id not in ordered_tasks_ids
             ]
             ordered_tasks_ids.extend(unordered_tasks_ids)
-            ordered_tasks = Task.objects.filter(id__in=ordered_tasks_ids).order_by(
+            ordered_tasks = Task.objects.filter(
+                id__in=ordered_tasks_ids, weekdays__name=selected_day
+            ).order_by(
                 models.Case(
                     *[
                         models.When(id=task_id, then=pos)
@@ -64,7 +72,7 @@ class TasksView(LoginRequiredMixin, ListView):
         else:
             ordered_tasks = {}
             for br in Branch.objects.all():
-                branch_tasks = tasks.filter(branch=br)
+                branch_tasks = tasks.filter(branch=br, weekdays__name=selected_day)
                 if branch_tasks.exists():
                     task_orders = (
                         TaskBranchOrder.objects.filter(branch__id=br.id)
@@ -99,6 +107,16 @@ class TasksView(LoginRequiredMixin, ListView):
                 if form.instance.pk and branch != "All":
                     form.instance.done_for_branch = form.instance.is_done(branch)
 
+        days_of_week = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+
         context.update(
             {
                 "pageTitle": "Tasks",
@@ -108,6 +126,7 @@ class TasksView(LoginRequiredMixin, ListView):
                 "branches": branches,
                 "branch": branch,
                 "is_admin": check_admin(self.request.user),
+                "days_of_week": days_of_week,
             }
         )
         return context
@@ -162,9 +181,9 @@ def get_my_tasks(request):
     Fetches tasks for the current user based on the day of the week, user's groups, and selected branch.
     Excludes subtasks and optimizes queries to improve performance.
     """
-    today_weekday = timezone.now().strftime("%A")
+    selected_day = request.GET.get("day", timezone.now().strftime("%A"))
     tasks = Task.objects.filter(
-        Q(weekdays__name=today_weekday) | Q(weekdays__isnull=True), parent_task=None
+        Q(weekdays__name=selected_day) | Q(weekdays__isnull=True), parent_task=None
     ).prefetch_related("users", "groups", "branch")
 
     branch = get_current_branch(request)

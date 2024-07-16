@@ -25,10 +25,13 @@
                         <li class="mb-4">
                             <h5>{{ video.title }}</h5>
                             <p>{{ video.description }}</p>
-                            <video width="320" height="240" controls>
+                            <div class="video-wrap d-flex justify-content-center">
+                            <video controls>
                                 <source src="{{ video.video_file.url }}" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
+
+                                </div>
                         </li>
                     {% endfor %}
                     </ul>
@@ -38,4 +41,12 @@
     {% endfor %}
 </div>
 
+    <style>
+
+        video {
+            border: 1px solid #273047;
+            max-width: 90%;
+            border-radius: 1rem;
+        }
+    </style>
 {% endblock %}
