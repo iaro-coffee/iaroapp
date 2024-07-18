@@ -46,7 +46,7 @@ class Task(BaseModel):
         help_text="Enter a brief description of the task. <br>",
         null=True,
         blank=True,
-        config_name="extends",
+        config_name="default",
     )
     branch = models.ManyToManyField(
         "inventory.Branch",

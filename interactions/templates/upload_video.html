@@ -3,6 +3,7 @@
 
 {% block extra_head %}
     <title>iaroapp - Upload Video</title>
+    {{ form.media }}
 {% endblock %}
 
 {% block widgets %}
@@ -23,19 +24,19 @@
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="id_category" class="form-label">Category:</label>
-                        <input type="text" name="category" class="form-control" id="id_category">
+                        {{ form.category }}
                     </div>
                     <div class="mb-3">
                         <label for="id_title" class="form-label">Title:</label>
-                        <input type="text" name="title" class="form-control" id="id_title">
+                        {{ form.title }}
                     </div>
                     <div class="mb-3">
                         <label for="id_description" class="form-label">Description:</label>
-                        <textarea name="description" class="form-control" id="id_description" rows="10"></textarea>
+                        {{ form.description }}
                     </div>
                     <div class="mb-3">
                         <label for="id_video_file" class="form-label">Video file:</label>
-                        <input type="file" name="video_file" class="form-control" id="id_video_file">
+                        {{ form.video_file }}
                     </div>
                     <button type="submit" class="w-100 btn bg-gradient-primary">Upload</button>
                 </form>
