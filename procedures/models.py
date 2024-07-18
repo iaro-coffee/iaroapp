@@ -1,6 +1,6 @@
-from ckeditor.fields import RichTextField
 from django.contrib.auth.models import Group
 from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 
 from iaroapp.base_model import BaseModel
 from inventory.models import Branch
@@ -15,8 +15,11 @@ class Procedure(BaseModel):
     type = models.ManyToManyField(
         ProcedureType, help_text="Select a type for this procedure"
     )
-    summary = RichTextField(
-        max_length=1000, help_text="Enter a brief description of the task", blank=True
+    summary = CKEditor5Field(
+        "Summary",
+        config_name="extends",
+        help_text="Enter a brief description of the task",
+        blank=True,
     )
     groups = models.ManyToManyField(
         Group,
