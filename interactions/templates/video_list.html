@@ -24,7 +24,7 @@
                     {% for video in videos %}
                         <li class="mb-4">
                             <h5>{{ video.title }}</h5>
-                            <p>{{ video.description }}</p>
+                            <p>{{ video.description|safe }}</p>
                             <div class="video-wrap d-flex justify-content-center">
                             <video controls>
                                 <source src="{{ video.video_file.url }}" type="video/mp4">
