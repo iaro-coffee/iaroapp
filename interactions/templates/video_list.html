@@ -26,12 +26,11 @@
                             <h5>{{ video.title }}</h5>
                             <p>{{ video.description|safe }}</p>
                             <div class="video-wrap d-flex justify-content-center">
-                            <video controls>
-                                <source src="{{ video.video_file.url }}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-
-                                </div>
+                                <video controls>
+                                    <source src="{{ video.video_file.url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
                         </li>
                     {% endfor %}
                     </ul>
