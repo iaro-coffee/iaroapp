@@ -344,7 +344,7 @@ class TasksEvaluationView(LoginRequiredMixin, UserPassesTestMixin, View):
             done_weekday = task_instance.date_done.strftime("%A")
             done_data = {
                 "done_datetime": timezone.localtime(task_instance.date_done).strftime(
-                    "%d.%m.%y %H:%M Uhr"
+                    "%d.%m.%y %H:%M"
                 ),
                 "done_persons": (
                     task_instance.user.get_full_name() or task_instance.user.username

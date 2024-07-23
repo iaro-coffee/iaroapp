@@ -65,18 +65,26 @@
                                                 <tbody>
                                                     {% for task_detail in tasks %}
                                                         <tr class="{% if task_detail.done|dict_get:weekday %}done{% else %}open{% endif %} p-4">
-                                                            <td class="text-break w-70" style="word-wrap: break-word; white-space: normal;">
+                                                            <td class="text-break w-65" style="word-wrap: break-word; white-space: normal;">
                                                                 <p class="text-xs m-0 p-2" style="word-wrap: break-word; white-space: normal;">
                                                                     {{ task_detail.title }}
                                                                 </p>
                                                             </td>
-                                                            <td class="text-break w-100" style="word-wrap: break-word; white-space: normal;">
-                                                                <p class="m-0 p-2 text-xs" style="word-wrap: break-word; white-space: normal;">
+                                                            <td class="text-break w-100"
+                                                                style="word-wrap: break-word; white-space: normal;">
+                                                                <p class="m-0 p-2 text-xxs"
+                                                                   style="word-wrap: break-word; white-space: normal;">
                                                                     {% if task_detail.done|dict_get:weekday %}
-                                                                        {% for done_data in task_detail.done|dict_get:weekday %}
-                                                                            {{ done_data.done_datetime }} <br>Done by
-                                                                            <b>{{ done_data.done_persons }}</b>
-                                                                        {% endfor %}
+                                                                        {% if task_detail.done|dict_get:weekday %}
+                                                                            {% for done_data in task_detail.done|dict_get:weekday %}
+                                                                                {{ done_data.done_datetime }} <br>By
+                                                                                <b>{{ done_data.done_persons }}</b>
+                                                                            {% endfor %}
+                                                                        {% else %}
+                                                                            <span class="text-secondary">Not done</span>
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        <span class="text-secondary">Not done</span>
                                                                     {% endif %}
                                                                 </p>
                                                             </td>
@@ -110,8 +118,12 @@
         cursor: auto !important;
     }
 
-    .done {
+    tr {
         border-bottom: 1px solid var(--table-border-color);
+    }
+
+    tr:hover {
+        background-color: transparent !important;
     }
 </style>
 
