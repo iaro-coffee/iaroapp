@@ -3,7 +3,7 @@ FROM python:3.11-slim
 
 # install npm
 RUN apt-get update && \
-    apt-get install -y npm telnet procps dnsutils && \
+    apt-get install -y npm poppler-utils   && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
