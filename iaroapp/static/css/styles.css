@@ -50,6 +50,7 @@ body.dark-page .navbar-brand-img {
 }
 
 :root {
+  --table-border-color: rgba(131, 146, 171, 0.2);
   --bs-blue: #63B3ED;
   --bs-indigo: #596CFF;
   --bs-purple: #6f42c1;

@@ -1,10 +1,10 @@
 import logging
-from datetime import datetime, time, timedelta
+from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
@@ -12,8 +12,9 @@ from django.forms.models import model_to_dict
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
-from django.views.generic import ListView
+from django.views.generic import ListView, View
 
+from iaroapp.query_helpers import qif
 from inventory.models import Branch
 from users.models import Profile
 
@@ -188,7 +189,8 @@ class TasksView(LoginRequiredMixin, ListView):
         # Submit task completion updates
         task_formset = self.formset_class(request.POST)
         user = request.user
-        date_done = timezone.now()
+        date_done = timezone.localtime(timezone.now())
+        print(date_done)
         branch_name = self.request.GET.get("branch", "All")
 
         if branch_name != "All":
@@ -262,67 +264,108 @@ def check_staff(user):
     return user.is_superuser or user.is_staff
 
 
-@user_passes_test(check_admin)
-def tasks_evaluation(request):
-    tasks = Task.objects.all()
-    tasks_evaluation = {}
-    weekdays = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-    ]
-    weekday_today = datetime.today().strftime("%A")
+class TasksEvaluationView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def get(self, request, *args, **kwargs):
+        branch_name = request.GET.get("branch", "All")
+        tasks_evaluation, valid_weekdays = self.get_tasks_evaluation(branch_name)
+        weekdays = valid_weekdays
+        today = timezone.now().strftime("%A")
+        branches = self.get_branches()
 
-    for weekday in weekdays:
-        tasks_evaluation[weekday] = []
+        return render(
+            request,
+            "tasks_list_evaluation.html",
+            context={
+                "pageTitle": "Tasks overview",
+                "tasks_evaluation": tasks_evaluation,
+                "weekdays": weekdays,
+                "today": today,
+                "branches": branches,
+                "branch": branch_name,
+            },
+        )
+
+    def get_tasks_evaluation(self, branch_name):
+        weekdays = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+        today = timezone.now().date()
+        current_weekday_index = today.weekday()
+        valid_weekdays = weekdays[: current_weekday_index + 1]
+
+        tasks_evaluation = {weekday: [] for weekday in valid_weekdays}
+
+        # Filter tasks relevant to the weekdays and the selected branch
+        tasks = (
+            Task.objects.prefetch_related("users", "groups", "weekdays", "branch")
+            .filter(
+                qif(weekdays__name__in=valid_weekdays, _if=True)
+                | qif(weekdays__isnull=True),
+                qif(branch__name=branch_name, _if=branch_name != "All"),
+            )
+            .distinct()
+        )
+
         for task in tasks:
-            task = model_to_dict(task)
-            task["assignees"] = task["users"] + task["groups"]
-            if not task["weekdays"]:
-                tasks_evaluation[weekday].append(task)
-            for task_weekday in task["weekdays"]:
-                if weekday == str(task_weekday):
-                    tasks_evaluation[weekday].append(task)
+            task_data = model_to_dict(task)
+            task_data["assignees"] = list(
+                task.users.values_list("username", flat=True)
+            ) + list(task.groups.values_list("name", flat=True))
+            task_data["done"] = {weekday: [] for weekday in valid_weekdays}
+            task_weekdays = list(task.weekdays.values_list("name", flat=True))
+            if not task_weekdays:
+                for weekday in valid_weekdays:
+                    tasks_evaluation[weekday].append(task_data)
+            else:
+                for weekday in task_weekdays:
+                    if weekday in valid_weekdays:
+                        tasks_evaluation[weekday].append(task_data)
 
-    beginning_of_week = datetime.combine(
-        datetime.today() - timedelta(days=datetime.today().weekday() % 7), time()
-    )
-    task_instances = TaskInstance.objects.all()
-    for task_instance in task_instances:
-        for weekday in weekdays:
-            for task in tasks_evaluation[weekday]:
-                if "done" not in task:
-                    task["done"] = {}
-                if task["id"] == task_instance.task.id:
-                    if task_instance.date_done is not None:
-                        if beginning_of_week.astimezone() < task_instance.date_done:
-                            done = {
-                                "done_weekday": weekdays[
-                                    task_instance.date_done.weekday()
-                                ],
-                                "done_datetime": task_instance.date_done.strftime(
-                                    "%d.%m, %H:%M"
-                                ),
-                                "done_persons": task_instance.user,
-                            }
-                            task["done"][
-                                weekdays[task_instance.date_done.weekday()]
-                            ] = done
+        beginning_of_week = timezone.make_aware(
+            timezone.datetime.combine(
+                today - timezone.timedelta(days=today.weekday()),
+                timezone.datetime.min.time(),
+            )
+        )
 
-    return render(
-        request,
-        "tasks_list_evaluation.html",
-        context={
-            "pageTitle": "Tasks overview",
-            "tasks": tasks_evaluation,
-            "weekdays": weekdays,
-            "today": weekday_today,
-        },
-    )
+        # Fetch task instances done after the beginning of the week
+        task_instances = TaskInstance.objects.filter(
+            date_done__gte=beginning_of_week
+        ).select_related("task", "user")
+
+        for task_instance in task_instances:
+            task_id = task_instance.task.id
+            done_weekday = task_instance.date_done.strftime("%A")
+            done_data = {
+                "done_datetime": timezone.localtime(task_instance.date_done).strftime(
+                    "%d.%m.%y %H:%M"
+                ),
+                "done_persons": (
+                    task_instance.user.get_full_name() or task_instance.user.username
+                    if task_instance.user
+                    else ""
+                ),
+            }
+            if done_weekday in valid_weekdays:
+                for task in tasks_evaluation[done_weekday]:
+                    if task["id"] == task_id:
+                        # Ensure unique entries in the done dictionary for the specific weekday
+                        if done_data not in task["done"][done_weekday]:
+                            task["done"][done_weekday].append(done_data)
+
+        return tasks_evaluation, valid_weekdays
+
+    def get_branches(self):
+        return list(Branch.objects.all().order_by("name"))
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
 
 @user_passes_test(check_admin)
