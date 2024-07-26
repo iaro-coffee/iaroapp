@@ -1,0 +1,96 @@
+
+.swiper-container {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.swiper-slide img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 0.5rem;
+}
+
+.swiper-button-next, .swiper-button-prev {
+    scale: 0.7;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swiper-button-next::after, .swiper-button-prev::after {
+    font-size: 20px;
+}
+
+.card-body {
+    overflow: hidden;
+}
+
+.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fullscreen .swiper-container {
+    width: 100%;
+    height: 100%;
+}
+
+.exit-fullscreen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10000;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 1rem;
+}
+
+.swiper-pagination-wrapper {
+    position: relative;
+    margin-bottom: 100px;
+}
+
+.swiper-pagination {
+    text-align: center;
+    top: -26px;
+}
+
+.swiper-button-next, .swiper-button-prev {
+    position: absolute;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+}
+
+.swiper-button-next {
+    right: calc(50% - 100px);
+}
+
+.swiper-button-prev {
+    left: calc(50% - 100px);
+}

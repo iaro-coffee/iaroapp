@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from inventory.models import Branch
 
-from .models import Note, Video
+from .models import LearningCategory, Note, PDFUpload, Video
 
 
 class NoteForm(forms.ModelForm):
@@ -54,3 +54,48 @@ class VideoUploadForm(forms.ModelForm):
     class Meta:
         model = Video
         fields = ["category", "title", "description", "video_file"]
+
+
+class PDFUploadForm(forms.ModelForm):
+    new_category = forms.CharField(
+        max_length=255,
+        required=False,
+        help_text="Enter a new category name if you want to create one.",
+    )
+
+    class Meta:
+        model = PDFUpload
+        fields = ["file", "name", "description", "category"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["category"].queryset = LearningCategory.objects.all()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_category_name = cleaned_data.get("new_category")
+        category = cleaned_data.get("category")
+
+        if not category and not new_category_name:
+            raise forms.ValidationError(
+                "You must select a category or enter a new category name."
+            )
+
+        if new_category_name:
+            category, created = LearningCategory.objects.get_or_create(
+                name=new_category_name
+            )
+            cleaned_data["category"] = category
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        new_category_name = self.cleaned_data.get("new_category")
+        if new_category_name:
+            category, created = LearningCategory.objects.get_or_create(
+                name=new_category_name
+            )
+            instance.category = category
+        if commit:
+            instance.save()
+        return instance

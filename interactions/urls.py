@@ -6,6 +6,9 @@ from .views import (
     UnreadCountView,
     VideoListView,
     VideoUploadView,
+    upload_pdf,
+    view_slides,
+    view_slides_list,
 )
 
 urlpatterns = [
@@ -14,4 +17,7 @@ urlpatterns = [
     path("get-unread-count/", UnreadCountView.as_view(), name="get_unread_count"),
     path("upload-video/", VideoUploadView.as_view(), name="upload_video"),
     path("videos/", VideoListView.as_view(), name="view_videos"),
+    path("upload-pdf/", upload_pdf, name="upload_pdf"),
+    path("learning/", view_slides_list, name="view_slides_list"),
+    path("learning/<int:pdf_id>/", view_slides, name="view_slides"),
 ]

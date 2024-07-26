@@ -1,0 +1,82 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <title>iaroapp - Upload PDF</title>
+    {{ form.media }}
+{% endblock %}
+
+{% block widgets %}
+<div class="d-flex justify-content-between flex-wrap gap-2 mb-0">
+    <a href="{% url 'view_slides_list' %}" class="btn bg-gradient-primary mb-0">View PDFs</a>
+</div>
+{% endblock widgets %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100" id="upload-pdf">
+            <div class="card-header pb-0">
+                <h6>Upload a PDF</h6>
+            </div>
+            <div class="card-body p-3">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_category" class="form-label">Category:</label>
+                        <select id="id_category" name="category" onchange="toggleNewCategoryInput()" class="form-select">
+                            <option value="">Select a category</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                            <option value="new">Create new category</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="new_category_div" style="display: none;">
+                        <label for="id_new_category" class="form-label">New Category:</label>
+                        {{ form.new_category }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_name" class="form-label">Name:</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">Description:</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_file" class="form-label">PDF file:</label>
+                        <br>
+                        {{ form.file }}
+                    </div>
+                    <button type="submit" class="w-100 btn bg-gradient-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleNewCategoryInput() {
+    var categorySelect = document.getElementById('id_category');
+    var newCategoryDiv = document.getElementById('new_category_div');
+    if (categorySelect.value === 'new') {
+        newCategoryDiv.style.display = 'block';
+    } else {
+        newCategoryDiv.style.display = 'none';
+    }
+}
+</script>
+
+<style>
+    input {
+        width: 100%;
+    }
+    body.dark-page select {
+        background-color: #323b55 !important;
+    }
+    .ck-editor-container {
+        color: black;
+    }
+</style>
+{% endblock %}

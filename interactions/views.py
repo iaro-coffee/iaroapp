@@ -1,14 +1,18 @@
+import os
+
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
+from pdf2image import convert_from_path as pdf2image_convert_from_path
 
-from .forms import NoteForm, VideoUploadForm
-from .models import Note, NoteReadStatus, Video
+from .forms import NoteForm, PDFUploadForm, VideoUploadForm
+from .models import LearningCategory, Note, NoteReadStatus, PDFImage, PDFUpload, Video
 
 
 class NoteView(LoginRequiredMixin, TemplateView):
@@ -170,3 +174,84 @@ class VideoListView(View):
         return render(
             request, "video_list.html", {"videos_by_category": videos_by_category}
         )
+
+
+def convert_from_path(pdf_path):
+    """
+    Convert a PDF file to a list of images, one for each page.
+    """
+    images = pdf2image_convert_from_path(pdf_path, dpi=300)
+    return images
+
+
+def upload_pdf(request):
+    categories = LearningCategory.objects.all()
+
+    if request.method == "POST":
+        form = PDFUploadForm(request.POST, request.FILES)
+        new_category_name = request.POST.get("new_category")
+
+        if new_category_name:
+            category, created = LearningCategory.objects.get_or_create(
+                name=new_category_name
+            )
+            post_data = request.POST.copy()
+            post_data["category"] = category.id
+            form = PDFUploadForm(post_data, request.FILES)
+
+        if form.is_valid():
+            pdf_upload = form.save(commit=False)
+            pdf_upload.file = request.FILES["file"]
+            pdf_upload.save()
+
+            pdf_path = pdf_upload.file.path
+            images = convert_from_path(pdf_path)
+            for i, image in enumerate(images):
+                image_filename = f"{pdf_upload.id}_{i}.jpg"
+                image_path = os.path.join(
+                    settings.MEDIA_ROOT, "pdf_images", image_filename
+                )
+                image.save(image_path, "JPEG")
+                PDFImage.objects.create(
+                    pdf=pdf_upload,
+                    image=f"pdf_images/{image_filename}",
+                    page_number=i + 1,
+                )
+            return redirect("view_slides", pdf_id=pdf_upload.id)
+        else:
+            print("Form errors:", form.errors)
+    else:
+        form = PDFUploadForm()
+
+    return render(request, "upload_pdf.html", {"form": form, "categories": categories})
+
+
+def view_slides(request, pdf_id):
+    pdf = get_object_or_404(PDFUpload, id=pdf_id)
+    pdf_images = PDFImage.objects.filter(pdf=pdf).order_by("page_number")
+    return render(request, "view_slides.html", {"pdf_images": pdf_images, "pdf": pdf})
+
+
+def view_slides_list(request):
+    selected_category = request.GET.get("category", "All")
+
+    if selected_category == "All":
+        pdfs_by_category = {
+            category.name: PDFUpload.objects.filter(category=category)
+            for category in LearningCategory.objects.all()
+        }
+    else:
+        category = LearningCategory.objects.get(name=selected_category)
+        pdfs_by_category = {category.name: PDFUpload.objects.filter(category=category)}
+
+    categories = LearningCategory.objects.values_list("name", flat=True)
+    return render(
+        request,
+        "view_slides_list.html",
+        {
+            "pageTitle": "PDF Education List",
+            "pdfs_by_category": pdfs_by_category,
+            "categories": categories,
+            "selected_category": selected_category,
+        },
+    )

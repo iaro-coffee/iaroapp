@@ -50,3 +50,43 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class LearningCategory(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Learning Category"
+        verbose_name_plural = "Learning Categories"
+
+
+class PDFUpload(models.Model):
+    file = models.FileField(upload_to="pdfs/")
+    name = models.CharField(max_length=255, unique=True)
+    description = CKEditor5Field(config_name="default", blank=True, null=True)
+    category = models.ForeignKey(
+        LearningCategory, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def delete(self, *args, **kwargs):
+        pdf_images = PDFImage.objects.filter(pdf=self)
+        for pdf_image in pdf_images:
+            pdf_image.image.delete()
+            pdf_image.delete()
+
+        self.file.delete()
+        super().delete(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "PDF Upload"
+        verbose_name_plural = "PDF Uploads"
+
+
+class PDFImage(models.Model):
+    pdf = models.ForeignKey(PDFUpload, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="pdf_images/")
+    page_number = models.IntegerField()
