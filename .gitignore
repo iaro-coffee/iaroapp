@@ -8,5 +8,10 @@ node_modules
 staticfiles
 info.log
 /media/videos/
-/media/pdfs/
-/media/pdf_images/
+# Ignore contents of media/pdfs/ but not the directory itself
+/media/pdfs/*
+!/media/pdfs/.gitkeep
+
+# Ignore contents of media/pdf_images/ but not the directory itself
+/media/pdf_images/*
+!/media/pdf_images/.gitkeep

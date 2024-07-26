@@ -223,13 +223,21 @@ def upload_pdf(request):
     else:
         form = PDFUploadForm()
 
-    return render(request, "upload_pdf.html", {"form": form, "categories": categories})
+    return render(
+        request,
+        "upload_pdf.html",
+        {"form": form, "categories": categories, "pageTitle": "PDF Upload"},
+    )
 
 
 def view_slides(request, pdf_id):
     pdf = get_object_or_404(PDFUpload, id=pdf_id)
     pdf_images = PDFImage.objects.filter(pdf=pdf).order_by("page_number")
-    return render(request, "view_slides.html", {"pdf_images": pdf_images, "pdf": pdf})
+    return render(
+        request,
+        "view_slides.html",
+        {"pdf_images": pdf_images, "pdf": pdf, "pageTitle": "PDF Education Details"},
+    )
 
 
 def view_slides_list(request):

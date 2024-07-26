@@ -65,6 +65,17 @@
                     <span class="nav-link-text ms-1">Inventory</span>
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link {% if '/learning/' == request.path %} active {% endif %} "
+                   href="{% url 'view_slides_list' %}" id="show-loading">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center"
+                         style="padding: 8px">
+                        <span data-feather="book-open" class="align-text-bottom"></span>
+                    </div>
+                    <span class="nav-link-text ms-1">Learn</span>
+                </a>
+            </li>
         </ul>
 
         {% load is_member%}
