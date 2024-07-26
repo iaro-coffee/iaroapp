@@ -8,3 +8,5 @@ node_modules
 staticfiles
 info.log
 /media/videos/
+/media/pdfs/
+/media/pdf_images/
