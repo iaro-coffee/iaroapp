@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 import os
@@ -10,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Avg, Q
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -185,6 +186,63 @@ def get_customer_profile(user):
         return None
 
 
+def sanitize_cache_key(key: str) -> str:
+    """
+    Sanitize cache key to ensure it's valid for memcached.
+    Sha256 secure hashing algorithm.
+    """
+    return hashlib.sha256(key.encode("utf-8")).hexdigest()
+
+
+@employee_required
+@login_required
+def get_populartimes_data(request: HttpRequest):
+    user_profile = get_user_profile(request.user)
+
+    # Set formatted address based on user profile and branch
+    if user_profile and user_profile.branch:
+        if user_profile.branch.tech_name not in ["iaro-ost", "iaro-west"]:
+            formatted_address = "iaro Sophienstraße 108, Karlsruhe"
+        else:
+            formatted_address = (
+                f"iaro {user_profile.branch.street_address}, {user_profile.branch.city}"
+            )
+    else:
+        formatted_address = "iaro Sophienstraße 108, Karlsruhe"
+
+    # Override formatted_address if provided in GET request
+    formatted_address = request.GET.get("formatted_address", formatted_address)
+
+    # Create a sanitized cache key based on the formatted address
+    raw_cache_key = f"populartimes_data_{formatted_address}"
+    cache_key = sanitize_cache_key(raw_cache_key)
+
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+        response_data = cached_data
+    else:
+        # Retrieve populartimes data
+        populartimes_data = (
+            livepopulartimes.get_populartimes_by_address(formatted_address)
+            if formatted_address
+            else {}
+        )
+        time_spent = populartimes_data.get("time_spent", [15, 45])
+        current_popularity = populartimes_data.get("current_popularity", [])
+        populartimes = populartimes_data.get("populartimes", [])
+
+        response_data = {
+            "populartimes": populartimes,
+            "time_spent": time_spent,
+            "current_popularity": current_popularity,
+        }
+
+        cache.set(cache_key, response_data, timeout=300)
+
+    return JsonResponse(response_data)
+
+
 @employee_required
 @login_required
 def index(request: HttpRequest):
@@ -201,28 +259,6 @@ def index(request: HttpRequest):
     statistics, statisticsSum = getStatistics(request)
     user_profile = get_user_profile(request.user)
     customer_profile = get_customer_profile(request.user)
-
-    # Set formatted address based on user profile and branch
-    if user_profile and user_profile.branch:
-        if user_profile.branch.tech_name not in ["iaro-ost", "iaro-west"]:
-            formatted_address = "iaro Sophienstraße 108, Karlsruhe"
-        else:
-            formatted_address = (
-                f"iaro {user_profile.branch.street_address}, {user_profile.branch.city}"
-            )
-    else:
-        formatted_address = "iaro Sophienstraße 108, Karlsruhe"
-
-    # Override formatted_address if provided in GET request
-    formatted_address = request.GET.get("formatted_address", formatted_address)
-
-    # Retrieve populartimes data
-    populartimes_data = (
-        livepopulartimes.get_populartimes_by_address(formatted_address)
-        if formatted_address
-        else {}
-    )
-    time_spent = populartimes_data.get("time_spent", [15, 45])
 
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
@@ -287,10 +323,6 @@ def index(request: HttpRequest):
         "statistics_sum": statisticsSum,
         "ongoingShift": ongoingShift[0] if ongoingShift else None,
         "shiftStart": ongoingShift[1] if ongoingShift else None,
-        "populartimes": populartimes_data.get("populartimes", []),
-        "time_spent": time_spent,
-        "current_popularity": populartimes_data.get("current_popularity", []),
-        "formatted_address": formatted_address,
         "branch_address": branch_address,
         "user_profile": user_profile,
         "customer_profile": customer_profile,

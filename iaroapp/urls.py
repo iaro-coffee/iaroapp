@@ -35,6 +35,11 @@ urlpatterns = [
     path("users/", include("users.urls")),
     path("notes/", include("interactions.urls")),  # Updated path
     path("", include("customers.urls")),
+    path(
+        "get_populartimes_data/",
+        views.get_populartimes_data,
+        name="get_populartimes_data",
+    ),
 ]
 
 # Use static() to add url mapping to serve static files during development (only)

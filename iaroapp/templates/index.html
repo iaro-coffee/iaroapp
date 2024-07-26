@@ -196,41 +196,36 @@
                     </div>
 
                     <div class="card-body p-3">
-                        <div class="text-bold align-center justify-content-center gap-1 d-flex" id="chartLegend">
-                        </div>
+                        <div class="text-bold align-center justify-content-center gap-1 d-flex" id="chartLegend"></div>
                         <div class="chart">
+                            <div id="populartimesLoader" class="loading-card-overlay active">
+                                <div class="spinner"></div>
+                            </div>
                             <canvas id="populartimesChart" class="chart-canvas" height="300"></canvas>
                         </div>
                         <div class="d-flex justify-content-center align-items-center">
                             <span data-feather="clock" class="align-text-bottom" style="height: 15px"></span>
-
                             <div class="d-flex">
-                                &nbsp;People spend
-                                <span class="text-bold">&nbsp;{{ time_spent.0 }}-{{ time_spent.1 }} min&nbsp;</span>
-                                today
+                                &nbsp;People spend&nbsp;
+                                <span class="text-bold" id="timeSpent">&nbsp;loading...&nbsp;</span>
+                                &nbsp;today
                             </div>
                         </div>
                     </div>
 
-                    {#    check if hardcoded formatted_address correspond to DB    #}
-                    <form id="anchorForTimes" class="d-flex justify-content-center gap-2 mb-4" method="GET"
-                          action="{% url 'index' %}#popular-times">
-                        <input type="hidden" name="formatted_address" id="formatted_address"
-                               value="{{ formatted_address }}">
-
-                        <button class="h6 text-bold mt-3 w-35 {% if formatted_address == 'iaro Rintheimer 1, Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
-                                type="submit"
-                                onclick="document.getElementById('formatted_address').value='iaro Rintheimer 1, Karlsruhe'; showLoading();">
+                    <div class="d-flex justify-content-center gap-2 mb-4">
+                        <button class="h6 text-bold mt-3 w-35 btn-default popular-times-btn"
+                                data-address="iaro Rintheimer 1, Karlsruhe"
+                                onclick="fetchPopularTimesData('iaro Rintheimer 1, Karlsruhe');">
                             Iaro Ost
                         </button>
 
-                        <button class="h6 text-bold mt-3 w-35 {% if formatted_address != 'iaro Rintheimer 1, Karlsruhe' %}btn-active{% else %}btn-default{% endif %}"
-                                type="submit"
-                                onclick="document.getElementById('formatted_address').value='iaro Sophienstraße 108, Karlsruhe'; showLoading();">
+                        <button class="h6 text-bold mt-3 w-35 btn-default popular-times-btn"
+                                data-address="iaro Sophienstraße 108, Karlsruhe"
+                                onclick="fetchPopularTimesData('iaro Sophienstraße 108, Karlsruhe');">
                             Iaro West
                         </button>
-                    </form>
-
+                    </div>
                 </div>
             </div>
 
@@ -415,81 +410,48 @@
             margin-top: 0 !important;
         }
     </style>
-{#    <script>#}
-{#        function formatDate(date) {#}
-{#            const options = {day: 'numeric', month: 'long'};#}
-{#            return date.toLocaleDateString('en-US', options);#}
-{#        }#}
-{##}
-{#        async function fetchHolidays() {#}
-{#            const apiKey = 'drP9SEnt8e5iPinqjLhBQ12LZ4G53ZPm';#}
-{#            const country = 'DE';#}
-{#            const year = new Date().getFullYear();#}
-{#            let url = `https://calendarific.com/api/v2/holidays?&api_key=${apiKey}&country=${country}&year=${year}`;#}
-{##}
-{#            try {#}
-{#                const response = await fetch(url);#}
-{#                if (!response.ok) {#}
-{#                    throw new Error(`HTTP error! status: ${response.status}`);#}
-{#                }#}
-{#                const data = await response.json();#}
-{#                console.log(data)#}
-{#                const holidays = data.response.holidays;#}
-{#                const today = new Date();#}
-{#                const tomorrow = new Date(today.getTime() + 86400000);#}
-{##}
-{#                const todayFormatted = formatDate(today);#}
-{#                const tomorrowFormatted = formatDate(tomorrow);#}
-{##}
-{#                const todayHolidays = holidays.filter(holiday => holiday.date.iso === today.toISOString().split('T')[0]);#}
-{#                const tomorrowHolidays = holidays.filter(holiday => holiday.date.iso === tomorrow.toISOString().split('T')[0]);#}
-{##}
-{#                document.getElementById('today-date').innerHTML = `<b>${todayFormatted}</b>`;#}
-{#                document.getElementById('today-holidays').innerHTML = todayHolidays.map(h => `${h.name}: ${h.description}`).join('<br>') || 'No holidays today.';#}
-{#                document.getElementById('tomorrow-date').innerHTML = `<b>${tomorrowFormatted}</b>`;#}
-{#                document.getElementById('tomorrow-holidays').innerHTML = tomorrowHolidays.map(h => `${h.name}: ${h.description}`).join('<br>') || 'No holidays tomorrow.';#}
-{#            } catch (error) {#}
-{#                console.error('Failed to fetch holidays:', error);#}
-{#                document.getElementById('today-date').innerHTML = '<b>Error loading date</b>';#}
-{#                document.getElementById('tomorrow-date').innerHTML = '<b>Error loading date</b>';#}
-{#                document.getElementById('today-holidays').innerHTML = 'Failed to load holidays.';#}
-{#                document.getElementById('tomorrow-holidays').innerHTML = 'Failed to load holidays.';#}
-{#            }#}
-{#        }#}
-{##}
-{#        fetchHolidays();#}
-{#    </script>#}
 
-    <script>
-        // scroll down for mobile devices
-        window.addEventListener('DOMContentLoaded', function () {
-            var form = document.getElementById('anchorForTimes');
+    <style>
+        .loading-card-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 10;
+            border-radius: 1rem;
+        }
 
-            function updateFormAction() {
-                if (window.innerWidth < 992) {
-                    form.action = "{% url 'index' %}#popular-times";
-                    setTimeout(function () {
-                        window.scrollBy(0, -90);
-                    }, 100);
-                } else {
-                    form.action = "{% url 'index' %}";
-                }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
             }
-
-            updateFormAction();
-
-            // Update action whenever the window is resized
-            window.addEventListener('resize', updateFormAction);
-        });
-    </script>
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 
     <script>
         // Charts parsing
-        var populartimesData = JSON.parse('{{ populartimes | to_json | escapejs }}');
         const currentLivePopularity = JSON.parse('{{ current_popularity | to_json | escapejs }}');
         const livePopularity = currentLivePopularity;
         const currentBranch = '{{ branch }}';
-        var statistics = JSON.parse('{{ statistics | to_json | escapejs }}');
+        const statistics = JSON.parse('{{ statistics | to_json | escapejs }}');
     </script>
     <script src="{% static 'js/shifts.js' %}"></script>
     <script src="{% static 'js/charts_populartimes.js' %}"></script>
