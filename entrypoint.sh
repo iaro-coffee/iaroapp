@@ -12,4 +12,4 @@ if [ -d "/app/media" ]; then
 fi
 
 # start gunicorn server
-gunicorn iaroapp.wsgi:application --bind 0.0.0.0:8000
+gunicorn iaroapp.wsgi:application --bind 0.0.0.0:8000 --workers 5 --threads 2

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 
 from inventory.models import Branch
 
@@ -42,7 +43,9 @@ class NoteReadStatus(models.Model):
 class Video(models.Model):
     category = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    description = CKEditor5Field(
+        "Description", blank=True, null=True, config_name="default"
+    )
     video_file = models.FileField(upload_to="videos/")
 
     def __str__(self):
