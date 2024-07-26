@@ -149,10 +149,9 @@ class CustomerIndexView(LoginRequiredMixin, TemplateView):
 
         # Check if code is already stored in db, if not - create it
         if not customer_profile.card_qr_code:
-            qr_code_data = generate_qr_code_base64(
-                get_card_id_from_user(self.request.user)
-            )
-            customer_profile.card_qr_code = qr_code_data
+            card_id = get_card_id_from_user(self.request.user)
+            qr_code_data = generate_qr_code_base64(card_id)
+            customer_profile.card_qr_code = card_id
             customer_profile.save()
         else:
             qr_code_data = customer_profile.card_qr_code
