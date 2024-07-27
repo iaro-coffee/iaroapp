@@ -3,32 +3,109 @@
 
 {% block extra_head %}
     <title>iaroapp - View Slides</title>
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide@3.5.2/dist/css/glide.core.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide@3.5.2/dist/css/glide.theme.min.css" />
     <link rel="stylesheet" href="{% static 'css/view_slides.css' %}" type="text/css">
     <style>
-        .fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: white;
-            z-index: 9999;
-            display: none;
-            overflow: hidden;
-        }
-
-        .exit-fullscreen-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10000;
-        }
-
-        .fullscreen-swiper img {
+        .glide__slide img {
             width: 100%;
-            height: 100%;
+            height: auto;
             object-fit: contain;
+        }
+
+        .glide__arrows {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+
+        .glide__arrow {
+            background: rgba(0, 123, 255, 0.25);
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background 0.3s, transform 0.3s;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .glide__arrow:hover {
+            background: rgba(0, 86, 179, 0.75);
+        }
+
+        .glide__arrow--left::before {
+            content: '◀';
+        }
+
+        .glide__arrow--right::before {
+            content: '▶';
+        }
+
+        @media (max-width: 1200px) {
+            .glide__arrow {
+                font-size: 20px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .glide__arrow {
+                font-size: 18px;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glide__arrow {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+
+        .glide__bullets {
+            display: flex;
+            justify-content: center;
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+        }
+
+        .glide__bullet {
+            background: rgba(0, 123, 255, 0.75);
+            border: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .glide__bullet:hover,
+        .glide__bullet--active {
+            background: rgba(0, 86, 179, 0.8);
+        }
+
+        .loading-indicator {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: #007bff;
+        }
+
+        .loading {
+            display: block;
         }
     </style>
 {% endblock %}
@@ -47,19 +124,25 @@
                 <h6>{{ pdf.name }}</h6>
             </div>
             <div class="card-body p-3">
-                <div class="swiper-container main-swiper">
-                    <div class="swiper-wrapper">
-                        {% for image in pdf_images %}
-                        <div class="swiper-slide">
-                            <img src="{{ image.image.url }}" loading="lazy" alt="PDF Page {{ image.page_number }}" onclick="enterFullscreen()">
-                            <div class="swiper-lazy-preloader"></div>
-                        </div>
-                        {% endfor %}
+                <div class="glide" id="glide">
+                    <div class="loading-indicator" id="loading-indicator">Loading...</div>
+                    <div class="glide__track" data-glide-el="track">
+                        <ul class="glide__slides">
+                            {% for image in pdf_images %}
+                            <li class="glide__slide">
+                                <img src="{{ image.image.url }}" loading="lazy" alt="PDF Page {{ image.page_number }}">
+                            </li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    <div class="swiper-pagination-wrapper">
-                        <div class="swiper-pagination"></div>
-                        <div class="swiper-button-next"></div>
-                        <div class="swiper-button-prev"></div>
+                    <div class="glide__arrows" data-glide-el="controls">
+                        <button class="glide__arrow glide__arrow--left" data-glide-dir="<" aria-label="Previous slide"></button>
+                        <button class="glide__arrow glide__arrow--right" data-glide-dir=">" aria-label="Next slide"></button>
+                    </div>
+                    <div class="glide__bullets" data-glide-el="controls[nav]">
+                        {% for image in pdf_images %}
+                        <button class="glide__bullet" data-glide-dir="={{ forloop.counter0 }}" aria-label="Go to slide {{ forloop.counter }}"></button>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -67,97 +150,59 @@
     </div>
 </div>
 
-<div class="fullscreen" id="fullscreen-container">
-    <button class="exit-fullscreen-btn" onclick="exitFullscreen()">Exit Fullscreen</button>
-    <div class="swiper-container fullscreen-swiper">
-        <div class="swiper-wrapper">
-            {% for image in pdf_images %}
-            <div class="swiper-slide">
-                <img src="{{ image.image.url }}" loading="lazy" alt="PDF Page {{ image.page_number }}">
-                <div class="swiper-lazy-preloader"></div>
-            </div>
-            {% endfor %}
-        </div>
-        <div class="swiper-pagination-wrapper">
-            <div class="swiper-pagination"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-        </div>
-    </div>
-</div>
-
-<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@glidejs/glide@3.5.2/dist/glide.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var mainSwiper = new Swiper('.main-swiper', {
-        pagination: {
-            el: '.swiper-pagination',
-            type: 'fraction',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        lazy: {
-            loadPrevNext: true,
-        },
-    });
+    // Override the position of the specific navbar
+    const specificNavbar = document.getElementById('navbarBlur');
+    if (specificNavbar) {
+        specificNavbar.classList.remove('position-sticky');
+        specificNavbar.style.position = 'relative';
 
-    var fullscreenSwiper = new Swiper('.fullscreen-swiper', {
-        pagination: {
-            el: '.swiper-pagination',
-            type: 'fraction',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        lazy: {
-            loadPrevNext: true,
-        },
-    });
+        // Use MutationObserver to ensure the position remains relative
+        const observer = new MutationObserver(() => {
+            if (specificNavbar.classList.contains('position-sticky') || specificNavbar.style.position !== 'relative') {
+                specificNavbar.classList.remove('position-sticky');
+                specificNavbar.style.position = 'relative';
+            }
+        });
 
-    window.enterFullscreen = function() {
-        var fullscreenContainer = document.getElementById('fullscreen-container');
-        if (fullscreenContainer.requestFullscreen) {
-            fullscreenContainer.requestFullscreen().then(() => {
-                fullscreenContainer.style.display = 'block';
-                fullscreenSwiper.update();
-            }).catch((err) => {
-                console.error(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
-            });
-        } else if (fullscreenContainer.mozRequestFullScreen) { /* Firefox */
-            fullscreenContainer.mozRequestFullScreen();
-        } else if (fullscreenContainer.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-            fullscreenContainer.webkitRequestFullscreen();
-        } else if (fullscreenContainer.msRequestFullscreen) { /* IE/Edge */
-            fullscreenContainer.msRequestFullscreen();
-        }
-    };
+        // Observe changes to the class attribute and style attribute of the navbar
+        observer.observe(specificNavbar, {
+            attributes: true,
+            attributeFilter: ['class', 'style']
+        });
+    }
 
-    window.exitFullscreen = function() {
-        if (document.exitFullscreen) {
-            document.exitFullscreen().then(() => {
-                document.getElementById('fullscreen-container').style.display = 'none';
-            }).catch((err) => {
-                console.error(`Error attempting to exit fullscreen mode: ${err.message} (${err.name})`);
-            });
-        } else if (document.mozCancelFullScreen) { /* Firefox */
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) { /* IE/Edge */
-            document.msExitFullscreen();
-        }
-    };
-
-    document.addEventListener('fullscreenchange', () => {
-        if (!document.fullscreenElement) {
-            document.getElementById('fullscreen-container').style.display = 'none';
+    const glide = new Glide('#glide', {
+        type: 'carousel',
+        startAt: 0,
+        perView: 1,
+        gap: 10,
+        autoplay: 0,
+        hoverpause: true,
+        breakpoints: {
+            1200: {
+                perView: 1
+            },
+            800: {
+                perView: 1
+            },
+            480: {
+                perView: 1
+            }
         }
     });
+
+    glide.on('mount.before', () => {
+        document.getElementById('loading-indicator').classList.add('loading');
+    });
+
+    glide.on('mount.after', () => {
+        document.getElementById('loading-indicator').classList.remove('loading');
+    });
+
+    glide.mount();
 });
 </script>
 
