@@ -5,6 +5,32 @@
     <title>iaroapp - View Slides</title>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <link rel="stylesheet" href="{% static 'css/view_slides.css' %}" type="text/css">
+    <style>
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            z-index: 9999;
+            display: none;
+            overflow: hidden;
+        }
+
+        .exit-fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+        }
+
+        .fullscreen-swiper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
 {% endblock %}
 
 {% block widgets %}
@@ -41,7 +67,7 @@
     </div>
 </div>
 
-<div class="fullscreen" id="fullscreen-container" style="display:none;">
+<div class="fullscreen" id="fullscreen-container">
     <button class="exit-fullscreen-btn" onclick="exitFullscreen()">Exit Fullscreen</button>
     <div class="swiper-container fullscreen-swiper">
         <div class="swiper-wrapper">
@@ -94,13 +120,44 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.enterFullscreen = function() {
-        document.getElementById('fullscreen-container').style.display = 'block';
-        fullscreenSwiper.update();
+        var fullscreenContainer = document.getElementById('fullscreen-container');
+        if (fullscreenContainer.requestFullscreen) {
+            fullscreenContainer.requestFullscreen().then(() => {
+                fullscreenContainer.style.display = 'block';
+                fullscreenSwiper.update();
+            }).catch((err) => {
+                console.error(`Error attempting to enable fullscreen mode: ${err.message} (${err.name})`);
+            });
+        } else if (fullscreenContainer.mozRequestFullScreen) { /* Firefox */
+            fullscreenContainer.mozRequestFullScreen();
+        } else if (fullscreenContainer.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            fullscreenContainer.webkitRequestFullscreen();
+        } else if (fullscreenContainer.msRequestFullscreen) { /* IE/Edge */
+            fullscreenContainer.msRequestFullscreen();
+        }
     };
 
     window.exitFullscreen = function() {
-        document.getElementById('fullscreen-container').style.display = 'none';
+        if (document.exitFullscreen) {
+            document.exitFullscreen().then(() => {
+                document.getElementById('fullscreen-container').style.display = 'none';
+            }).catch((err) => {
+                console.error(`Error attempting to exit fullscreen mode: ${err.message} (${err.name})`);
+            });
+        } else if (document.mozCancelFullScreen) { /* Firefox */
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE/Edge */
+            document.msExitFullscreen();
+        }
     };
+
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+            document.getElementById('fullscreen-container').style.display = 'none';
+        }
+    });
 });
 </script>
 
