@@ -12,6 +12,7 @@ services:
       - "8000"           # expose port 8000 for django app inside docker for other services
     depends_on:
       - memcached        # ensure memcached starts before django_gunicorn
+    restart: always
 
   nginx:
     build: ./nginx       # build nginx from specified directory
