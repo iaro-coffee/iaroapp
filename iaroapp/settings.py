@@ -79,6 +79,8 @@ MIDDLEWARE = [
     "login_required.middleware.LoginRequiredMiddleware",
 ]
 
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
+
 ROOT_URLCONF = "iaroapp.urls"
 
 TEMPLATES = [

@@ -24,3 +24,4 @@ django-allauth[socialaccount]
 django_ckeditor_5
 qrcode
 pdf2image
+psutil

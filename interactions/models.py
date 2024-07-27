@@ -65,7 +65,7 @@ class LearningCategory(models.Model):
 
 class PDFUpload(models.Model):
     file = models.FileField(upload_to="pdfs/")
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     description = CKEditor5Field(config_name="default", blank=True, null=True)
     category = models.ForeignKey(
         LearningCategory, on_delete=models.SET_NULL, null=True, blank=True

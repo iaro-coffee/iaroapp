@@ -1,6 +1,9 @@
+import gc
 import os
 
+import psutil
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -9,7 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
-from pdf2image import convert_from_path as pdf2image_convert_from_path
+from pdf2image import convert_from_path, pdfinfo_from_path
 
 from .forms import NoteForm, PDFUploadForm, VideoUploadForm
 from .models import LearningCategory, Note, NoteReadStatus, PDFImage, PDFUpload, Video
@@ -176,12 +179,7 @@ class VideoListView(View):
         )
 
 
-def convert_from_path(pdf_path):
-    """
-    Convert a PDF file to a list of images, one for each page.
-    """
-    images = pdf2image_convert_from_path(pdf_path, dpi=300)
-    return images
+conversion_status = {"current_page": 0, "memory_usage": 0.0, "total_pages": 0}
 
 
 def upload_pdf(request):
@@ -189,6 +187,7 @@ def upload_pdf(request):
 
     if request.method == "POST":
         form = PDFUploadForm(request.POST, request.FILES)
+        print(f"Form data received: {request.POST}, files: {request.FILES}")
         new_category_name = request.POST.get("new_category")
 
         if new_category_name:
@@ -205,29 +204,154 @@ def upload_pdf(request):
             pdf_upload.save()
 
             pdf_path = pdf_upload.file.path
-            images = convert_from_path(pdf_path)
-            for i, image in enumerate(images):
-                image_filename = f"{pdf_upload.id}_{i}.jpg"
-                image_path = os.path.join(
-                    settings.MEDIA_ROOT, "pdf_images", image_filename
+            print(
+                f"PDF uploaded and saved with id: {pdf_upload.id} at path: {pdf_path}"
+            )
+
+            try:
+                batch_size = 3  # Process 3 pages at a time
+                print("Starting incremental conversion of PDF pages...")
+
+                # Update total pages in the global conversion status
+                conversion_status["total_pages"] = pdfinfo_from_path(pdf_path).get(
+                    "Pages", 0
                 )
-                image.save(image_path, "JPEG")
-                PDFImage.objects.create(
-                    pdf=pdf_upload,
-                    image=f"pdf_images/{image_filename}",
-                    page_number=i + 1,
+                conversion_status["current_page"] = (
+                    0  # Initialize current_page at the start
                 )
-            return redirect("view_slides", pdf_id=pdf_upload.id)
+
+                total_pages = 0
+
+                while True:
+                    try:
+                        images = convert_from_path(
+                            pdf_path,
+                            first_page=total_pages + 1,
+                            last_page=total_pages + batch_size,
+                            dpi=200,
+                            thread_count=2,  # Try increasing this to 4 if it improves performance
+                            use_pdftocairo=True,  # Use pdftocairo instead of pdftoppm
+                            fmt="jpeg",  # Use JPEG format for faster processing and smaller files
+                        )
+                        if not images:
+                            break
+
+                        for i, image in enumerate(images):
+                            page_number = total_pages + i + 1
+                            image_filename = f"{pdf_upload.id}_{page_number}.jpg"
+                            image_path = os.path.join(
+                                settings.MEDIA_ROOT, "pdf_images", image_filename
+                            )
+                            image.save(image_path, "JPEG")
+                            PDFImage.objects.create(
+                                pdf=pdf_upload,
+                                image=f"pdf_images/{image_filename}",
+                                page_number=page_number,
+                            )
+                            print(
+                                f"Converted page {page_number} to image: {image_filename}"
+                            )
+
+                            # Update conversion status
+                            conversion_status["current_page"] = page_number
+
+                            # Explicitly close and delete the image
+                            image.close()
+                            del image
+                            gc.collect()
+
+                        total_pages += len(images)
+                        process = psutil.Process(os.getpid())
+                        mem_info = process.memory_info()
+                        conversion_status["memory_usage"] = mem_info.rss / (
+                            1024 * 1024
+                        )  # MB
+                        print(
+                            f"Memory usage: {conversion_status['memory_usage']:.2f} MB"
+                        )
+
+                    except Exception as e:
+                        print(
+                            f"An error occurred while converting pages {total_pages + 1} to {total_pages + batch_size}: {e}"
+                        )
+                        messages.error(
+                            request,
+                            f"Error converting pages {total_pages + 1} to {total_pages + batch_size}: {e}",
+                        )
+                        break
+
+                print(f"Finished converting {total_pages} pages.")
+                messages.success(
+                    request, f"Successfully uploaded and converted {total_pages} pages."
+                )
+                return JsonResponse(
+                    {
+                        "success": True,
+                        "redirect_url": redirect(
+                            "view_slides", pdf_id=pdf_upload.id
+                        ).url,
+                    }
+                )
+
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+                messages.error(request, f"An unexpected error occurred: {e}")
+                return JsonResponse(
+                    {"success": False, "error": f"An unexpected error occurred: {e}"}
+                )
+
         else:
             print("Form errors:", form.errors)
+            errors = {
+                field: error.get_json_data() for field, error in form.errors.items()
+            }
+            return JsonResponse({"success": False, "errors": errors})
+
     else:
+        print("Request method is GET")
         form = PDFUploadForm()
+        print("Empty form created")
 
     return render(
         request,
         "upload_pdf.html",
         {"form": form, "categories": categories, "pageTitle": "PDF Upload"},
     )
+
+
+def get_conversion_details(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        pdf_file = request.FILES["file"]
+        temp_dir = os.path.join(settings.MEDIA_ROOT, "temp")
+        os.makedirs(temp_dir, exist_ok=True)
+        pdf_path = os.path.join(temp_dir, pdf_file.name)
+
+        with open(pdf_path, "wb+") as destination:
+            for chunk in pdf_file.chunks():
+                destination.write(chunk)
+
+        file_size = os.path.getsize(pdf_path) / (1024 * 1024)
+
+        try:
+            pdf_info = pdfinfo_from_path(pdf_path)
+            total_pages = pdf_info.get("Pages", 0)
+        except Exception as e:
+            print(f"An error occurred while getting PDF info: {e}")
+            total_pages = 0
+
+        os.remove(pdf_path)
+
+        return JsonResponse(
+            {"file_size": round(file_size, 2), "total_pages": total_pages}
+        )
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def get_conversion_status(request):
+    if request.method == "GET":
+        return JsonResponse(conversion_status)
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 def view_slides(request, pdf_id):

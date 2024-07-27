@@ -6,6 +6,8 @@ from .views import (
     UnreadCountView,
     VideoListView,
     VideoUploadView,
+    get_conversion_details,
+    get_conversion_status,
     upload_pdf,
     view_slides,
     view_slides_list,
@@ -20,4 +22,6 @@ urlpatterns = [
     path("upload-pdf/", upload_pdf, name="upload_pdf"),
     path("learning/", view_slides_list, name="view_slides_list"),
     path("learning/<int:pdf_id>/", view_slides, name="view_slides"),
+    path("conversion_details/", get_conversion_details, name="conversion_details"),
+    path("conversion_status/", get_conversion_status, name="conversion_status"),
 ]

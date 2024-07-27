@@ -25,7 +25,8 @@
                     <div class="swiper-wrapper">
                         {% for image in pdf_images %}
                         <div class="swiper-slide">
-                            <img src="{{ image.image.url }}" alt="PDF Page {{ image.page_number }}" onclick="enterFullscreen()">
+                            <img src="{{ image.image.url }}" loading="lazy" alt="PDF Page {{ image.page_number }}" onclick="enterFullscreen()">
+                            <div class="swiper-lazy-preloader"></div>
                         </div>
                         {% endfor %}
                     </div>
@@ -46,7 +47,8 @@
         <div class="swiper-wrapper">
             {% for image in pdf_images %}
             <div class="swiper-slide">
-                <img src="{{ image.image.url }}" alt="PDF Page {{ image.page_number }}">
+                <img src="{{ image.image.url }}" loading="lazy" alt="PDF Page {{ image.page_number }}">
+                <div class="swiper-lazy-preloader"></div>
             </div>
             {% endfor %}
         </div>
@@ -59,6 +61,47 @@
 </div>
 
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-<script src="{% static 'js/view_slides.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var mainSwiper = new Swiper('.main-swiper', {
+        pagination: {
+            el: '.swiper-pagination',
+            type: 'fraction',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        lazy: {
+            loadPrevNext: true,
+        },
+    });
+
+    var fullscreenSwiper = new Swiper('.fullscreen-swiper', {
+        pagination: {
+            el: '.swiper-pagination',
+            type: 'fraction',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        lazy: {
+            loadPrevNext: true,
+        },
+    });
+
+    window.enterFullscreen = function() {
+        document.getElementById('fullscreen-container').style.display = 'block';
+        fullscreenSwiper.update();
+    };
+
+    window.exitFullscreen = function() {
+        document.getElementById('fullscreen-container').style.display = 'none';
+    };
+});
+</script>
 
 {% endblock %}
