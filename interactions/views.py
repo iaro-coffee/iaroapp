@@ -228,7 +228,7 @@ def upload_pdf(request):
                             pdf_path,
                             first_page=total_pages + 1,
                             last_page=total_pages + batch_size,
-                            dpi=200,
+                            dpi=150,
                             thread_count=2,  # Try increasing this to 4 if it improves performance
                             use_pdftocairo=True,  # Use pdftocairo instead of pdftoppm
                             fmt="jpeg",  # Use JPEG format for faster processing and smaller files
