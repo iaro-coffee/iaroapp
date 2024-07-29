@@ -6,208 +6,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide@3.5.2/dist/css/glide.core.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide@3.5.2/dist/css/glide.theme.min.css"/>
     <link rel="stylesheet" href="{% static 'css/view_slides.css' %}" type="text/css">
-    <style>
-    .row {
-        display: flex;
-        flex-direction: column;
-        max-height: calc(100vh - 12rem);
-    }
-
-    .col-lg-12 {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        max-height: calc(100vh - 11.4rem);
-    }
-
-    .slider__card {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        max-height: calc(100vh - 4rem);
-        overflow: hidden;
-    }
-
-    .card-body {
-        flex: 1;
-        overflow-y: auto;
-    }
-
-    .glide__slide {
-        display: flex;
-        justify-content: center;
-    }
-
-    .glide__slide img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
-
-    .fullscreen-modal .glide__slide img {
-        height: 100vh;
-    }
-
-    .glide__arrows {
-        display: flex;
-        justify-content: space-between;
-        position: absolute;
-        top: 50%;
-        width: 100%;
-        transform: translateY(-50%);
-        z-index: 2;
-    }
-
-    .glide__arrow {
-        background: rgba(0, 123, 255, 0.25);
-        border: none;
-        color: rgba(255, 255, 255, 0.5);
-        cursor: pointer;
-        border-radius: 50%;
-        transition: background 0.3s, transform 0.3s;
-        font-size: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .glide__arrow:hover {
-        background: rgba(0, 86, 179, 0.75);
-    }
-
-    .glide__arrow--left::before {
-        content: '◀';
-    }
-
-    .glide__arrow--right::before {
-        content: '▶';
-    }
-
-    @media (max-width: 1200px) {
-        .glide__arrow {
-            font-size: 20px;
-            padding: 15px;
-        }
-    }
-
-    @media (max-width: 800px) {
-        .glide__arrow {
-            font-size: 18px;
-            padding: 12px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .glide__arrow {
-            font-size: 16px;
-            padding: 10px;
-        }
-    }
-
-    .glide__bullets {
-        display: flex;
-        justify-content: center;
-        position: absolute;
-        bottom: 10px;
-        width: 100%;
-    }
-
-    .glide__bullet {
-        background: rgba(0, 123, 255, 0.75);
-        border: none;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin: 0 5px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    .glide__bullet:hover,
-    .glide__bullet--active {
-        background: rgba(0, 86, 179, 0.8);
-    }
-
-    .fullscreen-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 9999;
-        justify-content: center;
-        align-items: center;
-        padding: 0;
-        overflow: hidden;
-    }
-
-    .modal-content {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        background: #fff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0;
-        padding: 0;
-    }
-
-    .modal-content .glide {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content .glide__slide {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-    }
-
-    .glide__slides {
-        align-items: center;
-    }
-
-    .exit__btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        border-radius: 5px;
-        background-color: rgba(0, 0, 0, 0.7);
-        background-image: none !important;
-        color: white;
-        z-index: 3;
-        padding: 10px 20px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .exit__btn:hover {
-        background-color: rgba(0, 86, 179, 0.8) !important;
-    }
-    .glide__arrow--right {
-        right: 0.8em !important;
-    }
-    .glide__arrow--left {
-        left: 0.8em !important;
-    }
-</style>
-
-
 {% endblock %}
 
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2 mb-0">
-    <button id="fullscreen-btn" class="btn bg-gradient-primary mb-0">Enter Fullscreen</button>
-    <a href="{% url 'view_slides_list' %}" class="btn bg-gradient-primary mb-0">View PDFs</a>
+    <a href="{% url 'view_slides_list' %}" class="btn bg-gradient-primary mb-0">Back</a>
+    <button id="fullscreen-btn" class="btn btn__control bg-gradient-secondary btn-custom mb-0" title="Enter Fullscreen"><i class="fas fa-expand"></i></button>
+{#    <button id="refresh-btn" class="btn btn__control bg-gradient-secondary btn-custom mb-0" title="Refresh"><i class="fas fa-sync-alt"></i></button>#}
 </div>
 {% endblock widgets %}
 
@@ -218,6 +23,8 @@
             <div class="card-header pb-0">
                 <h6>{{ pdf.name }}</h6>
             </div>
+                            <div id="page-indicator" class="mb-2 text-center">1/{{ pdf_images|length }}</div>
+
             <div class="card-body p-3">
                 <div class="glide" id="glide">
                     <div class="glide__track" data-glide-el="track">
@@ -230,8 +37,8 @@
                         </ul>
                     </div>
                     <div class="glide__arrows" data-glide-el="controls">
-                        <button class="glide__arrow glide__arrow--left" data-glide-dir="<" aria-label="Previous slide"></button>
-                        <button class="glide__arrow glide__arrow--right" data-glide-dir=">" aria-label="Next slide"></button>
+                        <button class="glide__arrow glide__arrow--left" data-glide-dir="<" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
+                        <button class="glide__arrow glide__arrow--right" data-glide-dir=">" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
                     </div>
                     <div class="glide__bullets" data-glide-el="controls[nav]">
                         {% for image in pdf_images %}
@@ -246,7 +53,8 @@
 
 <div id="fullscreen-modal" class="fullscreen-modal">
     <div class="modal-content">
-        <button id="exit-fullscreen-btn" class="btn d-flex justify-content-center align-items-center bg-gradient-primary exit__btn mb-0" style="width: 40px; height: 40px; border-radius: 50% !important;"><b>X</b></button>
+        <button id="exit-fullscreen-btn" class="btn d-flex justify-content-center align-items-center bg-gradient-primary exit__btn mb-0"><i class="fas fa-times"></i></button>
+{#        <button id="refresh-fullscreen-btn" class="btn refresh__btn d-flex justify-content-center align-items-center bg-gradient-secondary mb-0"><i class="fas fa-sync-alt"></i></button>#}
         <div class="glide" id="glide-fullscreen">
             <div class="glide__track" data-glide-el="track">
                 <ul class="glide__slides">
@@ -258,8 +66,8 @@
                 </ul>
             </div>
             <div class="glide__arrows" data-glide-el="controls">
-                <button class="glide__arrow glide__arrow--left" data-glide-dir="<" aria-label="Previous slide"></button>
-                <button class="glide__arrow glide__arrow--right" data-glide-dir=">" aria-label="Next slide"></button>
+                <button class="glide__arrow glide__arrow--left" data-glide-dir="<" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
+                <button class="glide__arrow glide__arrow--right" data-glide-dir=">" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
             </div>
             <div class="glide__bullets" data-glide-el="controls[nav]">
                 {% for image in pdf_images %}
@@ -291,7 +99,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const glide = new Glide('#glide', {
+    const pageIndicator = document.getElementById('page-indicator');
+    const totalSlides = {{ pdf_images|length }};
+
+    let glide = new Glide('#glide', {
         type: 'carousel',
         startAt: 0,
         perView: 1,
@@ -305,6 +116,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    glide.on('move.after', () => {
+        const currentSlide = glide.index + 1;
+        pageIndicator.textContent = `${currentSlide}/${totalSlides}`;
+    });
+
     glide.mount();
 
     let fullscreenGlide;
@@ -313,14 +129,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn');
     const fullscreenModal = document.getElementById('fullscreen-modal');
 
-    fullscreenBtn.addEventListener('click', () => {
-        const currentSlideIndex = glide.index;
-        fullscreenModal.style.display = 'flex';
-        fullscreenBtn.style.display = 'none';
+    function initializeFullscreenGlide(startIndex) {
+        if (fullscreenGlide) {
+            fullscreenGlide.destroy();
+        }
 
         fullscreenGlide = new Glide('#glide-fullscreen', {
             type: 'carousel',
-            startAt: currentSlideIndex,
+            startAt: startIndex,
             perView: 1,
             gap: 10,
             autoplay: 0,
@@ -333,16 +149,67 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         fullscreenGlide.mount();
+    }
+
+    function initializeGlide(startIndex) {
+        glide.destroy();
+        glide = new Glide('#glide', {
+            type: 'carousel',
+            startAt: startIndex,
+            perView: 1,
+            gap: 10,
+            autoplay: 0,
+            hoverpause: true,
+            breakpoints: {
+                1200: { perView: 1 },
+                800: { perView: 1 },
+                480: { perView: 1 }
+            }
+        });
+
+        glide.on('move.after', () => {
+            const currentSlide = glide.index + 1;
+            pageIndicator.textContent = `${currentSlide}/${totalSlides}`;
+        });
+
+        glide.mount();
+    }
+
+    fullscreenBtn.addEventListener('click', () => {
+        const currentSlideIndex = glide.index;
+        fullscreenModal.style.display = 'flex';
+        fullscreenBtn.style.display = 'none';
+
+        setTimeout(() => {
+            initializeFullscreenGlide(currentSlideIndex);
+        }, 75);
     });
 
     exitFullscreenBtn.addEventListener('click', () => {
         const currentSlideIndex = fullscreenGlide.index;
         fullscreenModal.style.display = 'none';
         fullscreenBtn.style.display = 'inline-block';
-        fullscreenGlide.destroy();
         glide.go('=' + currentSlideIndex);
+    });
+
+    window.addEventListener('resize', () => {
+        const currentSlideIndex = glide.index;
+        initializeGlide(currentSlideIndex);
+
+        if (fullscreenModal.style.display === 'flex') {
+            initializeFullscreenGlide(currentSlideIndex);
+        }
+    });
+
+    window.addEventListener('orientationchange', () => {
+        const currentSlideIndex = fullscreenModal.style.display === 'flex' ? fullscreenGlide.index : glide.index;
+
+        if (fullscreenModal.style.display === 'flex') {
+            initializeFullscreenGlide(currentSlideIndex);
+        } else {
+            initializeGlide(currentSlideIndex);
+        }
     });
 });
 </script>
-
 {% endblock %}

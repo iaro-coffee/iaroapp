@@ -101,164 +101,190 @@
     </div>
 </div>
 
-<script>
-function toggleNewCategoryInput() {
-    var categorySelect = document.getElementById('id_category');
-    var newCategoryDiv = document.getElementById('new_category_div');
-    if (categorySelect.value === 'new') {
-        newCategoryDiv.style.display = 'block';
-    } else {
-        newCategoryDiv.style.display = 'none';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('uploadForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const form = document.getElementById('uploadForm');
-        const formData = new FormData(form);
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '', true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-        xhr.upload.addEventListener('progress', function(e) {
-            if (e.lengthComputable) {
-                const percentComplete = (e.loaded / e.total) * 100;
-                document.getElementById('progressBar').style.width = percentComplete + '%';
-                document.getElementById('estimatedTime').innerText = Math.round(percentComplete) + '%';
-                console.log(`Uploaded ${e.loaded} of ${e.total} bytes (${percentComplete.toFixed(2)}%)`);
-                if (percentComplete === 100) {
-                    showConversionMessage();
-                    fetchConversionDetails(formData);
-                }
+    <script>
+        function toggleNewCategoryInput() {
+            var categorySelect = document.getElementById('id_category');
+            var newCategoryDiv = document.getElementById('new_category_div');
+            if (categorySelect.value === 'new') {
+                newCategoryDiv.style.display = 'block';
             } else {
-                console.log('Unable to compute progress information since the total size is unknown');
+                newCategoryDiv.style.display = 'none';
             }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            function displayFormErrors(errors) {
+                const form = document.getElementById('uploadForm');
+                const errorDivs = form.querySelectorAll('.alert.alert-danger');
+                errorDivs.forEach(div => div.remove());
+
+                for (const [field, errorData] of Object.entries(errors)) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-2';
+                    errorDiv.innerHTML = errorData.map(error => error.message).join('<br>');
+
+                    if (field === '__all__') {
+                        form.prepend(errorDiv);
+                    } else {
+                        const fieldElement = document.getElementById(`id_${field}`);
+                        if (fieldElement) {
+                            fieldElement.parentElement.appendChild(errorDiv);
+                        }
+                    }
+                }
+            }
+
+            function validateForm() {
+                const categoryField = document.getElementById('id_category');
+                const newCategoryField = document.getElementById('id_new_category');
+                let isValid = true;
+                let errors = {};
+
+                if (!categoryField.value && !newCategoryField.value) {
+                    isValid = false;
+                    errors['category'] = [{
+                        message: 'You must select a category or enter a new category name.'
+                    }];
+                }
+
+                if (!isValid) {
+                    displayFormErrors(errors);
+                }
+
+                return isValid;
+            }
+
+            document.getElementById('uploadForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                if (!validateForm()) {
+                    return;
+                }
+
+                const form = document.getElementById('uploadForm');
+                const formData = new FormData(form);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '', true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.upload.addEventListener('progress', function (e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        document.getElementById('progressBar').style.width = percentComplete + '%';
+                        document.getElementById('estimatedTime').innerText = Math.round(percentComplete) + '%';
+                        console.log(`Uploaded ${e.loaded} of ${e.total} bytes (${percentComplete.toFixed(2)}%)`);
+                        if (percentComplete === 100) {
+                            showConversionMessage();
+                            fetchConversionDetails(formData);
+                        }
+                    } else {
+                        console.log('Unable to compute progress information since the total size is unknown');
+                    }
+                });
+
+                xhr.onloadstart = function () {
+                    console.log('Upload started');
+                    showCardLoading();
+                };
+
+                xhr.onloadend = function () {
+                    console.log('Upload completed');
+                    hideLoading();
+                };
+
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            startConversionStatusUpdates();
+                            window.location.href = response.redirect_url;
+                        } else {
+                            displayFormErrors(response.errors);
+                        }
+                    } else {
+                        console.log(`Upload failed: ${xhr.statusText}`);
+                        alert('An error occurred!');
+                    }
+                };
+
+                xhr.onerror = function () {
+                    console.log('Upload error occurred');
+                    alert('An error occurred!');
+                };
+
+                xhr.onabort = function () {
+                    console.log('Upload aborted');
+                    hideLoading();
+                };
+
+                xhr.send(formData);
+            });
+
+            function fetchConversionDetails(formData) {
+                fetch('/notes/conversion_details/', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('fileSize').innerText = `File size: ${data.file_size} MB`;
+                        document.getElementById('estimatedConversionTime').innerText = `Converted page 0/${data.total_pages}`;
+                        startConversionStatusUpdates();
+                    })
+                    .catch(error => console.error('Error fetching conversion details:', error));
+            }
+
+            function startConversionStatusUpdates() {
+                updateConversionStatus();
+                conversionStatusInterval = setInterval(updateConversionStatus, 2000);  // Update every 2 seconds
+            }
+
+            function stopConversionStatusUpdates() {
+                clearInterval(conversionStatusInterval);
+            }
+
+            function updateConversionStatus() {
+                fetch('/notes/conversion_status/', {
+                    method: 'GET'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('estimatedConversionTime').innerText = `Converted page ${data.current_page}/${data.total_pages}`;
+                    })
+                    .catch(error => console.error('Error fetching conversion status:', error));
+            }
+
+            function showCardLoading() {
+                const overlay = document.getElementById('PDFLoader');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function hideLoading() {
+                const overlay = document.getElementById('PDFLoader');
+                overlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            function showConversionMessage() {
+                document.getElementById('progressBar').style.display = 'none';
+                document.getElementById('estimatedTime').style.display = 'none';
+                document.getElementById('conversionText').style.display = 'block';
+            }
+
+            window.addEventListener("load", function () {
+                hideLoading();
+            });
+
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted) {
+                    hideLoading();
+                }
+            });
         });
-
-        xhr.onloadstart = function() {
-            console.log('Upload started');
-            showCardLoading();
-        };
-
-        xhr.onloadend = function() {
-            console.log('Upload completed');
-            hideLoading();
-        };
-
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    startConversionStatusUpdates();
-                    window.location.href = response.redirect_url;
-                } else {
-                    displayFormErrors(response.errors);
-                }
-            } else {
-                console.log(`Upload failed: ${xhr.statusText}`);
-                alert('An error occurred!');
-            }
-        };
-
-        xhr.onerror = function() {
-            console.log('Upload error occurred');
-            alert('An error occurred!');
-        };
-
-        xhr.onabort = function() {
-            console.log('Upload aborted');
-            hideLoading();
-        };
-
-        xhr.send(formData);
-    });
-
-    function displayFormErrors(errors) {
-        const form = document.getElementById('uploadForm');
-        const errorDivs = form.querySelectorAll('.alert.alert-danger');
-        errorDivs.forEach(div => div.remove());
-
-        for (const [field, errorData] of Object.entries(errors)) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'alert alert-danger mt-2';
-            errorDiv.innerHTML = errorData.map(error => error.message).join('<br>');
-
-            if (field === '__all__') {
-                form.prepend(errorDiv);
-            } else {
-                const fieldElement = document.getElementById(`id_${field}`);
-                if (fieldElement) {
-                    fieldElement.parentElement.appendChild(errorDiv);
-                }
-            }
-        }
-    }
-
-    function fetchConversionDetails(formData) {
-        fetch('/notes/conversion_details/', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('fileSize').innerText = `File size: ${data.file_size} MB`;
-            document.getElementById('estimatedConversionTime').innerText = `Converted page 0/${data.total_pages}`;
-            startConversionStatusUpdates();
-        })
-        .catch(error => console.error('Error fetching conversion details:', error));
-    }
-
-    function startConversionStatusUpdates() {
-        updateConversionStatus();
-        conversionStatusInterval = setInterval(updateConversionStatus, 2000);  // Update every 2 seconds
-    }
-
-    function stopConversionStatusUpdates() {
-        clearInterval(conversionStatusInterval);
-    }
-
-    function updateConversionStatus() {
-        fetch('/notes/conversion_status/', {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('estimatedConversionTime').innerText = `Converted page ${data.current_page}/${data.total_pages}`;
-        })
-        .catch(error => console.error('Error fetching conversion status:', error));
-    }
-
-    function showCardLoading() {
-        const overlay = document.getElementById('PDFLoader');
-        overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function hideLoading() {
-        const overlay = document.getElementById('PDFLoader');
-        overlay.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    }
-
-    function showConversionMessage() {
-        document.getElementById('progressBar').style.display = 'none';
-        document.getElementById('estimatedTime').style.display = 'none';
-        document.getElementById('conversionText').style.display = 'block';
-    }
-
-    window.addEventListener("load", function () {
-        hideLoading();
-    });
-
-    window.addEventListener("pageshow", function (event) {
-        if (event.persisted) {
-            hideLoading();
-        }
-    });
-});
-</script>
+    </script>
 
 
 <style>

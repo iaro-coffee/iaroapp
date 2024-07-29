@@ -39,8 +39,7 @@
                                 <p>{{ pdf.description|safe }}</p>
                             </div>
                             <div class="pdf-wrap d-flex justify-content-center">
-                                <a href="{% url 'view_slides' pdf.id %}" class="btn btn-secondary" target="_blank">View
-                                    PDF</a>
+                                <a href="{% url 'view_slides' pdf.id %}" class="btn btn-secondary">View PDF</a>
                             </div>
                         </li>
                     {% endfor %}
