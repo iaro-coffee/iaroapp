@@ -1,17 +1,4 @@
-    .row {
-        display: flex;
-        flex-direction: column;
-        max-height: calc(100vh - 12rem);
-    }
-
-    .col-lg-12 {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        max-height: calc(100vh - 11.4rem);
-    }
-
-    .slider__card {
+ .slider__card {
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -21,7 +8,7 @@
 
     .card-body {
         flex: 1;
-        overflow-y: auto;
+        overflow-y: hidden;
     }
 
     .glide__slide {
@@ -50,7 +37,7 @@
     }
 
     .glide__arrow {
-        background: rgba(0, 123, 255, 0.25);
+        background-image: linear-gradient(310deg, rgba(98, 117, 148, 0.6) 0%, rgba(168, 184, 216, 0.6) 100%);
         border: none;
         color: rgba(255, 255, 255, 0.5);
         cursor: pointer;
@@ -66,7 +53,7 @@
     }
 
     .glide__arrow:hover {
-        background: rgba(0, 86, 179, 0.75);
+        background: rgba(0, 86, 179, 0.7);
     }
 
     @media (max-width: 1200px) {
@@ -85,7 +72,7 @@
     }
 
     .glide__bullet {
-        background: rgba(0, 123, 255, 0.75);
+        background-image: linear-gradient(310deg, rgba(98, 117, 148, 0.6) 0%, rgba(168, 184, 216, 0.6) 100%);
         border: none;
         width: 10px;
         height: 10px;
@@ -97,7 +84,7 @@
 
     .glide__bullet:hover,
     .glide__bullet--active {
-        background: rgba(0, 86, 179, 0.8);
+        background: rgba(0, 86, 179, 0.7);
     }
 
     .fullscreen-modal {
@@ -152,8 +139,7 @@
         top: 10px;
         right: 10px;
         border-radius: 0.5rem !important;
-        background-color: rgba(0, 0, 0, 0.6);
-        background-image: none !important;
+        background-image: linear-gradient(310deg, rgba(98, 117, 148, 0.6) 0%, rgba(168, 184, 216, 0.6) 100%) !important;
         color: white;
         z-index: 3;
         padding: 10px 20px;
@@ -161,10 +147,10 @@
         transition: background-color 0.3s;
 
     }
-
     .exit__btn:hover {
-        background-color: rgba(0, 86, 179, 0.8) !important;
+        background-color: rgba(0, 86, 179, 0.7) !important;
     }
+
     .glide__arrow--right {
         right: 0.8em !important;
     }
@@ -193,4 +179,8 @@
 
     .title {
         justify-content: flex-start !important;
+    }
+
+    .page__indicator {
+        background-image: linear-gradient(310deg, #627594 0%, #A8B8D8 100%);
     }

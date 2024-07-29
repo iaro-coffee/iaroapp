@@ -11,21 +11,18 @@
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2 mb-0">
     <a href="{% url 'view_slides_list' %}" class="btn bg-gradient-primary mb-0">Back</a>
-    <button id="fullscreen-btn" class="btn btn__control bg-gradient-secondary btn-custom mb-0" title="Enter Fullscreen"><i class="fas fa-expand"></i></button>
+    <button id="fullscreen-btn" class="btn btn__control bg-gradient-primary btn-custom mb-0" title="Enter Fullscreen"><i class="fas fa-expand"></i></button>
 {#    <button id="refresh-btn" class="btn btn__control bg-gradient-secondary btn-custom mb-0" title="Refresh"><i class="fas fa-sync-alt"></i></button>#}
 </div>
 {% endblock widgets %}
 
 {% block content %}
+
 <div class="row">
     <div class="col-lg-12 mb-4">
         <div class="card slider__card h-100">
-            <div class="card-header pb-0">
-                <h6>{{ pdf.name }}</h6>
-            </div>
-                            <div id="page-indicator" class="mb-2 text-center">1/{{ pdf_images|length }}</div>
-
-            <div class="card-body p-3">
+            <div id="page-indicator" class="page__indicator text-center">1/{{ pdf_images|length }}</div>
+            <div class="card-body p-0">
                 <div class="glide" id="glide">
                     <div class="glide__track" data-glide-el="track">
                         <ul class="glide__slides">
@@ -40,12 +37,20 @@
                         <button class="glide__arrow glide__arrow--left" data-glide-dir="<" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
                         <button class="glide__arrow glide__arrow--right" data-glide-dir=">" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
                     </div>
-                    <div class="glide__bullets" data-glide-el="controls[nav]">
-                        {% for image in pdf_images %}
-                        <button class="glide__bullet" data-glide-dir="={{ forloop.counter0 }}" aria-label="Go to slide {{ forloop.counter }}"></button>
-                        {% endfor %}
-                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <div class="card h-100">
+            <div class="card-header pb-0">
+                <h6>{{ pdf.name }}</h6>
+            </div>
+            <div class="card-body p-3">
+                <p>{{ pdf.description|safe }}</p>
             </div>
         </div>
     </div>
@@ -80,8 +85,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide@3.5.2/dist/glide.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const specificNavbar = document.getElementById('navbarBlur');
+    const pageIndicator = document.getElementById('page-indicator');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn');
+    const fullscreenModal = document.getElementById('fullscreen-modal');
+    const totalSlides = {{ pdf_images|length }};
+
     if (specificNavbar) {
         specificNavbar.classList.remove('position-sticky');
         specificNavbar.style.position = 'relative';
@@ -99,9 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const pageIndicator = document.getElementById('page-indicator');
-    const totalSlides = {{ pdf_images|length }};
-
     let glide = new Glide('#glide', {
         type: 'carousel',
         startAt: 0,
@@ -109,11 +117,6 @@ document.addEventListener('DOMContentLoaded', function() {
         gap: 10,
         autoplay: 0,
         hoverpause: true,
-        breakpoints: {
-            1200: { perView: 1 },
-            800: { perView: 1 },
-            480: { perView: 1 }
-        }
     });
 
     glide.on('move.after', () => {
@@ -125,11 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let fullscreenGlide;
 
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
-    const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn');
-    const fullscreenModal = document.getElementById('fullscreen-modal');
-
-    function initializeFullscreenGlide(startIndex) {
+    const initializeFullscreenGlide = (startIndex) => {
         if (fullscreenGlide) {
             fullscreenGlide.destroy();
         }
@@ -149,9 +148,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         fullscreenGlide.mount();
-    }
+    };
 
-    function initializeGlide(startIndex) {
+    const initializeGlide = (startIndex) => {
         glide.destroy();
         glide = new Glide('#glide', {
             type: 'carousel',
@@ -173,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         glide.mount();
-    }
+    };
 
     fullscreenBtn.addEventListener('click', () => {
         const currentSlideIndex = glide.index;
