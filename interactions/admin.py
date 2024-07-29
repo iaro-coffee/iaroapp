@@ -11,7 +11,7 @@ import os
 
 from django.contrib import admin
 
-from .models import LearningCategory, PDFImage, PDFUpload, Video
+from .models import LearningCategory, PDFUpload, Video
 
 
 @admin.register(Video)
@@ -31,16 +31,13 @@ class VideoAdmin(admin.ModelAdmin):
         return "Not available"
 
 
-class PDFImageInline(admin.TabularInline):
-    model = PDFImage
-    extra = 0
-    readonly_fields = ("image", "page_number")
-
-
 @admin.register(PDFUpload)
 class PDFUploadAdmin(admin.ModelAdmin):
-    list_display = ("file", "category", "uploaded_at")
-    inlines = [PDFImageInline]
+    list_display = ("name", "category", "uploaded_at")
+    list_filter = ("category", "uploaded_at")
+    search_fields = ("name", "description")
+
+    readonly_fields = ("uploaded_at",)
 
     def delete_queryset(self, request, queryset):
         for obj in queryset:
@@ -50,4 +47,7 @@ class PDFUploadAdmin(admin.ModelAdmin):
         obj.delete()
 
 
-admin.site.register(LearningCategory)
+@admin.register(LearningCategory)
+class LearningCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)
