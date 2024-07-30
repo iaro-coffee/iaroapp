@@ -38,6 +38,10 @@
                         <label for="id_video_file" class="form-label">Video file:</label>
                         {{ form.video_file }}
                     </div>
+                    <div class="mb-3">
+                        <label for="id_video_url" class="form-label">Video URL:</label>
+                        {{ form.video_url }}
+                    </div>
                     <button type="submit" class="w-100 btn bg-gradient-primary">Upload</button>
                 </form>
             </div>
@@ -45,9 +49,9 @@
     </div>
 </div>
 
-    <style>
-        body.dark-page textarea {
-            background-color: #323b55 !important;
-        }
-    </style>
+<style>
+    body.dark-page textarea {
+        background-color: #323b55 !important;
+    }
+</style>
 {% endblock %}

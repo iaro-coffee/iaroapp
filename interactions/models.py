@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
+from embed_video.fields import EmbedVideoField
 
 from inventory.models import Branch
 
@@ -46,10 +48,24 @@ class Video(models.Model):
     description = CKEditor5Field(
         "Description", blank=True, null=True, config_name="default"
     )
-    video_file = models.FileField(upload_to="videos/")
+    video_file = models.FileField(upload_to="videos/", blank=True, null=True)
+    video_url = EmbedVideoField(blank=True, null=True)
+    added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        if not self.video_file and not self.video_url:
+            raise ValidationError("You must provide a video file or a video URL.")
+
+        if self.video_file and self.video_url:
+            raise ValidationError(
+                "You cannot provide both a video file and a video URL."
+            )
+
+    class Meta:
+        ordering = ["-added_at"]
 
 
 class LearningCategory(models.Model):

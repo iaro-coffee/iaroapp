@@ -174,6 +174,7 @@ class VideoListView(View):
         videos_by_category = {
             category: Video.objects.filter(category=category) for category in categories
         }
+
         return render(
             request, "video_list.html", {"videos_by_category": videos_by_category}
         )

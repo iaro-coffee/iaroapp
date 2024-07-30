@@ -1,3 +1,5 @@
+from urllib.parse import parse_qs, urlparse
+
 from django import forms
 from django.contrib.auth.models import User
 
@@ -53,7 +55,41 @@ class NoteForm(forms.ModelForm):
 class VideoUploadForm(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ["category", "title", "description", "video_file"]
+        fields = ["category", "title", "description", "video_file", "video_url"]
+
+    def clean_video_url(self):
+        video_url = self.cleaned_data.get("video_url")
+        if video_url:
+            if "youtube.com" in video_url or "youtu.be" in video_url:
+                parsed_url = urlparse(video_url)
+                if parsed_url.netloc == "youtu.be":
+                    video_id = parsed_url.path[1:]
+                    return f"https://www.youtube.com/embed/{video_id}"
+                elif (
+                    parsed_url.netloc == "www.youtube.com"
+                    and parsed_url.path == "/watch"
+                ):
+                    video_id = parse_qs(parsed_url.query).get("v")
+                    if video_id:
+                        return f"https://www.youtube.com/embed/{video_id[0]}"
+        return video_url
+
+    def clean(self):
+        cleaned_data = super().clean()
+        video_file = cleaned_data.get("video_file")
+        video_url = cleaned_data.get("video_url")
+
+        if not video_file and not video_url:
+            raise forms.ValidationError("You must provide a video file or a video URL.")
+
+        if video_file and video_url:
+            raise forms.ValidationError(
+                "You cannot provide both a video file and a video URL."
+            )
+
+        cleaned_data["video_url"] = self.clean_video_url()
+
+        return cleaned_data
 
 
 class PDFUploadForm(forms.ModelForm):

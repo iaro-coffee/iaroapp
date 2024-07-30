@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "colorful",
     "import_export",
     "iaroapp.apps.IaroappConfig",
+    "embed_video",
 ]
 
 MIDDLEWARE = [
