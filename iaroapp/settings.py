@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-import logging
 import os
 from pathlib import Path
 
@@ -45,21 +44,14 @@ SECURE_HSTS_SECONDS = 3600
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_BROWSER_XSS_FILTER = True
-# X_FRAME_OPTIONS = "SAMEORIGIN"
+# X_FRAME_OPTIONS = "SAMEORIGIN"  # - no need if added django-cors
 
 # Ensure the request is recognized as secure when behind a proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-CORS_ALLOW_ALL_ORIGINS = True
-logging.basicConfig(level=logging.DEBUG)
-
 CORS_ALLOW_METHODS = [
     "GET",
     "POST",
-    "PUT",
-    "PATCH",
-    "DELETE",
-    "OPTIONS",
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -67,6 +59,9 @@ CORS_ALLOW_HEADERS = [
     "content-type",
     "x-csrftoken",
 ]
+
+# CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOWED_ORIGINS = [
     "https://www.youtube.com",
     "https://googleads.g.doubleclick.net",
