@@ -183,10 +183,6 @@ class VideoListView(View):
 conversion_status = {"current_page": 0, "memory_usage": 0.0, "total_pages": 0}
 
 
-for video in Video.objects.all():
-    print(video.video_url)
-
-
 def upload_pdf(request):
     categories = LearningCategory.objects.all()
 

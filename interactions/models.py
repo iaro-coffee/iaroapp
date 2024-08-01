@@ -86,6 +86,9 @@ class PDFUpload(models.Model):
     category = models.ForeignKey(
         LearningCategory, on_delete=models.SET_NULL, null=True, blank=True
     )
+    branch = models.ForeignKey(
+        Branch, on_delete=models.SET_NULL, null=True, blank=True
+    )  # Add branch field
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def delete(self, *args, **kwargs):
