@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import logging
 import os
 from pathlib import Path
 
@@ -44,10 +45,33 @@ SECURE_HSTS_SECONDS = 3600
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = "DENY"
+# X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # Ensure the request is recognized as secure when behind a proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CORS_ALLOW_ALL_ORIGINS = True
+logging.basicConfig(level=logging.DEBUG)
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "x-csrftoken",
+]
+CORS_ALLOWED_ORIGINS = [
+    "https://www.youtube.com",
+    "https://googleads.g.doubleclick.net",
+]
+
 
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
@@ -78,12 +102,14 @@ INSTALLED_APPS = [
     "import_export",
     "iaroapp.apps.IaroappConfig",
     "embed_video",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

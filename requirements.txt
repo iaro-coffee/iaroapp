@@ -26,3 +26,4 @@ qrcode
 pdf2image
 psutil
 django-embed-video
+django-cors-headers
