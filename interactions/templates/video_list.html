@@ -1,6 +1,7 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% load embed_video_tags %}
+{% load custom_filters %}
 
 {% block extra_head %}
     <title>iaroapp - Video List</title>
@@ -33,7 +34,7 @@
                                         Your browser does not support the video tag.
                                     </video>
                                 {% elif video.video_url %}
-                                    {% video video.video_url "560x315" %}
+                                    <iframe width="560" height="315" src="{{ video.video_url|https }}" loading="lazy" frameborder="0" allowfullscreen></iframe>
                                 {% endif %}
                             </div>
                         </li>
