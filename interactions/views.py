@@ -14,6 +14,8 @@ from django.views import View
 from django.views.generic import TemplateView
 from pdf2image import convert_from_path, pdfinfo_from_path
 
+from inventory.models import Branch
+
 from .forms import NoteForm, PDFUploadForm, VideoUploadForm
 from .models import LearningCategory, Note, NoteReadStatus, PDFImage, PDFUpload, Video
 
@@ -185,10 +187,10 @@ conversion_status = {"current_page": 0, "memory_usage": 0.0, "total_pages": 0}
 
 def upload_pdf(request):
     categories = LearningCategory.objects.all()
+    branches = Branch.objects.all()
 
     if request.method == "POST":
         form = PDFUploadForm(request.POST, request.FILES)
-        print(f"Form data received: {request.POST}, files: {request.FILES}")
         new_category_name = request.POST.get("new_category")
 
         if new_category_name:
@@ -203,24 +205,15 @@ def upload_pdf(request):
             pdf_upload = form.save(commit=False)
             pdf_upload.file = request.FILES["file"]
             pdf_upload.save()
+            form.save_m2m()
 
             pdf_path = pdf_upload.file.path
-            print(
-                f"PDF uploaded and saved with id: {pdf_upload.id} at path: {pdf_path}"
-            )
-
             try:
-                batch_size = 3  # Process 3 pages at a time
-                print("Starting incremental conversion of PDF pages...")
-
-                # Update total pages in the global conversion status
+                batch_size = 3
                 conversion_status["total_pages"] = pdfinfo_from_path(pdf_path).get(
                     "Pages", 0
                 )
-                conversion_status["current_page"] = (
-                    0  # Initialize current_page at the start
-                )
-
+                conversion_status["current_page"] = 0
                 total_pages = 0
 
                 while True:
@@ -230,9 +223,9 @@ def upload_pdf(request):
                             first_page=total_pages + 1,
                             last_page=total_pages + batch_size,
                             dpi=150,
-                            thread_count=2,  # Try increasing this to 4 if it improves performance
-                            use_pdftocairo=True,  # Use pdftocairo instead of pdftoppm
-                            fmt="jpeg",  # Use JPEG format for faster processing and smaller files
+                            thread_count=2,
+                            use_pdftocairo=True,
+                            fmt="jpeg",
                         )
                         if not images:
                             break
@@ -249,14 +242,8 @@ def upload_pdf(request):
                                 image=f"pdf_images/{image_filename}",
                                 page_number=page_number,
                             )
-                            print(
-                                f"Converted page {page_number} to image: {image_filename}"
-                            )
 
-                            # Update conversion status
                             conversion_status["current_page"] = page_number
-
-                            # Explicitly close and delete the image
                             image.close()
                             del image
                             gc.collect()
@@ -264,24 +251,15 @@ def upload_pdf(request):
                         total_pages += len(images)
                         process = psutil.Process(os.getpid())
                         mem_info = process.memory_info()
-                        conversion_status["memory_usage"] = mem_info.rss / (
-                            1024 * 1024
-                        )  # MB
-                        print(
-                            f"Memory usage: {conversion_status['memory_usage']:.2f} MB"
-                        )
+                        conversion_status["memory_usage"] = mem_info.rss / (1024 * 1024)
 
                     except Exception as e:
-                        print(
-                            f"An error occurred while converting pages {total_pages + 1} to {total_pages + batch_size}: {e}"
-                        )
                         messages.error(
                             request,
                             f"Error converting pages {total_pages + 1} to {total_pages + batch_size}: {e}",
                         )
                         break
 
-                print(f"Finished converting {total_pages} pages.")
                 messages.success(
                     request, f"Successfully uploaded and converted {total_pages} pages."
                 )
@@ -295,28 +273,29 @@ def upload_pdf(request):
                 )
 
             except Exception as e:
-                print(f"An unexpected error occurred: {e}")
                 messages.error(request, f"An unexpected error occurred: {e}")
                 return JsonResponse(
                     {"success": False, "error": f"An unexpected error occurred: {e}"}
                 )
 
         else:
-            print("Form errors:", form.errors)
             errors = {
                 field: error.get_json_data() for field, error in form.errors.items()
             }
             return JsonResponse({"success": False, "errors": errors})
 
     else:
-        print("Request method is GET")
         form = PDFUploadForm()
-        print("Empty form created")
 
     return render(
         request,
         "upload_pdf.html",
-        {"form": form, "categories": categories, "pageTitle": "PDF Upload"},
+        {
+            "form": form,
+            "categories": categories,
+            "branches": branches,
+            "pageTitle": "PDF Upload",
+        },
     )
 
 
@@ -366,25 +345,38 @@ def view_slides(request, pdf_id):
 
 
 def view_slides_list(request):
-    selected_category = request.GET.get("category", "All")
+    selected_branch = request.GET.get("branch", "All")
 
-    if selected_category == "All":
-        pdfs_by_category = {
-            category.name: PDFUpload.objects.filter(category=category)
-            for category in LearningCategory.objects.all()
-        }
+    branches = Branch.objects.values_list("name", flat=True)
+
+    if selected_branch == "All":
+        branch_filter = Q()
     else:
-        category = LearningCategory.objects.get(name=selected_category)
-        pdfs_by_category = {category.name: PDFUpload.objects.filter(category=category)}
+        branch_filter = Q(branches__name=selected_branch)
 
-    categories = LearningCategory.objects.values_list("name", flat=True)
+    pdfs_by_category = {
+        category.name: PDFUpload.objects.filter(category=category).filter(branch_filter)
+        for category in LearningCategory.objects.all()
+    }
+
+    # Filter out categories that do not have any PDFs
+    pdfs_by_category = {
+        category: pdfs for category, pdfs in pdfs_by_category.items() if pdfs.exists()
+    }
+
+    # Debug information
+    for category, pdfs in pdfs_by_category.items():
+        print(f"Category: {category}")
+        for pdf in pdfs:
+            print(f"PDF: {pdf.name}, Branches: {pdf.branches.all()}")
+
     return render(
         request,
         "view_slides_list.html",
         {
             "pageTitle": "PDF Education List",
             "pdfs_by_category": pdfs_by_category,
-            "categories": categories,
-            "selected_category": selected_category,
+            "branches": branches,
+            "selected_branch": selected_branch,
         },
     )

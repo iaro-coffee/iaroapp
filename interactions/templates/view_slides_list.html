@@ -6,47 +6,99 @@
 {% endblock %}
 
 {% block widgets %}
-<div class="d-flex justify-content-between flex-wrap gap-2 mb-0">
-    <a href="{% url 'upload_pdf' %}" class="btn bg-gradient-primary mb-0">Upload PDF</a>
+<div class="d-flex gap-2">
     <div class="dropdown">
         <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {{ selected_category }}
+            {{ selected_branch }}
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="?category=All">All</a></li>
-            {% for category in categories %}
-            <li><a class="dropdown-item" href="?category={{ category }}">{{ category }}</a></li>
+            <li><a class="dropdown-item" href="?branch=All">All</a></li>
+            {% for branch in branches %}
+            <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
             {% endfor %}
         </ul>
     </div>
+    <a href="{% url 'upload_pdf' %}" class="btn bg-gradient-primary mb-0">Add Lesson</a>
 </div>
 {% endblock widgets %}
 
 {% block content %}
 <div class="row">
-    {% for category, pdfs in pdfs_by_category.items %}
-        <div class="col-lg-12 mb-4">
-            <div class="card h-100" id="pdf-list">
-                <div class="card-header pb-0">
-                    <h6>{{ category }}</h6>
-                </div>
-                <div class="card-body p-3">
-                    <ul class="list-unstyled">
-                    {% for pdf in pdfs %}
-                        <li class="mb-4">
-                            <h5>{{ pdf.name }}</h5>
-                            <div>
-                                <p>{{ pdf.description|safe }}</p>
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-body px-0 pt-0 pb-0">
+                <div class="list-group list-group-flush">
+                    {% for category, pdfs in pdfs_by_category.items %}
+                        <div class="list-group-item">
+                            <a data-bs-toggle="collapse" href="#pdfList_{{ forloop.counter }}" class="d-flex align-items-center">
+                                <h6 class="mb-0 mx-2 responsive__mobile-3">{{ category }}</h6>
+                            </a>
+                            <div id="pdfList_{{ forloop.counter }}" class="collapse" data-bs-parent="#accordion">
+                                <div class="list-group list-group-flush">
+                                    {% for pdf in pdfs %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div class="d-flex flex-column">
+                                                <h6 class="text-sm mb-0">{{ pdf.name }}</h6>
+                                            </div>
+                                            <a href="{% url 'view_slides' pdf.id %}" class="btn mb-0 py-2 px-4 btn-secondary">Learn</a>
+                                        </div>
+                                    {% endfor %}
+                                </div>
                             </div>
-                            <div class="pdf-wrap d-flex justify-content-center">
-                                <a href="{% url 'view_slides' pdf.id %}" class="btn btn-secondary">View PDF</a>
-                            </div>
-                        </li>
+                        </div>
                     {% endfor %}
-                    </ul>
                 </div>
             </div>
         </div>
-    {% endfor %}
+    </div>
 </div>
+
+<style>
+    .card-body {
+        display: flex;
+        flex-direction: column;
+    }
+    .list-group-item-action:hover {
+        text-decoration: none;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var inputs = document.querySelectorAll('.value-input');
+
+        inputs.forEach(function(input) {
+            input.addEventListener('focus', function () {
+                var dateField = this.closest('a').querySelector('.date-field');
+                var hintField = this.closest('a').querySelector('.hint-field');
+                var amountField = this.closest('a').querySelector('.amount-field');
+                if (dateField) {
+                    dateField.classList.remove('d-none');
+                }
+                if (hintField) {
+                    hintField.classList.remove('d-none');
+                }
+                if (amountField) {
+                    amountField.classList.remove('d-none');
+                }
+            });
+
+            input.addEventListener('blur', function () {
+                var dateField = this.closest('a').querySelector('.date-field');
+                var hintField = this.closest('a').querySelector('.hint-field');
+                var amountField = this.closest('a').querySelector('.amount-field');
+                if (dateField) {
+                    dateField.classList.add('d-none');
+                }
+                if (hintField) {
+                    hintField.classList.add('d-none');
+                }
+                if (amountField) {
+                    amountField.classList.add('d-none');
+                }
+            });
+        });
+    });
+</script>
+
 {% endblock %}

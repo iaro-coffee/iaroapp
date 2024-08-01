@@ -9,7 +9,7 @@
 
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2 mb-0">
-    <a href="{% url 'view_slides_list' %}" class="btn bg-gradient-primary mb-0">View PDFs</a>
+    <a href="{% url 'view_slides_list' %}" class="btn bg-gradient-primary mb-0">View Lessons</a>
 </div>
 {% endblock widgets %}
 
@@ -51,6 +51,17 @@
                         {% if form.new_category.errors %}
                             <div class="alert alert-danger">
                                 {{ form.new_category.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_branches" class="form-label">Branches:</label>
+                        {{ form.branches }}
+                        <p class="text-xxs text-secondary">Hold down “Control”, or “Command”, to select more
+                            than one.</p>
+                        {% if form.branches.errors %}
+                            <div class="alert alert-danger">
+                                {{ form.branches.errors }}
                             </div>
                         {% endif %}
                     </div>

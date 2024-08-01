@@ -65,6 +65,7 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOWED_ORIGINS = [
     "https://www.youtube.com",
     "https://googleads.g.doubleclick.net",
+    "https://kit.fontawesome.com",
 ]
 
 

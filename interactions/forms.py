@@ -101,11 +101,12 @@ class PDFUploadForm(forms.ModelForm):
 
     class Meta:
         model = PDFUpload
-        fields = ["file", "name", "description", "category"]
+        fields = ["file", "name", "description", "category", "branches"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["category"].queryset = LearningCategory.objects.all()
+        self.fields["branches"].queryset = Branch.objects.all()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -134,4 +135,5 @@ class PDFUploadForm(forms.ModelForm):
             instance.category = category
         if commit:
             instance.save()
+            self.save_m2m()
         return instance
