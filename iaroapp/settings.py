@@ -329,7 +329,11 @@ CKEDITOR_5_CONFIGS = {
             "numberedList",
             "blockQuote",
             "insertTable",
+            "mediaEmbed",
         ],
+        "mediaEmbed": {
+            "previewsInData": True,
+        },
     },
     "comment": {
         "language": {"ui": "en", "content": "en"},
