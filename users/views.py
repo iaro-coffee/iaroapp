@@ -168,11 +168,11 @@ class RegisterView(FormView):
 
             user.backend = "django.contrib.auth.backends.ModelBackend"
 
-            # check if customer-profile is only created if it does not already exist
-            try:
-                CustomerProfile.objects.get(user=user)
-            except CustomerProfile.DoesNotExist:
-                CustomerProfile.objects.create(user=user)
+            # check if customer profile exists, if not create and set is_employee to True
+            customer_profile, created = CustomerProfile.objects.get_or_create(user=user)
+            if created:
+                customer_profile.is_employee = True
+                customer_profile.save()
 
             login(self.request, user)
             clear_messages(self.request)  # Clear all existing messages
