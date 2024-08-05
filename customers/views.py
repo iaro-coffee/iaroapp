@@ -24,12 +24,6 @@ from customers.forms import CustomLoginForm, CustomSignupForm
 from customers.models import CustomerProfile
 from lib.pos_hello_tess import get_card_id_from_user
 
-# from allauth.account.utils import send_email_confirmation
-
-
-# def send_verification_email(user, request):
-#     pass
-
 
 class CustomerLoginView(LoginView):
     template_name = "account/customers_auth.html"

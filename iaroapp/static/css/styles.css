@@ -28,12 +28,7 @@ body {
 }
 
 body.dark-page .navbar-brand-img {
-    content:url("/static/images/logo_small_white.png");
-}
-
-.feather {
-  width: 16px;
-  height: 16px;
+    content:url("/static/images/logo_small_white.png");  /* ignore IDE error */
 }
 
 .bg-gradient-primary {
@@ -184,4 +179,8 @@ body.dark-page .sidenav-toggler-line {
     width: 100px;
     border-radius: 10px;
     background-color: darkslateblue;
+}
+
+.btn {
+  justify-content: center;
 }

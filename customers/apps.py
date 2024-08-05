@@ -6,4 +6,5 @@ class CustomersConfig(AppConfig):
     name = "customers"
 
     def ready(self):
-        pass
+
+        print("Customers signals imported and ready")
