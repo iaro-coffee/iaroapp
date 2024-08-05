@@ -53,6 +53,9 @@
                 <p>{{ pdf.description|safe }}</p>
             </div>
         </div>
+        {% if user.is_superuser %}
+            <a href="{% url 'admin:interactions_pdfupload_change' pdf.id %}" class="btn btn-secondary mt-3">Edit</a>
+        {% endif %}
     </div>
 </div>
 
