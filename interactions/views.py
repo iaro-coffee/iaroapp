@@ -431,7 +431,6 @@ def is_superuser(user):
 @user_passes_test(is_superuser)
 def user_progress(request):
     branch_name = request.GET.get("branch", "All")
-
     branches = Branch.objects.all().values_list("name", flat=True)
 
     if branch_name == "All":
@@ -439,48 +438,35 @@ def user_progress(request):
         profiles = Profile.objects.all()
         pdf_filter = {}
     else:
-        branch = Branch.objects.filter(name=branch_name).first()
-        if branch:
+        try:
+            branch = Branch.objects.get(name=branch_name)
             selected_branch = branch_name
             profiles = Profile.objects.filter(branch=branch)
             pdf_filter = {"branches": branch}
-        else:
+        except Branch.DoesNotExist:
             profiles = Profile.objects.none()
             pdf_filter = {}
-            selected_branch = branch_name
 
-    users = User.objects.filter(profile__in=profiles).select_related("profile")
-
-    # Fetch PDFs and filter by selected branch
-    pdfs = PDFUpload.objects.filter(**pdf_filter)
-
-    # Fetch completed PDFs for the current user
-    completed_pdfs = PDFCompletion.objects.filter(user=request.user).values_list(
-        "pdf_id", flat=True
+    users = (
+        User.objects.filter(profile__in=profiles)
+        .prefetch_related("profile")
+        .select_related("profile")
     )
 
-    # Create a dictionary to hold PDFs for each user and their completion status
-    pdfs_by_user = {}
-    pdf_completions_by_user = {}
+    pdfs = PDFUpload.objects.filter(**pdf_filter)
+    completed_pdfs = set(
+        PDFCompletion.objects.filter(user=request.user).values_list("pdf_id", flat=True)
+    )
 
-    for user in users:
-        try:
-            profile = user.profile
-            user_branch = profile.branch
-
-            # Filter PDFs by branch
-            user_pdfs = pdfs.filter(branches=user_branch)
-            pdfs_by_user[user.id] = user_pdfs
-
-            # Get completion status for each PDF for the current user
-            user_pdf_completions = PDFCompletion.objects.filter(user=user).values_list(
-                "pdf_id", flat=True
-            )
-            pdf_completions_by_user[user.id] = user_pdf_completions
-
-        except Profile.DoesNotExist:
-            pdfs_by_user[user.id] = []
-            pdf_completions_by_user[user.id] = []
+    pdfs_by_user = {
+        user.id: list(pdfs.filter(branches=user.profile.branch)) for user in users
+    }
+    pdf_completions_by_user = {
+        user.id: set(
+            PDFCompletion.objects.filter(user=user).values_list("pdf_id", flat=True)
+        )
+        for user in users
+    }
 
     context = {
         "pageTitle": "Employee Progress",
@@ -491,4 +477,5 @@ def user_progress(request):
         "branches": branches,
         "selected_branch": selected_branch,
     }
+
     return render(request, "user_learning_progress.html", context)

@@ -40,7 +40,7 @@
                             <div id="pdfList_{{ forloop.counter }}" class="collapse" data-bs-parent="#accordion">
                                 <div class="list-group list-group-flush">
                                     {% for pdf in pdfs %}
-                                        <div class="list-group-item d-flex justify-content-between align-items-center {% if pdf.id in completed_pdfs %}bg-success{% endif %}">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center {% if pdf.id in completed_pdfs %}bg-success rounded{% endif %}">
                                             <div class="d-flex flex-column">
                                                 <h6 class="text-sm mb-0">{{ pdf.name }}</h6>
                                             </div>
@@ -74,11 +74,6 @@
     .list-group-item-action:hover {
         text-decoration: none;
     }
-
-    .list-group-item {
-        border-radius: 0.5rem !important;
-    }
-
 </style>
 
 <script>

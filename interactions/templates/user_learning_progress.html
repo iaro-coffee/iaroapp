@@ -26,10 +26,11 @@
 {% block content %}
     <div class="row">
         <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-body px-0 pt-0 pb-0">
-                    <div class="list-group list-group-flush">
-                        {% for user in users %}
+            {% for user in users %}
+                <div class="card mb-2">
+                    <div class="card-body px-0 pt-0 pb-0">
+                        <div class="list-group list-group-flush">
+
                             <div class="list-group-item">
                                 <a data-bs-toggle="collapse" href="#userPdfs_{{ user.id }}"
                                    class="d-flex align-items-center">
@@ -40,7 +41,8 @@
                                         {% with pdfs=pdfs_by_user|get_item:user.id %}
                                             {% if pdfs %}
                                                 {% for pdf in pdfs %}
-                                                    <div class="list-group-item d-flex justify-content-between align-items-center {% if pdf.id in pdf_completions_by_user|get_item:user.id %}bg-success{% endif %}">
+                                                    <div class="list-group-item d-flex justify-content-between align-items-center
+{% if pdf.id in pdf_completions_by_user|get_item:user.id %}bg-success rounded{% endif %}">
                                                         <div class="d-flex flex-column">
                                                             <h6 class="text-sm mb-0">{{ pdf.name }}</h6>
                                                         </div>
@@ -53,10 +55,12 @@
                                     </div>
                                 </div>
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
+    <style>
+    </style>
 {% endblock %}
