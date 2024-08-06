@@ -10,6 +10,7 @@ from .views import (
     get_conversion_details,
     get_conversion_status,
     upload_pdf,
+    user_progress,
     view_slides,
     view_slides_list,
 )
@@ -26,4 +27,5 @@ urlpatterns = [
     path("conversion_details/", get_conversion_details, name="conversion_details"),
     path("conversion_status/", get_conversion_status, name="conversion_status"),
     path("mark_pdf_complete/", MarkPDFCompleteView.as_view(), name="mark_pdf_complete"),
+    path("user-progress/", user_progress, name="user_learning_progress"),
 ]

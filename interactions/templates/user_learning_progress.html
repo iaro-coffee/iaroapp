@@ -1,0 +1,62 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block extra_head %}
+    <title>iaroapp - User Learning Progress</title>
+{% endblock %}
+
+{% block widgets %}
+<div class="d-flex gap-2">
+    <a href="{% url 'view_slides_list' %}" class="btn bg-gradient-primary mb-0">Back</a>
+    <div class="dropdown">
+        <button class="btn bg-gradient-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ selected_branch }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="?branch=All">All</a></li>
+            {% for branch in branches %}
+            <li><a class="dropdown-item" href="?branch={{ branch }}">{{ branch }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock widgets %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body px-0 pt-0 pb-0">
+                    <div class="list-group list-group-flush">
+                        {% for user in users %}
+                            <div class="list-group-item">
+                                <a data-bs-toggle="collapse" href="#userPdfs_{{ user.id }}"
+                                   class="d-flex align-items-center">
+                                    <h6 class="mb-0 mx-2">{{ user.username }}</h6>
+                                </a>
+                                <div id="userPdfs_{{ user.id }}" class="collapse" data-bs-parent="#accordion">
+                                    <div class="list-group list-group-flush">
+                                        {% with pdfs=pdfs_by_user|get_item:user.id %}
+                                            {% if pdfs %}
+                                                {% for pdf in pdfs %}
+                                                    <div class="list-group-item d-flex justify-content-between align-items-center {% if pdf.id in pdf_completions_by_user|get_item:user.id %}bg-success{% endif %}">
+                                                        <div class="d-flex flex-column">
+                                                            <h6 class="text-sm mb-0">{{ pdf.name }}</h6>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p>No PDFs available for this user.</p>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

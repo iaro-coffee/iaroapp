@@ -19,7 +19,9 @@
             {% endfor %}
         </ul>
     </div>
-    <a href="{% url 'upload_pdf' %}" class="btn bg-gradient-primary mb-0">Add Lesson</a>
+    {% if user.is_superuser or user.is_staff %}
+        <a href="{% url 'upload_pdf' %}" class="btn bg-gradient-primary mb-0">Add Lesson</a>
+    {% endif %}
 </div>
 {% endblock widgets %}
 
@@ -54,6 +56,13 @@
             </div>
         </div>
     </div>
+    {% if user.is_superuser or user.is_staff %}
+        <div class="mt-0">
+            <a href="{% url 'user_learning_progress' %}" class="btn btn-secondary">
+                View User Progress
+            </a>
+        </div>
+    {% endif %}
 </div>
 
 

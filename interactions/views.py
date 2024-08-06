@@ -4,6 +4,7 @@ import os
 import psutil
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -15,6 +16,7 @@ from django.views.generic import TemplateView
 from pdf2image import convert_from_path, pdfinfo_from_path
 
 from inventory.models import Branch
+from users.models import Profile
 
 from .forms import NoteForm, PDFUploadForm, VideoUploadForm
 from .models import (
@@ -420,3 +422,73 @@ class MarkPDFCompleteView(View):
             messages.success(request, "Lesson marked as complete successfully.")
 
         return redirect("view_slides", pdf_id=pdf_id)
+
+
+def is_superuser(user):
+    return user.is_superuser
+
+
+@user_passes_test(is_superuser)
+def user_progress(request):
+    branch_name = request.GET.get("branch", "All")
+
+    branches = Branch.objects.all().values_list("name", flat=True)
+
+    if branch_name == "All":
+        selected_branch = "All"
+        profiles = Profile.objects.all()
+        pdf_filter = {}
+    else:
+        branch = Branch.objects.filter(name=branch_name).first()
+        if branch:
+            selected_branch = branch_name
+            profiles = Profile.objects.filter(branch=branch)
+            pdf_filter = {"branches": branch}
+        else:
+            profiles = Profile.objects.none()
+            pdf_filter = {}
+            selected_branch = branch_name
+
+    users = User.objects.filter(profile__in=profiles).select_related("profile")
+
+    # Fetch PDFs and filter by selected branch
+    pdfs = PDFUpload.objects.filter(**pdf_filter)
+
+    # Fetch completed PDFs for the current user
+    completed_pdfs = PDFCompletion.objects.filter(user=request.user).values_list(
+        "pdf_id", flat=True
+    )
+
+    # Create a dictionary to hold PDFs for each user and their completion status
+    pdfs_by_user = {}
+    pdf_completions_by_user = {}
+
+    for user in users:
+        try:
+            profile = user.profile
+            user_branch = profile.branch
+
+            # Filter PDFs by branch
+            user_pdfs = pdfs.filter(branches=user_branch)
+            pdfs_by_user[user.id] = user_pdfs
+
+            # Get completion status for each PDF for the current user
+            user_pdf_completions = PDFCompletion.objects.filter(user=user).values_list(
+                "pdf_id", flat=True
+            )
+            pdf_completions_by_user[user.id] = user_pdf_completions
+
+        except Profile.DoesNotExist:
+            pdfs_by_user[user.id] = []
+            pdf_completions_by_user[user.id] = []
+
+    context = {
+        "pageTitle": "Employee Progress",
+        "users": users,
+        "pdfs_by_user": pdfs_by_user,
+        "pdf_completions_by_user": pdf_completions_by_user,
+        "completed_pdfs": completed_pdfs,
+        "branches": branches,
+        "selected_branch": selected_branch,
+    }
+    return render(request, "user_learning_progress.html", context)
