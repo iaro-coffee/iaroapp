@@ -17,7 +17,15 @@ from pdf2image import convert_from_path, pdfinfo_from_path
 from inventory.models import Branch
 
 from .forms import NoteForm, PDFUploadForm, VideoUploadForm
-from .models import LearningCategory, Note, NoteReadStatus, PDFImage, PDFUpload, Video
+from .models import (
+    LearningCategory,
+    Note,
+    NoteReadStatus,
+    PDFCompletion,
+    PDFImage,
+    PDFUpload,
+    Video,
+)
 
 
 class NoteView(LoginRequiredMixin, TemplateView):
@@ -337,10 +345,19 @@ def get_conversion_status(request):
 def view_slides(request, pdf_id):
     pdf = get_object_or_404(PDFUpload, id=pdf_id)
     pdf_images = PDFImage.objects.filter(pdf=pdf).order_by("page_number")
+
+    # Check if the current user has marked this PDF as completed
+    completed = PDFCompletion.objects.filter(user=request.user, pdf=pdf).exists()
+
     return render(
         request,
         "view_slides.html",
-        {"pdf_images": pdf_images, "pdf": pdf, "pageTitle": "PDF Education Details"},
+        {
+            "pdf_images": pdf_images,
+            "pdf": pdf,
+            "pageTitle": "PDF Education Details",
+            "completed": completed,
+        },
     )
 
 
@@ -354,8 +371,9 @@ def view_slides_list(request):
     else:
         branch_filter = Q(branches__name=selected_branch)
 
+    # Use LearningCategory objects as keys
     pdfs_by_category = {
-        category.name: PDFUpload.objects.filter(category=category).filter(branch_filter)
+        category: PDFUpload.objects.filter(category=category).filter(branch_filter)
         for category in LearningCategory.objects.all()
     }
 
@@ -364,11 +382,16 @@ def view_slides_list(request):
         category: pdfs for category, pdfs in pdfs_by_category.items() if pdfs.exists()
     }
 
-    # Debug information
-    for category, pdfs in pdfs_by_category.items():
-        print(f"Category: {category}")
-        for pdf in pdfs:
-            print(f"PDF: {pdf.name}, Branches: {pdf.branches.all()}")
+    # Check which PDFs the user has completed
+    completed_pdfs = PDFCompletion.objects.filter(user=request.user).values_list(
+        "pdf_id", flat=True
+    )
+
+    # Determine if all PDFs in each category are completed
+    all_completed_categories = {
+        category: all(pdf.id in completed_pdfs for pdf in pdfs)
+        for category, pdfs in pdfs_by_category.items()
+    }
 
     return render(
         request,
@@ -378,5 +401,22 @@ def view_slides_list(request):
             "pdfs_by_category": pdfs_by_category,
             "branches": branches,
             "selected_branch": selected_branch,
+            "completed_pdfs": completed_pdfs,
+            "all_completed_categories": all_completed_categories,
         },
     )
+
+
+class MarkPDFCompleteView(View):
+    def post(self, request, *args, **kwargs):
+        pdf_id = request.POST.get("pdf_id")
+        pdf = get_object_or_404(PDFUpload, id=pdf_id)
+
+        # Check if the user has already marked this PDF as complete
+        if PDFCompletion.objects.filter(user=request.user, pdf=pdf).exists():
+            messages.info(request, "You have already marked this Lesson as complete.")
+        else:
+            PDFCompletion.objects.create(user=request.user, pdf=pdf)
+            messages.success(request, "Lesson marked as complete successfully.")
+
+        return redirect("view_slides", pdf_id=pdf_id)

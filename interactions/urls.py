@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     LoadMoreNotesView,
+    MarkPDFCompleteView,
     NoteView,
     UnreadCountView,
     VideoListView,
@@ -24,4 +25,5 @@ urlpatterns = [
     path("learning/<int:pdf_id>/", view_slides, name="view_slides"),
     path("conversion_details/", get_conversion_details, name="conversion_details"),
     path("conversion_status/", get_conversion_status, name="conversion_status"),
+    path("mark_pdf_complete/", MarkPDFCompleteView.as_view(), name="mark_pdf_complete"),
 ]

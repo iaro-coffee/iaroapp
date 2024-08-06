@@ -45,7 +45,8 @@
 
 <div class="row">
     <div class="col-lg-12 mb-4">
-        <div class="card h-100">
+        {% if pdf.description %}
+        <div class="card h-100 content__card">
             <div class="card-header pb-0">
                 <h6>{{ pdf.name }}</h6>
             </div>
@@ -53,11 +54,23 @@
                 <p>{{ pdf.description|safe }}</p>
             </div>
         </div>
+        {% endif %}
         {% if user.is_superuser %}
             <a href="{% url 'admin:interactions_pdfupload_change' pdf.id %}" class="btn btn-secondary mt-3">Edit</a>
         {% endif %}
+        <form method="post" action="{% url 'mark_pdf_complete' %}">
+            {% csrf_token %}
+            <input type="hidden" name="pdf_id" value="{{ pdf.id }}">
+            {% if completed %}
+                <button type="button" class="btn btn-success" disabled>Completed</button>
+            {% else %}
+                <button type="submit" class="btn btn-secondary">Mark as Complete</button>
+            {% endif %}
+        </form>
     </div>
 </div>
+
+
 
 <div id="fullscreen-modal" class="fullscreen-modal">
     <div class="modal-content">

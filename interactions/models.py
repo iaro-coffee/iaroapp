@@ -107,3 +107,12 @@ class PDFImage(models.Model):
     pdf = models.ForeignKey(PDFUpload, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="pdf_images/")
     page_number = models.IntegerField()
+
+
+class PDFCompletion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    pdf = models.ForeignKey(PDFUpload, on_delete=models.CASCADE)
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "pdf")

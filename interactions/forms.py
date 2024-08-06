@@ -108,6 +108,15 @@ class PDFUploadForm(forms.ModelForm):
         self.fields["category"].queryset = LearningCategory.objects.all()
         self.fields["branches"].queryset = Branch.objects.all()
 
+    def clean_description(self):
+        description = self.cleaned_data.get("description")
+        if description:
+            # Remove non-breaking spaces and empty paragraph tags
+            description = description.replace("&nbsp;", "").strip()
+            if description in ("<p></p>", "<p>&nbsp;</p>", ""):
+                return None
+        return description
+
     def clean(self):
         cleaned_data = super().clean()
         new_category_name = cleaned_data.get("new_category")
