@@ -159,7 +159,7 @@ class LoginView(AuthLoginView):
 class RegisterView(FormView):
     template_name = "register.html"
     form_class = UserClientCreationForm
-    success_url = reverse_lazy("index")
+    success_url = reverse_lazy("personal_information")
 
     def form_valid(self, form):
         try:

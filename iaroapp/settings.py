@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "customers",
     "interactions",
+    "onboarding",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",

@@ -40,6 +40,7 @@ urlpatterns = [
         views.get_populartimes_data,
         name="get_populartimes_data",
     ),
+    path("", include("onboarding.urls")),
 ]
 
 # Use static() to add url mapping to serve static files during development (only)
