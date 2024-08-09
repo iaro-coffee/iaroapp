@@ -215,39 +215,21 @@ def get_next_user_shifts(request: HttpRequest):
     """
     try:
         user_email = request.user.email
-        planday.authenticate()  # Ensure the user is authenticated
 
-        # Define the 'from' date as the start of the current day
-        from_date = datetime.now().strftime("%Y-%m-%d")
+        employee_id = planday.get_employee_id_by_email(user_email)
+        if not employee_id:
+            return JsonResponse({"error": "Employee not found"}, status=404)
 
-        # Define the 'to' date as the last day of the current month
-        end_of_month = (datetime.now() + relativedelta(day=31)).strftime("%Y-%m-%d")
+        from_date = datetime.now().strftime("%Y-%m-%d")  # Define 'from' date
+        end_of_month = (datetime.now() + relativedelta(day=31)).strftime(
+            "%Y-%m-%d"
+        )  # Define 'to' date
 
-        # Prepare query parameters
-        payload = {
-            "From": from_date,
-            "To": end_of_month,
-            "EmployeeId": [planday.get_employee_id_by_email(user_email)],
-            "Limit": 50,  # Adjust the limit as needed
-            "ShiftStatus": "Assigned",
-        }
+        shifts = planday.get_user_shifts(
+            employee_id, from_date, end_of_month
+        )  # Fetch shifts
 
-        # Fetch shifts within the date range
-        response = planday.session.get(
-            f"{planday.base_url}/scheduling/v1.0/shifts",
-            headers=planday.get_auth_headers(),
-            params=payload,
-        )
-        response.raise_for_status()
-        response_data = response.json()
-
-        # Extract shifts data
-        shifts = response_data.get("data", [])
-
-        # Initial shifts to display (first 2 shifts)
         initial_shifts = shifts[:5]
-
-        # Remaining shifts to load on button click
         remaining_shifts = shifts[5:]
 
         return JsonResponse(

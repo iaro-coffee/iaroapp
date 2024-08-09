@@ -1,9 +1,7 @@
-import datetime
 import json
 import os
 
 import requests
-from dateutil.relativedelta import relativedelta
 from django.core.cache import cache
 from dotenv import find_dotenv, load_dotenv
 from requests.exceptions import RequestException, Timeout
@@ -114,6 +112,75 @@ class Planday:
 
         return response.json()
 
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10)
+    )
+    def get_employees(self):
+        auth_headers = self.get_auth_headers()
+        response = self.session.get(
+            f"{self.base_url}/hr/v1/employees", headers=auth_headers
+        )
+        response.raise_for_status()
+
+        try:
+            response_json = response.json()
+        except ValueError:
+            raise ValueError("Invalid JSON response from Planday API")
+
+        if "data" not in response_json:
+            raise ValueError(f"Unexpected API response structure: {response_json}")
+
+        employees = response_json["data"]
+        if not all(isinstance(emp, dict) for emp in employees):
+            raise ValueError(f"Unexpected employee data structure: {employees}")
+
+        return employees
+
+    def get_employee_id_by_email(self, email):
+        employees = self.get_employees()
+        for employee in employees:
+            if isinstance(employee, dict) and employee.get("email") == email:
+                return employee.get("id")
+        return None
+
+    def get_user_shifts(
+        self, employee_id, from_date, to_date, limit=50, status="Assigned"
+    ):
+        """
+        Fetch shifts for a specific employee within the provided date range.
+        """
+        auth_headers = self.get_auth_headers()
+        payload = {
+            "From": from_date,
+            "To": to_date,
+            "EmployeeId": [employee_id],
+            "Limit": limit,
+            "ShiftStatus": status,
+        }
+
+        response = self.session.get(
+            f"{self.base_url}/scheduling/v1.0/shifts",
+            headers=auth_headers,
+            params=payload,
+        )
+        response.raise_for_status()
+
+        try:
+            response_data = response.json()
+
+            if not isinstance(response_data, dict):
+                raise ValueError(f"Unexpected response type: {type(response_data)}")
+
+            shifts = response_data.get("data", [])
+
+            if not isinstance(shifts, list):
+                raise ValueError(f"Unexpected type for 'data' field: {type(shifts)}")
+
+            return shifts
+
+        except ValueError as e:
+            raise ValueError(f"Invalid JSON response from Planday API: {e}")
+
     def punch_in_by_email(self, email):
         employeeId = self.get_employee_id_by_email(email)
         if employeeId is None:
@@ -159,37 +226,6 @@ class Planday:
             json=payload,
         )
         return response.status_code
-
-    def get_employee_id_by_email(self, email):
-        employees = self.get_employees()
-        for key, value in employees.items():
-            if value["email"] == email:
-                return value["id"]
-        return None
-
-    @retry(
-        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10)
-    )
-    def get_employees(self):
-        auth_headers = {
-            "Authorization": "Bearer " + self.access_token,
-            "X-ClientId": self.client_id,
-        }
-        response = self.session.request(
-            "GET", self.base_url + "/hr/v1/employees", headers=auth_headers
-        )
-
-        try:
-            response_json = response.json()
-        except json.JSONDecodeError:
-            raise ValueError("Invalid JSON response from Planday API")
-
-        if "data" not in response_json:
-            print(f"Unexpected API response: {response_json}")
-            return {}
-
-        employees = {employee["id"]: employee for employee in response_json["data"]}
-        return employees
 
     def get_employee_group_name(self, group_id):
         auth_headers = {
@@ -244,92 +280,6 @@ class Planday:
         response = response["data"]
 
         return response
-
-    def get_user_shifts_of_day(self, day):
-        employees = self.get_employees()
-        auth_headers = {
-            "Authorization": "Bearer " + self.access_token,
-            "X-ClientId": self.client_id,
-        }
-        todayStart = day.strftime("%Y-%m-%dT00:00")
-        todayEnd = day.strftime("%Y-%m-%dT23:59")
-
-        payload = {
-            "from": todayStart,
-            "to": todayEnd,
-        }
-
-        response = self.session.request(
-            "GET",
-            self.base_url + "/punchclock/v1/punchclockshifts",
-            headers=auth_headers,
-            params=payload,
-        )
-        response = json.loads(response.text)
-        response = response["data"]
-        user_shifts = {}
-        for shift in response:
-            if "employeeId" in shift:
-                user_shifts[employees[shift["employeeId"]]["email"]] = shift
-        return user_shifts
-
-    def get_upcoming_shifts_for_user(self, user_email):
-        # Ensure the user is authenticated before making the request
-        self.authenticate()  # This will cache the token and only authenticate if necessary
-
-        employeeId = self.get_employee_id_by_email(user_email)
-        if employeeId is None:
-            return []
-
-        auth_headers = {
-            "Authorization": f"Bearer {self.access_token}",
-            "X-ClientId": self.client_id,
-        }
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        nextMonth = (datetime.datetime.now() + relativedelta(months=1)).strftime(
-            "%Y-%m-%d"
-        )
-
-        payload = {
-            "from": today,
-            "to": nextMonth,
-            "limit": 5000,
-            "employeeId": employeeId,
-        }
-
-        response = self.session.get(
-            f"{self.base_url}/scheduling/v1/shifts",
-            headers=auth_headers,
-            params=payload,
-        )
-
-        try:
-            response.raise_for_status()  # Raise an exception for HTTP errors
-            data = response.json()
-        except (requests.HTTPError, json.JSONDecodeError) as e:
-            print(f"Error fetching shifts for {user_email}: {e}")
-            return []
-
-        shifts = []
-
-        for shift in data.get("data", []):
-            start = shift["startDateTime"]
-            end = shift["endDateTime"]
-            departmentId = shift.get("departmentId", "")
-            groupId = shift.get("employeeGroupId", "")
-            comment = shift.get("comment", "")
-
-            shifts.append(
-                {
-                    "start": start,
-                    "end": end,
-                    "departmentId": departmentId,
-                    "groupId": groupId,
-                    "comment": comment,
-                }
-            )
-
-        return shifts
 
     def get_departments(self, limit=50, offset=0):
         """Fetches the list of departments from the Planday API."""
