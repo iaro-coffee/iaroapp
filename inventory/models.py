@@ -23,7 +23,7 @@ class Branch(BaseModel):
     departmentId = models.CharField(
         max_length=500,
         default="",
-        help_text="Department ID associated with the branch.",
+        help_text="Planday 'departmentId' associated with the branch.",
     )
     street_address = models.CharField(
         max_length=500,

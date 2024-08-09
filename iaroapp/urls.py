@@ -17,11 +17,10 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-
-# Use include() to add URLS from the tasks application and authentication system
 from django.urls import include, path
 
 from . import views
+from .views import get_employees_list, get_shifts_data, planday_info
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -41,6 +40,9 @@ urlpatterns = [
         name="get_populartimes_data",
     ),
     path("", include("onboarding.urls")),
+    path("api/shifts/", get_shifts_data, name="get_shifts_data"),
+    path("api/planday/", planday_info, name="planday_info"),
+    path("api/get-employees-list/", get_employees_list, name="get-employees-list"),
 ]
 
 # Use static() to add url mapping to serve static files during development (only)

@@ -27,3 +27,4 @@ pdf2image
 psutil
 django-embed-video
 django-cors-headers
+tenacity

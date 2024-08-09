@@ -1,0 +1,134 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% load json_filters %}
+
+{% block extra_css %}
+<style>
+    .loading-card-overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 10;
+        border-radius: 1rem;
+    }
+
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-top: 4px solid #007bff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+    <div class="main__blocks">
+        <div class="row">
+            <!-- Portal Information Card -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Planday Portal Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li><strong>ID:</strong> {{ portal_info.id }}</li>
+                            <li><strong>Name:</strong> {{ portal_info.name }}</li>
+                            <li><strong>Company Name:</strong> {{ portal_info.companyName }}</li>
+                            <li><strong>Country:</strong> {{ portal_info.country }}</li>
+                            <li><strong>Time Zone:</strong> {{ portal_info.timeZone }}</li>
+                            <li><strong>Max Departments:</strong> {{ portal_info.maxDepartments }}</li>
+                            <li><strong>Aliases:</strong> {{ portal_info.aliases|join:", " }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employees List Card -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Employees List</h6>
+                    </div>
+                    <div class="card-body">
+                        <button id="getEmployeesBtn" class="btn bg-gradient-primary mt-0">Get Employees List</button>
+                        <p id="employeesList" class="mt-4"></p>
+                        <div id="employeesLoader" class="loading-card-overlay active" style="display: none;">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Placeholder Card -->
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Placeholder Card</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <p>This is a placeholder card.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('getEmployeesBtn').addEventListener('click', function () {
+            const employeesList = document.getElementById('employeesList');
+            const loader = document.getElementById('employeesLoader');
+
+
+            loader.style.display = 'flex';
+
+            fetch('/api/get-employees-list/')
+                .then(response => response.json())
+                .then(data => {
+                    // Clear any existing content
+                    employeesList.innerHTML = '';
+
+                    if (data.employees && data.employees.length > 0) {
+                        // Concatenate all employee names into a single string with newline characters
+                        const employeesString = data.employees.map((employee, index) => `${index + 1}. ${employee}`).join('\n');
+                        employeesList.textContent = employeesString;
+                    } else {
+                        employeesList.textContent = 'No employees found.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching employees:', error);
+                    employeesList.textContent = 'Error loading employees list.';
+                })
+                .finally(() => {
+                    loader.style.display = 'none';
+                });
+        });
+
+    </script>
+
+    <style>
+        #employeesList {
+            white-space: pre-line;
+        }
+    </style>
+{% endblock %}

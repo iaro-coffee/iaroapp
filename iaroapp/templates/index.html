@@ -162,19 +162,10 @@
                         </p>
                     </div>
                     <div class="card-body px-0 pb-2">
-                        <ul class="shifts">
-                            {% for shift in nextShifts %}
-                                <li>
-                                    <div class="date px-4">
-                                        {{ shift.day }}
-                                        <span class="weekday">{{ shift.weekday }}</span>
-                                    </div>
-                                    <div class="shift">
-                                        <span class="time">{{ shift.start }} – {{ shift.end }}</span>
-                                        <span class="location">{{ branch_address }}</span>
-                                    </div>
-                                </li>
-                            {% endfor %}
+                        <ul class="shifts" id="shifts-list">
+                            <div id="shiftsLoader" class="loading-card-overlay active">
+                                <div class="spinner"></div>
+                            </div>
                         </ul>
                     </div>
                 </div>
@@ -453,6 +444,52 @@
         const currentBranch = '{{ branch }}';
         const statistics = JSON.parse('{{ statistics | to_json | escapejs }}');
     </script>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const shiftsList = document.getElementById('shifts-list');
+    const loader = document.getElementById('shiftsLoader');
+
+    fetch('/api/shifts/')
+        .then(response => response.json())
+        .then(data => {
+            // Clear any existing list items
+            shiftsList.innerHTML = '';
+            console.log(data.shifts)
+            if (data.shifts.length > 0) {
+                data.shifts.forEach(shift => {
+                    const shiftItem = document.createElement('li');
+                    shiftItem.innerHTML = `
+                        <div class="date px-4">
+                            ${shift.day}
+                            <span class="weekday">${shift.weekday}</span>
+                        </div>
+                        <div class="shift">
+                            <span class="time">${shift.start} – ${shift.end}</span>
+                            <span class="location">${shift.location}</span>
+                        </div>
+                        ${shift.departmentId ? `<div>Department ID: ${shift.departmentId}</div>` : ''}
+                        ${shift.employeeGroupId ? `<div>Employee Group ID: ${shift.employeeGroupId}</div>` : ''}
+                        ${shift.comment ? `<div>Comment: ${shift.comment}</div>` : ''}
+                    `;
+                    shiftsList.appendChild(shiftItem);
+                });
+            } else {
+                shiftsList.innerHTML = '<li>No shifts available</li>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching shifts:', error);
+            shiftsList.innerHTML = '<li>Error loading shifts</li>';
+        })
+        .finally(() => {
+            if (loader) {
+                loader.classList.remove('active');
+            }
+        });
+});
+    </script>
+
     <script src="{% static 'js/shifts.js' %}"></script>
     <script src="{% static 'js/charts_populartimes.js' %}"></script>
     <script src="{% static 'js/charts_user-stats.js' %}"></script>

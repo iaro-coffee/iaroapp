@@ -5,6 +5,7 @@ import os
 import requests
 from dateutil.relativedelta import relativedelta
 from dotenv import find_dotenv, load_dotenv
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 load_dotenv(find_dotenv())
 
@@ -30,6 +31,20 @@ class Planday:
         )
         response = json.loads(response.text)
         self.access_token = response["access_token"]
+
+    def get_portal_info(self):
+        """Fetch the portal information"""
+        auth_headers = {
+            "Authorization": f"Bearer {self.access_token}",
+            "X-ClientId": self.client_id,
+        }
+        endpoint = "/portal/v1.0/info"
+        url = f"{self.base_url}{endpoint}"
+
+        response = self.session.get(url, headers=auth_headers)
+        response.raise_for_status()
+
+        return response.json()
 
     def punch_in_by_email(self, email):
         employeeId = self.get_employee_id_by_email(email)
@@ -82,7 +97,11 @@ class Planday:
         for key, value in employees.items():
             if value["email"] == email:
                 return value["id"]
+        return None
 
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10)
+    )
     def get_employees(self):
         auth_headers = {
             "Authorization": "Bearer " + self.access_token,
@@ -91,11 +110,17 @@ class Planday:
         response = self.session.request(
             "GET", self.base_url + "/hr/v1/employees", headers=auth_headers
         )
-        response = json.loads(response.text)
-        response = response["data"]
-        employees = {}
-        for employee in response:
-            employees[employee["id"]] = employee
+
+        try:
+            response_json = response.json()
+        except json.JSONDecodeError:
+            raise ValueError("Invalid JSON response from Planday API")
+
+        if "data" not in response_json:
+            print(f"Unexpected API response: {response_json}")
+            return {}
+
+        employees = {employee["id"]: employee for employee in response_json["data"]}
         return employees
 
     def get_employee_group_name(self, group_id):
@@ -180,8 +205,11 @@ class Planday:
                 user_shifts[employees[shift["employeeId"]]["email"]] = shift
         return user_shifts
 
-    def get_upcoming_shifts(self, starting, until):
-        employees = self.get_employees()
+    def get_upcoming_shifts_for_user(self, user_email):
+        employeeId = self.get_employee_id_by_email(user_email)
+        if employeeId is None:
+            return []
+
         auth_headers = {
             "Authorization": "Bearer " + self.access_token,
             "X-ClientId": self.client_id,
@@ -191,10 +219,12 @@ class Planday:
             "%Y-%m-%d"
         )
         payload = {
-            "from": today if starting is None else starting,
-            "to": nextMonth if until is None else until,
+            "from": today,
+            "to": nextMonth,
             "limit": 5000,
+            "employeeId": employeeId,
         }
+
         response = self.session.request(
             "GET",
             self.base_url + "/scheduling/v1/shifts",
@@ -207,23 +237,44 @@ class Planday:
         if "data" not in response:
             return shifts
 
-        response = response["data"]
-        for shift in response:
-            if "employeeId" in shift:
-                employee = employees[shift["employeeId"]]["email"]
-                employeeId = shift["employeeId"]
-                start = shift["startDateTime"]
-                end = shift["endDateTime"]
-                departmentId = shift["departmentId"]
-                groupId = shift["employeeGroupId"]
-                shifts.append(
-                    {
-                        "employee": employee,
-                        "employeeId": employeeId,
-                        "departmentId": departmentId,
-                        "groupId": groupId,
-                        "start": start,
-                        "end": end,
-                    }
-                )
+        for shift in response["data"]:
+            print(shift)
+            start = shift["startDateTime"]
+            end = shift["endDateTime"]
+            departmentId = shift.get("departmentId", "")
+            groupId = shift.get("employeeGroupId", "")
+            comment = shift.get("comment", "")
+
+            shifts.append(
+                {
+                    "start": start,
+                    "end": end,
+                    "departmentId": departmentId,
+                    "groupId": groupId,
+                    "comment": comment,
+                }
+            )
+
         return shifts
+
+
+"""
+  ## response example
+{'paging': {'offset': 0, 'limit': 50, 'total': 40}, 'data':
+[{'securityGroups': [],
+'id': 1186664,
+'dateTimeCreated': '2024-03-18',
+'dateTimeModified': '2024-05-20T18:55:11.967Z',
+'employeeTypeId': 112483,
+'salaryIdentifier': '1196664',
+'firstName': 'Zuzana',
+'lastName': 'Svantnerova',
+'userName': 'zuzana.svantnerova@gmail.com',
+'cellPhone': '+49',
+'phone': '',
+'email': 'zuzana.svantnerova@gmail.com',
+'departments': [154388],
+'employeeGroups': [274170],
+'cellPhoneCountryPrefix': '+49',
+'cellPhoneCountryCode': 'DE'}]}
+"""
