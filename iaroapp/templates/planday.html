@@ -42,8 +42,8 @@
 {% block content %}
     <div class="main__blocks">
         <div class="row">
-            <!-- Portal Information Card -->
-            <div class="col-lg-4 mb-4">
+            <!-- Portal Information and Departments Card -->
+            <div class="col-lg-6 mb-4">
                 <div class="card h-100">
                     <div class="card-header pb-0">
                         <h6>Planday Portal Information</h6>
@@ -57,6 +57,15 @@
                             <li><strong>Time Zone:</strong> {{ portal_info.timeZone }}</li>
                             <li><strong>Max Departments:</strong> {{ portal_info.maxDepartments }}</li>
                             <li><strong>Aliases:</strong> {{ portal_info.aliases|join:", " }}</li>
+                        </ul>
+
+                        <hr>
+
+                        <h6>Departments</h6>
+                        <ul>
+                            {% for department in departments %}
+                                <li>{{ department.id }}: {{ department.name }}</li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -75,18 +84,17 @@
                             <div class="spinner"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <!-- Placeholder Card -->
+            <!-- Employees List Card -->
             <div class="col-lg-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header pb-0">
                         <h6>Placeholder Card</h6>
                     </div>
-                    <div class="card-body text-center">
-                        <p>This is a placeholder card.</p>
+                    <div class="card-body">
+                        <p>placeholder content</p>
                     </div>
                 </div>
             </div>
@@ -98,17 +106,13 @@
             const employeesList = document.getElementById('employeesList');
             const loader = document.getElementById('employeesLoader');
 
-
             loader.style.display = 'flex';
 
             fetch('/api/get-employees-list/')
                 .then(response => response.json())
                 .then(data => {
-                    // Clear any existing content
                     employeesList.innerHTML = '';
-
                     if (data.employees && data.employees.length > 0) {
-                        // Concatenate all employee names into a single string with newline characters
                         const employeesString = data.employees.map((employee, index) => `${index + 1}. ${employee}`).join('\n');
                         employeesList.textContent = employeesString;
                     } else {
@@ -123,11 +127,10 @@
                     loader.style.display = 'none';
                 });
         });
-
     </script>
 
     <style>
-        #employeesList {
+        #employeesList, #departmentsList {
             white-space: pre-line;
         }
     </style>

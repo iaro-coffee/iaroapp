@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-from .views import get_employees_list, get_shifts_data, planday_info
+from .views import get_employees_list, get_next_user_shifts, planday_info
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -40,7 +40,7 @@ urlpatterns = [
         name="get_populartimes_data",
     ),
     path("", include("onboarding.urls")),
-    path("api/shifts/", get_shifts_data, name="get_shifts_data"),
+    path("api/shifts/", get_next_user_shifts, name="get_next_user_shifts"),
     path("api/planday/", planday_info, name="planday_info"),
     path("api/get-employees-list/", get_employees_list, name="get-employees-list"),
 ]

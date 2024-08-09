@@ -101,28 +101,27 @@
                             days
                         </p>
                     </div>
-                    <div class="card-body px-0 pb-2">
+                    <div class="card-body pb-2">
                         <div class="table-responsive">
                             <table class="table align-items-center mb-2">
                                 <tbody>
                                 {% for task in task_list %}
                                     {% if task.date_done == undefined or task.date_done|date:"Y-m-d" != today|date:"Y-m-d" %}
                                         <tr>
-                                            <td>
-                                                <div class="d-flex px-2 py-1">
-                                                    <div class="d-flex px-4" style="align-items:center;">
+                                            <td class="px-0">
+                                                <div class="d-flex py-1">
+                                                    <div class="d-flex" style="align-items: center; min-width: 24px; padding-left: 0; padding-right: 0;">
                                                         <i class="fa fa-thumbtack cursor-pointer"
                                                            aria-hidden="true"></i>
                                                     </div>
-                                                    <div>
-                                                        <div class="d-flex px-2 py-1">
+                                                    <div style="padding-left: 10px">
+                                                        <div class="d-flex py-1">
                                                             <div class="d-flex flex-column justify-content-center">
-                                                                <h6 class="mb-0 text-sm">{{ task.title }}</h6>
+                                                                <h6 class="mb-0 text-sm text-wrap">{{ task.title }}</h6>
                                                             </div>
                                                         </div>
                                                         <div class="d-flex">
-                                                            <small class="d-block text-xs opacity-7"
-                                                                   style="margin: 0.1rem 0; padding-left: 0.5rem;">
+                                                            <small class="d-block text-xs opacity-7">
                                                         <span data-feather="tag" class="align-text-bottom"
                                                               style="height: 16px"></span>
                                                                 {{ task.get_types|join:", " }}
@@ -161,12 +160,16 @@
                             you can do this!
                         </p>
                     </div>
-                    <div class="card-body px-0 pb-2">
+                    <div class="card-body px-4 py-2">
+                        <p class="text-center mb-0">{{ current_month_year }}</p>
                         <ul class="shifts" id="shifts-list">
                             <div id="shiftsLoader" class="loading-card-overlay active">
                                 <div class="spinner"></div>
                             </div>
                         </ul>
+                        <div class="text-center d-flex justify-content-center mt-3">
+                            <button id="loadMoreBtn" class="btn w-100 bg-gradient-primary" style="display: none;">More</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -186,7 +189,7 @@
                         </div>
                     </div>
 
-                    <div class="card-body p-3">
+                    <div class="card-body">
                         <div class="text-bold align-center justify-content-center gap-1 d-flex" id="chartLegend"></div>
                         <div class="chart">
                             <div id="populartimesLoader" class="loading-card-overlay active">
@@ -202,21 +205,22 @@
                                 &nbsp;today
                             </div>
                         </div>
-                    </div>
-
-                    <div class="d-flex justify-content-center gap-2 mb-4">
-                        <button class="h6 text-bold mt-3 w-35 btn-default popular-times-btn"
+                                            <div class="d-flex justify-content-center gap-2 mb-0 mt-2">
+                        <button class="h6 text-bold w-35 btn-default popular-times-btn"
                                 data-address="iaro Rintheimer 1, Karlsruhe"
                                 onclick="fetchPopularTimesData('iaro Rintheimer 1, Karlsruhe');">
                             Iaro Ost
                         </button>
 
-                        <button class="h6 text-bold mt-3 w-35 btn-default popular-times-btn"
+                        <button class="h6 text-bold w-35 btn-default popular-times-btn"
                                 data-address="iaro Sophienstraße 108, Karlsruhe"
                                 onclick="fetchPopularTimesData('iaro Sophienstraße 108, Karlsruhe');">
                             Iaro West
                         </button>
                     </div>
+                    </div>
+
+
                 </div>
             </div>
 
@@ -226,7 +230,7 @@
                         <h6>Your Notes</h6>
                         <p class="text-sm"><i class="fas fa-sticky-note pe-2 text-success"></i>Stay on top of things, check your last notes.</p>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body">
                         {% for note in received_notes %}
                             <div class="d-flex justify-content-between">
                                 <div class="user__info mb-3 w-75">
@@ -264,7 +268,7 @@
                         <p class="text-sm"><i class="fas fa-calendar-day pe-2 text-success"></i>Here’s a peek at special
                             days coming up!</p>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body">
                         <div class="d-flex gap-4 justify-content-center" id="holiday-info">
                             <div class="w-45">
                                 <h6 id="today-date">Today: {{ today|date:"F j" }}</h6>
@@ -303,7 +307,7 @@
                             <span class="font-weight-bold">{{ statistics_sum.workHours }}h</span>
                         </p>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body">
                         <div class="chart">
                             <canvas id="chart-line1" class="chart-canvas" height="300"></canvas>
                         </div>
@@ -320,7 +324,7 @@
                             <span class="font-weight-bold">{{ statistics_sum.tasks }}</span>
                         </p>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body">
                         <div class="chart">
                             <canvas id="chart-line2" class="chart-canvas" height="300"></canvas>
                         </div>
@@ -337,7 +341,7 @@
                             <span class="font-weight-bold">{{ statistics_sum.ratings }}</span>
                         </p>
                     </div>
-                    <div class="card-body p-3">
+                    <div class="card-body">
                         <div class="chart">
                             <canvas id="chart-line3" class="chart-canvas" height="300"></canvas>
                         </div>
@@ -400,6 +404,22 @@
         .title {
             margin-top: 0 !important;
         }
+
+        .date {
+            {#padding-right: 0rem !important;#}
+            padding-left: 0rem !important;
+            {#width: 100px !important;#}
+            padding-top: 0.8rem !important;
+            padding-bottom: 0.8rem !important;
+        }
+        .weekday {
+            min-width: 30px !important;
+        }
+
+        .shifts li {
+            margin: 0 !important;
+        }
+
     </style>
 
     <style>
@@ -445,50 +465,80 @@
         const statistics = JSON.parse('{{ statistics | to_json | escapejs }}');
     </script>
 
-    <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const shiftsList = document.getElementById('shifts-list');
-    const loader = document.getElementById('shiftsLoader');
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const shiftsList = document.getElementById('shifts-list');
+        const loader = document.getElementById('shiftsLoader');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
 
-    fetch('/api/shifts/')
-        .then(response => response.json())
-        .then(data => {
-            // Clear any existing list items
-            shiftsList.innerHTML = '';
-            console.log(data.shifts)
-            if (data.shifts.length > 0) {
-                data.shifts.forEach(shift => {
-                    const shiftItem = document.createElement('li');
-                    shiftItem.innerHTML = `
-                        <div class="date px-4">
-                            ${shift.day}
-                            <span class="weekday">${shift.weekday}</span>
-                        </div>
-                        <div class="shift">
-                            <span class="time">${shift.start} – ${shift.end}</span>
-                            <span class="location">${shift.location}</span>
-                        </div>
-                        ${shift.departmentId ? `<div>Department ID: ${shift.departmentId}</div>` : ''}
-                        ${shift.employeeGroupId ? `<div>Employee Group ID: ${shift.employeeGroupId}</div>` : ''}
-                        ${shift.comment ? `<div>Comment: ${shift.comment}</div>` : ''}
-                    `;
-                    shiftsList.appendChild(shiftItem);
-                });
-            } else {
-                shiftsList.innerHTML = '<li>No shifts available</li>';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching shifts:', error);
-            shiftsList.innerHTML = '<li>Error loading shifts</li>';
-        })
-        .finally(() => {
-            if (loader) {
-                loader.classList.remove('active');
-            }
+        let remainingShifts = [];
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
+
+        function formatShift(shift) {
+            const startDate = new Date(shift.startDateTime);
+            const endDate = new Date(shift.endDateTime);
+            const day = startDate.getDate().toString().padStart(2, '0');
+            const weekday = startDate.toLocaleDateString('en-US', { weekday: 'short' });
+
+            return `
+                <div class="date">
+                    ${day}
+                    <span class="weekday text-center">${weekday}</span>
+                </div>
+                <div class="shift bg-gradient-secondary px-3">
+                    <span class="time text-sm">${formatTime(startDate)} – ${formatTime(endDate)}</span>
+                    <span class="location text-xs opacity-5">${shift.departmentId}</span>
+                </div>
+                {#${shift.employeeGroupId ? `<div>Employee Group ID: ${shift.employeeGroupId}</div>` : ''}#}
+                {#${shift.comment ? `<div>Comment: ${shift.comment}</div>` : ''}#}
+            `;
+        }
+
+        function appendShifts(shifts) {
+            shifts.forEach(shift => {
+                const shiftItem = document.createElement('li');
+                shiftItem.innerHTML = formatShift(shift);
+                shiftsList.appendChild(shiftItem);
+            });
+        }
+
+        fetch('/api/shifts/')
+            .then(response => response.json())
+            .then(data => {
+                shiftsList.innerHTML = '';
+
+                if (data.initial_shifts.length > 0) {
+                    appendShifts(data.initial_shifts);
+                    remainingShifts = data.remaining_shifts;
+
+                    if (remainingShifts.length > 0) {
+                        loadMoreBtn.style.display = 'block';
+                    }
+                } else {
+                    shiftsList.innerHTML = '<li>No shifts available</li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching shifts:', error);
+                shiftsList.innerHTML = '<li>Error loading shifts</li>';
+            })
+            .finally(() => loader?.classList.remove('active'));
+
+        loadMoreBtn.addEventListener('click', function () {
+            appendShifts(remainingShifts);
+            loadMoreBtn.style.display = 'none';
         });
-});
-    </script>
+    });
+</script>
+
+
 
     <script src="{% static 'js/shifts.js' %}"></script>
     <script src="{% static 'js/charts_populartimes.js' %}"></script>

@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 import livepopulartimes
 import requests
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -114,13 +115,13 @@ def index(request: HttpRequest):
     """
     today = datetime.today().date()
     tomorrow = today + timedelta(days=1)
-    userShifts = getNextShiftsByUser(request)
     myTasks = get_my_tasks(request)
     ongoingShift = hasOngoingShift(request)
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
     statistics, statisticsSum = getStatistics(request)
     user_profile = get_user_profile(request.user)
     customer_profile = get_customer_profile(request.user)
+    current_month_year = today.strftime("%B %Y")
 
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
@@ -177,7 +178,6 @@ def index(request: HttpRequest):
 
     context = {
         "pageTitle": "Dashboard",
-        "nextShifts": userShifts[:5],
         "task_list": myTasks[:5],
         "tasks_done_last_month": tasksDoneLastMonth,
         "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
@@ -193,6 +193,7 @@ def index(request: HttpRequest):
         "tomorrow": tomorrow,
         "today_holidays": today_holidays,
         "tomorrow_holidays": tomorrow_holidays,
+        "current_month_year": current_month_year,
     }
 
     return render(request, "index.html", context=context)
@@ -204,6 +205,57 @@ run_once_day_punch_clock = {}
 nextShifts = []
 nextShiftsUser = {}
 punchClockRecordsUser = {}
+
+
+@login_required
+@employee_required
+def get_next_user_shifts(request: HttpRequest):
+    """
+    API view to fetch the next shifts for the current user within the current day to the end of the month.
+    """
+    try:
+        user_email = request.user.email
+        planday.authenticate()  # Ensure the user is authenticated
+
+        # Define the 'from' date as the start of the current day
+        from_date = datetime.now().strftime("%Y-%m-%d")
+
+        # Define the 'to' date as the last day of the current month
+        end_of_month = (datetime.now() + relativedelta(day=31)).strftime("%Y-%m-%d")
+
+        # Prepare query parameters
+        payload = {
+            "From": from_date,
+            "To": end_of_month,
+            "EmployeeId": [planday.get_employee_id_by_email(user_email)],
+            "Limit": 50,  # Adjust the limit as needed
+            "ShiftStatus": "Assigned",
+        }
+
+        # Fetch shifts within the date range
+        response = planday.session.get(
+            f"{planday.base_url}/scheduling/v1.0/shifts",
+            headers=planday.get_auth_headers(),
+            params=payload,
+        )
+        response.raise_for_status()
+        response_data = response.json()
+
+        # Extract shifts data
+        shifts = response_data.get("data", [])
+
+        # Initial shifts to display (first 2 shifts)
+        initial_shifts = shifts[:5]
+
+        # Remaining shifts to load on button click
+        remaining_shifts = shifts[5:]
+
+        return JsonResponse(
+            {"initial_shifts": initial_shifts, "remaining_shifts": remaining_shifts}
+        )
+    except Exception as e:
+        logger.error(f"Error fetching shifts data: {str(e)}")
+        return JsonResponse({"error": "Error fetching shifts data."}, status=500)
 
 
 def shiftsWereCheckedToday(userId):
@@ -219,45 +271,6 @@ def punchClockRecordsWereCheckedToday(userId):
     ):
         return False
     return True
-
-
-def getNextShiftsByUser(request):
-    planday.authenticate()
-    user_email = request.user.email
-    userShifts = planday.get_upcoming_shifts_for_user(user_email)
-
-    transformed_shifts = []
-    for shift in userShifts:
-        start = datetime.fromisoformat(shift["start"]).strftime("%H.%M")
-        end = datetime.fromisoformat(shift["end"]).strftime("%H.%M")
-        day = datetime.fromisoformat(shift["end"]).strftime("%d")
-        weekday = datetime.fromisoformat(shift["end"]).strftime("%a")
-
-        transformed_shifts.append(
-            {
-                "day": day,
-                "start": start,
-                "end": end,
-                "weekday": weekday,
-                "location": shift.get("departmentId", ""),
-                "departmentId": shift.get("departmentId", ""),
-                "employeeGroupId": shift.get("groupId", ""),
-                "comment": shift.get("comment", ""),
-            }
-        )
-
-    return transformed_shifts
-
-
-@login_required
-@employee_required
-def get_shifts_data(request):
-    try:
-        userShifts = getNextShiftsByUser(request)
-        return JsonResponse({"shifts": userShifts})
-    except Exception as e:
-        logger.error(f"Error fetching shifts data: {str(e)}")
-        return JsonResponse({"shifts": []}, status=500)
 
 
 def hasOngoingShift(request):
@@ -354,15 +367,20 @@ def getStatistics(request):
 @employee_required
 def planday_info(request: HttpRequest):
     """
-    View to fetch and display Planday portal information.
+    View to fetch and display Planday portal information and departments.
     """
     planday = Planday()
     planday.authenticate()
 
+    # Fetch portal information
     portal_info = planday.get_portal_info()
+
+    # Fetch departments
+    departments = planday.get_departments()
 
     context = {
         "portal_info": portal_info["data"],
+        "departments": departments,
     }
 
     # Render the template with the context

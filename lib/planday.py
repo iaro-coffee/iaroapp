@@ -4,8 +4,15 @@ import os
 
 import requests
 from dateutil.relativedelta import relativedelta
+from django.core.cache import cache
 from dotenv import find_dotenv, load_dotenv
-from tenacity import retry, stop_after_attempt, wait_exponential
+from requests.exceptions import RequestException, Timeout
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 load_dotenv(find_dotenv())
 
@@ -19,18 +26,79 @@ class Planday:
     session = requests.session()
     session.trust_env = False
 
+    @retry(
+        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((RequestException, Timeout)),
+    )
     def authenticate(self):
-        payload = {
-            "client_id": self.client_id,
-            "refresh_token": self.refresh_token,
-            "grant_type": "refresh_token",
+        """
+        Authenticate with the Planday API using the refresh token. Caches the access token
+        for reuse. Retries on network-related issues and handles token expiration.
+        """
+        try:
+            # Check cache for existing access token
+            access_token = cache.get("planday_access_token")
+            if access_token:
+                self.access_token = access_token
+                return
+
+            # Prepare the payload and headers for the authentication request
+            payload = {
+                "client_id": self.client_id,
+                "refresh_token": self.refresh_token,
+                "grant_type": "refresh_token",
+            }
+            headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+            # Send the authentication request
+            response = self.session.post(self.auth_url, headers=headers, data=payload)
+            response.raise_for_status()
+
+            # Parse and cache the access token
+            response_data = response.json()
+            self.access_token = response_data.get("access_token")
+            expires_in = response_data.get(
+                "expires_in", 3600
+            )  # Default to 1 hour if not provided
+
+            # Cache the access token
+            if self.access_token:
+                cache.set("planday_access_token", self.access_token, timeout=expires_in)
+            else:
+                raise ValueError("Access token not found in the response.")
+
+        except requests.HTTPError as e:
+            if e.response.status_code == 401:
+                # 401 Unauthorized, possibly due to invalid credentials
+                cache.delete("planday_access_token")
+                raise PermissionError(
+                    "Invalid credentials. Please check your client ID and refresh token."
+                )
+            else:
+                raise e  # Re-raise other HTTP errors for further handling
+        except (RequestException, Timeout) as e:
+            raise ConnectionError(f"Network error occurred: {e}")
+        except ValueError as e:
+            raise ValueError(f"Authentication failed: {e}")
+        except Exception as e:
+            # General fallback for any other unexpected errors
+            raise RuntimeError(
+                f"An unexpected error occurred during authentication: {e}"
+            )
+
+    def get_auth_headers(self):
+        """
+        Return headers with the authorization token.
+        """
+        if not self.access_token:
+            self.authenticate()
+
+        return {
+            "Authorization": f"Bearer {self.access_token}",
+            "X-ClientId": self.client_id,
+            "Content-Type": "application/json",
         }
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        response = self.session.request(
-            "POST", self.auth_url, headers=headers, data=payload
-        )
-        response = json.loads(response.text)
-        self.access_token = response["access_token"]
 
     def get_portal_info(self):
         """Fetch the portal information"""
@@ -206,18 +274,22 @@ class Planday:
         return user_shifts
 
     def get_upcoming_shifts_for_user(self, user_email):
+        # Ensure the user is authenticated before making the request
+        self.authenticate()  # This will cache the token and only authenticate if necessary
+
         employeeId = self.get_employee_id_by_email(user_email)
         if employeeId is None:
             return []
 
         auth_headers = {
-            "Authorization": "Bearer " + self.access_token,
+            "Authorization": f"Bearer {self.access_token}",
             "X-ClientId": self.client_id,
         }
         today = datetime.datetime.now().strftime("%Y-%m-%d")
         nextMonth = (datetime.datetime.now() + relativedelta(months=1)).strftime(
             "%Y-%m-%d"
         )
+
         payload = {
             "from": today,
             "to": nextMonth,
@@ -225,20 +297,22 @@ class Planday:
             "employeeId": employeeId,
         }
 
-        response = self.session.request(
-            "GET",
-            self.base_url + "/scheduling/v1/shifts",
+        response = self.session.get(
+            f"{self.base_url}/scheduling/v1/shifts",
             headers=auth_headers,
             params=payload,
         )
-        response = json.loads(response.text)
+
+        try:
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            data = response.json()
+        except (requests.HTTPError, json.JSONDecodeError) as e:
+            print(f"Error fetching shifts for {user_email}: {e}")
+            return []
+
         shifts = []
 
-        if "data" not in response:
-            return shifts
-
-        for shift in response["data"]:
-            print(shift)
+        for shift in data.get("data", []):
             start = shift["startDateTime"]
             end = shift["endDateTime"]
             departmentId = shift.get("departmentId", "")
@@ -256,6 +330,38 @@ class Planday:
             )
 
         return shifts
+
+    def get_departments(self, limit=50, offset=0):
+        """Fetches the list of departments from the Planday API."""
+        auth_headers = {
+            "Authorization": "Bearer " + self.access_token,
+            "X-ClientId": self.client_id,
+        }
+
+        params = {
+            "limit": limit,
+            "offset": offset,
+        }
+
+        response = self.session.get(
+            f"{self.base_url}/hr/v1.0/departments", headers=auth_headers, params=params
+        )
+
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                departments = data.get("data", [])
+                for department in departments:
+                    print(
+                        f"Department ID: {department['id']}, Name: {department['name']}"
+                    )
+                return departments
+            except json.JSONDecodeError:
+                print("Error decoding JSON response.")
+                return []
+        else:
+            print(f"Failed to fetch departments. Status code: {response.status_code}")
+            return []
 
 
 """
