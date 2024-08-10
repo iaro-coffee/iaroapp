@@ -1,5 +1,6 @@
 from base64 import b64encode
 from io import BytesIO
+from smtplib import SMTPAuthenticationError
 
 import qrcode
 from allauth.account.models import EmailAddress
@@ -16,8 +17,6 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from customers.forms import CustomLoginForm, CustomSignupForm
@@ -65,7 +64,6 @@ class CustomerLoginView(LoginView):
         return context
 
 
-@method_decorator(csrf_exempt, name="dispatch")
 class CustomerSignupView(SignupView):
     """View to handle customer sign up."""
 
@@ -77,8 +75,10 @@ class CustomerSignupView(SignupView):
         return CustomSignupForm
 
     def form_valid(self, form):
-        """Validate form, save user and return appropriate JsonResponse."""
+        """Validate form, save user, handle exceptions and return appropriate JsonResponse."""
         email = form.cleaned_data.get("email")
+
+        # Check if the email is already in use
         if User.objects.filter(email=email).exists():
             form.add_error(
                 None,
@@ -90,8 +90,23 @@ class CustomerSignupView(SignupView):
             )
             return self.form_invalid(form)
 
-        super().form_valid(form)
-        return JsonResponse({"success": True})
+        try:
+            # Proceed with user creation
+            super().form_valid(form)
+            return JsonResponse({"success": True})
+
+        except SMTPAuthenticationError:
+            # Handle SMTP authentication errors specifically
+            form.add_error(
+                None,
+                "Account is created but email confirmation failed. Please contact support.",
+            )
+            return self.form_invalid(form)
+
+        except Exception:
+            # Handle any other unexpected errors
+            form.add_error(None, "Unexpected error. Please contact support.")
+            return self.form_invalid(form)
 
     def form_invalid(self, form):
         """Return JsonResponse with errors when form is invalid."""

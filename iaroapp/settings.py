@@ -188,6 +188,7 @@ USE_I18N = True
 USE_TZ = True
 
 SITE_ID = 3
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "iaro - "
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
