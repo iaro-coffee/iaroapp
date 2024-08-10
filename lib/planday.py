@@ -47,7 +47,10 @@ class Planday:
                 "refresh_token": self.refresh_token,
                 "grant_type": "refresh_token",
             }
-            headers = {"Content-Type": "application/x-www-form-urlencoded"}
+            headers = {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-ClientId": self.client_id,
+            }
 
             # Send the authentication request
             response = self.session.post(self.auth_url, headers=headers, data=payload)

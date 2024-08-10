@@ -477,78 +477,98 @@
         const statistics = JSON.parse('{{ statistics | to_json | escapejs }}');
     </script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const shiftsList = document.getElementById('shifts-list');
-        const loader = document.getElementById('shiftsLoader');
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const shiftsList = document.getElementById('shifts-list');
+            const loader = document.getElementById('shiftsLoader');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const refreshShiftsBtn = document.getElementById('refreshShiftsBtn');
 
-        let remainingShifts = [];
+            let remainingShifts = [];
 
-        function formatTime(date) {
-            return date.toLocaleTimeString('en-GB', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
-        }
+            function formatTime(date) {
+                return date.toLocaleTimeString('en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+            }
 
-        function formatShift(shift) {
-            const startDate = new Date(shift.startDateTime);
-            const endDate = new Date(shift.endDateTime);
-            const day = startDate.getDate().toString().padStart(2, '0');
-            const weekday = startDate.toLocaleDateString('en-US', { weekday: 'short' });
+            function formatShift(shift) {
+                const startDate = new Date(shift.startDateTime);
+                const endDate = new Date(shift.endDateTime);
+                const day = startDate.getDate().toString().padStart(2, '0');
+                const weekday = startDate.toLocaleDateString('en-US', {weekday: 'short'});
 
-            return `
-                <div class="date">
-                    ${day}
-                    <span class="weekday text-center">${weekday}</span>
-                </div>
-                <div class="shift bg-gradient-secondary px-3">
-                    <span class="time text-sm">${formatTime(startDate)} – ${formatTime(endDate)}</span>
-                    <span class="location text-xs opacity-5">${shift.departmentId}</span>
-                </div>
-                {#${shift.employeeGroupId ? `<div>Employee Group ID: ${shift.employeeGroupId}</div>` : ''}#}
-                {#${shift.comment ? `<div>Comment: ${shift.comment}</div>` : ''}#}
-            `;
-        }
+                return `
+            <div class="date">
+                ${day}
+                <span class="weekday text-center">${weekday}</span>
+            </div>
+            <div class="shift bg-gradient-secondary px-3">
+                <span class="time text-sm">${formatTime(startDate)} – ${formatTime(endDate)}</span>
+                <span class="location text-xs opacity-5">${shift.departmentId}</span>
+            </div>
+            {#${shift.employeeGroupId ? `<div>Employee Group ID: ${shift.employeeGroupId}</div>` : ''}#}
+            {#${shift.comment ? `<div>Comment: ${shift.comment}</div>` : ''}#}
+        `;
+            }
 
-        function appendShifts(shifts) {
-            shifts.forEach(shift => {
-                const shiftItem = document.createElement('li');
-                shiftItem.innerHTML = formatShift(shift);
-                shiftsList.appendChild(shiftItem);
-            });
-        }
+            function appendShifts(shifts) {
+                shifts.forEach(shift => {
+                    const shiftItem = document.createElement('li');
+                    shiftItem.innerHTML = formatShift(shift);
+                    shiftsList.appendChild(shiftItem);
+                });
+            }
 
-        fetch('/api/shifts/')
-            .then(response => response.json())
-            .then(data => {
+            function fetchShifts(refresh = false) {
+                const url = refresh ? '/api/shifts/?refresh=true' : '/api/shifts/';
+
+                loader.classList.add('active');
                 shiftsList.innerHTML = '';
 
-                if (data.initial_shifts.length > 0) {
-                    appendShifts(data.initial_shifts);
-                    remainingShifts = data.remaining_shifts;
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.initial_shifts && data.initial_shifts.length > 0) {
+                            appendShifts(data.initial_shifts);
+                            remainingShifts = data.remaining_shifts;
 
-                    if (remainingShifts.length > 0) {
-                        loadMoreBtn.style.display = 'block';
-                    }
-                } else {
-                    shiftsList.innerHTML = '<li>No shifts available</li>';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching shifts:', error);
-                shiftsList.innerHTML = '<li>Error loading shifts</li>';
-            })
-            .finally(() => loader?.classList.remove('active'));
+                            if (remainingShifts.length > 0) {
+                                loadMoreBtn.style.display = 'block';
+                            } else {
+                                loadMoreBtn.style.display = 'none';
+                            }
+                        } else {
+                            shiftsList.innerHTML = '<li>No shifts available</li>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching shifts:', error);
+                        shiftsList.innerHTML = '<li>Error loading shifts</li>';
+                    })
+                    .finally(() => loader.classList.remove('active'));
 
-        loadMoreBtn.addEventListener('click', function () {
-            appendShifts(remainingShifts);
-            loadMoreBtn.style.display = 'none';
+            }
+
+            refreshShiftsBtn.addEventListener('click', function () {
+                fetchShifts(true);
+            });
+
+            loadMoreBtn.addEventListener('click', function () {
+                appendShifts(remainingShifts);
+                loadMoreBtn.style.display = 'none';
+            });
+
+            fetchShifts();
         });
-    });
-</script>
+    </script>
 
 
 

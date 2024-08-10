@@ -13,7 +13,7 @@ from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Avg, Q
 from django.http import HttpRequest, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
@@ -31,7 +31,7 @@ from tasks.views import get_my_tasks
 logger = logging.getLogger(__name__)
 
 
-def get_user_profile(user):
+def get_employee_profile(user):
     try:
         return EmployeeProfile.objects.get(user=user)
     except EmployeeProfile.DoesNotExist:
@@ -60,7 +60,7 @@ def sanitize_cache_key(key: str) -> str:
 @employee_required
 @login_required
 def get_populartimes_data(request: HttpRequest):
-    user_profile = get_user_profile(request.user)
+    user_profile = get_employee_profile(request.user)
 
     # Set formatted address based on user profile and branch
     if user_profile and user_profile.branch:
@@ -119,7 +119,7 @@ def index(request: HttpRequest):
     ongoingShift = hasOngoingShift(request)
     tasksDoneLastMonth = getTasksDoneLastMonth(request)
     statistics, statisticsSum = getStatistics(request)
-    user_profile = get_user_profile(request.user)
+    user_profile = get_employee_profile(request.user)
     customer_profile = get_customer_profile(request.user)
     current_month_year = today.strftime("%B %Y")
 
@@ -212,19 +212,37 @@ punchClockRecordsUser = {}
 def get_next_user_shifts(request: HttpRequest):
     """
     API view to fetch the next shifts for the current user within the current day to the end of the month.
+    Cached for 24 hours unless the user requests a refresh.
     """
     try:
         user_email = request.user.email
 
-        employee_id = planday.get_employee_id_by_email(user_email)
-        if not employee_id:
-            return JsonResponse({"error": "Employee not found"}, status=404)
+        # Retrieve id for the current user
+        employee_profile = get_object_or_404(EmployeeProfile, user=request.user)
+        employee_id = employee_profile.planday_id
 
+        # If planday_id is not available, fallback to using the email to get the ID (fetch all users)
+        if not employee_id:
+            employee_id = planday.get_employee_id_by_email(user_email)
+            if not employee_id:
+                return JsonResponse({"error": "Employee not found"}, status=404)
+
+        cache_key = f"user_shifts_{employee_id}"
+        refresh = request.GET.get("refresh", "false").lower() == "true"
+
+        # Check if data is cached and refresh is not requested
+        if not refresh:
+            cached_data = cache.get(cache_key)
+            if cached_data:
+                return JsonResponse(cached_data)
+            else:
+                print("Cache miss - no data found")
+
+        # If not cached or refresh is requested, fetch the shifts
         from_date = datetime.now().strftime("%Y-%m-%d")  # Define 'from' date
         end_of_month = (datetime.now() + relativedelta(day=31)).strftime(
             "%Y-%m-%d"
         )  # Define 'to' date
-
         shifts = planday.get_user_shifts(
             employee_id, from_date, end_of_month
         )  # Fetch shifts
@@ -232,9 +250,15 @@ def get_next_user_shifts(request: HttpRequest):
         initial_shifts = shifts[:5]
         remaining_shifts = shifts[5:]
 
-        return JsonResponse(
-            {"initial_shifts": initial_shifts, "remaining_shifts": remaining_shifts}
-        )
+        response_data = {
+            "initial_shifts": initial_shifts,
+            "remaining_shifts": remaining_shifts,
+        }
+
+        # Cache the result for 24 hours
+        cache.set(cache_key, response_data, timeout=60 * 60 * 24)
+
+        return JsonResponse(response_data)
     except Exception as e:
         logger.error(f"Error fetching shifts data: {str(e)}")
         return JsonResponse({"error": "Error fetching shifts data."}, status=500)
