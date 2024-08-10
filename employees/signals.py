@@ -2,8 +2,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from customers.models import CustomerProfile
+from employees.models import EmployeeProfile
 from lib.pos_hello_tess import POSHelloTess, get_card_id_from_user
-from users.models import Profile
 
 
 @receiver(post_save, sender=CustomerProfile)
@@ -25,9 +25,12 @@ def create_user_profile(sender, instance, created, **kwargs):
         print("Instance was just created, exit function.")
         return
 
-    if instance.is_employee and not Profile.objects.filter(user=instance.user).exists():
+    if (
+        instance.is_employee
+        and not EmployeeProfile.objects.filter(user=instance.user).exists()
+    ):
         print("Instance is an employee and profile does not exist.")
-        Profile.objects.create(user=instance.user)
+        EmployeeProfile.objects.create(user=instance.user)
         print("Profile created successfully for user.")
     else:
         print("No action needed, profile already exists.")

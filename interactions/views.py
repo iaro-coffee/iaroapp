@@ -15,8 +15,8 @@ from django.views import View
 from django.views.generic import TemplateView
 from pdf2image import convert_from_path, pdfinfo_from_path
 
+from employees.models import EmployeeProfile
 from inventory.models import Branch
-from users.models import Profile
 
 from .forms import NoteForm, PDFUploadForm, VideoUploadForm
 from .models import (
@@ -38,7 +38,7 @@ class NoteView(LoginRequiredMixin, TemplateView):
         context["form"] = NoteForm()
 
         user = self.request.user
-        user_branch = user.profile.branch
+        user_branch = user.employeeprofile.branch
 
         # Fetch received notes (combine by user and by user's branch) - init load, first 5
         received_notes = (
@@ -96,7 +96,7 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
         offset = int(request.GET.get("offset", 0))
         limit = 5
         user = request.user
-        user_branch = user.profile.branch
+        user_branch = user.employeeprofile.branch
 
         received_notes = list(
             Note.objects.filter(Q(receivers=user) | Q(branches=user_branch))
@@ -156,7 +156,7 @@ class UnreadCountView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        user_branch = user.profile.branch
+        user_branch = user.employeeprofile.branch
 
         unread_count = NoteReadStatus.objects.filter(
             Q(user=user)
@@ -435,16 +435,16 @@ def user_progress(request):
 
     if branch_name == "All":
         selected_branch = "All"
-        profiles = Profile.objects.all()
+        profiles = EmployeeProfile.objects.all()
         pdf_filter = {}
     else:
         try:
             branch = Branch.objects.get(name=branch_name)
             selected_branch = branch_name
-            profiles = Profile.objects.filter(branch=branch)
+            profiles = EmployeeProfile.objects.filter(branch=branch)
             pdf_filter = {"branches": branch}
         except Branch.DoesNotExist:
-            profiles = Profile.objects.none()
+            profiles = EmployeeProfile.objects.none()
             pdf_filter = {}
 
     users = (
@@ -459,7 +459,8 @@ def user_progress(request):
     )
 
     pdfs_by_user = {
-        user.id: list(pdfs.filter(branches=user.profile.branch)) for user in users
+        user.id: list(pdfs.filter(branches=user.employeeprofile.branch))
+        for user in users
     }
     pdf_completions_by_user = {
         user.id: set(

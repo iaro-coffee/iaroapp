@@ -14,9 +14,9 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views.generic import ListView, View
 
+from employees.models import EmployeeProfile
 from iaroapp.query_helpers import qif
 from inventory.models import Branch
-from users.models import Profile
 
 from .forms import BakingPlanForm, TaskForm, TaskFormset
 from .models import (
@@ -48,7 +48,7 @@ class TasksView(LoginRequiredMixin, ListView):
             branch_name = self.request.GET.get("branch", "All")
         else:
             # Use the user's profile branch if no specific parameters are present
-            user_profile = Profile.objects.get(user=self.request.user)
+            user_profile = EmployeeProfile.objects.get(user=self.request.user)
             branch_name = user_profile.branch.name if user_profile.branch else "All"
             selected_day = current_day
 

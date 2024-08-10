@@ -2,15 +2,25 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
+from customers.models import CustomerProfile
+from employees.models import EmployeeProfile
+
 from .forms import UserAdminCreationForm
-from .models import Profile
 
 
-class ProfileInline(admin.StackedInline):
-    model = Profile
+class EmployeeProfileInline(admin.StackedInline):
+    model = EmployeeProfile
     can_delete = False
     verbose_name_plural = "Profiles"
     fk_name = "user"
+
+
+class CustomerProfileInline(admin.StackedInline):
+    model = CustomerProfile
+    can_delete = False
+    verbose_name_plural = "Profiles"
+    fk_name = "user"
+    readonly_fields = ("card_qr_code",)
 
 
 class CustomUserAdmin(BaseUserAdmin):
@@ -24,7 +34,10 @@ class CustomUserAdmin(BaseUserAdmin):
             },
         ),
     )
-    inlines = (ProfileInline,)
+    inlines = (
+        EmployeeProfileInline,
+        CustomerProfileInline,
+    )
     search_fields = ("username", "email")
 
     def get_inline_instances(self, request, obj=None):
@@ -35,13 +48,3 @@ class CustomUserAdmin(BaseUserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
-
-
-@admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "branch", "avatar")
-    search_fields = (
-        "user__username__icontains",
-        "user__email__icontains",
-        "branch__name__icontains",
-    )

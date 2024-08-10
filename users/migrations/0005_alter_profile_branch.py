@@ -3,7 +3,7 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import users.models
+import employees.models
 
 
 class Migration(migrations.Migration):
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             name="branch",
             field=models.ForeignKey(
                 blank=True,
-                default=users.models.get_first_branch_id,
+                default=employees.models.get_first_branch_id,
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
                 to="inventory.branch",

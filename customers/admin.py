@@ -12,3 +12,5 @@ class CustomerProfileAdmin(admin.ModelAdmin):
         "first_name__icontains",
         "last_name__icontains",
     )
+    readonly_fields = ("card_qr_code",)
+    ordering = ("user__username",)

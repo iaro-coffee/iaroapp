@@ -29,7 +29,7 @@ def get_current_branch(request):
 
     # If no branch is specified, try to get it from user's profile
     if request.user.is_authenticated:
-        profile = request.user.profile
+        profile = request.user.employeeprofile
         if profile and profile.branch:
             return profile.branch
 

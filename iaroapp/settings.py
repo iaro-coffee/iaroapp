@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     "inventory.apps.InventoryConfig",
     "users.apps.UsersConfig",
     "customers",
+    "employees",
     "interactions",
     "onboarding",
     "allauth",
@@ -208,10 +209,10 @@ LOGIN_URL = "/card/login/"
 LOGIN_REDIRECT_URL = "/card/dashboard/"
 
 LOGIN_REQUIRED_IGNORE_PATHS = [
-    r"/users/logout/$",
-    r"/users/signup/$",
-    r"/users/login/$",
-    r"/users/register",
+    r"/staff/logout/$",
+    r"/staff/signup/$",
+    r"/staff/login/$",
+    r"/staff/register",
     r"/card/",
 ]
 

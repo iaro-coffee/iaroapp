@@ -133,7 +133,6 @@ class Planday:
         employees = response_json["data"]
         if not all(isinstance(emp, dict) for emp in employees):
             raise ValueError(f"Unexpected employee data structure: {employees}")
-        print(employees)
         return employees
 
     def get_employee_id_by_email(self, email):

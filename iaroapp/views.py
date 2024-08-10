@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
 from customers.models import CustomerProfile
+from employees.models import EmployeeProfile
 from iaroapp.decorators import employee_required
 from interactions.models import Note
 from lib import planday
@@ -26,15 +27,14 @@ from ratings.views import EmployeeRating
 from shifts.models import Shift
 from tasks.models import TaskInstance
 from tasks.views import get_my_tasks
-from users.models import Profile
 
 logger = logging.getLogger(__name__)
 
 
 def get_user_profile(user):
     try:
-        return Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
+        return EmployeeProfile.objects.get(user=user)
+    except EmployeeProfile.DoesNotExist:
         logger.info(f"User {user.username} does not have a profile.")
         print(f"User {user.username} does not have a profile.")
         return None

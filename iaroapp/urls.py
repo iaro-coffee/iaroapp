@@ -31,8 +31,8 @@ urlpatterns = [
     path("shifts/", include("shifts.urls")),
     path("ratings/", include("ratings.urls")),
     path("tasks/", include("tasks.urls")),
-    path("users/", include("users.urls")),
-    path("notes/", include("interactions.urls")),  # Updated path
+    path("staff/", include("employees.urls")),
+    path("notes/", include("interactions.urls")),
     path("", include("customers.urls")),
     path(
         "get_populartimes_data/",
