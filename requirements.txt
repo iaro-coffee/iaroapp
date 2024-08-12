@@ -28,3 +28,4 @@ psutil
 django-embed-video
 django-cors-headers
 tenacity
+fillpdf

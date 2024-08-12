@@ -448,9 +448,9 @@ def user_progress(request):
             pdf_filter = {}
 
     users = (
-        User.objects.filter(profile__in=profiles)
-        .prefetch_related("profile")
-        .select_related("profile")
+        User.objects.filter(employeeprofile__in=profiles)
+        .prefetch_related("employeeprofile")
+        .select_related("employeeprofile")
     )
 
     pdfs = PDFUpload.objects.filter(**pdf_filter)
