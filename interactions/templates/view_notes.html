@@ -37,7 +37,7 @@
                                     {{ note.timestamp|time:"H:i" }}
                                 </div>
                                 <div class="user__info mb-2">
-                                    <img src="{% if note.sender.profile.avatar.url %}{{ note.sender.profile.avatar.url }}
+                                    <img src="{% if note.sender.employeeprofile.avatar.url %}{{ note.sender.employeeprofile.avatar.url }}
                                                 {% else %}{% static 'images/avatar.png' %}{% endif %}"
                                          alt="{{ note.sender.username }}'s avatar"
                                          class="avatar">
@@ -77,7 +77,7 @@
                                         {% endfor %}
                                         {% for receiver in note.receivers.all %}
                                             <img src="
-                                                    {% if receiver.profile.avatar.url %}{{ receiver.profile.avatar.url }}
+                                                    {% if receiver.employeeprofile.avatar.url %}{{ receiver.employeeprofile.avatar.url }}
                                 {% else %}{% static 'images/avatar.png' %}{% endif %}"
                                                  alt="{{ receiver.username }}'s avatar"
                                                  class="avatar">

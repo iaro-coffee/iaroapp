@@ -244,7 +244,8 @@
                         {% for note in received_notes %}
                             <div class="d-flex justify-content-between">
                                 <div class="user__info mb-3 w-75">
-                                    <img src="{{ note.sender.profile.avatar.url }}"
+                                    <img src="
+                                            {% if note.sender.employeeprofile.avatar %}{{ note.sender.employeeprofile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
                                          alt="{{ note.sender.username }}'s avatar"
                                          style="width: 32px; height: 32px; border-radius: 50%; background-color: #483d8b">
                                     {{ note.sender.username }}:
