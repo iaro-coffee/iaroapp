@@ -23,7 +23,6 @@ def generate_access_token():
     response_data = response.json()
 
     if response.status_code == 200:
-        print(f"Access Token Generated: {response_data['access_token']}")
         return response_data["access_token"]
     else:
         raise Exception(f"Error generating access token: {response_data}")
@@ -76,7 +75,35 @@ def send_document_using_template(
     )
 
     if response.status_code == 200:
-        return response.json()
+        print("Success! Here is the response:")
+        print("Response Status Code:", response.status_code)
+        print("Response Headers:", json.dumps(dict(response.headers), indent=4))
+
+        response_json = response.json()
+        print("Response Content:", json.dumps(response_json, indent=4))
+
+        # Extract request_id and action_id
+        request_id = response_json.get("requests", {}).get("request_id")
+
+        actions = response_json.get("requests", {}).get("actions", [])
+        if not actions:
+            print("No actions found in the response.")
+            raise ValueError("No actions found in the response.")
+
+        action_id = actions[0].get("action_id")
+
+        # Debugging: Print the request_id and action_id to inspect them
+        print(f"Extracted Request ID: {request_id}, Action ID: {action_id}")
+
+        if not request_id or not action_id:
+            raise ValueError("request_id or action_id is None, cannot proceed.")
+
+        # Return the entire response JSON and the extracted IDs for further use
+        return {
+            "response_json": response_json,
+            "request_id": request_id,
+            "action_id": action_id,
+        }
     else:
         raise Exception(f"Error sending document: {response.json()}")
 
@@ -98,3 +125,16 @@ def get_embedded_signing_url(request_id, action_id, domain_name, oauth_token):
         return response.json().get("signing_url")
     else:
         raise Exception(f"Error getting signing URL: {response.json()}")
+
+
+template_id = "66746000000038081"
+oauth_token = generate_access_token()
+recipient_email = "3dom.ua@gmail.com"
+recipient_name = "John Doe"
+send_document_using_template(
+    template_id,
+    get_template_details(template_id, oauth_token),
+    recipient_email,
+    recipient_name,
+    oauth_token,
+)
