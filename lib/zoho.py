@@ -56,9 +56,12 @@ def send_document_using_template(
             "recipient_email": recipient_email,
             "recipient_name": recipient_name,
             "action_id": action["action_id"],
-            "action_type": action["action_type"],
+            "action_type": "SIGN",  # Standard action type for signing
             "private_notes": "",
             "signing_order": action["signing_order"],
+            "role": action.get("role"),  # Pass the role if applicable
+            "verify_recipient": False,  # Set to True if you want to verify the recipient's identity
+            "is_embedded": True,  # This makes the action embedded
         }
         new_action_array.append(new_action)
 
