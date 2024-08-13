@@ -41,7 +41,7 @@ def sign_document(request):
         access_token = generate_access_token()
 
         # Step 2: Get Template Details
-        template_id = "66746000000033003"  # Replace with your template ID
+        template_id = "66746000000038081"  # Replace with your template ID
         template_details = get_template_details(template_id, access_token)
 
         # Step 3: Send Document Using Template (without pre-filling fields)
@@ -56,9 +56,12 @@ def sign_document(request):
 
         # Step 4: Extract request_id and action_id
         request_id = send_response.get("requests", {}).get("request_id")
-        action_id = (
-            send_response.get("requests", {}).get("actions", [{}])[0].get("action_id")
-        )
+        actions = send_response.get("requests", {}).get("actions", [])
+
+        if not actions:
+            raise ValueError("No actions found in the response.")
+
+        action_id = actions[0].get("action_id")
 
         # Debugging: Print the request_id and action_id to inspect them
         print(f"Request ID: {request_id}, Action ID: {action_id}")

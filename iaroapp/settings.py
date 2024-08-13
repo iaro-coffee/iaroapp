@@ -44,7 +44,7 @@ SECURE_HSTS_SECONDS = 3600
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_BROWSER_XSS_FILTER = True
-# X_FRAME_OPTIONS = "SAMEORIGIN"  # - no need if added django-cors
+X_FRAME_OPTIONS = "SAMEORIGIN"
 CSRF_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SAMESITE = "None"
 
@@ -66,7 +66,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.youtube.com",
     "https://googleads.g.doubleclick.net",
     "https://kit.fontawesome.com",
-    "https://sign.zoho.eu/",
+    "https://sign.zoho.eu",
 ]
 
 
