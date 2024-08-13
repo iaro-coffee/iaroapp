@@ -7,7 +7,7 @@ from lib.pos_hello_tess import POSHelloTess, get_card_id_from_user
 
 
 @receiver(post_save, sender=CustomerProfile)
-def create_user_profile(sender, instance, created, **kwargs):
+def create_employee_profile(sender, instance, created, **kwargs):
     print(
         f"Function create_user_profile called with:\n sender={sender},"
         f"\n instance={instance},\n created={created},\n kwargs={kwargs}"

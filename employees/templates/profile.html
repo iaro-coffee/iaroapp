@@ -12,10 +12,15 @@
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="d-flex justify-content-center">
-                        {% if user.profile %}
-                             <img class="img-fluid avatar-img"
-                                 src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
+                        {% if user.employeeprofile %}
+                            <img class="img-fluid avatar-img"
+                                 src="{% if user.employeeprofile.avatar %}{{ user.employeeprofile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
                                  alt="{{ user.username }}'s avatar"
+                                 accept=".jpg,.jpeg,.png"/>
+                        {% else %}
+                            <img class="img-fluid avatar-img"
+                                 src="{% static 'images/avatar.png' %}"
+                                 alt="Default avatar"
                                  accept=".jpg,.jpeg,.png"/>
                         {% endif %}
                     </div>
