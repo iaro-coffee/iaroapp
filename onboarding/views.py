@@ -39,10 +39,14 @@ def sign_document(request):
     try:
         # Step 1: Generate Access Token
         access_token = generate_access_token()
+        print(f"Access Token: {access_token}")  # Debugging access token generation
 
         # Step 2: Get Template Details
         template_id = "66746000000038081"  # Replace with your template ID
         template_details = get_template_details(template_id, access_token)
+        print(
+            f"Template Details: {json.dumps(template_details, indent=4)}"
+        )  # Debugging template details
 
         # Step 3: Send Document Using Template (without pre-filling fields)
         recipient_email = "3dom.ua@gmail.com"  # Replace with actual recipient email
@@ -50,18 +54,21 @@ def sign_document(request):
         send_response = send_document_using_template(
             template_id, template_details, recipient_email, recipient_name, access_token
         )
-
-        # Debugging: Print the send_response to inspect it
-        print("Send Response:", json.dumps(send_response, indent=4))
+        print(
+            "Send Response:", json.dumps(send_response, indent=4)
+        )  # Debugging send_response
 
         # Step 4: Extract request_id and action_id
         request_id = send_response.get("requests", {}).get("request_id")
-        actions = send_response.get("requests", {}).get("actions", [])
+        print(f"Extracted Request ID: {request_id}")  # Debugging extracted request_id
 
+        actions = send_response.get("requests", {}).get("actions", [])
         if not actions:
+            print("No actions found in the response.")
             raise ValueError("No actions found in the response.")
 
         action_id = actions[0].get("action_id")
+        print(f"Extracted Action ID: {action_id}")  # Debugging extracted action_id
 
         # Debugging: Print the request_id and action_id to inspect them
         print(f"Request ID: {request_id}, Action ID: {action_id}")
@@ -73,9 +80,11 @@ def sign_document(request):
         signing_url = get_embedded_signing_url(
             request_id, action_id, "app.iaro.co", access_token
         )
+        print(f"Signing URL: {signing_url}")  # Debugging signing URL
 
         # Render the signing page with the iframe
         return render(request, "sign_document.html", {"signing_url": signing_url})
 
     except Exception as e:
+        print(f"An error occurred: {str(e)}")
         return JsonResponse({"error": str(e)})
