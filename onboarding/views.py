@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -43,15 +45,26 @@ def sign_document(request):
         template_details = get_template_details(template_id, access_token)
 
         # Step 3: Send Document Using Template (without pre-filling fields)
-        recipient_email = "recipient@example.com"  # Replace with actual recipient email
+        recipient_email = "3dom.ua@gmail.com"  # Replace with actual recipient email
         recipient_name = "John Doe"  # Replace with actual recipient name
         send_response = send_document_using_template(
             template_id, template_details, recipient_email, recipient_name, access_token
         )
 
+        # Debugging: Print the send_response to inspect it
+        print("Send Response:", json.dumps(send_response, indent=4))
+
         # Step 4: Extract request_id and action_id
-        request_id = send_response["requests"]["request_id"]
-        action_id = send_response["requests"]["actions"][0]["action_id"]
+        request_id = send_response.get("requests", {}).get("request_id")
+        action_id = (
+            send_response.get("requests", {}).get("actions", [{}])[0].get("action_id")
+        )
+
+        # Debugging: Print the request_id and action_id to inspect them
+        print(f"Request ID: {request_id}, Action ID: {action_id}")
+
+        if not request_id or not action_id:
+            raise ValueError("request_id or action_id is None, cannot proceed.")
 
         # Step 5: Get Embedded Signing URL with correct domain
         signing_url = get_embedded_signing_url(
