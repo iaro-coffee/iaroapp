@@ -21,6 +21,7 @@ from customers.models import CustomerProfile
 from employees.models import EmployeeProfile
 from iaroapp.decorators import employee_required
 from interactions.models import Note
+from inventory.models import Branch
 from lib import planday
 from lib.planday import Planday
 from ratings.views import EmployeeRating
@@ -126,18 +127,17 @@ def index(request: HttpRequest):
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
 
-    # Display address for shifts
-    if user_profile and user_profile.branch:
-        branch_address = (
-            f"{user_profile.branch.street_address}, {user_profile.branch.city}"
-        )
-
     combined_notes = (
         Note.objects.filter(Q(receivers=request.user) | Q(branches=user_branch))
         .distinct()
         .order_by("-timestamp")[:4]
     )
 
+    # Get all branches and map them by departmentId
+    branches_by_department_id = {
+        branch.departmentId: f"{branch.street_address}, {branch.city}"
+        for branch in Branch.objects.all()
+    }
     # HOLIDAYS API
     holidays_cache_key = f"holidays_{today}"
 
@@ -185,7 +185,6 @@ def index(request: HttpRequest):
         "statistics_sum": statisticsSum,
         "ongoingShift": ongoingShift[0] if ongoingShift else None,
         "shiftStart": ongoingShift[1] if ongoingShift else None,
-        "branch_address": branch_address,
         "user_profile": user_profile,
         "customer_profile": customer_profile,
         "received_notes": combined_notes,
@@ -194,6 +193,7 @@ def index(request: HttpRequest):
         "today_holidays": today_holidays,
         "tomorrow_holidays": tomorrow_holidays,
         "current_month_year": current_month_year,
+        "branches_by_department_id": branches_by_department_id,
     }
 
     return render(request, "index.html", context=context)

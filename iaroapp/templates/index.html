@@ -179,7 +179,6 @@
                                         class="fa fa-refresh"></i></button>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -484,6 +483,7 @@
             const loader = document.getElementById('shiftsLoader');
             const loadMoreBtn = document.getElementById('loadMoreBtn');
             const refreshShiftsBtn = document.getElementById('refreshShiftsBtn');
+            const branchesByDepartmentId = {{ branches_by_department_id|safe }};
 
             let remainingShifts = [];
 
@@ -500,6 +500,8 @@
                 const endDate = new Date(shift.endDateTime);
                 const day = startDate.getDate().toString().padStart(2, '0');
                 const weekday = startDate.toLocaleDateString('en-US', {weekday: 'short'});
+                const address = branchesByDepartmentId[shift.departmentId] || "Unknown location";
+
 
                 return `
             <div class="date">
@@ -508,7 +510,7 @@
             </div>
             <div class="shift bg-gradient-secondary px-3">
                 <span class="time text-sm">${formatTime(startDate)} – ${formatTime(endDate)}</span>
-                <span class="location text-xs opacity-5">${shift.departmentId}</span>
+                <span class="location text-xs opacity-5">${address}</span>
             </div>
             {#${shift.employeeGroupId ? `<div>Employee Group ID: ${shift.employeeGroupId}</div>` : ''}#}
             {#${shift.comment ? `<div>Comment: ${shift.comment}</div>` : ''}#}
