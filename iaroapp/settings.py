@@ -45,6 +45,8 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_BROWSER_XSS_FILTER = True
 # X_FRAME_OPTIONS = "SAMEORIGIN"  # - no need if added django-cors
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
 
 # Ensure the request is recognized as secure when behind a proxy
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -53,19 +55,18 @@ CORS_ALLOW_METHODS = [
     "GET",
     "POST",
 ]
-
 CORS_ALLOW_HEADERS = [
     "authorization",
     "content-type",
     "x-csrftoken",
 ]
-
+CORS_ALLOW_CREDENTIALS = True
 # CORS_ALLOW_ALL_ORIGINS = True
-
 CORS_ALLOWED_ORIGINS = [
     "https://www.youtube.com",
     "https://googleads.g.doubleclick.net",
     "https://kit.fontawesome.com",
+    "https://sign.zoho.eu/",
 ]
 
 
