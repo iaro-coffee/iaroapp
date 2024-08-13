@@ -60,7 +60,12 @@ def sign_document(request):
         signing_url = get_embedded_signing_url(
             request_id, action_id, "app.iaro.co", access_token
         )
-        print(f"Signing URL: {signing_url}")  # Debugging signing URL
+
+        # Debugging: Check if the signing_url is None
+        if signing_url is None:
+            print("Error: signing_url is None")
+        else:
+            print(f"Signing URL: {signing_url}")  # Debugging signing URL
 
         # Render the signing page with the iframe
         return render(request, "sign_document.html", {"signing_url": signing_url})

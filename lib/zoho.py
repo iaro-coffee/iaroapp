@@ -122,7 +122,12 @@ def get_embedded_signing_url(request_id, action_id, domain_name, oauth_token):
     response = requests.post(url, headers=headers, timeout=DEFAULT_TIMEOUT)
 
     if response.status_code == 200:
-        return response.json().get("signing_url")
+        signing_url = response.json().get("signing_url")
+        if not signing_url:
+            raise Exception(
+                f"Error: No signing_url returned by Zoho. Full response: {response.json()}"
+            )
+        return signing_url
     else:
         raise Exception(f"Error getting signing URL: {response.json()}")
 
