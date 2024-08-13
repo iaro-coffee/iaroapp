@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEFAULT_TIMEOUT = 10
+DEFAULT_TIMEOUT = 30
 
 
 def generate_access_token():
@@ -83,6 +83,9 @@ def get_embedded_signing_url(request_id, action_id, domain_name, oauth_token):
         "Authorization": f"Zoho-oauthtoken {oauth_token}",
         "Content-Type": "application/json",
     }
+
+    if not domain_name.startswith("https://"):
+        domain_name = "https://" + domain_name
 
     url = f"https://sign.zoho.eu/api/v1/requests/{request_id}/actions/{action_id}/embedtoken?host={domain_name}"
 

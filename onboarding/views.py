@@ -53,7 +53,7 @@ def sign_document(request):
         request_id = send_response["requests"]["request_id"]
         action_id = send_response["requests"]["actions"][0]["action_id"]
 
-        # Step 5: Get Embedded Signing URL
+        # Step 5: Get Embedded Signing URL with correct domain
         signing_url = get_embedded_signing_url(
             request_id, action_id, "app.iaro.co", access_token
         )
