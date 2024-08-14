@@ -130,16 +130,3 @@ def get_embedded_signing_url(request_id, action_id, domain_name, oauth_token):
         return signing_url
     else:
         raise Exception(f"Error getting signing URL: {response.json()}")
-
-
-template_id = "66746000000038081"
-oauth_token = generate_access_token()
-recipient_email = "3dom.ua@gmail.com"
-recipient_name = "John Doe"
-send_document_using_template(
-    template_id,
-    get_template_details(template_id, oauth_token),
-    recipient_email,
-    recipient_name,
-    oauth_token,
-)
