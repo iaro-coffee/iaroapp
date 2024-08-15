@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Document</title>
-</head>
-<body>
+{% extends "base_generic.html" %}
+{% load static %}
+
+
+{% block content %}
     <h1>Sign Document</h1>
     <iframe src="{{ signing_url }}" width="100%" height="600px" frameborder="0"></iframe>
-</body>
-</html>
+{% endblock %}

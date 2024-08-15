@@ -21,11 +21,16 @@ def generate_access_token():
 
     response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
     response_data = response.json()
+    print(response_data["access_token"])
 
-    if response.status_code == 200:
-        return response_data["access_token"]
-    else:
-        raise Exception(f"Error generating access token: {response_data}")
+    dev_access_token = os.environ.get("ZOHO_TESTING_TOKEN")
+
+    # if response.status_code == 200:
+    #     return response_data["access_token"]
+    # else:
+    #     raise Exception(f"Error generating access token: {response_data}")
+
+    return dev_access_token  # temp dev purpose
 
 
 def get_template_details(template_id, oauth_token):
@@ -67,7 +72,7 @@ def send_document_using_template(
     temp_data["actions"] = new_action_array
 
     data = {"templates": temp_data}
-    data_json = {"data": json.dumps(data), "is_quicksend": True}
+    data_json = {"data": json.dumps(data), "is_quicksend": True, "testing": True}
 
     url = f"https://sign.zoho.eu/api/v1/templates/{template_id}/createdocument"
     response = requests.post(
@@ -75,9 +80,6 @@ def send_document_using_template(
     )
 
     if response.status_code == 200:
-        print("Success! Here is the response:")
-        print("Response Status Code:", response.status_code)
-        print("Response Headers:", json.dumps(dict(response.headers), indent=4))
 
         response_json = response.json()
         print("Response Content:", json.dumps(response_json, indent=4))
@@ -106,6 +108,19 @@ def send_document_using_template(
         }
     else:
         raise Exception(f"Error sending document: {response.json()}")
+
+
+# template_id = "66746000000038081"
+# oauth_token = generate_access_token()
+# recipient_email = "3dom.ua@gmail.com"
+# recipient_name = "John Doe"
+# send_document_using_template(
+#     template_id,
+#     get_template_details(template_id, oauth_token),
+#     recipient_email,
+#     recipient_name,
+#     oauth_token,
+# )
 
 
 def get_embedded_signing_url(request_id, action_id, domain_name, oauth_token):
