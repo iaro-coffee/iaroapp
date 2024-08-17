@@ -10,28 +10,28 @@ DEFAULT_TIMEOUT = 30
 
 
 def generate_access_token():
-    # url = "https://accounts.zoho.eu/oauth/v2/token"
-    # data = {
-    #     "refresh_token": os.environ.get("ZOHO_REFRESH_TOKEN"),
-    #     "client_id": os.environ.get("ZOHO_CLIENT_ID"),
-    #     "client_secret": os.environ.get("ZOHO_CLIENT_SECRET"),
-    #     "redirect_uri": os.environ.get("ZOHO_REDIRECT_URI"),
-    #     "grant_type": "refresh_token",
-    # }
+    url = "https://accounts.zoho.eu/oauth/v2/token"
+    data = {
+        "refresh_token": os.environ.get("ZOHO_REFRESH_TOKEN"),
+        "client_id": os.environ.get("ZOHO_CLIENT_ID"),
+        "client_secret": os.environ.get("ZOHO_CLIENT_SECRET"),
+        "redirect_uri": os.environ.get("ZOHO_REDIRECT_URI"),
+        "grant_type": "refresh_token",
+    }
 
-    # response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
-    # response_data = response.json()
+    response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
+    response_data = response.json()
     # print(response_data["access_token"])
 
-    dev_access_token = os.environ.get("ZOHO_TESTING_TOKEN")
-    print(dev_access_token)
+    # dev_access_token = os.environ.get("ZOHO_TESTING_TOKEN")
+    # print(dev_access_token)
 
-    # if response.status_code == 200:
-    #     return response_data["access_token"]
-    # else:
-    #     raise Exception(f"Error generating access token: {response_data}")
+    if response.status_code == 200:
+        return response_data["access_token"]
+    else:
+        raise Exception(f"Error generating access token: {response_data}")
 
-    return dev_access_token  # temp dev purpose
+    # return dev_access_token  # temp dev purpose
 
 
 def get_template_details(template_id, oauth_token):
