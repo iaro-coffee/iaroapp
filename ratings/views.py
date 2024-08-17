@@ -64,7 +64,9 @@ def ratings_evaluation(request):
             ratingBar = 0
 
         try:
-            profile = user.profile  # check profile to avoid RelatedObject not found
+            profile = (
+                user.employeeprofile
+            )  # check profile to avoid RelatedObject not found
             userDicts.append(
                 {
                     "user": model_to_dict(user),

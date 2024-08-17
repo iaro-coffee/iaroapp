@@ -404,11 +404,8 @@ def get_employees_list(request):
 
         employees = planday.get_employees()
 
-        employees_list = [
-            f"{emp['firstName']} {emp['lastName']}" for emp in employees.values()
-        ]
+        employees_list = [f"{emp['firstName']} {emp['lastName']}" for emp in employees]
 
         return JsonResponse({"employees": employees_list})
-    except Exception as e:
-        logger.error(f"Error fetching employees: {str(e)}")
+    except Exception:
         return JsonResponse({"error": "Unable to fetch employees list."}, status=500)

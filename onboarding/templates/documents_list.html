@@ -1,0 +1,67 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/tables.css' %}" type="text/css">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-2 table-collapse">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
+                                    Document Name
+                                </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
+                                    Status
+                                </th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for document in documents %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-1 py-1">
+                                            <h6 class="mb-0 text-sm">{{ document.name }}</h6>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if document.id in signed_document_ids %}
+                                            <span class="badge bg-gradient-success">Signed</span>
+                                        {% else %}
+                                            <span class="badge bg-gradient-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn bg-gradient-primary mb-0 btn-sm" onclick="window.location.href='{% url 'document_sign' document.id %}'">
+                                            {% if document.id in signed_document_ids %}
+                                                View
+                                            {% else %}
+                                                Sign
+                                            {% endif %}
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <style>
+        .title {
+            margin: 0 !important;
+        }
+    </style>
+{% endblock content %}

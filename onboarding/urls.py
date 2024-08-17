@@ -1,7 +1,6 @@
 from django.urls import path
 
-from . import views
-from .views import PersonalInformationView
+from .views import DocumentSignView, DocumentsListView, PersonalInformationView
 
 urlpatterns = [
     path(
@@ -9,5 +8,10 @@ urlpatterns = [
         PersonalInformationView.as_view(),
         name="personal_information",
     ),
-    path("sign-documents/", views.sign_document, name="sign_documents"),
+    path("documents/", DocumentsListView.as_view(), name="documents_list"),
+    path(
+        "document-sign/<int:document_id>/",
+        DocumentSignView.as_view(),
+        name="document_sign",
+    ),
 ]

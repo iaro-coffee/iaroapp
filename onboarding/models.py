@@ -1,5 +1,8 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+
+from employees.models import EmployeeProfile
 
 
 class PersonalInformation(models.Model):
@@ -89,3 +92,43 @@ class PersonalInformation(models.Model):
 
     def __str__(self):
         return f"{self.familienname}, {self.vorname} - {self.date_submitted}"
+
+
+class Document(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    template_id = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class SignedDocument(models.Model):
+    SIGNING_STATUS_CHOICES = [
+        ("not_started", "Not Started"),
+        ("in_progress", "In Progress"),
+        ("completed", "Completed"),
+        ("revoked", "Revoked"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    signing_url = models.URLField(max_length=1000)
+    request_id = models.CharField(max_length=255, null=True, blank=True)
+    action_id = models.CharField(max_length=255, null=True, blank=True)
+    signing_status = models.CharField(
+        max_length=20, choices=SIGNING_STATUS_CHOICES, default="not_started"
+    )
+    signed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "document")
+
+    def user_full_name(self):
+        try:
+            employee_profile = EmployeeProfile.objects.get(user=self.user)
+            return f"{employee_profile.first_name} {employee_profile.last_name}"
+        except EmployeeProfile.DoesNotExist:
+            return "No Profile"
+
+    user_full_name.short_description = "Full Name"

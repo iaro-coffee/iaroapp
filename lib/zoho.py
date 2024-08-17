@@ -10,20 +10,21 @@ DEFAULT_TIMEOUT = 30
 
 
 def generate_access_token():
-    url = "https://accounts.zoho.eu/oauth/v2/token"
-    data = {
-        "refresh_token": os.environ.get("ZOHO_REFRESH_TOKEN"),
-        "client_id": os.environ.get("ZOHO_CLIENT_ID"),
-        "client_secret": os.environ.get("ZOHO_CLIENT_SECRET"),
-        "redirect_uri": os.environ.get("ZOHO_REDIRECT_URI"),
-        "grant_type": "refresh_token",
-    }
+    # url = "https://accounts.zoho.eu/oauth/v2/token"
+    # data = {
+    #     "refresh_token": os.environ.get("ZOHO_REFRESH_TOKEN"),
+    #     "client_id": os.environ.get("ZOHO_CLIENT_ID"),
+    #     "client_secret": os.environ.get("ZOHO_CLIENT_SECRET"),
+    #     "redirect_uri": os.environ.get("ZOHO_REDIRECT_URI"),
+    #     "grant_type": "refresh_token",
+    # }
 
-    response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
-    response_data = response.json()
-    print(response_data["access_token"])
+    # response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
+    # response_data = response.json()
+    # print(response_data["access_token"])
 
     dev_access_token = os.environ.get("ZOHO_TESTING_TOKEN")
+    print(dev_access_token)
 
     # if response.status_code == 200:
     #     return response_data["access_token"]
@@ -40,9 +41,13 @@ def get_template_details(template_id, oauth_token):
     response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
 
     if response.status_code == 200:
+        # print(response.json())
         return response.json()
     else:
         raise Exception(f"Error getting template details: {response.json()}")
+
+
+# get_template_details(66746000000038081, generate_access_token())
 
 
 def send_document_using_template(
@@ -51,7 +56,6 @@ def send_document_using_template(
     headers = {"Authorization": f"Zoho-oauthtoken {oauth_token}"}
 
     temp_data = {}
-
     actions = template_details["templates"]["actions"]
     new_action_array = []
 
@@ -82,7 +86,7 @@ def send_document_using_template(
     if response.status_code == 200:
 
         response_json = response.json()
-        print("Response Content:", json.dumps(response_json, indent=4))
+        print("Response Content Received")
 
         # Extract request_id and action_id
         request_id = response_json.get("requests", {}).get("request_id")
@@ -110,19 +114,6 @@ def send_document_using_template(
         raise Exception(f"Error sending document: {response.json()}")
 
 
-# template_id = "66746000000038081"
-# oauth_token = generate_access_token()
-# recipient_email = "3dom.ua@gmail.com"
-# recipient_name = "John Doe"
-# send_document_using_template(
-#     template_id,
-#     get_template_details(template_id, oauth_token),
-#     recipient_email,
-#     recipient_name,
-#     oauth_token,
-# )
-
-
 def get_embedded_signing_url(request_id, action_id, domain_name, oauth_token):
     headers = {
         "Authorization": f"Zoho-oauthtoken {oauth_token}",
@@ -145,3 +136,28 @@ def get_embedded_signing_url(request_id, action_id, domain_name, oauth_token):
         return signing_url
     else:
         raise Exception(f"Error getting signing URL: {response.json()}")
+
+
+def check_document_status(request_id, access_token):
+    try:
+        url = f"https://sign.zoho.eu/api/v1/requests/{request_id}"
+        headers = {
+            "Authorization": f"Zoho-oauthtoken {access_token}",
+        }
+        response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
+
+        if response.status_code == 200:
+            data = response.json()
+            request_status = data.get("requests", {}).get("request_status")
+            print(request_status)
+            return request_status
+        else:
+            print(f"Failed to get document status: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Error checking document status: {str(e)}")
+        return None
+
+
+# check_document_status(66746000000043413, generate_access_token())
+# get_embedded_signing_url(66746000000043235, 66746000000038106, "e91d-2a00-20-3042-c478-d6a0-f1b2-c005-e5ed.ngrok-free.app", generate_access_token())

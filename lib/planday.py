@@ -2,9 +2,8 @@ import json
 import os
 
 import requests
-from django.core.cache import cache
 from dotenv import find_dotenv, load_dotenv
-from requests.exceptions import RequestException, Timeout
+from requests.exceptions import HTTPError, RequestException, Timeout
 from tenacity import (
     retry,
     retry_if_exception_type,
@@ -31,16 +30,10 @@ class Planday:
     )
     def authenticate(self):
         """
-        Authenticate with the Planday API using the refresh token. Caches the access token
-        for reuse. Retries on network-related issues and handles token expiration.
+        Authenticate with the Planday API using the refresh token. Retries on network-related
+        issues and handles token expiration.
         """
         try:
-            # Check cache for existing access token
-            access_token = cache.get("planday_access_token")
-            if access_token:
-                self.access_token = access_token
-                return
-
             # Prepare the payload and headers for the authentication request
             payload = {
                 "client_id": self.client_id,
@@ -56,23 +49,15 @@ class Planday:
             response = self.session.post(self.auth_url, headers=headers, data=payload)
             response.raise_for_status()
 
-            # Parse and cache the access token
+            # Parse the access token
             response_data = response.json()
             self.access_token = response_data.get("access_token")
-            expires_in = response_data.get(
-                "expires_in", 3600
-            )  # Default to 1 hour if not provided
 
-            # Cache the access token
-            if self.access_token:
-                cache.set("planday_access_token", self.access_token, timeout=expires_in)
-            else:
+            if not self.access_token:
                 raise ValueError("Access token not found in the response.")
 
-        except requests.HTTPError as e:
+        except HTTPError as e:
             if e.response.status_code == 401:
-                # 401 Unauthorized, possibly due to invalid credentials
-                cache.delete("planday_access_token")
                 raise PermissionError(
                     "Invalid credentials. Please check your client ID and refresh token."
                 )
@@ -90,7 +75,7 @@ class Planday:
 
     def get_auth_headers(self):
         """
-        Return headers with the authorization token.
+        Return headers with the authorization token. Calls authenticate if no token exists.
         """
         if not self.access_token:
             self.authenticate()
@@ -102,18 +87,25 @@ class Planday:
         }
 
     def get_portal_info(self):
-        """Fetch the portal information"""
-        auth_headers = {
-            "Authorization": f"Bearer {self.access_token}",
-            "X-ClientId": self.client_id,
-        }
-        endpoint = "/portal/v1.0/info"
-        url = f"{self.base_url}{endpoint}"
+        """
+        Fetch the portal information from Planday API.
+        """
+        try:
+            auth_headers = self.get_auth_headers()
+            endpoint = "/portal/v1.0/info"
+            url = f"{self.base_url}{endpoint}"
 
-        response = self.session.get(url, headers=auth_headers)
-        response.raise_for_status()
+            response = self.session.get(url, headers=auth_headers)
+            response.raise_for_status()
 
-        return response.json()
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 401:
+                raise PermissionError(
+                    "Unauthorized access. Please check your credentials."
+                )
+            else:
+                raise
 
     @retry(
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10)
@@ -303,10 +295,6 @@ class Planday:
             try:
                 data = response.json()
                 departments = data.get("data", [])
-                for department in departments:
-                    print(
-                        f"Department ID: {department['id']}, Name: {department['name']}"
-                    )
                 return departments
             except json.JSONDecodeError:
                 print("Error decoding JSON response.")
