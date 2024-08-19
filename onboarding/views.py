@@ -65,7 +65,7 @@ class DocumentSignView(View):
                     signing_url = get_embedded_signing_url(
                         request_id,
                         action_id,
-                        "8109-2a00-20-3013-a636-f287-a754-7591-3ee.ngrok-free.app",
+                        "app.iaro.co",
                         access_token,
                     )
                     signed_document.signing_url = signing_url
@@ -105,7 +105,7 @@ class DocumentSignView(View):
                 signing_url = get_embedded_signing_url(
                     request_id,
                     action_id,
-                    "8109-2a00-20-3013-a636-f287-a754-7591-3ee.ngrok-free.app",
+                    "app.iaro.co",
                     access_token,
                 )
 

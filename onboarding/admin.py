@@ -2,8 +2,6 @@ from typing import List, Tuple
 
 from django.contrib import admin
 from django.db import models
-from django.db.models import F, Value
-from django.db.models.functions import Concat
 
 from .models import Document, PersonalInformation, SignedDocument
 
@@ -84,23 +82,9 @@ class SignedDocumentAdmin(admin.ModelAdmin):
         "signed_at",
     ]
 
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        queryset = queryset.annotate(
-            full_name=Concat(
-                F("user__employeeprofile__first_name"),
-                Value(" "),
-                F("user__employeeprofile__last_name"),
-            )
-        )
-        return queryset
-
-    @admin.display(
-        description="Full Name",
-        ordering="full_name",
-    )
+    @admin.display(description="Full Name")
     def user_full_name(self, obj):
-        return obj.full_name
+        return obj.user_full_name()
 
     def has_delete_permission(self, request, obj=None):
         return False

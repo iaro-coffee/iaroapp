@@ -106,8 +106,8 @@ class Document(models.Model):
 class SignedDocument(models.Model):
     SIGNING_STATUS_CHOICES = [
         ("not_started", "Not Started"),
-        ("in_progress", "In Progress"),
-        ("completed", "Completed"),
+        ("inprogress", "In Progress"),
+        ("success", "Completed"),
         ("revoked", "Revoked"),
         ("unknown", "Unknown"),
     ]
