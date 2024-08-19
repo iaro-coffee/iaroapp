@@ -78,7 +78,9 @@ class NoteView(LoginRequiredMixin, TemplateView):
 
             # Add all users in the specified branches
             for branch in branches:
-                all_recipients.update(User.objects.filter(profile__branch=branch))
+                all_recipients.update(
+                    User.objects.filter(employeeprofile__branch=branch)
+                )
 
             for recipient in all_recipients:
                 NoteReadStatus.objects.create(note=note, user=recipient, is_read=False)
@@ -122,8 +124,8 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
         return {
             "sender_username": note.sender.username if note.sender else None,
             "sender_avatar": (
-                note.sender.profile.avatar.url
-                if note.sender and note.sender.profile.avatar
+                note.sender.employeeprofile.avatar.url
+                if note.sender and note.sender.employeeprofile.avatar
                 else ""
             ),
             "content": note.content,
@@ -139,8 +141,8 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
                     {
                         "username": receiver.username,
                         "avatar": (
-                            receiver.profile.avatar.url
-                            if receiver.profile.avatar
+                            receiver.employeeprofile.avatar.url
+                            if receiver.employeeprofile.avatar
                             else None
                         ),
                     }
