@@ -17,10 +17,10 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
                                     Document Name
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100 responsive__hide">
                                     Status
                                 </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
+                                <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder w-100">
                                     Action
                                 </th>
                             </tr>
@@ -32,18 +32,40 @@
                                         <div class="d-flex px-1 py-1">
                                             <h6 class="mb-0 text-sm">{{ document.name }}</h6>
                                         </div>
+                                        <!-- Status Display for Mobile -->
+                                        <div class="mt-1 responsive__show">
+                                        <span class="text-secondary text-xs" style="margin-left: 0.5rem;">Status:</span>
+                                            {% if document_statuses|default_if_none:'not_started' == 'completed' %}
+                                                <span class="badge bg-gradient-success">Signed</span>
+                                            {% elif document_statuses|default_if_none:'not_started' == 'in_progress' %}
+                                                <span class="badge bg-gradient-warning align-content-center">In Progress</span>
+                                            {% elif document_statuses|default_if_none:'not_started' == 'revoked' %}
+                                                <span class="badge bg-gradient-danger">Revoked</span>
+                                            {% else %}
+                                                <span class="badge bg-gradient-secondary">Not Started</span>
+                                            {% endif %}
+                                        </div>
                                     </td>
-                                    <td>
-                                        {% if document.id in signed_document_ids %}
+                                    <!-- Status Display for Desktop -->
+                                    <td class="responsive__hide">
+                                        {% if document_statuses|default_if_none:'not_started' == 'completed' %}
                                             <span class="badge bg-gradient-success">Signed</span>
+                                        {% elif document_statuses|default_if_none:'not_started' == 'in_progress' %}
+                                            <span class="badge bg-gradient-warning">In Progress</span>
+                                        {% elif document_statuses|default_if_none:'not_started' == 'revoked' %}
+                                            <span class="badge bg-gradient-danger">Revoked</span>
                                         {% else %}
-                                            <span class="badge bg-gradient-warning">Pending</span>
+                                            <span class="badge bg-gradient-secondary">Not Started</span>
                                         {% endif %}
                                     </td>
                                     <td>
                                         <button class="btn bg-gradient-primary mb-0 btn-sm" onclick="window.location.href='{% url 'document_sign' document.id %}'">
-                                            {% if document.id in signed_document_ids %}
+                                            {% if document_statuses|default_if_none:'not_started' == 'completed' %}
                                                 View
+                                            {% elif document_statuses|default_if_none:'not_started' == 'in_progress' %}
+                                                Continue Signing
+                                            {% elif document_statuses|default_if_none:'not_started' == 'revoked' %}
+                                                View Details
                                             {% else %}
                                                 Sign
                                             {% endif %}
@@ -59,9 +81,27 @@
     </div>
 </div>
 
-    <style>
-        .title {
-            margin: 0 !important;
+<style>
+    .title {
+        margin: 0 !important;
+    }
+
+    .responsive__show {
+        display: none;
+    }
+
+    @media (max-width: 1199px) {
+        .responsive__hide {
+            display: none;
         }
-    </style>
+        .responsive__show {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+    }
+    .badge {
+        align-content: center;
+    }
+</style>
 {% endblock content %}

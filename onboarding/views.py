@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-from django.views.generic import ListView
 
 from lib.zoho import (
     check_document_status,
@@ -122,18 +121,26 @@ class DocumentSignView(View):
             return JsonResponse({"error": str(e)})
 
 
-class DocumentsListView(ListView):
-    model = Document
+class DocumentsListView(View):
     template_name = "documents_list.html"
-    context_object_name = "documents"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        signed_document_ids = SignedDocument.objects.filter(user=user).values_list(
-            "document_id", flat=True
-        )
-        context.update(
-            {"pageTitle": "Documents List", "signed_document_ids": signed_document_ids}
-        )
-        return context
+    def get(self, request):
+        documents = Document.objects.all()
+        user = request.user
+
+        document_statuses = {}
+        for document in documents:
+            signed_document = SignedDocument.objects.filter(
+                user=user, document=document
+            ).first()
+            if signed_document:
+                document_statuses[document.id] = signed_document.signing_status
+            else:
+                document_statuses[document.id] = "not_started"
+
+        context = {
+            "pageTitle": "Documents List",
+            "documents": documents,
+            "document_statuses": document_statuses,
+        }
+        return render(request, self.template_name, context)

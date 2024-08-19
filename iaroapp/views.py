@@ -236,7 +236,7 @@ def get_next_user_shifts(request: HttpRequest):
             if cached_data:
                 return JsonResponse(cached_data)
             else:
-                print("Cache miss - no data found")
+                print("Cache miss - no shifts found")
 
         # If not cached or refresh is requested, fetch the shifts
         from_date = datetime.now().strftime("%Y-%m-%d")  # Define 'from' date
