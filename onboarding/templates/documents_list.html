@@ -34,12 +34,12 @@
                                         </div>
                                         <!-- Status Display for Mobile -->
                                         <div class="mt-1 responsive__show">
-                                        <span class="text-secondary text-xs" style="margin-left: 0.5rem;">Status:</span>
-                                            {% if document_statuses|default_if_none:'not_started' == 'completed' %}
+                                            <span class="text-secondary text-xs" style="margin-left: 0.5rem;">Status:</span>
+                                            {% if document.signing_status == 'completed' %}
                                                 <span class="badge bg-gradient-success">Signed</span>
-                                            {% elif document_statuses|default_if_none:'not_started' == 'in_progress' %}
+                                            {% elif document.signing_status == 'inprogress' %}
                                                 <span class="badge bg-gradient-warning align-content-center">In Progress</span>
-                                            {% elif document_statuses|default_if_none:'not_started' == 'revoked' %}
+                                            {% elif document.signing_status == 'revoked' %}
                                                 <span class="badge bg-gradient-danger">Revoked</span>
                                             {% else %}
                                                 <span class="badge bg-gradient-secondary">Not Started</span>
@@ -48,11 +48,11 @@
                                     </td>
                                     <!-- Status Display for Desktop -->
                                     <td class="responsive__hide">
-                                        {% if document_statuses|default_if_none:'not_started' == 'completed' %}
+                                        {% if document.signing_status == 'completed' %}
                                             <span class="badge bg-gradient-success">Signed</span>
-                                        {% elif document_statuses|default_if_none:'not_started' == 'in_progress' %}
+                                        {% elif document.signing_status == 'inprogress' %}
                                             <span class="badge bg-gradient-warning">In Progress</span>
-                                        {% elif document_statuses|default_if_none:'not_started' == 'revoked' %}
+                                        {% elif document.signing_status == 'revoked' %}
                                             <span class="badge bg-gradient-danger">Revoked</span>
                                         {% else %}
                                             <span class="badge bg-gradient-secondary">Not Started</span>
@@ -60,11 +60,11 @@
                                     </td>
                                     <td>
                                         <button class="btn bg-gradient-primary mb-0 btn-sm" onclick="window.location.href='{% url 'document_sign' document.id %}'">
-                                            {% if document_statuses|default_if_none:'not_started' == 'completed' %}
+                                            {% if document.signing_status == 'completed' %}
                                                 View
-                                            {% elif document_statuses|default_if_none:'not_started' == 'in_progress' %}
+                                            {% elif document.signing_status == 'in_progress' %}
                                                 Continue Signing
-                                            {% elif document_statuses|default_if_none:'not_started' == 'revoked' %}
+                                            {% elif document.signing_status == 'revoked' %}
                                                 View Details
                                             {% else %}
                                                 Sign

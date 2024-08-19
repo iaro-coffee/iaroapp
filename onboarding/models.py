@@ -109,6 +109,7 @@ class SignedDocument(models.Model):
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
         ("revoked", "Revoked"),
+        ("unknown", "Unknown"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)

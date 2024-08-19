@@ -63,7 +63,10 @@ class DocumentSignView(View):
                 # Always regenerate the signing URL, even if completed
                 try:
                     signing_url = get_embedded_signing_url(
-                        request_id, action_id, "app.iaro.co", access_token
+                        request_id,
+                        action_id,
+                        "8109-2a00-20-3013-a636-f287-a754-7591-3ee.ngrok-free.app",
+                        access_token,
                     )
                     signed_document.signing_url = signing_url
                     signed_document.signing_status = request_status
@@ -100,7 +103,10 @@ class DocumentSignView(View):
 
                 # Get the embedded signing URL
                 signing_url = get_embedded_signing_url(
-                    request_id, action_id, "app.iaro.co", access_token
+                    request_id,
+                    action_id,
+                    "8109-2a00-20-3013-a636-f287-a754-7591-3ee.ngrok-free.app",
+                    access_token,
                 )
 
                 # Save the new signing URL and status in the database
@@ -128,19 +134,16 @@ class DocumentsListView(View):
         documents = Document.objects.all()
         user = request.user
 
-        document_statuses = {}
         for document in documents:
             signed_document = SignedDocument.objects.filter(
                 user=user, document=document
             ).first()
-            if signed_document:
-                document_statuses[document.id] = signed_document.signing_status
-            else:
-                document_statuses[document.id] = "not_started"
+            document.signing_status = (
+                signed_document.signing_status if signed_document else "not_started"
+            )
 
         context = {
             "pageTitle": "Documents List",
             "documents": documents,
-            "document_statuses": document_statuses,
         }
         return render(request, self.template_name, context)
