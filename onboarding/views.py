@@ -65,7 +65,7 @@ class DocumentSignView(View):
                     signing_url = get_embedded_signing_url(
                         request_id,
                         action_id,
-                        "6d2c-2a00-20-3013-a636-e360-52e7-7ae6-3c1f.ngrok-free.app",
+                        "app.iaro.co",
                         access_token,
                     )
                     # Update the status and URL in the database
@@ -106,7 +106,7 @@ class DocumentSignView(View):
                 signing_url = get_embedded_signing_url(
                     request_id,
                     action_id,
-                    "6d2c-2a00-20-3013-a636-e360-52e7-7ae6-3c1f.ngrok-free.app",
+                    "app.iaro.co",
                     access_token,
                 )
 
