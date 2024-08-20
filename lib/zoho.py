@@ -2,36 +2,52 @@ import json
 import os
 
 import requests
+from django.core.cache import cache
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DEFAULT_TIMEOUT = 30
+ZOHO_TOKEN_CACHE_KEY = "zoho_access_token"  # nosec
+ZOHO_TOKEN_EXPIRY = 3600
 
 
 def generate_access_token():
-    url = "https://accounts.zoho.eu/oauth/v2/token"
-    data = {
-        "refresh_token": os.environ.get("ZOHO_REFRESH_TOKEN"),
-        "client_id": os.environ.get("ZOHO_CLIENT_ID"),
-        "client_secret": os.environ.get("ZOHO_CLIENT_SECRET"),
-        "redirect_uri": os.environ.get("ZOHO_REDIRECT_URI"),
-        "grant_type": "refresh_token",
-    }
+    access_token = cache.get(ZOHO_TOKEN_CACHE_KEY)
 
-    response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
-    response_data = response.json()
-    # print(response_data["access_token"])
+    if not access_token:
+        url = "https://accounts.zoho.eu/oauth/v2/token"
+        data = {
+            "refresh_token": os.environ.get("ZOHO_REFRESH_TOKEN"),
+            "client_id": os.environ.get("ZOHO_CLIENT_ID"),
+            "client_secret": os.environ.get("ZOHO_CLIENT_SECRET"),
+            "redirect_uri": os.environ.get("ZOHO_REDIRECT_URI"),
+            "grant_type": "refresh_token",
+        }
 
-    # dev_access_token = os.environ.get("ZOHO_TESTING_TOKEN")
-    # print(dev_access_token)
+        response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
+        response_data = response.json()
 
-    if response.status_code == 200:
-        return response_data["access_token"]
-    else:
-        raise Exception(f"Error generating access token: {response_data}")
+        if response.status_code == 200:
+            access_token = response_data["access_token"]
+            cache.set(ZOHO_TOKEN_CACHE_KEY, access_token, ZOHO_TOKEN_EXPIRY)
+        elif response.status_code == 401:
+            # Token creation throttle limit reached or token is expired, attempt to get a new token
+            cache.delete(ZOHO_TOKEN_CACHE_KEY)
+            response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
+            response_data = response.json()
 
-    # return dev_access_token  # temp dev purpose
+            if response.status_code == 200:
+                access_token = response_data["access_token"]
+                cache.set(ZOHO_TOKEN_CACHE_KEY, access_token, ZOHO_TOKEN_EXPIRY)
+            else:
+                raise Exception(
+                    f"Error generating access token on retry: {response_data}"
+                )
+        else:
+            raise Exception(f"Error generating access token: {response_data}")
+
+    return access_token
 
 
 def get_template_details(template_id, oauth_token):

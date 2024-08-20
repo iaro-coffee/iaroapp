@@ -104,22 +104,12 @@ class Document(models.Model):
 
 
 class SignedDocument(models.Model):
-    SIGNING_STATUS_CHOICES = [
-        ("not_started", "Not Started"),
-        ("inprogress", "In Progress"),
-        ("success", "Completed"),
-        ("revoked", "Revoked"),
-        ("unknown", "Unknown"),
-    ]
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     signing_url = models.URLField(max_length=1000)
     request_id = models.CharField(max_length=255, null=True, blank=True)
     action_id = models.CharField(max_length=255, null=True, blank=True)
-    signing_status = models.CharField(
-        max_length=20, choices=SIGNING_STATUS_CHOICES, default="not_started"
-    )
+    signing_status = models.CharField(max_length=50, default="not_started")
     signed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

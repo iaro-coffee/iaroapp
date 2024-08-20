@@ -65,9 +65,10 @@ class DocumentSignView(View):
                     signing_url = get_embedded_signing_url(
                         request_id,
                         action_id,
-                        "app.iaro.co",
+                        "6d2c-2a00-20-3013-a636-e360-52e7-7ae6-3c1f.ngrok-free.app",
                         access_token,
                     )
+                    # Update the status and URL in the database
                     signed_document.signing_url = signing_url
                     signed_document.signing_status = request_status
                     signed_document.save()
@@ -105,7 +106,7 @@ class DocumentSignView(View):
                 signing_url = get_embedded_signing_url(
                     request_id,
                     action_id,
-                    "app.iaro.co",
+                    "6d2c-2a00-20-3013-a636-e360-52e7-7ae6-3c1f.ngrok-free.app",
                     access_token,
                 )
 
@@ -133,14 +134,29 @@ class DocumentsListView(View):
     def get(self, request):
         documents = Document.objects.all()
         user = request.user
+        access_token = generate_access_token()
 
         for document in documents:
             signed_document = SignedDocument.objects.filter(
                 user=user, document=document
             ).first()
-            document.signing_status = (
-                signed_document.signing_status if signed_document else "not_started"
-            )
+
+            if signed_document:
+                # Check the status of the document
+                request_status = check_document_status(
+                    signed_document.request_id, access_token
+                )
+
+                if request_status is None:
+                    request_status = "unknown"
+
+                # Update the status in the db
+                signed_document.signing_status = request_status
+                signed_document.save()
+
+                document.signing_status = request_status
+            else:
+                document.signing_status = "not_started"
 
         context = {
             "pageTitle": "Documents List",
