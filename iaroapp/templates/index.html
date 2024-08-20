@@ -237,37 +237,47 @@
                 <div class="card h-100" id="notes">
                     <div class="card-header pb-0">
                         <h6>Your Notes</h6>
-                        <p class="text-sm"><i class="fas fa-sticky-note pe-2 text-success"></i>Stay on top of things, check your last notes.</p>
+                        <p class="text-sm"><i class="fas fa-sticky-note pe-2 text-success"></i>Stay on top of things ;)</p>
                     </div>
-                    <div class="card-body">
-                        {% for note in received_notes %}
-                            <div class="d-flex justify-content-between">
-                                <div class="user__info mb-3 w-75">
-                                    <img src="
-                                            {% if note.sender.employeeprofile.avatar %}{{ note.sender.employeeprofile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
-                                         alt="{{ note.sender.username }}'s avatar"
-                                         style="width: 32px; height: 32px; border-radius: 50%; background-color: #483d8b">
-                                    {{ note.sender.username }}:
-                                    {% if note.content|length > 140 %}
-                                        {{ note.content|slice:":140" }}...
-                                    {% else %}
-                                        {{ note.content }}
-                                    {% endif %}
-                                </div>
-                                <div class="note__time text-xs text-secondary">
-                                    {{ note.timestamp|date:"F j" }}<br>
-                                    {{ note.timestamp|time }}
-                                </div>
-                            </div>
-                        {% endfor %}
+                    <div class="card-body pt-0">
+                        <div class="table-responsive" style="overflow-x: auto;">
+                            <table class="table align-items-center mb-0" style="width: 100%; table-layout: fixed;">
+                                <tbody>
+                                    {% for note in received_notes %}
+                                        <tr>
+                                            <td style="word-wrap: break-word; word-break: break-word; overflow-wrap: break-word;">
+                                                <div class="d-flex justify-content-center text-xxs text-secondary">
+                                                    {{ note.timestamp|date:"F j" }}, {{ note.timestamp|time:"H:i" }}
+                                                </div>
+                                                <div class="d-flex py-0">
+                                                    <div class="user__info" style="white-space: normal; word-wrap: break-word; word-break: break-word;">
+                                                        <img src="{% if note.sender.employeeprofile.avatar.url %}{{ note.sender.employeeprofile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
+                                                             alt="{{ note.sender.username }}'s avatar"
+                                                             class="avatar"
+                                                             onclick="openAvatarModal(this.src)">
+                                                        <span class="text-bolder username" onclick="openAvatarModal(this.previousElementSibling.src)">
+                                                            {{ note.sender.username }}:
+                                                        </span>
+                                                        {{ note.content|safe|truncatechars:140 }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="d-flex justify-content-center">
-                            <a class="btn bg-gradient-primary mt-3 w-100"
-                               href="/notes">
-                                Manage notes
-                            </a>
+                            <a class="btn bg-gradient-primary mt-3 w-100" href="/notes">Manage notes</a>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Modal for Full-Size Avatar -->
+            <div id="avatarModal" class="avatar-modal">
+                <span class="avatar-close" onclick="closeAvatarModal()">&times;</span>
+                <img class="avatar-modal-content" id="fullSizeAvatar">
             </div>
 
 
@@ -432,6 +442,76 @@
         .more__btn:hover {
             transform: scale(1.01) !important;
         }
+        a.docs__link {
+            color: #d63384 !important;
+            font-weight: bold;
+        }
+        body.dark-page table td a {
+            color: #d63384 !important;
+        }
+        .avatar {
+            background-color: #483d8b;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+        .title {
+            display: none !important;
+        }
+        body.dark-page textarea {
+            background-color: #323b55 !important;
+        }
+
+        #received-notes {
+            justify-content: center;
+        }
+    </style>
+
+    <style>
+        .avatar-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-modal-content {
+            display: block;
+            margin: auto;
+            border-radius: 10px;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .avatar-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .avatar-close:hover,
+        .avatar-close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .avatar, .username {
+            cursor: pointer;
+        }
     </style>
 
     <style>
@@ -573,6 +653,27 @@
         });
     </script>
 
+
+    <script>
+        function openAvatarModal(src) {
+            var modal = document.getElementById("avatarModal");
+            var modalImg = document.getElementById("fullSizeAvatar");
+            modal.style.display = "flex";
+            modalImg.src = src;
+        }
+
+        function closeAvatarModal() {
+            var modal = document.getElementById("avatarModal");
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            var modal = document.getElementById("avatarModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 
 
     <script src="{% static 'js/shifts.js' %}"></script>

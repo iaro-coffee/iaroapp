@@ -11,70 +11,76 @@
         <div class="card mb-4">
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
-                    <table class="table align-items-center mb-2 table-collapse">
-                        <thead>
-                            <tr>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
-                                    Document Name
-                                </th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100 responsive__hide">
-                                    Status
-                                </th>
-                                <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder w-100">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for document in documents %}
+                    {% if documents %}
+                        <table class="table align-items-center mb-2 table-collapse">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <div class="d-flex px-1 py-1">
-                                            <h6 class="mb-0 text-sm">{{ document.name }}</h6>
-                                        </div>
-                                        <!-- Status Display for Mobile -->
-                                        <div class="mt-1 responsive__show">
-                                            <span class="text-secondary text-xs" style="margin-left: 0.5rem;">Status:</span>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100">
+                                        Document Name
+                                    </th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder w-100 responsive__hide">
+                                        Status
+                                    </th>
+                                    <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder w-100">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for document in documents %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex px-1 py-1">
+                                                <h6 class="mb-0 text-sm">{{ document.name }}</h6>
+                                            </div>
+                                            <!-- Status Display for Mobile -->
+                                            <div class="mt-1 responsive__show">
+                                                <span class="text-secondary text-xs" style="margin-left: 0.5rem;">Status:</span>
+                                                {% if document.signing_status == 'completed' %}
+                                                    <span class="badge bg-gradient-success">Signed</span>
+                                                {% elif document.signing_status == 'inprogress' %}
+                                                    <span class="badge bg-gradient-warning align-content-center">In Progress</span>
+                                                {% elif document.signing_status == 'revoked' %}
+                                                    <span class="badge bg-gradient-danger">Revoked</span>
+                                                {% else %}
+                                                    <span class="badge bg-gradient-secondary">Not Started</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <!-- Status Display for Desktop -->
+                                        <td class="responsive__hide">
                                             {% if document.signing_status == 'completed' %}
                                                 <span class="badge bg-gradient-success">Signed</span>
                                             {% elif document.signing_status == 'inprogress' %}
-                                                <span class="badge bg-gradient-warning align-content-center">In Progress</span>
+                                                <span class="badge bg-gradient-warning">In Progress</span>
                                             {% elif document.signing_status == 'revoked' %}
                                                 <span class="badge bg-gradient-danger">Revoked</span>
                                             {% else %}
                                                 <span class="badge bg-gradient-secondary">Not Started</span>
                                             {% endif %}
-                                        </div>
-                                    </td>
-                                    <!-- Status Display for Desktop -->
-                                    <td class="responsive__hide">
-                                        {% if document.signing_status == 'completed' %}
-                                            <span class="badge bg-gradient-success">Signed</span>
-                                        {% elif document.signing_status == 'inprogress' %}
-                                            <span class="badge bg-gradient-warning">In Progress</span>
-                                        {% elif document.signing_status == 'revoked' %}
-                                            <span class="badge bg-gradient-danger">Revoked</span>
-                                        {% else %}
-                                            <span class="badge bg-gradient-secondary">Not Started</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <button class="btn bg-gradient-primary mb-0 btn-sm" onclick="window.location.href='{% url 'document_sign' document.id %}'">
-                                            {% if document.signing_status == 'completed' %}
-                                                View
-                                            {% elif document.signing_status == 'in_progress' %}
-                                                Sign
-                                            {% elif document.signing_status == 'revoked' %}
-                                                View
-                                            {% else %}
-                                                Sign
-                                            {% endif %}
-                                        </button>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                        </td>
+                                        <td>
+                                            <button class="btn bg-gradient-primary mb-0 btn-sm" onclick="window.location.href='{% url 'document_sign' document.id %}'">
+                                                {% if document.signing_status == 'completed' %}
+                                                    View
+                                                {% elif document.signing_status == 'in_progress' %}
+                                                    Sign
+                                                {% elif document.signing_status == 'revoked' %}
+                                                    View
+                                                {% else %}
+                                                    Sign
+                                                {% endif %}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="text-center p-3">
+                            <p class="text-muted">No documents assigned to you at this time.</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

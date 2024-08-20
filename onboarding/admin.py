@@ -3,6 +3,8 @@ from typing import List, Tuple
 from django.contrib import admin
 from django.db import models
 
+from employees.models import EmployeeProfile
+
 from .models import Document, PersonalInformation, SignedDocument
 
 
@@ -57,8 +59,17 @@ class PersonalInformationAdmin(admin.ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ("name", "template_id")
+    list_display = ("name", "template_id", "auto_assign_new_employees")
     search_fields = ("name", "description", "template_id")
+    # filter_horizontal = ("assigned_employees",)
+    readonly_fields = ("assigned_employees",)
+
+    def save_model(self, request, obj, form, change):
+        # Automatically assign the document to all employees if the option is enabled
+        super().save_model(request, obj, form, change)
+        if obj.auto_assign_new_employees:
+            all_employees = EmployeeProfile.objects.all()
+            obj.assigned_employees.add(*all_employees)
 
 
 @admin.register(SignedDocument)

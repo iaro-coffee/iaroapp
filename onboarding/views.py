@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
+from employees.models import EmployeeProfile
 from lib.zoho import (
     check_document_status,
     generate_access_token,
@@ -132,9 +133,22 @@ class DocumentsListView(View):
     template_name = "documents_list.html"
 
     def get(self, request):
-        documents = Document.objects.all()
         user = request.user
+
+        try:
+            employee_profile = EmployeeProfile.objects.get(user=user)
+        except EmployeeProfile.DoesNotExist:
+            # Handle the case where the user doesn't have an employee profile
+            context = {
+                "pageTitle": "Documents List",
+                "documents": [],
+            }
+            return render(request, self.template_name, context)
+
         access_token = generate_access_token()
+
+        # Fetch only the documents assigned to the user's employee profile
+        documents = Document.objects.filter(assigned_employees=employee_profile)
 
         for document in documents:
             signed_document = SignedDocument.objects.filter(

@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 
 from inventory.models import Branch
+from onboarding.models import Document
 
 from .models import LearningCategory, Note, PDFUpload, Video
 
@@ -13,12 +14,23 @@ class NoteForm(forms.ModelForm):
         queryset=Branch.objects.all(), required=False, label="Send to Branches"
     )
     receivers = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(), required=False, label="Send to Users"
+        queryset=User.objects.all(), required=False, label="Send to People"
+    )
+    document = forms.ModelMultipleChoiceField(
+        queryset=Document.objects.all(),
+        required=False,
+        label="Request to sign a Document",
     )
 
     class Meta:
         model = Note
-        fields = ["content", "receivers", "branches"]
+        fields = ["content", "receivers", "branches", "document"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Hide the document field for non-superusers
+        if not self.initial["user"].is_superuser:
+            self.fields.pop("document")
 
     def clean(self):
         cleaned_data = super().clean()
@@ -42,7 +54,7 @@ class NoteForm(forms.ModelForm):
         branches = self.cleaned_data.get("branches")
         if branches:
             users_in_branches = User.objects.filter(
-                profile__branch__in=branches
+                employeeprofile__branch__in=branches
             ).distinct()
             note.receivers.add(*users_in_branches)
 

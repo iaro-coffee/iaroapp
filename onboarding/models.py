@@ -6,7 +6,6 @@ from employees.models import EmployeeProfile
 
 
 class PersonalInformation(models.Model):
-
     GENDER_CHOICES = [
         ("male", "Männlich"),
         ("female", "Weiblich"),
@@ -98,6 +97,16 @@ class Document(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     template_id = models.CharField(max_length=50, unique=True)
+    assigned_employees = models.ManyToManyField(
+        EmployeeProfile,
+        blank=True,
+        related_name="assigned_documents",
+        help_text="Currently assigned employees",
+    )
+    auto_assign_new_employees = models.BooleanField(
+        default=False,
+        help_text="Automatically assign this document to all new employees",
+    )
 
     def __str__(self):
         return self.name

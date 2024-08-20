@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls.base import reverse
 from django.utils import timezone
 from django.views import View
 from django.views.generic import TemplateView
@@ -35,7 +36,7 @@ class NoteView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form"] = NoteForm()
+        context["form"] = NoteForm(initial={"user": self.request.user})
 
         user = self.request.user
         user_branch = user.employeeprofile.branch
@@ -65,11 +66,40 @@ class NoteView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        form = NoteForm(request.POST)
+        form = NoteForm(request.POST, initial={"user": request.user})
         if form.is_valid():
             note = form.save(commit=False, sender=request.user)
+
+            # Handle document assignment if a document is attached
+            documents = form.cleaned_data.get("document")
+            if documents:
+                # Generate the link to the documents list
+                documents_link = request.build_absolute_uri(reverse("documents_list"))
+                clickable_link = f'<a class="docs__link" href="{documents_link}">Link: View Documents</a>'
+
+                # Append the clickable link to the note content
+                note.content += f" {clickable_link}"
+
+            # Save the note with the updated content
             note.save()
             form.save_m2m()
+
+            if documents:
+                receivers = form.cleaned_data.get("receivers")
+                branches = form.cleaned_data.get("branches")
+                all_recipients = set(receivers)
+
+                # Add all users in the specified branches
+                for branch in branches:
+                    all_recipients.update(
+                        User.objects.filter(employeeprofile__branch=branch)
+                    )
+
+                # Assign each document to the corresponding employee profiles
+                for document in documents:
+                    for recipient in all_recipients:
+                        employee_profile = recipient.employeeprofile
+                        document.assigned_employees.add(employee_profile)
 
             # Create NoteReadStatus entries for each recipient
             receivers = form.cleaned_data["receivers"]
