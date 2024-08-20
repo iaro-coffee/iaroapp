@@ -95,7 +95,7 @@ class DocumentSignView(View):
                     template_id,
                     template_details,
                     user.email,
-                    f"{user.first_name} {user.last_name}",
+                    f"{user.employeeprofile.first_name} {user.employeeprofile.last_name}",
                     access_token,
                 )
 
