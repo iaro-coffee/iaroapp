@@ -9,9 +9,9 @@ from .models import CustomerProfile
 def save_customer_profile(sender, instance, created, **kwargs):
 
     if created:
-        CustomerProfile.objects.create(user=instance, is_employee=False)
+        CustomerProfile.objects.create(user=instance, is_employee=True)
     else:
         try:
             instance.customerprofile.save()
         except CustomerProfile.DoesNotExist:
-            CustomerProfile.objects.create(user=instance, is_employee=False)
+            CustomerProfile.objects.create(user=instance, is_employee=True)

@@ -4,18 +4,21 @@ from django.contrib import messages
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView as AuthLoginView
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import FormView
 
 from customers.forms import CustomerProfileUpdateForm
 from customers.models import CustomerProfile
+from interactions.models import Note, NoteReadStatus
+from onboarding.models import Document
 
 from .forms import ProfileUpdateForm, UserClientCreationForm, UserUpdateForm
+from .models import EmployeeProfile
 from .no_planday_email_exception import NoPlandayEmailException
 
 logger = logging.getLogger(__name__)
@@ -164,17 +167,21 @@ class RegisterView(FormView):
     def form_valid(self, form):
         try:
             user, employeeGroups = form.save()
-            self.assign_user_groups(user, employeeGroups)
 
-            user.backend = "django.contrib.auth.backends.ModelBackend"
+            # Ensure customer profile exists and is marked as an employee
+            self.ensure_customer_profile(user)
 
-            # check if customer profile exists, if not create and set is_employee to True
-            customer_profile, created = CustomerProfile.objects.get_or_create(user=user)
-            if created:
-                customer_profile.is_employee = True
-                customer_profile.save()
+            # Use the ModelBackend explicitly for login
+            login(
+                self.request, user, backend="django.contrib.auth.backends.ModelBackend"
+            )
 
-            login(self.request, user)
+            # Trigger document assignment to the user
+            self.assign_documents_to_user(user)
+
+            # Send note to the user to check documents
+            self.send_document_note_to_user(user)
+
             clear_messages(self.request)  # Clear all existing messages
             messages.success(self.request, "Registration successful.")
             return super().form_valid(form)
@@ -194,13 +201,45 @@ class RegisterView(FormView):
         )
         return super().form_invalid(form)
 
-    def assign_user_groups(self, user, employeeGroups):
-        group_mapping = {272480: "Barista", 274170: "Kitchen", 275780: "Service"}
-        for group_id in employeeGroups:
-            group_name = group_mapping.get(group_id)
-            if group_name:
-                try:
-                    group = Group.objects.get(name=group_name)
-                    user.groups.add(group)
-                except Group.DoesNotExist:
-                    logger.error(f"Group {group_name} does not exist.")
+    def ensure_customer_profile(self, user):
+        customer_profile, created = CustomerProfile.objects.get_or_create(user=user)
+        if created:
+            customer_profile.is_employee = True
+            customer_profile.save()
+
+    def assign_documents_to_user(self, user):
+        try:
+            employee_profile = user.employeeprofile
+            auto_assign_documents = Document.objects.filter(
+                auto_assign_new_employees=True
+            )
+            for document in auto_assign_documents:
+                document.assigned_employees.add(employee_profile)
+            logger.info(f"Documents assigned to user {user.username}.")
+        except EmployeeProfile.DoesNotExist:
+            logger.error(f"Employee profile does not exist for user: {user.username}")
+
+    def send_document_note_to_user(self, user):
+        try:
+            admin_user = User.objects.get(id=6)
+            documents_link = self.request.build_absolute_uri(reverse("documents_list"))
+            clickable_link = f'<a class="docs__link" href="{documents_link}">Link: View Documents</a>'
+            note_content = (
+                f"Please review and sign the required documents. {clickable_link}"
+            )
+
+            # Create a note with admin_user as the sender
+            note = Note.objects.create(
+                sender=admin_user,
+                content=note_content,
+            )
+            note.receivers.add(user)
+
+            # Set NoteReadStatus for the user to 'not read yet'
+            NoteReadStatus.objects.create(note=note, user=user, is_read=False)
+        except User.DoesNotExist:
+            logger.error("Admin user with id=6 does not exist.")
+        except Exception as e:
+            logger.error(
+                f"Failed to send document note to user {user.username}: {str(e)}"
+            )

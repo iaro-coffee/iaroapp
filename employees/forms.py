@@ -35,12 +35,19 @@ class UserClientCreationForm(UserCreationForm):
         user.email = self.cleaned_data["email"]
         self.planday.authenticate()
         employees = self.planday.get_employees()
-        for employee in employees.values():
-            if user.email == employee["email"]:
-                if commit:
-                    user.save()
-                    EmployeeProfile.objects.create(
-                        user=user, branch=self.cleaned_data["branch"]
-                    )
-                return user, employee["employeeGroups"]
+
+        if isinstance(employees, list):
+            for employee in employees:
+                if user.email == employee.get("email"):
+                    if commit:
+                        user.save()
+                        EmployeeProfile.objects.create(
+                            user=user, branch=self.cleaned_data["branch"]
+                        )
+
+                    # Return user and employee_groups (IDs list)
+                    return user, employee.get("employeeGroups", [])
+        else:
+            raise ValueError("Unexpected data type for employees. Expected list.")
+
         raise NoPlandayEmailException("Email should correspond to your Planday Email.")
