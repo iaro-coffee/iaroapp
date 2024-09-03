@@ -303,6 +303,38 @@ class Planday:
             print(f"Failed to fetch departments. Status code: {response.status_code}")
             return []
 
+    def get_employee_groups(self, limit=50, offset=0):
+        """Fetches the list of employee groups from the Planday API."""
+        auth_headers = {
+            "Authorization": "Bearer " + self.access_token,
+            "X-ClientId": self.client_id,
+        }
+
+        params = {
+            "limit": limit,
+            "offset": offset,
+        }
+
+        response = self.session.get(
+            f"{self.base_url}/hr/v1.0/employeegroups",
+            headers=auth_headers,
+            params=params,
+        )
+
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                employee_groups = data.get("data", [])
+                return employee_groups
+            except json.JSONDecodeError:
+                print("Error decoding JSON response.")
+                return []
+        else:
+            print(
+                f"Failed to fetch employee groups. Status code: {response.status_code}"
+            )
+            return []
+
 
 """
   ## response example

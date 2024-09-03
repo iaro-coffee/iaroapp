@@ -2,6 +2,11 @@
     appearance: none;
     scale: 0.85;
 }
+@media (max-width: 1199px) {
+  .form-check-input {
+    scale: 0.75;
+  }
+}
 
 table tr.entry:hover {
     background-color: rgba(20,23,39,0.05);

@@ -20,117 +20,116 @@
 
 {% block content %}
 
-{% for target_branch, deliverable_products in branch_deliveries.items %}
+{% for target_branch, product_storages in branch_deliveries.items %}
     <div class="row">
         <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-body px-0 pt-0 pb-2">
-                    <div class="table-responsive p-0">
-                        <table class="table align-items-center mb-2 table-collapse">
-                            <thead>
-                                <tr class="title">
-                                    <th class="border-bottom-0" colspan="4">
-                                        <h6>Deliver to {{ target_branch.name }}</h6>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <thead>
-                                <tr>
-                                    <th class="w-4 text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
-                                        Select
-                                    </th>
-                                    <th class="w-20 w-responsive__product text-uppercase text-secondary text-xxs font-weight-bolder">
-                                        Product
-                                    </th>
-                                    <th class="w-100 text-uppercase text-secondary text-xxs font-weight-bolder responsive__hide responsive__mobile-1">
-                                        Storages
-                                    </th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1">
-                                        Needed
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for product in deliverable_products %}
-                                    {% for product_storage, data in product.get_oos_value_shipping.items %}
-                                        {% if product_storage == target_branch and data.value_needed > 0 %}
-                                            <tr class="entry">
-                                                <td>
-                                                    <div class="d-flex justify-content-center responsive__mobile-2">
-                                                        <div class="form-check">
-                                                            <div class="checkbox-wrapper">
-                                                                <input class="form-check-input flex-shrink-0"
-                                                                       type="checkbox"
-                                                                       id="checkbox{{ forloop.counter }}"
-                                                                       name="done_{{ forloop.counter }}">
-                                                            </div>
+            {% if product_storages %}
+                <div class="card mb-4">
+                    <div class="card-body px-0 pt-0 pb-2">
+                        <div class="table-responsive p-0">
+                            <table class="table align-items-center mb-2 table-collapse">
+                                <thead>
+                                    <tr class="title">
+                                        <th class="border-bottom-0" colspan="4">
+                                            <h6>Deliver to {{ target_branch.name }}</h6>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <thead>
+                                    <tr>
+                                        <th class="w-4 d-none text-center text-uppercase text-secondary text-xxs font-weight-bolder align-middle responsive__mobile-1">
+                                            Check
+                                        </th>
+                                        <th class="w-20 w-responsive__product text-uppercase text-secondary text-xxs font-weight-bolder">
+                                            Product
+                                        </th>
+                                        <th class="w-100 text-uppercase text-secondary text-xxs font-weight-bolder responsive__hide responsive__mobile-1">
+                                            Storages
+                                        </th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder responsive__mobile-1 text-center">
+                                            Needed
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product_storage in product_storages %}
+                                        <tr class="entry">
+                                            <td class="d-none">
+                                                <div class="d-flex justify-content-center responsive__mobile-2">
+                                                    <div class="form-check">
+                                                        <div class="checkbox-wrapper">
+                                                            <input class="form-check-input flex-shrink-0"
+                                                                   type="checkbox"
+                                                                   id="checkbox{{ forloop.counter }}"
+                                                                   name="done_{{ forloop.counter }}">
                                                         </div>
                                                     </div>
-                                                </td>
-                                                <td>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <label for="checkbox{{ forloop.counter }}" class="sr-only">Select {{ product_storage.product.name }}</label>
+                                                    <h6 class="mb-0 text-sm responsive__mobile-3">
+                                                        {{ product_storage.product.name }}
+                                                    </h6>
+                                                </div>
+                                                <div class="mt-1 responsive__show">
+
+                                                <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary" style="">
                                                     <div class="d-flex align-items-center">
-                                                        <label for="checkbox{{ forloop.counter }}" class="sr-only">Select {{ product.name }}</label>
-                                                        <h6 class="mb-0 text-sm responsive__mobile-3">
-                                                            {{ product.name }}
+                                                        <svg class="bi me-1" width="16" height="16">
+                                                            <circle cx="8" cy="8" r="7" fill="#ff00ff" stroke="#cbd3da">
+                                                            </circle>
+                                                        </svg>
+                                                        {{ product_storage.storage.name }}
+                                                    </div>
+                                                </span>
+
+                                        </div>
+                                            </td>
+                                            <td class="responsive__hide">
+                                                <div class="badge-wrap d-flex align-items-center">
+                                                    <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
+                                                        <div class="d-flex align-items-center">
+                                                            <svg class="bi me-1" width="16" height="16">
+                                                                <circle cx="8" cy="8" r="7" fill="{{ product_storage.storage.color }}" stroke="#cbd3da"></circle>
+                                                            </svg>
+                                                            {{ product_storage.storage.name }}
+                                                        </div>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center units-wrap">
+                                                    <div class="units-column d-flex">
+                                                        <h6 class="mb-0 text-sm value">
+                                                            {{ product_storage.value_needed|floatformat:2 }}
                                                         </h6>
-                                                        <!-- Product Storages Display Mobile -->
-                                                        <div class="mt-1 mb-1 responsive__show">
-                                                            {% for ps in product.product_storages.all %}
-                                                                {% if not ps.main_storage and ps.has_shortage and ps.branch == target_branch %}
-                                                                    <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
-                                                                        <div class="d-flex align-items-center">
-                                                                            <svg class="bi me-1" width="16" height="16">
-                                                                                <circle cx="8" cy="8" r="7" fill="{{ ps.storage.color }}" stroke="#cbd3da"></circle>
-                                                                            </svg>
-                                                                            {{ ps.storage.name }}
-                                                                        </div>
-                                                                    </span>
-                                                                {% endif %}
-                                                            {% endfor %}
-                                                        </div>
+                                                        <h6 class="mb-0 me-2 ms-1 text-sm unit">
+                                                            {{ product_storage.product.unit.all|join:", " }}
+                                                        </h6>
                                                     </div>
-                                                </td>
-                                                <!-- Product Storages Display Laptop -->
-                                                <td class="responsive__hide">
-                                                    <div class="badge-wrap d-flex align-items-center">
-                                                        {% for ps in product.product_storages.all %}
-                                                            {% if not ps.main_storage and ps.has_shortage and ps.branch == target_branch %}
-                                                                <span class="badge bg-secondary-subtle border border-secondary-subtle text-secondary">
-                                                                    <div class="d-flex align-items-center">
-                                                                        <svg class="bi me-1" width="16" height="16">
-                                                                            <circle cx="8" cy="8" r="7" fill="{{ ps.storage.color }}" stroke="#cbd3da"></circle>
-                                                                        </svg>
-                                                                        {{ ps.storage.name }}
-                                                                    </div>
-                                                                </span>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center units-wrap">
-                                                        <div class="units-column d-flex">
-                                                            <h6 class="mb-0 text-sm value">
-                                                                {{ data.value_needed|floatformat:2 }}
-                                                            </h6>
-                                                            <h6 class="mb-0 me-2 ms-1 text-sm unit">
-                                                                {{ product.unit.all|join:", " }}
-                                                            </h6>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
                                     {% endfor %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% else %}
+                <p>No products need to be delivered to {{ target_branch.name }}.</p>
+            {% endif %}
         </div>
     </div>
 {% endfor %}
+
+    <style>
+        .entry td {
+            padding: 0.4rem 0.8rem !important;
+        }
+    </style>
 
 <script src="{% static 'js/tables_appearence.js' %}"></script>
 

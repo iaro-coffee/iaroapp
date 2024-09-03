@@ -67,6 +67,13 @@
                                 <li>{{ department.id }}: {{ department.name }}</li>
                             {% endfor %}
                         </ul>
+
+                        <h6>Employee Groups</h6>
+                        <ul>
+                            {% for group in employee_groups %}
+                                <li>{{ group.id }}: {{ group.name }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>

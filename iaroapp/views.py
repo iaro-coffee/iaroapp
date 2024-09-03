@@ -384,11 +384,15 @@ def planday_info(request: HttpRequest):
     # Fetch departments
     departments = planday.get_departments()
 
+    # Fetch groups
+    employee_groups = planday.get_employee_groups()
+
     context = {
         "portal_info": portal_info["data"],
         "departments": departments,
+        "employee_groups": employee_groups,
     }
-
+    print(employee_groups)
     # Render the template with the context
     return render(request, "planday.html", context)
 

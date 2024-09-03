@@ -3,7 +3,7 @@ import logging
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Prefetch
+from django.db.models import F, Prefetch
 from django.shortcuts import redirect, render, reverse
 from django.utils import timezone
 
@@ -235,58 +235,56 @@ def inventory_packaging(request):
     current_branch = get_current_branch(request)
     branches = get_available_branches_filtered(current_branch)
 
-    # Determine the target branches
-    product_storages_with_shortage = [
-        product_storage
-        for product_storage in ProductStorage.objects.filter(main_storage=False)
-        if product_storage.has_shortage
-    ]
-
-    target_branches_set = {
-        product_storage.storage.branch
-        for product_storage in product_storages_with_shortage
-    }
+    branch_deliveries = {}
 
     if current_branch == "All":
-        target_branches = list(target_branches_set)
+        # Fetch all product storages with shortages across all branches
+        product_storages_with_shortage = (
+            ProductStorage.objects.filter(main_storage=False, value__lt=F("threshold"))
+            .select_related("product", "storage__branch", "storage")
+            .prefetch_related("product__unit")
+        )
+
+        # Group by target branch
+        for ps in product_storages_with_shortage:
+            target_branch = ps.storage.branch
+            if target_branch not in branch_deliveries:
+                branch_deliveries[target_branch] = []
+            branch_deliveries[target_branch].append(ps)
+
     else:
-        target_branches = list(target_branches_set.difference({current_branch}))
+        # Fetch product storages with shortages for the current branch's main storage
+        product_storages_with_shortage = (
+            ProductStorage.objects.filter(
+                product__product_storages__storage__branch=current_branch,
+                product__product_storages__main_storage=True,
+                main_storage=False,
+                value__lt=F("threshold"),
+            )
+            .select_related("product", "storage__branch", "storage")
+            .prefetch_related("product__unit")
+        )
 
-    # Get products and related storages
-    products = Product.objects.prefetch_related("product_storages", "unit")
+        # Group by target branch
+        for ps in product_storages_with_shortage:
+            target_branch = ps.storage.branch
+            if target_branch not in branch_deliveries:
+                branch_deliveries[target_branch] = []
+            branch_deliveries[target_branch].append(ps)
 
-    # Dictionary to track deliverable products for each target branch
-    branch_deliveries = {}
-    for target_branch in target_branches:
-        deliverable_products = []
-        for product in products:
-            if (
-                product.needs_packaging()
-                and target_branch in product.get_storage_branches
-            ):
-                oos_value_shipping = product.get_oos_value_shipping()
-                for product_storage, data in oos_value_shipping.items():
-                    if product_storage == target_branch and data["value_needed"] > 0:
-                        deliverable_products.append(product)
-                        break
-        if deliverable_products:
-            branch_deliveries[target_branch] = deliverable_products
-
-    # Filter out empty branches
-    branch_deliveries = {k: v for k, v in branch_deliveries.items() if v}
-
-    modified_date = get_inventory_modified_date(current_branch)
+    # Send the data to the template
+    modified_date = get_inventory_modified_date(
+        current_branch if current_branch != "All" else None
+    )
 
     return render(
         request,
         "inventory_packaging.html",
         context={
             "pageTitle": "Packaging",
-            "products": products,
-            "product_storages": product_storages_with_shortage,
+            "branch_deliveries": branch_deliveries,
             "modifiedDate": modified_date,
             "branches": branches,
             "branch": current_branch,
-            "branch_deliveries": branch_deliveries,
         },
     )
