@@ -152,6 +152,16 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
     def note_to_dict(self, note, user_branch):
         local_time = timezone.localtime(note.timestamp)
         return {
+            "sender_first_name": (
+                note.sender.employeeprofile.first_name
+                if note.sender and hasattr(note.sender, "employeeprofile")
+                else None
+            ),
+            "sender_last_name": (
+                note.sender.employeeprofile.last_name
+                if note.sender and hasattr(note.sender, "employeeprofile")
+                else None
+            ),
             "sender_username": note.sender.username if note.sender else None,
             "sender_avatar": (
                 note.sender.employeeprofile.avatar.url

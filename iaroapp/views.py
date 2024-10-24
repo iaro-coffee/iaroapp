@@ -31,6 +31,77 @@ from tasks.views import get_my_tasks
 
 logger = logging.getLogger(__name__)
 
+planday = planday.Planday()
+run_once_day = {}
+run_once_day_punch_clock = {}
+nextShifts = []
+nextShiftsUser = {}
+punchClockRecordsUser = {}
+
+
+def get_user_shifts(employee_id, from_date, to_date):
+    """
+    Fetch user shifts from Planday within a date range.
+    """
+    try:
+        return planday.get_user_shifts(employee_id, from_date, to_date)
+    except Exception as e:
+        logger.error(f"Error fetching shifts: {str(e)}")
+        return []
+
+
+def initialize_employee_groups_map():
+    """
+    Initialize a dictionary that maps employeeGroupId to group names.
+    Fetches group data from Planday.
+    """
+    planday.authenticate()  # Ensure Planday is authenticated
+    employee_groups = planday.get_employee_groups()  # Fetch groups from Planday
+    return {str(group["id"]): group["name"] for group in employee_groups}
+
+
+def initialize_branches_by_department_id():
+    """
+    Initialize a dictionary that maps departmentId to branch names.
+    """
+    return {
+        str(branch.departmentId): branch.name  # Ensure keys are strings
+        for branch in Branch.objects.all()
+    }
+
+
+def enrich_shift_with_group_name(shift, employee_groups_map):
+    """
+    Enrich a single shift with the group name based on its employeeGroupId.
+    """
+    group_id = str(shift.get("employeeGroupId"))  # Convert to string for consistency
+    shift["group_name"] = employee_groups_map.get(group_id, "Unknown Group")
+    return shift
+
+
+def enrich_shift_with_branch_name(shift, branches_by_department_id):
+    """
+    Enrich a single shift with the branch name based on its departmentId.
+    Also converts start and end times to datetime objects.
+    """
+    department_id = str(shift.get("departmentId"))
+    shift["branch_name"] = branches_by_department_id.get(
+        department_id, "Unknown Branch"
+    )
+    shift = convert_to_datetime(shift)
+    return shift
+
+
+def convert_to_datetime(shift):
+    """
+    Convert the 'startDateTime' and 'endDateTime' of a shift from string to datetime.
+    """
+    if "startDateTime" in shift and isinstance(shift["startDateTime"], str):
+        shift["startDateTime"] = parse_datetime(shift["startDateTime"])
+    if "endDateTime" in shift and isinstance(shift["endDateTime"], str):
+        shift["endDateTime"] = parse_datetime(shift["endDateTime"])
+    return shift
+
 
 def get_employee_profile(user):
     try:
@@ -107,8 +178,8 @@ def get_populartimes_data(request: HttpRequest):
     return JsonResponse(response_data)
 
 
-@employee_required
 @login_required
+@employee_required
 def index(request: HttpRequest):
     """
     Render the dashboard page for the user with relevant data including shifts,
@@ -124,42 +195,72 @@ def index(request: HttpRequest):
     customer_profile = get_customer_profile(request.user)
     current_month_year = today.strftime("%B %Y")
 
+    # Initialize branches_by_department_id and employee_groups_map
+    branches_by_department_id = initialize_branches_by_department_id()
+    employee_groups_map = initialize_employee_groups_map()
+    print(f"branches_by_department_id: {branches_by_department_id}")
+
+    # Authenticate and fetch shifts for the user
+    planday.authenticate()
+    employee_id = user_profile.planday_id
+    user_shifts = get_user_shifts(employee_id, today.isoformat(), today.isoformat())
+
+    # Check if user_shifts contains data
+    if user_shifts:
+        # Enrich the shift with both branch and group information
+        current_shift = enrich_shift_with_group_name(
+            enrich_shift_with_branch_name(user_shifts[0], branches_by_department_id),
+            employee_groups_map,
+        )
+        print(current_shift)
+    else:
+        current_shift = None
+        print(current_shift)
+
+    # Check if user has punched in
+    punch_clock_records = planday.get_user_punchclock_records_of_timespan(
+        request.user.email, today, today
+    )
+
+    # Ensure `punched_in` and `punch_in_time` are correctly derived
+    punched_in, punch_in_time, punch_out_time = False, None, None
+
+    for record in punch_clock_records:
+        if "endDateTime" not in record or record["endDateTime"] is None:
+            # User is punched in if there's no endDateTime
+            punched_in = True
+            punch_in_time = parse_datetime(record["startDateTime"])
+        else:
+            # Capture punch-out time if available (last record should be the latest)
+            punch_out_time = parse_datetime(record["endDateTime"])
+
+    # Ensure time values are formatted properly for UI
+    punch_in_time_str = punch_in_time.strftime("%H:%M") if punch_in_time else None
+    punch_out_time_str = punch_out_time.strftime("%H:%M") if punch_out_time else None
+
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
-
     combined_notes = (
         Note.objects.filter(Q(receivers=request.user) | Q(branches=user_branch))
         .distinct()
         .order_by("-timestamp")[:4]
     )
 
-    # Get all branches and map them by departmentId
-    branches_by_department_id = {
-        branch.departmentId: f"{branch.street_address}, {branch.city}"
-        for branch in Branch.objects.all()
-    }
     # HOLIDAYS API
     holidays_cache_key = f"holidays_{today}"
-
-    # Check if the holiday data for today is already in the cache
     holiday_data = cache.get(holidays_cache_key)
+
     if holiday_data is None:
-        # If not, fetch the holiday data from the API
         calendarific_api_key = os.getenv("CALENDARIFIC_API_KEY")
         country = "DE"
         year = today.year
         url = f"https://calendarific.com/api/v2/holidays?&api_key={calendarific_api_key}&country={country}&year={year}"
 
-        response = requests.get(
-            url, timeout=10
-        )  # Timeout 10sec to avoid potential indefinite load
+        response = requests.get(url, timeout=10)
         if response.status_code == 200:
             data = response.json()
             holidays = data.get("response", {}).get("holidays", [])
-            # Save the data to the cache
-            cache.set(
-                holidays_cache_key, holidays, timeout=24 * 60 * 60
-            )  # Cache for 1 day
+            cache.set(holidays_cache_key, holidays, timeout=24 * 60 * 60)
             holiday_data = holidays
         else:
             holiday_data = []
@@ -194,17 +295,18 @@ def index(request: HttpRequest):
         "tomorrow_holidays": tomorrow_holidays,
         "current_month_year": current_month_year,
         "branches_by_department_id": branches_by_department_id,
+        "current_shift": current_shift,
+        "user_group": (
+            current_shift.get("group_name", "Unknown Group")
+            if current_shift
+            else "Unknown Group"
+        ),
+        "punched_in": punched_in,
+        "punch_in_time": punch_in_time_str,
+        "punch_out_time": punch_out_time_str,
     }
 
     return render(request, "index.html", context=context)
-
-
-planday = planday.Planday()
-run_once_day = {}
-run_once_day_punch_clock = {}
-nextShifts = []
-nextShiftsUser = {}
-punchClockRecordsUser = {}
 
 
 @login_required
@@ -215,40 +317,39 @@ def get_next_user_shifts(request: HttpRequest):
     Cached for 24 hours unless the user requests a refresh.
     """
     try:
-        user_email = request.user.email
-
-        # Retrieve id for the current user
         employee_profile = get_object_or_404(EmployeeProfile, user=request.user)
         employee_id = employee_profile.planday_id
-
-        # If planday_id is not available, fallback to using the email to get the ID (fetch all users)
-        if not employee_id:
-            employee_id = planday.get_employee_id_by_email(user_email)
-            if not employee_id:
-                return JsonResponse({"error": "Employee not found"}, status=404)
+        refresh = request.GET.get("refresh", "false").lower() == "true"
 
         cache_key = f"user_shifts_{employee_id}"
-        refresh = request.GET.get("refresh", "false").lower() == "true"
 
         # Check if data is cached and refresh is not requested
         if not refresh:
             cached_data = cache.get(cache_key)
             if cached_data:
                 return JsonResponse(cached_data)
-            else:
-                print("Cache miss - no shifts found")
 
-        # If not cached or refresh is requested, fetch the shifts
-        from_date = datetime.now().strftime("%Y-%m-%d")  # Define 'from' date
-        end_of_month = (datetime.now() + relativedelta(day=31)).strftime(
-            "%Y-%m-%d"
-        )  # Define 'to' date
-        shifts = planday.get_user_shifts(
-            employee_id, from_date, end_of_month
-        )  # Fetch shifts
+        # Initialize branches_by_department_id and employee_groups_map
+        branches_by_department_id = initialize_branches_by_department_id()
+        employee_groups_map = initialize_employee_groups_map()
 
-        initial_shifts = shifts[:5]
-        remaining_shifts = shifts[5:]
+        # Fetch shifts and enrich them with user group and branch
+        from_date = datetime.now().strftime("%Y-%m-%d")
+        end_of_month = (datetime.now() + relativedelta(day=31)).strftime("%Y-%m-%d")
+        shifts = get_user_shifts(employee_id, from_date, end_of_month)
+
+        # Enrich each shift with user group, branch, and group name
+        enriched_shifts = [
+            enrich_shift_with_group_name(
+                enrich_shift_with_branch_name(shift, branches_by_department_id),
+                employee_groups_map,
+            )
+            for shift in shifts
+        ]
+
+        # Split shifts into initial and remaining for pagination
+        initial_shifts = enriched_shifts[:5]
+        remaining_shifts = enriched_shifts[5:]
 
         response_data = {
             "initial_shifts": initial_shifts,
@@ -363,6 +464,8 @@ def getStatistics(request):
                         diff = end_date_time - start_date_time
                         hours = diff.seconds / 3600
         statistics["workHours"].insert(0, hours)
+
+        print(punchClockRecordsUser)
 
     statisticsSum["workHours"] = round(sum(statistics["workHours"]), 2)
 

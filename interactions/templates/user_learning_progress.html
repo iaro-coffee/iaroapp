@@ -34,7 +34,11 @@
                             <div class="list-group-item">
                                 <a data-bs-toggle="collapse" href="#userPdfs_{{ user.id }}"
                                    class="d-flex align-items-center">
-                                    <h6 class="mb-0 mx-2">{{ user.username }}</h6>
+                                    <h6 class="mb-0 mx-2">
+                                        {{ user.employeeprofile.first_name }}
+                                        {{ user.employeeprofile.last_name }}
+{#                                        {{ user.username }}#}
+                                    </h6>
                                 </a>
                                 <div id="userPdfs_{{ user.id }}" class="collapse" data-bs-parent="#accordion">
                                     <div class="list-group list-group-flush">

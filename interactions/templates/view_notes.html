@@ -38,12 +38,12 @@
                                 <div class="user__info mb-2">
                                     <img src="
                                             {% if note.sender.employeeprofile.avatar.url %}{{ note.sender.employeeprofile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
-                                         alt="{{ note.sender.username }}'s avatar"
+                                         alt="{{ note.sender.employeeprofile.first_name }}'s avatar"
                                          class="avatar"
                                          onclick="openAvatarModal(this.src)">
                                     <span class="text-bolder username"
                                           onclick="openAvatarModal(this.previousElementSibling.src)">
-                                    {{ note.sender.username }}:
+                                    {{ note.sender.employeeprofile.first_name }} {{ note.sender.employeeprofile.last_name }}:
                                 </span>
                                     {{ note.content|safe }}
                                 </div>
@@ -82,12 +82,14 @@
                                         {% for receiver in note.receivers.all %}
                                             <img src="
                                                     {% if receiver.employeeprofile.avatar.url %}{{ receiver.employeeprofile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
-                                                 alt="{{ receiver.username }}'s avatar"
+                                                 alt="{{ receiver.employeeprofile.first_name }}'s avatar"
                                                  class="avatar"
                                                  onclick="openAvatarModal(this.src)">
                                             <span class="text-bolder username"
                                                   onclick="openAvatarModal(this.previousElementSibling.src)">
-                                            {{ receiver.username }}{% if not forloop.last %}, {% endif %}
+                                            {{ receiver.employeeprofile.first_name  }}
+                                            {{ receiver.employeeprofile.last_name  }}
+                                                {% if not forloop.last %}, {% endif %}
                                         </span>
                                         {% endfor %}
                                     {% endwith %}
@@ -344,10 +346,10 @@
                                     noteInfo = noteTime + `
                                 <div class="user__info mb-2">
                                     <img src="${note.sender_avatar ? note.sender_avatar : '{% static "images/avatar.png" %}'}"
-                                         alt="${note.sender_username}'s avatar"
+                                         alt="${note.sender_first_name}'s avatar"
                                          class="avatar"
                                          style="width: 32px; height: 32px; border-radius: 50%; background-color: #483d8b">
-                                    <span class="text-bolder username">${note.sender_username}</span>
+                                    <span class="text-bolder username">${note.sender_first_name} ${note.sender_last_name}</span>
                                     <span class="text-bolder" style="margin-left: -4px;">:</span>
                                     ${note.content}
                                 </div>
@@ -373,7 +375,7 @@
                                              alt="${receiver.username}'s avatar"
                                              class="avatar"
                                              style="width: 30px; height: 30px; border-radius: 50%; background-color: #483d8b">
-                                        <span class="text-bolder username">${receiver.username}</span>
+                                        <span class="text-bolder username">${note.sender_first_name} ${note.sender_last_name}</span>
                                     `);
                                         });
                                     }

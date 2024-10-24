@@ -23,23 +23,42 @@
             <div class="col-lg-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header pb-0">
-                        <h6>{% if ongoingShift %} End your shift? {% else %} Start shift? {% endif %}</h6>
+                        <h6>Punch Clock</h6>
                         <p class="text-sm mb-0">
+                            {% if current_shift %}
                             <i class="fa fa-clock text-info" aria-hidden="true"></i>
-                            {% if ongoingShift %}
-                                Punch out to end your shift {% else %} Punch in to start your shift
+                                <b>Today: </b>
+                                {{ current_shift.startDateTime|date:"H:i" }} - {{ current_shift.endDateTime|date:"H:i" }}
+                                <span class="text-xs text-secondary">
+                                    {{ current_shift.branch_name|default:"Unknown Branch" }} -
+                                    {{ current_shift.group_name|default:"Unknown Group" }}
+                                </span>
+                            {% else %}
+                            <i class="fa fa-coffee text-success" aria-hidden="true"></i>
+                                Enjoy your well-deserved time off!
                             {% endif %}
                         </p>
                     </div>
+
                     <div class="card-body text-center py-1">
-                        {% if ongoingShift %}
-                            <span id="clock"></span>
+                        {% if not current_shift %}
+                            <p>Hey {{ user_profile.first_name }}, there are no shifts available for you today. <a
+                                    href="#next-shifts" class="scroll-link">Check upcoming</a></p>
+                        {% elif not punched_in %}
+                            <p>Hey {{ user_profile.first_name }}, have an awesome shift ahead! 🌟<br>Ready to start?</p>
+                            <div class="d-flex justify-content-center">
+                                <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
+                                    Punch in
+                                </a>
+                            </div>
+                        {% else %}
+                            <p>Punched in at: {{ punch_in_time|date:"H:i" }} - <span id="expectedPunchOut"></span></p>
+                            <div class="d-flex justify-content-center">
+                                <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
+                                    Punch out
+                                </a>
+                            </div>
                         {% endif %}
-                        <div class="d-flex justify-content-center">
-                            <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
-                                {% if ongoingShift %} Punch out {% else %} Punch in {% endif %}
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -151,13 +170,13 @@
                 </div>
             </div>
 
-            <div class="col-lg-4 mb-4">
+            <div id="next-shifts" class="col-lg-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header pb-0">
                         <h6>Your next shifts</h6>
                         <p class="text-sm mb-0">
                             <i class="fa fa-dumbbell text-info" aria-hidden="true"></i>
-                            you can do this!
+                            You can do this!
                         </p>
                     </div>
                     <div class="card-body px-4 py-2">
@@ -256,7 +275,7 @@
                                                              class="avatar"
                                                              onclick="openAvatarModal(this.src)">
                                                         <span class="text-bolder username" onclick="openAvatarModal(this.previousElementSibling.src)">
-                                                            {{ note.sender.username }}:
+                                                            {{ note.sender.employeeprofile.first_name }} {{ note.sender.employeeprofile.last_name }}:
                                                         </span>
                                                         {{ note.content|safe|truncatechars:140 }}
                                                     </div>
@@ -395,7 +414,7 @@
                         {% csrf_token %}
                         <input type="text" name="user" value="{{ user.id }}" style="display: none;"/>
                         {% if ongoingShift %}
-                            <h5>How was todays shift for you?</h5>
+                            <h5>How was today's shift for you?</h5>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="stars">
@@ -464,6 +483,10 @@
 
         #received-notes {
             justify-content: center;
+        }
+
+        .scroll-link {
+            color: #d63384;
         }
     </style>
 
@@ -579,22 +602,22 @@
                 const startDate = new Date(shift.startDateTime);
                 const endDate = new Date(shift.endDateTime);
                 const day = startDate.getDate().toString().padStart(2, '0');
-                const weekday = startDate.toLocaleDateString('en-US', {weekday: 'short'});
+                const weekday = startDate.toLocaleDateString('en-US', { weekday: 'short' });
                 const address = branchesByDepartmentId[shift.departmentId] || "Unknown location";
 
-
                 return `
-            <div class="date">
-                ${day}
-                <span class="weekday text-center">${weekday}</span>
-            </div>
-            <div class="shift bg-gradient-secondary px-3">
-                <span class="time text-sm">${formatTime(startDate)} – ${formatTime(endDate)}</span>
-                <span class="location text-xs opacity-5">${address}</span>
-            </div>
-            {#${shift.employeeGroupId ? `<div>Employee Group ID: ${shift.employeeGroupId}</div>` : ''}#}
-            {#${shift.comment ? `<div>Comment: ${shift.comment}</div>` : ''}#}
-        `;
+                    <div class="date">
+                        ${day}
+                        <span class="weekday text-center">${weekday}</span>
+                    </div>
+                    <div class="shift bg-gradient-secondary px-3">
+                        <span class="time text-sm">${formatTime(startDate)} – ${formatTime(endDate)}</span>
+                        <span class="location text-xs opacity-5">
+                            ${shift.branch_name ? `<span>${shift.branch_name}</span>` : 'Unknown Branch'} -
+                            ${shift.group_name || 'Unknown Group'}
+                        </span>
+                    </div>
+                `;
             }
 
             function appendShifts(shifts) {
@@ -629,7 +652,7 @@
                                 loadMoreBtn.style.display = 'none';
                             }
                         } else {
-                            shiftsList.innerHTML = '<li>No shifts available</li>';
+                            shiftsList.innerHTML = '<li>No shifts available. Use refresh button below to update data.</li>';
                         }
                     })
                     .catch(error => {
@@ -676,7 +699,46 @@
     </script>
 
 
-    <script src="{% static 'js/shifts.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var punchInTime = new Date("{{ punch_in_time|date:'Y-m-d H:i:s' }}");
+            var shiftEndTime = new Date("{{ current_shift.endDateTime|date:'Y-m-d H:i:s' }}");
+            var expectedPunchOut = document.getElementById('expectedPunchOut');
+
+            if (expectedPunchOut) {
+                var timeDiff = shiftEndTime - punchInTime;
+                var expectedTime = new Date(punchInTime.getTime() + timeDiff);
+                expectedPunchOut.textContent = expectedTime.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const links = document.querySelectorAll('.scroll-link');
+
+            links.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+                        const offset = 100;
+                        window.scrollTo({
+                            top: targetPosition - offset,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
     <script src="{% static 'js/charts_populartimes.js' %}"></script>
     <script src="{% static 'js/charts_user-stats.js' %}"></script>
 
