@@ -55,17 +55,20 @@ def initialize_employee_groups_map():
     Initialize a dictionary that maps employeeGroupId to group names.
     Fetches group data from Planday.
     """
-    planday.authenticate()  # Ensure Planday is authenticated
-    employee_groups = planday.get_employee_groups()  # Fetch groups from Planday
+    planday.authenticate()
+    employee_groups = planday.get_employee_groups()
     return {str(group["id"]): group["name"] for group in employee_groups}
 
 
 def initialize_branches_by_department_id():
     """
-    Initialize a dictionary that maps departmentId to branch names.
+    Initialize a dictionary that maps departmentId to both branch name and full address (street and city).
     """
     return {
-        str(branch.departmentId): branch.name  # Ensure keys are strings
+        str(branch.departmentId): {
+            "name": branch.name,
+            "address": f"{branch.street_address}, {branch.city}",
+        }
         for branch in Branch.objects.all()
     }
 
@@ -74,20 +77,21 @@ def enrich_shift_with_group_name(shift, employee_groups_map):
     """
     Enrich a single shift with the group name based on its employeeGroupId.
     """
-    group_id = str(shift.get("employeeGroupId"))  # Convert to string for consistency
+    group_id = str(shift.get("employeeGroupId"))
     shift["group_name"] = employee_groups_map.get(group_id, "Unknown Group")
     return shift
 
 
 def enrich_shift_with_branch_name(shift, branches_by_department_id):
     """
-    Enrich a single shift with the branch name based on its departmentId.
-    Also converts start and end times to datetime objects.
+    Enrich a single shift with the branch name and full address based on its departmentId.
     """
     department_id = str(shift.get("departmentId"))
-    shift["branch_name"] = branches_by_department_id.get(
-        department_id, "Unknown Branch"
+    branch_info = branches_by_department_id.get(
+        department_id, {"name": "Unknown Branch", "address": "Unknown location"}
     )
+    shift["branch_name"] = branch_info["name"]
+    shift["branch_address"] = branch_info["address"]
     shift = convert_to_datetime(shift)
     return shift
 
@@ -198,7 +202,6 @@ def index(request: HttpRequest):
     # Initialize branches_by_department_id and employee_groups_map
     branches_by_department_id = initialize_branches_by_department_id()
     employee_groups_map = initialize_employee_groups_map()
-    print(f"branches_by_department_id: {branches_by_department_id}")
 
     # Authenticate and fetch shifts for the user
     planday.authenticate()
@@ -212,10 +215,8 @@ def index(request: HttpRequest):
             enrich_shift_with_branch_name(user_shifts[0], branches_by_department_id),
             employee_groups_map,
         )
-        print(current_shift)
     else:
         current_shift = None
-        print(current_shift)
 
     # Check if user has punched in
     punch_clock_records = planday.get_user_punchclock_records_of_timespan(
@@ -234,9 +235,9 @@ def index(request: HttpRequest):
             # Capture punch-out time if available (last record should be the latest)
             punch_out_time = parse_datetime(record["endDateTime"])
 
-    # Ensure time values are formatted properly for UI
-    punch_in_time_str = punch_in_time.strftime("%H:%M") if punch_in_time else None
-    punch_out_time_str = punch_out_time.strftime("%H:%M") if punch_out_time else None
+    # # Ensure time values are formatted
+    # punch_in_time_str = punch_in_time.strftime("%H:%M") if punch_in_time else None
+    # punch_out_time_str = punch_out_time.strftime("%H:%M") if punch_out_time else None
 
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
@@ -302,8 +303,8 @@ def index(request: HttpRequest):
             else "Unknown Group"
         ),
         "punched_in": punched_in,
-        "punch_in_time": punch_in_time_str,
-        "punch_out_time": punch_out_time_str,
+        "punch_in_time": punch_in_time,
+        "punch_out_time": punch_out_time,
     }
 
     return render(request, "index.html", context=context)
@@ -464,8 +465,6 @@ def getStatistics(request):
                         diff = end_date_time - start_date_time
                         hours = diff.seconds / 3600
         statistics["workHours"].insert(0, hours)
-
-        print(punchClockRecordsUser)
 
     statisticsSum["workHours"] = round(sum(statistics["workHours"]), 2)
 

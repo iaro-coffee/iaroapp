@@ -1,7 +1,7 @@
 from django.urls import path
 
-from . import views
+from .views import ShiftManagementView
 
 urlpatterns = [
-    path("", views.index, name="shifts"),
+    path("manage/", ShiftManagementView.as_view(), name="shift-management"),
 ]

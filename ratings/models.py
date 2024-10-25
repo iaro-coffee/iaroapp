@@ -5,12 +5,12 @@ from iaroapp.base_model import BaseModel
 
 
 class EmployeeRating(BaseModel):
-    """Model representing a tip (but not a specific copy of a tip)."""
+    """Model representing an employee's shift rating."""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField()
     rating = models.FloatField()
+    comment = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        """String for representing the Model object."""
-        return "rating"
+        return f"Rating: {self.rating} for {self.user.username} on {self.date}"

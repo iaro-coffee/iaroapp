@@ -69,13 +69,17 @@ def ratings_evaluation(request):
             )  # check profile to avoid RelatedObject not found
             userDicts.append(
                 {
-                    "user": model_to_dict(user),
+                    "user": {
+                        **model_to_dict(user),
+                        "full_name": f"{profile.first_name} {profile.last_name}",
+                    },
                     "profile": model_to_dict(profile),
                     "avg_rating": rating,
                     "avg_rating_bar": ratingBar,
                 }
             )
-        except User.profile.RelatedObjectDoesNotExist:
+
+        except User.employeeprofile.RelatedObjectDoesNotExist:
             userDicts.append(
                 {
                     "user": model_to_dict(user),
@@ -99,7 +103,9 @@ def ratings_evaluation(request):
 
 @user_passes_test(check_admin)
 def user_ratings_evaluation(request, id):
-    userName = User.objects.filter(id=id).distinct().values("username")[0]["username"]
+    user_profile = User.objects.get(id=id).employeeprofile
+    userName = f"{user_profile.first_name} {user_profile.last_name}"
+
     avgRating = EmployeeRating.objects.filter(user=id).aggregate(Avg("rating"))[
         "rating__avg"
     ]

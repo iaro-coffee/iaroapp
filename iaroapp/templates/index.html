@@ -26,13 +26,12 @@
                         <h6>Punch Clock</h6>
                         <p class="text-sm mb-0">
                             {% if current_shift %}
-                            <i class="fa fa-clock text-info" aria-hidden="true"></i>
-                                <b>Today: </b>
-                                {{ current_shift.startDateTime|date:"H:i" }} - {{ current_shift.endDateTime|date:"H:i" }}
-                                <span class="text-xs text-secondary">
-                                    {{ current_shift.branch_name|default:"Unknown Branch" }} -
-                                    {{ current_shift.group_name|default:"Unknown Group" }}
-                                </span>
+                                <i class="fa fa-clock text-info" aria-hidden="true"></i>
+                                {% if punched_in %}
+                                    <b><span style="color: #82d616;">Punched in</span></b> on: {{ punch_in_time|date:"l, F d" }}
+                                {% else %}
+                                    <b><span>Ready to start?</span></b>
+                                {% endif %}
                             {% else %}
                             <i class="fa fa-coffee text-success" aria-hidden="true"></i>
                                 Enjoy your well-deserved time off!
@@ -45,21 +44,59 @@
                             <p>Hey {{ user_profile.first_name }}, there are no shifts available for you today. <a
                                     href="#next-shifts" class="scroll-link">Check upcoming</a></p>
                         {% elif not punched_in %}
-                            <p>Hey {{ user_profile.first_name }}, have an awesome shift ahead! 🌟<br>Ready to start?</p>
+                                Hey <strong>{{ user_profile.first_name }}</strong>, have an awesome shift ahead! 🌟 <br>
+                                <span class="text-secondary">
+                                    {{ current_shift.branch_name|default:"Unknown Branch" }} -
+                                    {{ current_shift.group_name|default:"Unknown Group" }} <br>
+                                    {{ current_shift.startDateTime|date:"H:i" }} - {{ current_shift.endDateTime|date:"H:i" }}
+                                </span>
+                            <!-- Punch In Button -->
                             <div class="d-flex justify-content-center">
-                                <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
+                                <button
+                                        id="punchInButton"
+                                        class="btn bg-gradient-primary mt-3 w-100"
+                                        data-user-id="{{ user.id }}">
                                     Punch in
-                                </a>
+                                </button>
                             </div>
                         {% else %}
-                            <p>Punched in at: {{ punch_in_time|date:"H:i" }} - <span id="expectedPunchOut"></span></p>
+                            {% if punched_in %}
+                                <!-- Timer -->
+                                <div class="mb-4 mt-2">
+                                    <b><span id="timeElapsed" class="timer text-2xl"></span></b><br>
+                                    <b class="text-secondary">Total break time: 0h 0m 0s</b>
+                                </div>
+                            {% endif %}
+
+                            <div class="text-xs">
+                                {% if punch_in_time %}
+                                    <span>{{ punch_in_time|date:"H:i" }} - ?</span> <br>
+                                {% else %}
+                                    <span>Punch-in time is not available.</span> <br>
+                                {% endif %}
+                                <span class="text-secondary">
+                                    {{ current_shift.branch_name|default:"Unknown Branch" }} -
+                                    {{ current_shift.group_name|default:"Unknown Group" }} <br>
+                                    {{ current_shift.startDateTime|date:"H:i" }} - {{ current_shift.endDateTime|date:"H:i" }}
+                                </span>
+                            </div>
+
+
+                            <!-- Punch Out Button -->
                             <div class="d-flex justify-content-center">
-                                <a id="punchShiftButton" class="btn bg-gradient-primary mt-3 w-100" href="#">
-                                    Punch out
-                                </a>
+                                <button
+                                        id="punchOutButton"
+                                        class="btn mt-3 w-100"
+                                        style="background-color: #fd3b2d; !important; color: white;"
+                                        data-user-id="{{ user.id }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#submitModal">
+                                    End Shift
+                                </button>
                             </div>
                         {% endif %}
                     </div>
+
                 </div>
             </div>
 
@@ -390,6 +427,23 @@
         </div>
     </div>
 
+    <!-- Modal for Shift Details -->
+    <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="shiftDetailsModal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content card card-body rounded-4 shadow">
+                <div class="modal-body p-5">
+                    <h2 class="fw-bold mb-0">Shift Details</h2>
+                    <br>
+                    <div id="shiftDetailsContent">
+                        <!-- Content for shifts details is dynamically filled from shifts.js -->
+                    </div>
+                    <button type="button" class="btn btn-secondary mt-3" onclick="closeShiftDetailsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Rating Error -->
     <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="errorModal">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content card card-body rounded-4 shadow">
@@ -402,19 +456,14 @@
         </div>
     </div>
 
+    <!-- Modal for Rating -->
     <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content card card-body rounded-4 shadow">
                 <div class="modal-body p-5">
-                    <h2 class="fw-bold mb-0">
-                        {% if ongoingShift %} Submit rating and punch out {% else %} Start your shift? {% endif %}
-                    </h2>
-                    <br>
-                    <form id="ratingForm" method="post">
-                        {% csrf_token %}
-                        <input type="text" name="user" value="{{ user.id }}" style="display: none;"/>
-                        {% if ongoingShift %}
-                            <h5>How was today's shift for you?</h5>
+                    <div id="punchOutConfirmationSection">
+                        <form id="ratingForm" class="modal-content-section">
+                            <h2 class="fw-bold mb-0" id="modalTitle">Rate your shift</h2>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="stars">
@@ -429,16 +478,33 @@
                                         <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
                                         <label class="star star-1" for="star-1"></label>
                                     </div>
+                                    <textarea id="comment" class="form-control mt-3"
+                                              placeholder="Leave a comment about your shift (optional)"></textarea>
                                 </div>
                             </div>
-                        {% endif %}
-                        <input type="submit" class="w-100 mt-2 btn btn-lg bg-gradient-primary" value="Submit"
-                               data-bs-dismiss="modal"/>
-                    </form>
+                            <button type="button" id="submitRatingBtn" class="w-100 mt-2 btn btn-lg bg-gradient-primary">
+                                Submit
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Reset Confirmation Section (initially hidden) -->
+                    <div id="resetConfirmationSection" class="modal-content-section" style="display: none;">
+                        <p>Your shift duration is less than 2 minutes. Do you want to reset the shift and punch in
+                            again?</p>
+                        <button type="button" id="confirmResetBtn" class="w-100 mt-2 btn btn-lg bg-gradient-primary">
+                            Yes, Reset Shift
+                        </button>
+                        <button type="button" id="cancelResetBtn" class="w-100 mt-2 btn btn-lg btn-secondary">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+
     <style>
         .title {
             margin-top: 0 !important;
@@ -488,6 +554,29 @@
         .scroll-link {
             color: #d63384;
         }
+
+        .info-btn {
+            background: transparent;
+            border: none;
+            color: #17c1e8;
+            font-size: 1rem;
+            margin-left: 10px;
+            cursor: pointer;
+            position: relative;
+            padding: 0;
+        }
+
+        .info-btn:hover {
+            color: #108ba8;
+        }
+
+        .modal {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .fa-info-circle::before {
+            line-height: 0;
+        }
     </style>
 
     <style>
@@ -502,6 +591,7 @@
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             align-items: center;
             justify-content: center;
         }
@@ -603,7 +693,8 @@
                 const endDate = new Date(shift.endDateTime);
                 const day = startDate.getDate().toString().padStart(2, '0');
                 const weekday = startDate.toLocaleDateString('en-US', { weekday: 'short' });
-                const address = branchesByDepartmentId[shift.departmentId] || "Unknown location";
+                const branchName = shift.branch_name || "Unknown Branch";
+                const branchAddress = shift.branch_address.replace(/'/g, "\\'"); // Escape single quotes
 
                 return `
                     <div class="date">
@@ -611,14 +702,34 @@
                         <span class="weekday text-center">${weekday}</span>
                     </div>
                     <div class="shift bg-gradient-secondary px-3">
-                        <span class="time text-sm">${formatTime(startDate)} – ${formatTime(endDate)}</span>
-                        <span class="location text-xs opacity-5">
-                            ${shift.branch_name ? `<span>${shift.branch_name}</span>` : 'Unknown Branch'} -
-                            ${shift.group_name || 'Unknown Group'}
-                        </span>
+                        <!-- Using Bootstrap grid -->
+                        <div class="row align-items-center">
+                            <!-- Left column for shift info -->
+                            <div class="shift_info col-10">
+                                <span class="time text-sm d-flex align-items-center">
+                                    ${formatTime(startDate)} – ${formatTime(endDate)}
+                                </span>
+                                <span class="location text-xs opacity-5">
+                                    ${branchName} - ${shift.group_name || 'Unknown Group'}
+                                </span>
+                            </div>
+
+                            <!-- Right column for info button -->
+                            <div class="info-btn-container col-2 d-flex justify-content-end">
+                                <button
+                                    class="info-btn"
+                                    data-branch-address="${branchAddress}"
+                                    data-comment="${shift.comment || ''}"
+                                    onclick="openShiftDetailsModal('${branchAddress}', '${shift.comment || ''}')">
+                                    <i class="fa fa-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
+
+
 
             function appendShifts(shifts) {
                 shifts.forEach(shift => {
@@ -739,6 +850,33 @@
         });
     </script>
 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get punch-in timestamp from the server (convert it to milliseconds)
+            const punchInTime = new Date("{{ punch_in_time|date:'Y-m-d H:i:s' }}").getTime();
+
+            // Function to calculate and display the elapsed time
+            function updateElapsedTime() {
+                const now = new Date().getTime();
+                const elapsed = now - punchInTime;
+
+                // Calculate minutes and seconds from the elapsed time
+                const minutes = Math.floor((elapsed / 1000) / 60);
+                const seconds = Math.floor((elapsed / 1000) % 60);
+
+                // Display the time in the format "25m 05s"
+                const formattedTime = `${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
+                document.getElementById('timeElapsed').textContent = formattedTime;
+            }
+
+            // Update the timer every second
+            setInterval(updateElapsedTime, 1000);
+        });
+    </script>
+
+    <script src="{% static 'js/punches.js' %}"></script>
+    <script src="{% static 'js/shifts.js' %}"></script>
     <script src="{% static 'js/charts_populartimes.js' %}"></script>
     <script src="{% static 'js/charts_user-stats.js' %}"></script>
 

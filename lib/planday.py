@@ -176,9 +176,13 @@ class Planday:
             raise ValueError(f"Invalid JSON response from Planday API: {e}")
 
     def punch_in_by_email(self, email):
+        print(f"Attempting punch-in for email: {email}")
         employeeId = self.get_employee_id_by_email(email)
+
         if employeeId is None:
+            print("Error: No employee ID found for the given email.")
             return 500
+
         auth_headers = {
             "Authorization": "Bearer " + self.access_token,
             "X-ClientId": self.client_id,
@@ -186,40 +190,49 @@ class Planday:
             "Accept": "application/json",
         }
         payload = {"comment": ""}
-        response = self.session.request(
-            "POST",
-            self.base_url
-            + "/punchclock/v1/punchclockshifts/employee/"
-            + str(employeeId)
-            + "/punchin",
-            headers=auth_headers,
-            json=payload,
-        )
-        return response.status_code
+
+        try:
+            response = self.session.post(
+                self.base_url
+                + "/punchclock/v1/punchclockshifts/employee/"
+                + str(employeeId)
+                + "/punchin",
+                headers=auth_headers,
+                json=payload,
+            )
+            print(f"Punch-In API response: {response.status_code} - {response.text}")
+            return response.status_code
+        except Exception as e:
+            print(f"Exception during punch-in: {str(e)}")
+            return 500
 
     def punch_out_by_email(self, email):
         employeeId = self.get_employee_id_by_email(email)
         if employeeId is None:
-            return 500
+            print("Failed to retrieve Employee ID for punch-out.")
+            return None  # Properly handle if employeeId is not found
         auth_headers = {
             "Authorization": "Bearer " + self.access_token,
             "X-ClientId": self.client_id,
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
-        payload = {
-            "comment": "",
-        }
-        response = self.session.request(
-            "PUT",
-            self.base_url
-            + "/punchclock/v1/punchclockshifts/employee/"
-            + str(employeeId)
-            + "/punchout",
-            headers=auth_headers,
-            json=payload,
-        )
-        return response.status_code
+        payload = {"comment": ""}
+        try:
+            response = self.session.request(
+                "PUT",
+                self.base_url
+                + "/punchclock/v1/punchclockshifts/employee/"
+                + str(employeeId)
+                + "/punchout",
+                headers=auth_headers,
+                json=payload,
+            )
+            return response  # Ensure we return the full response object
+        except Exception as e:
+            # Log the error or handle it appropriately
+            print(f"Exception occurred during punch-out request: {e}")
+            return None
 
     def get_employee_group_name(self, group_id):
         auth_headers = {

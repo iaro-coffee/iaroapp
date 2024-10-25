@@ -36,7 +36,7 @@
                                  alt="{{ item.user.username }}'s avatar" class="img-fluid avatar-img">
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.username }}</h6>
+                            <h6 class="mb-1" style="overflow-wrap: anywhere;">{{ item.user.full_name }}</h6>
                             <p class="text-xs mb-2 pb-1">
                                 <span data-feather="user" class="align-text-bottom" style="height: 16px"></span>
                                 {{ item.user.groups|join:", " }}</p>
