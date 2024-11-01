@@ -29,6 +29,16 @@ class EmployeeProfile(models.Model):
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
 
+    onboarding_stages = models.JSONField(default=dict)
+    # Use a string reference to avoid circular import
+    personal_information_form = models.OneToOneField(
+        "onboarding.PersonalInformation",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="employee_profile",
+    )
+
     def __str__(self):
         return f"{self.user.username} Profile"
 

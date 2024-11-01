@@ -1,17 +1,8 @@
-# from django.contrib import admin
-#
-# from .models import Note
-#
-#
-# @admin.register(Note)
-# class NoteAdmin(admin.ModelAdmin):
-#     list_display = ("sender", "content", "timestamp")
-#     search_fields = ("sender__username", "content")
 import os
 
 from django.contrib import admin
 
-from .models import LearningCategory, PDFUpload, Video
+from .models import LearningCategory, Note, PDFUpload, Video
 
 
 @admin.register(Video)
@@ -51,3 +42,9 @@ class PDFUploadAdmin(admin.ModelAdmin):
 class LearningCategoryAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
+
+
+@admin.register(Note)
+class NoteAdmin(admin.ModelAdmin):
+    list_display = ("sender", "content", "timestamp")
+    search_fields = ("sender__username", "content")

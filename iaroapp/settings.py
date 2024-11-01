@@ -116,6 +116,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "login_required.middleware.LoginRequiredMiddleware",
+    "employees.middleware.OnboardingCompletionMiddleware",
     "customers.middleware.RestrictAdminAccessMiddleware",
 ]
 

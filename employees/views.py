@@ -184,7 +184,9 @@ class RegisterView(FormView):
 
             clear_messages(self.request)  # Clear all existing messages
             messages.success(self.request, "Registration successful.")
-            return super().form_valid(form)
+
+            # Redirect user to fill out the 'personal_information' form after registration
+            return redirect("personal_information")
         except NoPlandayEmailException:
             form.add_error(
                 "email", "Provided E-Mail does not match any existing Planday E-Mail."

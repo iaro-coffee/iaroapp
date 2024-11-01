@@ -13,26 +13,62 @@ from lib.zoho import (
 )
 
 from .forms import PersonalInformationForm
-from .models import Document, SignedDocument
+from .models import Document, PersonalInformation, SignedDocument
 
 
 class PersonalInformationView(View):
     template_name = "personal_information.html"
 
     def get(self, request):
-        form = PersonalInformationForm()
+        try:
+            # Ensure the employee profile exists
+            employee_profile = request.user.employeeprofile
+
+            # Attempt to retrieve the personal information instance
+            personal_info = employee_profile.personal_information_form
+
+            if not personal_info:
+                # Create a blank instance but do not save until user submits the form
+                personal_info = PersonalInformation(
+                    familienname=employee_profile.last_name or "",
+                    vorname=employee_profile.first_name or "",
+                    geburtsdatum="1900-01-01",  # Default placeholder date
+                )
+                personal_info.save()
+                employee_profile.personal_information_form = personal_info
+                employee_profile.save()
+
+        except EmployeeProfile.DoesNotExist:
+            return redirect("error_page")
+
+        form = PersonalInformationForm(instance=personal_info)
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
-        form = PersonalInformationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(
-                request, "Your information has been submitted successfully."
+        try:
+            employee_profile = request.user.employeeprofile
+            form = PersonalInformationForm(
+                request.POST, instance=employee_profile.personal_information_form
             )
-            return redirect("index")
-        else:
-            messages.warning(request, "Please correct the errors below.")
+
+            if form.is_valid():
+                personal_info = form.save()
+
+                # Update the employee profile to reflect that the form is completed
+                employee_profile.personal_information_form = personal_info
+                employee_profile.onboarding_stages["personal_information"] = True
+                employee_profile.save()
+
+                messages.success(
+                    request, "Your information has been submitted successfully."
+                )
+                return redirect("index")
+            else:
+                messages.warning(request, "Please correct the errors below.")
+        except EmployeeProfile.DoesNotExist:
+            messages.error(request, "Employee profile not found.")
+            return redirect("error_page")
+
         return render(request, self.template_name, {"form": form})
 
 
