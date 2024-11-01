@@ -42,7 +42,11 @@ class UserClientCreationForm(UserCreationForm):
                     if commit:
                         user.save()
                         EmployeeProfile.objects.create(
-                            user=user, branch=self.cleaned_data["branch"]
+                            user=user,
+                            branch=self.cleaned_data["branch"],
+                            planday_id=employee.get("id"),
+                            first_name=employee.get("firstName"),
+                            last_name=employee.get("lastName"),
                         )
 
                     # Return user and employee_groups (IDs list)
