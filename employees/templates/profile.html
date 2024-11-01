@@ -48,6 +48,7 @@
                     <div class="mb-3">
                         <label for="id_avatar" class="form-label">Avatar</label>
                         <input type="file" class="form-control" id="id_avatar" name="avatar" accept=".jpg,.jpeg,.png">
+                        <span class="text-secondary text-xs">Click 'Update Profile' after uploading.</span>
                         {% if profile_form.avatar.errors %}
                             <div class="text-danger">
                                 {% for error in profile_form.avatar.errors %}
@@ -167,8 +168,7 @@
                         {{ password_form.new_password2 }}
                     </div>
 
-                    <button type="submit" class="w-100 btn bg-gradient-primary" name="password_form">Change Password</
-                    </button>
+                    <button type="submit" class="w-100 btn bg-gradient-primary" name="password_form">Change Password</button>
                 </form>
             </div>
         </div>
