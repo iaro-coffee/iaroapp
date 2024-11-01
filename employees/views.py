@@ -12,7 +12,6 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import FormView
 
-from customers.forms import CustomerProfileUpdateForm
 from customers.models import CustomerProfile
 from interactions.models import Note, NoteReadStatus
 from onboarding.models import Document
@@ -28,59 +27,50 @@ class EmployeeProfileView(LoginRequiredMixin, View):
     def get(self, request):
         user_form = UserUpdateForm(instance=request.user)
         password_form = PasswordChangeForm(user=request.user)
-        try:
-            profile_form = ProfileUpdateForm(instance=request.user.employeeprofile)
-        except ObjectDoesNotExist:
-            profile_form = None
+        profile_form = None
 
         try:
-            customer_profile_form = CustomerProfileUpdateForm(
-                instance=request.user.customerprofile
-            )
-            customer_profile = request.user.customerprofile
+            profile_form = ProfileUpdateForm(instance=request.user.employeeprofile)
+            employee_profile = request.user.employeeprofile
         except ObjectDoesNotExist:
-            customer_profile_form = None
-            customer_profile = None
+            employee_profile = None
+
+        # Logic for onboarding stages
+        onboarding_stages = {"personal_info": "pending"}
+
+        if employee_profile and employee_profile.personal_information_form:
+            onboarding_stages["personal_info"] = "done"
 
         context = {
             "pageTitle": "Profile",
             "user_form": user_form,
             "profile_form": profile_form,
             "password_form": password_form,
-            "customer_profile_form": customer_profile_form,
-            "customer_profile": customer_profile,
+            "onboarding_stages": onboarding_stages,
         }
 
         return render(request=request, template_name="profile.html", context=context)
 
     def post(self, request):
-        user_form = UserUpdateForm(instance=request.user)
         password_form = PasswordChangeForm(user=request.user)
         profile_form = None
-        customer_profile_form = None
 
-        if "username" in request.POST or "email" in request.POST:
-            user_form = UserUpdateForm(request.POST, instance=request.user)
-            try:
-                profile_instance = request.user.employeeprofile
-                profile_form = ProfileUpdateForm(
-                    request.POST, request.FILES, instance=profile_instance
-                )
-            except ObjectDoesNotExist:
-                profile_form = ProfileUpdateForm(request.POST, request.FILES)
+        try:
+            profile_instance = request.user.employeeprofile
+            profile_form = ProfileUpdateForm(
+                request.POST, request.FILES, instance=profile_instance
+            )
+        except ObjectDoesNotExist:
+            profile_form = ProfileUpdateForm(request.POST, request.FILES)
 
-            if user_form.is_valid() and (
-                profile_form is None or profile_form.is_valid()
-            ):
-                user_form.save()
-                if profile_form:
-                    profile_form.save()
-                messages.success(request, "Your profile has been updated successfully")
-                return redirect("profile")
-            else:
-                messages.error(request, "Please correct the error below.")
+        if profile_form and profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, "Your profile has been updated successfully")
+            return redirect("profile")
+        else:
+            messages.error(request, "Please correct the error below.")
 
-        elif (
+        if (
             "old_password" in request.POST
             or "new_password1" in request.POST
             or "new_password2" in request.POST
@@ -94,29 +84,9 @@ class EmployeeProfileView(LoginRequiredMixin, View):
             else:
                 messages.error(request, "Please correct the error below.")
 
-        elif "first_name" in request.POST or "last_name" in request.POST:
-            try:
-                customer_profile_instance = request.user.customerprofile
-                customer_profile_form = CustomerProfileUpdateForm(
-                    request.POST, instance=customer_profile_instance
-                )
-            except ObjectDoesNotExist:
-                customer_profile_form = CustomerProfileUpdateForm(request.POST)
-
-            if customer_profile_form.is_valid():
-                customer_profile_form.save()
-                messages.success(
-                    request, "Your customer profile has been updated successfully"
-                )
-                return redirect("profile")
-            else:
-                messages.error(request, "Please correct the error below.")
-
         context = {
-            "user_form": user_form,
             "profile_form": profile_form,
             "password_form": password_form,
-            "customer_profile_form": customer_profile_form,
         }
 
         return render(request=request, template_name="profile.html", context=context)
@@ -129,7 +99,7 @@ def clear_messages(request):
 
 class LoginView(AuthLoginView):
     template_name = "login.html"
-    success_url = reverse_lazy("profile")
+    success_url = reverse_lazy("customer_index")
 
     def form_valid(self, form):
         login(

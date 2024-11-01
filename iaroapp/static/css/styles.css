@@ -184,9 +184,12 @@ body.dark-page .sidenav-toggler-line {
 }
 
 .avatar-img {
-    width: 100px;
+    width: 100%;
+    max-width: 300px;
+    max-height: 300px;
     border-radius: 10px;
     background-color: darkslateblue;
+    object-fit: cover;
 }
 
 .btn {

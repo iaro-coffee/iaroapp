@@ -209,7 +209,6 @@ SOCIALACCOUNT_ADAPTER = "customers.adapters.CustomSocialAccountAdapter"
 # ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
 
 LOGIN_URL = "/card/login/"
-LOGIN_REDIRECT_URL = "/card/dashboard/"
 
 LOGIN_REQUIRED_IGNORE_PATHS = [
     r"/staff/logout/$",
