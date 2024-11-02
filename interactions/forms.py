@@ -3,6 +3,7 @@ from urllib.parse import parse_qs, urlparse
 from django import forms
 from django.contrib.auth.models import User
 
+from employees.models import EmployeeProfile
 from inventory.models import Branch
 from onboarding.models import Document
 
@@ -28,6 +29,14 @@ class NoteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Update the queryset to use EmployeeProfile instead of User directly
+        self.fields["receivers"].queryset = EmployeeProfile.objects.select_related(
+            "user"
+        ).all()
+        self.fields["receivers"].label_from_instance = (
+            lambda obj: f"{obj.first_name} {obj.last_name}"
+        )
+
         # Hide the document field for non-superusers
         if not self.initial["user"].is_superuser:
             self.fields.pop("document")

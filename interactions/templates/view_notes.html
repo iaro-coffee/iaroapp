@@ -38,7 +38,6 @@
                                 <div class="user__info mb-2">
                                     <img src="
                                             {% if note.sender.employeeprofile.avatar.url %}{{ note.sender.employeeprofile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
-                                         alt="{{ note.sender.employeeprofile.first_name }}'s avatar"
                                          class="avatar"
                                          onclick="openAvatarModal(this.src)">
                                     <span class="text-bolder username"
@@ -72,7 +71,6 @@
                                     {% with total_receivers=note.branches.count|add:note.receivers.count %}
                                         {% for branch in note.branches.all %}
                                             <img src="{% static 'images/avatar.png' %}"
-                                                 alt="{{ branch.name }}'s avatar"
                                                  class="avatar">
                                             <span class="text-bolder">
                                             {{ branch.name }}{% if not forloop.last or note.receivers.exists %}
@@ -82,7 +80,6 @@
                                         {% for receiver in note.receivers.all %}
                                             <img src="
                                                     {% if receiver.employeeprofile.avatar.url %}{{ receiver.employeeprofile.avatar.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}"
-                                                 alt="{{ receiver.employeeprofile.first_name }}'s avatar"
                                                  class="avatar"
                                                  onclick="openAvatarModal(this.src)">
                                             <span class="text-bolder username"
@@ -346,7 +343,6 @@
                                     noteInfo = noteTime + `
                                 <div class="user__info mb-2">
                                     <img src="${note.sender_avatar ? note.sender_avatar : '{% static "images/avatar.png" %}'}"
-                                         alt="${note.sender_first_name}'s avatar"
                                          class="avatar"
                                          style="width: 32px; height: 32px; border-radius: 50%; background-color: #483d8b">
                                     <span class="text-bolder username">${note.sender_first_name} ${note.sender_last_name}</span>
@@ -360,7 +356,6 @@
                                         note.branches.forEach(branch => {
                                             recipientsArray.push(`
                                         <img src="{% static 'images/avatar.png' %}"
-                                             alt="${branch.name}'s avatar"
                                              class="avatar"
                                              style="width: 30px; height: 30px; border-radius: 50%; background-color: #483d8b">
                                         <span class="text-bolder username">${branch.name}</span>
@@ -371,14 +366,14 @@
                                     if (note.receivers) {
                                         note.receivers.forEach(receiver => {
                                             recipientsArray.push(`
-                                        <img src="${receiver.avatar ? receiver.avatar : '{% static "images/avatar.png" %}'}"
-                                             alt="${receiver.username}'s avatar"
-                                             class="avatar"
-                                             style="width: 30px; height: 30px; border-radius: 50%; background-color: #483d8b">
-                                        <span class="text-bolder username">${note.sender_first_name} ${note.sender_last_name}</span>
-                                    `);
+                                                <img src="${receiver.avatar ? receiver.avatar : '{% static "images/avatar.png" %}'}"
+                                                     class="avatar"
+                                                     style="width: 30px; height: 30px; border-radius: 50%; background-color: #483d8b">
+                                                <span class="text-bolder username">${receiver.first_name ? receiver.first_name : 'User'} ${receiver.last_name ? receiver.last_name : ''}</span>
+                                            `);
                                         });
                                     }
+
 
                                     let recipientsInfo = recipientsArray.join(', ');
                                     recipientsInfo += '<span class="text-bolder" style="margin-left: -4px;">:</span> ';

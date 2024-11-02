@@ -180,6 +180,16 @@ class LoadMoreNotesView(LoginRequiredMixin, View):
                 [
                     {
                         "username": receiver.username,
+                        "first_name": (
+                            receiver.employeeprofile.first_name
+                            if hasattr(receiver, "employeeprofile")
+                            else None
+                        ),
+                        "last_name": (
+                            receiver.employeeprofile.last_name
+                            if hasattr(receiver, "employeeprofile")
+                            else None
+                        ),
                         "avatar": (
                             receiver.employeeprofile.avatar.url
                             if receiver.employeeprofile.avatar
