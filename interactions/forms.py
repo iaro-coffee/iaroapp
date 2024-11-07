@@ -3,7 +3,6 @@ from urllib.parse import parse_qs, urlparse
 from django import forms
 from django.contrib.auth.models import User
 
-from employees.models import EmployeeProfile
 from inventory.models import Branch
 from onboarding.models import Document
 
@@ -29,12 +28,15 @@ class NoteForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Update the queryset to use EmployeeProfile instead of User directly
-        self.fields["receivers"].queryset = EmployeeProfile.objects.select_related(
-            "user"
-        ).all()
-        self.fields["receivers"].label_from_instance = (
-            lambda obj: f"{obj.first_name} {obj.last_name}"
+        # Update the queryset to show user full names from their related EmployeeProfile
+        self.fields["receivers"].queryset = User.objects.filter(
+            employeeprofile__isnull=False
+        ).select_related("employeeprofile")
+        self.fields["receivers"].label_from_instance = lambda user: (
+            f"{user.employeeprofile.first_name or ''} {user.employeeprofile.last_name or ''}".strip()
+            if hasattr(user, "employeeprofile")
+            and (user.employeeprofile.first_name or user.employeeprofile.last_name)
+            else user.username
         )
 
         # Hide the document field for non-superusers
@@ -58,15 +60,9 @@ class NoteForm(forms.ModelForm):
         if sender:
             note.sender = sender
 
-        note.save()  # Ensure the note instance is saved to the database and has an ID
+        note.save()
 
-        branches = self.cleaned_data.get("branches")
-        if branches:
-            users_in_branches = User.objects.filter(
-                employeeprofile__branch__in=branches
-            ).distinct()
-            note.receivers.add(*users_in_branches)
-
+        # The `receivers` field already holds `User` objects, no transformation needed
         if commit:
             self.save_m2m()
 
