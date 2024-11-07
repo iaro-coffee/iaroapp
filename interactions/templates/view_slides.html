@@ -10,6 +10,15 @@
 
 {% block widgets %}
 <div class="d-flex justify-content-between flex-wrap gap-2 mb-0">
+        <form method="post" action="{% url 'mark_pdf_complete' %}">
+            {% csrf_token %}
+            <input type="hidden" name="pdf_id" value="{{ pdf.id }}">
+            {% if completed %}
+                <button type="button" class="btn mb-0 btn-success" disabled>Completed</button>
+            {% else %}
+                <button type="submit" class="btn mb-0 btn-secondary">Mark as Complete</button>
+            {% endif %}
+        </form>
     <a href="{% url 'view_slides_list' %}" class="btn bg-gradient-primary mb-0">Back</a>
     <button id="fullscreen-btn" class="btn btn__control bg-gradient-primary btn-custom mb-0" title="Enter Fullscreen"><i class="fas fa-expand"></i></button>
 {#    <button id="refresh-btn" class="btn btn__control bg-gradient-secondary btn-custom mb-0" title="Refresh"><i class="fas fa-sync-alt"></i></button>#}
@@ -58,15 +67,6 @@
         {% if user.is_superuser %}
             <a href="{% url 'admin:interactions_pdfupload_change' pdf.id %}" class="btn btn-secondary mt-3">Edit</a>
         {% endif %}
-        <form method="post" action="{% url 'mark_pdf_complete' %}">
-            {% csrf_token %}
-            <input type="hidden" name="pdf_id" value="{{ pdf.id }}">
-            {% if completed %}
-                <button type="button" class="btn btn-success" disabled>Completed</button>
-            {% else %}
-                <button type="submit" class="btn btn-secondary">Mark as Complete</button>
-            {% endif %}
-        </form>
     </div>
 </div>
 
@@ -98,6 +98,7 @@
         </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide@3.5.2/dist/glide.min.js"></script>
 <script>

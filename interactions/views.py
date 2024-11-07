@@ -447,6 +447,16 @@ def view_slides_list(request):
         for category, pdfs in pdfs_by_category.items()
     }
 
+    # Calculate completion percentage for each category
+    completion_percentages = {}
+    for category, pdfs in pdfs_by_category.items():
+        total_pdfs = pdfs.count()
+        completed_count = sum(1 for pdf in pdfs if pdf.id in completed_pdfs)
+        completion_percentage = (
+            (completed_count / total_pdfs * 100) if total_pdfs > 0 else 0
+        )
+        completion_percentages[category] = completion_percentage
+
     return render(
         request,
         "view_slides_list.html",
@@ -457,6 +467,7 @@ def view_slides_list(request):
             "selected_branch": selected_branch,
             "completed_pdfs": completed_pdfs,
             "all_completed_categories": all_completed_categories,
+            "completion_percentages": completion_percentages,
         },
     )
 
