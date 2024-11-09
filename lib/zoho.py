@@ -14,6 +14,7 @@ ZOHO_TOKEN_EXPIRY = 3600
 
 def generate_access_token():
     access_token = cache.get(ZOHO_TOKEN_CACHE_KEY)
+    print(f"Access token from cache: {access_token}")  # Debug
 
     if not access_token:
         url = "https://accounts.zoho.eu/oauth/v2/token"
@@ -31,8 +32,10 @@ def generate_access_token():
         if response.status_code == 200:
             access_token = response_data["access_token"]
             cache.set(ZOHO_TOKEN_CACHE_KEY, access_token, ZOHO_TOKEN_EXPIRY)
+            print(f"New access token generated: {access_token}")  # Debug
         elif response.status_code == 401:
             # Token creation throttle limit reached or token is expired, attempt to get a new token
+            print("Token expired or throttle limit reached, retrying...")  # Debug
             cache.delete(ZOHO_TOKEN_CACHE_KEY)
             response = requests.post(url, data=data, timeout=DEFAULT_TIMEOUT)
             response_data = response.json()
@@ -45,6 +48,7 @@ def generate_access_token():
                     f"Error generating access token on retry: {response_data}"
                 )
         else:
+            print(f"Error response: {response_data}")  # Debug
             raise Exception(f"Error generating access token: {response_data}")
 
     return access_token
@@ -55,15 +59,14 @@ def get_template_details(template_id, oauth_token):
     url = f"https://sign.zoho.eu/api/v1/templates/{template_id}"
 
     response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
+    print(f"Template details response: {response.status_code}")  # Debug
 
     if response.status_code == 200:
-        # print(response.json())
+        print(response.json())  # DEBUG
         return response.json()
     else:
+        print(f"Error fetching template details: {response.json()}")  # Debug
         raise Exception(f"Error getting template details: {response.json()}")
-
-
-# get_template_details(66746000000038081, generate_access_token())
 
 
 def send_document_using_template(
@@ -177,3 +180,7 @@ def check_document_status(request_id, access_token):
 
 # check_document_status(66746000000043413, generate_access_token())
 # get_embedded_signing_url(66746000000043235, 66746000000038106, "e91d-2a00-20-3042-c478-d6a0-f1b2-c005-e5ed.ngrok-free.app", generate_access_token())
+
+# generate_access_token()
+# get_template_details(66746000000038081, generate_access_token())
+#
