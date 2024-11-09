@@ -9,6 +9,7 @@ class Shift(BaseModel):
     """Model representing a shift."""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    planday_shift_id = models.IntegerField(null=True, blank=True)
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     rating = models.ForeignKey(
