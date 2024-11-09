@@ -28,7 +28,7 @@
                             {% if current_shift %}
                                 <i class="fa fa-clock text-info" aria-hidden="true"></i>
                                 {% if punched_in %}
-                                    <b><span style="color: #82d616;">Punched in</span></b> on: {{ punch_in_time|date:"l, F d" }}
+                                    <b><span style="color: #82d616;">Punched in:</span></b> {{ punch_in_time|date:"H:i" }} - ?
                                 {% else %}
                                     <b><span>Ready to start?</span></b>
                                 {% endif %}
@@ -46,6 +46,7 @@
                         {% elif not punched_in %}
                                 Hey <strong>{{ user_profile.first_name }}</strong>, have an awesome shift ahead! 🌟 <br>
                                 <span class="text-secondary">
+                                    <span>{{ formatted_today }}</span> <br>
                                     {{ current_shift.branch_name|default:"Unknown Branch" }} -
                                     {{ current_shift.group_name|default:"Unknown Group" }} <br>
                                     {{ current_shift.startDateTime|date:"H:i" }} - {{ current_shift.endDateTime|date:"H:i" }}
@@ -70,7 +71,7 @@
 
                             <div class="text-xs">
                                 {% if punch_in_time %}
-                                    <span>{{ punch_in_time|date:"H:i" }} - ?</span> <br>
+                                    <span>{{ punch_in_time|date:"l, F d" }}</span> <br>
                                 {% else %}
                                     <span>Punch-in time is not available.</span> <br>
                                 {% endif %}
@@ -810,22 +811,22 @@
     </script>
 
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var punchInTime = new Date("{{ punch_in_time|date:'Y-m-d H:i:s' }}");
-            var shiftEndTime = new Date("{{ current_shift.endDateTime|date:'Y-m-d H:i:s' }}");
-            var expectedPunchOut = document.getElementById('expectedPunchOut');
-
-            if (expectedPunchOut) {
-                var timeDiff = shiftEndTime - punchInTime;
-                var expectedTime = new Date(punchInTime.getTime() + timeDiff);
-                expectedPunchOut.textContent = expectedTime.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
-        });
-    </script>
+{#    <script>#}
+{#        document.addEventListener('DOMContentLoaded', function () {#}
+{#            var punchInTime = new Date("{{ punch_in_time|date:'Y-m-d H:i:s' }}");#}
+{#            var shiftEndTime = new Date("{{ current_shift.endDateTime|date:'Y-m-d H:i:s' }}");#}
+{#            var expectedPunchOut = document.getElementById('expectedPunchOut');#}
+{##}
+{#            if (expectedPunchOut) {#}
+{#                var timeDiff = shiftEndTime - punchInTime;#}
+{#                var expectedTime = new Date(punchInTime.getTime() + timeDiff);#}
+{#                expectedPunchOut.textContent = expectedTime.toLocaleTimeString([], {#}
+{#                    hour: '2-digit',#}
+{#                    minute: '2-digit'#}
+{#                });#}
+{#            }#}
+{#        });#}
+{#    </script>#}
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -861,12 +862,19 @@
                 const now = new Date().getTime();
                 const elapsed = now - punchInTime;
 
-                // Calculate minutes and seconds from the elapsed time
-                const minutes = Math.floor((elapsed / 1000) / 60);
+                // Calculate hours, minutes, and seconds
+                const hours = Math.floor((elapsed / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((elapsed / (1000 * 60)) % 60);
                 const seconds = Math.floor((elapsed / 1000) % 60);
 
-                // Display the time in the format "25m 05s"
-                const formattedTime = `${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
+                // Format the time based on the presence of hours
+                let formattedTime = '';
+                if (hours > 0) {
+                    formattedTime += `${hours}h `;
+                }
+                formattedTime += `${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
+
+                // Update the timer display
                 document.getElementById('timeElapsed').textContent = formattedTime;
             }
 

@@ -278,6 +278,8 @@ def index(request: HttpRequest):
         if holiday["date"]["iso"] == tomorrow.isoformat()
     ]
 
+    formatted_today = today.strftime("%A, %B %d")
+
     context = {
         "pageTitle": "Dashboard",
         "task_list": myTasks[:5],
@@ -291,6 +293,7 @@ def index(request: HttpRequest):
         "customer_profile": customer_profile,
         "received_notes": combined_notes,
         "today": today,
+        "formatted_today": formatted_today,
         "tomorrow": tomorrow,
         "today_holidays": today_holidays,
         "tomorrow_holidays": tomorrow_holidays,
