@@ -29,9 +29,10 @@ class ShiftManagementView(View):
             rating = data.get("rating", None)
             comment = data.get("comment", "")
             confirm_reset = data.get("confirm_reset", False)
+            shift_id = data.get("shift_id", None)  # Get shift ID from request
 
-            # Log received data
-            # print(f"Received data: {data}")
+            # Add a print statement to verify the comment
+            print(f"Received comment: {comment}")
 
             user = get_object_or_404(User, id=user_id)
             email = user.email
@@ -39,7 +40,7 @@ class ShiftManagementView(View):
 
             planday.authenticate()
 
-            # Check if a shift exists for this user
+            # Fetch the active shift for the user
             active_shift = Shift.objects.filter(user=user, end_date=None).first()
 
             if action == "punch_in":
@@ -47,14 +48,29 @@ class ShiftManagementView(View):
                 if active_shift:
                     # If a shift already exists, invalid operation
                     return JsonResponse(
-                        {"status": "error", "message": "Invalid operation."}, status=400
+                        {"status": "error", "message": "You are already punched in."},
+                        status=400,
                     )
 
-                status = planday.punch_in_by_email(email)
+                if not shift_id:
+                    return JsonResponse(
+                        {
+                            "status": "error",
+                            "message": "Shift ID is required for punch-in.",
+                        },
+                        status=400,
+                    )
+
+                status = planday.punch_in_by_email(email, shift_id, comment)
 
                 if status == 200:
-                    # If Planday confirmed punch-in, create a shift record in the DB
-                    Shift.objects.create(user=user, start_date=current_time)
+                    # Create a shift record in the DB with the Planday shift ID
+                    Shift.objects.create(
+                        user=user,
+                        start_date=current_time,
+                        planday_shift_id=int(shift_id),
+                        note=comment,  # Save the note
+                    )
                     return JsonResponse(
                         {"status": "success", "message": "Punched In successfully."},
                         status=200,
@@ -70,7 +86,14 @@ class ShiftManagementView(View):
                 if not active_shift:
                     # If no active shift, invalid operation
                     return JsonResponse(
-                        {"status": "error", "message": "Invalid operation."}, status=400
+                        {"status": "error", "message": "No active shift found."},
+                        status=400,
+                    )
+
+                if shift_id and int(shift_id) != active_shift.planday_shift_id:
+                    # The shift ID provided does not match the active shift
+                    return JsonResponse(
+                        {"status": "error", "message": "Shift ID mismatch."}, status=400
                     )
 
                 # Check if reset confirmation is needed
@@ -89,9 +112,10 @@ class ShiftManagementView(View):
                             status=409,
                         )
 
-                response = planday.punch_out_by_email(email)
+                response = planday.punch_out_by_email(
+                    email, active_shift.planday_shift_id, comment=comment
+                )
 
-                # Check if response is not None before proceeding
                 if response is None:
                     return JsonResponse(
                         {
@@ -130,9 +154,10 @@ class ShiftManagementView(View):
                         status=status,
                     )
 
-            return JsonResponse(
-                {"status": "error", "message": "Invalid operation."}, status=400
-            )
+            else:
+                return JsonResponse(
+                    {"status": "error", "message": "Invalid action."}, status=400
+                )
 
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)

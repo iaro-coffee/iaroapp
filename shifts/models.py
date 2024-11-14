@@ -15,6 +15,7 @@ class Shift(BaseModel):
     rating = models.ForeignKey(
         EmployeeRating, on_delete=models.SET_NULL, blank=True, null=True
     )
+    note = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return (

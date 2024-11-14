@@ -50,6 +50,25 @@ def get_user_shifts(employee_id, from_date, to_date):
         return []
 
 
+def get_shift_by_id(self, shift_id):
+    """
+    Fetch a shift by its ID.
+    """
+    auth_headers = self.get_auth_headers()
+    endpoint = f"/scheduling/v1.0/shifts/{shift_id}"
+    url = f"{self.base_url}{endpoint}"
+
+    response = self.session.get(url, headers=auth_headers)
+    response.raise_for_status()
+
+    try:
+        response_data = response.json()
+        shift = response_data.get("data", {})
+        return shift
+    except ValueError as e:
+        raise ValueError(f"Invalid JSON response from Planday API: {e}")
+
+
 def initialize_employee_groups_map():
     """
     Initialize a dictionary that maps employeeGroupId to group names.
@@ -86,6 +105,9 @@ def enrich_shift_with_branch_name(shift, branches_by_department_id):
     """
     Enrich a single shift with the branch name and full address based on its departmentId.
     """
+    if not shift:
+        print("Shift data is None.")
+        return shift
     department_id = str(shift.get("departmentId"))
     branch_info = branches_by_department_id.get(
         department_id, {"name": "Unknown Branch", "address": "Unknown location"}
@@ -198,6 +220,7 @@ def index(request: HttpRequest):
     user_profile = get_employee_profile(request.user)
     customer_profile = get_customer_profile(request.user)
     current_month_year = today.strftime("%B %Y")
+    employee_id = user_profile.planday_id
 
     # Initialize branches_by_department_id and employee_groups_map
     branches_by_department_id = initialize_branches_by_department_id()
@@ -218,10 +241,64 @@ def index(request: HttpRequest):
     else:
         current_shift = None
 
+    # Enrich all shifts
+    user_shifts = [
+        enrich_shift_with_group_name(
+            enrich_shift_with_branch_name(shift, branches_by_department_id),
+            employee_groups_map,
+        )
+        for shift in user_shifts
+    ]
+
+    # Fetch punch clock records for today
     # Check if user has punched in
+    # Check if shift is already punched out
     punch_clock_records = planday.get_user_punchclock_records_of_timespan(
         request.user.email, today, today
     )
+
+    # Create a set of shift IDs that have been punched out
+    punched_out_shift_ids = set()
+    for record in punch_clock_records:
+        shift_id = record.get("shiftId")
+        if shift_id and record.get("endDateTime"):
+            punched_out_shift_ids.add(shift_id)
+
+    # Dict to store punch times for each shift ID
+    punch_times_by_shift = {}
+
+    for record in punch_clock_records:
+        shift_id = record.get("shiftId")
+        if shift_id:
+            start_time = parse_datetime(record["startDateTime"])
+            end_time = (
+                parse_datetime(record["endDateTime"])
+                if record.get("endDateTime")
+                else None
+            )
+            punch_times_by_shift[shift_id] = {
+                "punch_in_time": start_time,
+                "punch_out_time": end_time,
+            }
+
+    # Display all shifts are done
+    all_shifts_done = True
+
+    # Include Planday shift ID
+    # Annotate each shift with 'punched_out' status and punch times
+    for shift in user_shifts:
+        shift_id = shift.get("id")
+        shift["planday_shift_id"] = shift_id
+        shift["punched_out"] = shift_id in punched_out_shift_ids
+        shift["punch_in_time"] = punch_times_by_shift.get(shift_id, {}).get(
+            "punch_in_time"
+        )
+        shift["punch_out_time"] = punch_times_by_shift.get(shift_id, {}).get(
+            "punch_out_time"
+        )
+        # check if all shifts are done
+        if not shift["punched_out"]:
+            all_shifts_done = False
 
     # Ensure `punched_in` and `punch_in_time` are correctly derived
     punched_in, punch_in_time, punch_out_time = False, None, None
@@ -235,9 +312,26 @@ def index(request: HttpRequest):
             # Capture punch-out time if available (last record should be the latest)
             punch_out_time = parse_datetime(record["endDateTime"])
 
-    # # Ensure time values are formatted
-    # punch_in_time_str = punch_in_time.strftime("%H:%M") if punch_in_time else None
-    # punch_out_time_str = punch_out_time.strftime("%H:%M") if punch_out_time else None
+    # Check for an active shift
+    punched_in, active_shift = hasOngoingShift(request)
+
+    if punched_in and active_shift:
+        # Fetch current shift details from Planday using shift ID
+        planday_shift = planday.get_shift_by_id(active_shift.planday_shift_id)
+        if planday_shift:
+            current_shift = enrich_shift_with_group_name(
+                enrich_shift_with_branch_name(planday_shift, branches_by_department_id),
+                employee_groups_map,
+            )
+            punch_in_time = active_shift.start_date
+        else:
+            # Handle the case where the shift details couldn't be fetched
+            print("Failed to fetch shift details from Planday.")
+            current_shift = None
+            punch_in_time = None
+    else:
+        current_shift = None
+        punch_in_time = None
 
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
@@ -299,15 +393,17 @@ def index(request: HttpRequest):
         "tomorrow_holidays": tomorrow_holidays,
         "current_month_year": current_month_year,
         "branches_by_department_id": branches_by_department_id,
-        "current_shift": current_shift,
         "user_group": (
             current_shift.get("group_name", "Unknown Group")
             if current_shift
             else "Unknown Group"
         ),
+        "current_shift": current_shift,
+        "user_shifts": user_shifts,
         "punched_in": punched_in,
         "punch_in_time": punch_in_time,
         "punch_out_time": punch_out_time,
+        "all_shifts_done": all_shifts_done,
     }
 
     return render(request, "index.html", context=context)
@@ -386,15 +482,14 @@ def punchClockRecordsWereCheckedToday(userId):
 
 def hasOngoingShift(request):
     if not request.user.is_authenticated:
-        return False
+        return False, None
     try:
-        return (
-            True,
-            Shift.objects.filter(user=request.user, end_date=None)
-            .first()
-            .start_date.timestamp(),
-        )
-    except:
+        active_shift = Shift.objects.filter(user=request.user, end_date=None).first()
+        if active_shift:
+            return True, active_shift
+        else:
+            return False, None
+    except Shift.DoesNotExist:
         return False, None
 
 

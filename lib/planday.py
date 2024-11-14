@@ -175,7 +175,34 @@ class Planday:
         except ValueError as e:
             raise ValueError(f"Invalid JSON response from Planday API: {e}")
 
-    def punch_in_by_email(self, email):
+    def get_shift_by_id(self, shift_id):
+        """
+        Fetch a shift by its ID from Planday.
+        """
+        version = "v1.0"
+        auth_headers = self.get_auth_headers()
+        endpoint = f"/scheduling/{version}/shifts/{shift_id}"
+        url = f"{self.base_url}{endpoint}"
+
+        try:
+            response = self.session.get(url, headers=auth_headers)
+            response.raise_for_status()
+            response_data = response.json()
+            shift = response_data.get("data", {})
+            return shift
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred while fetching shift by ID: {http_err}")
+            # Log the response content for debugging
+            print(f"Response content: {response.text}")
+            return None
+        except requests.exceptions.RequestException as req_err:
+            print(f"Request exception occurred while fetching shift by ID: {req_err}")
+            return None
+        except ValueError as json_err:
+            print(f"JSON decode error occurred: {json_err}")
+            return None
+
+    def punch_in_by_email(self, email, shift_id=None, comment=""):
         print(f"Attempting punch-in for email: {email}")
         employeeId = self.get_employee_id_by_email(email)
 
@@ -183,20 +210,32 @@ class Planday:
             print("Error: No employee ID found for the given email.")
             return 500
 
-        auth_headers = {
-            "Authorization": "Bearer " + self.access_token,
-            "X-ClientId": self.client_id,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
-        payload = {"comment": ""}
+        auth_headers = self.get_auth_headers()
+        payload = {"comment": comment}
+        if shift_id:
+            payload["shiftId"] = shift_id  # Include shiftId in the payload
+
+        # Print the payload to verify the comment
+        print(f"Payload to Planday API: {payload}")
 
         try:
-            response = self.session.post(
+            version = "v1.0"
+
+            url = (
                 self.base_url
-                + "/punchclock/v1/punchclockshifts/employee/"
+                + "/punchclock/"
+                + version
+                + "/punchclockshifts/employee/"
                 + str(employeeId)
-                + "/punchin",
+                + "/punchin"
+            )
+
+            # Print the full URL and payload for debugging
+            print(f"Punch-In URL: {url}")
+            print(f"Payload: {payload}")
+
+            response = self.session.post(
+                url,
                 headers=auth_headers,
                 json=payload,
             )
@@ -206,32 +245,42 @@ class Planday:
             print(f"Exception during punch-in: {str(e)}")
             return 500
 
-    def punch_out_by_email(self, email):
+    def punch_out_by_email(self, email, shift_id=None, comment=""):
         employeeId = self.get_employee_id_by_email(email)
         if employeeId is None:
             print("Failed to retrieve Employee ID for punch-out.")
             return None  # Properly handle if employeeId is not found
-        auth_headers = {
-            "Authorization": "Bearer " + self.access_token,
-            "X-ClientId": self.client_id,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
-        payload = {"comment": ""}
+
+        auth_headers = self.get_auth_headers()
+        payload = {"comment": comment}
+        if shift_id:
+            payload["shiftId"] = shift_id  # Include shiftId in the payload
+
         try:
-            response = self.session.request(
-                "PUT",
+            version = "v1.0"  # Use the correct API version
+
+            url = (
                 self.base_url
-                + "/punchclock/v1/punchclockshifts/employee/"
+                + "/punchclock/"
+                + version
+                + "/punchclockshifts/employee/"
                 + str(employeeId)
-                + "/punchout",
+                + "/punchout"
+            )
+
+            # Print the full URL and payload for debugging
+            print(f"Punch-Out URL: {url}")
+            print(f"Payload: {payload}")
+
+            response = self.session.put(
+                url,
                 headers=auth_headers,
                 json=payload,
             )
-            return response  # Ensure we return the full response object
+            print(f"Punch-Out API response: {response.status_code} - {response.text}")
+            return response  # Return the full response object
         except Exception as e:
-            # Log the error or handle it appropriately
-            print(f"Exception occurred during punch-out request: {e}")
+            print(f"Exception during punch-out: {str(e)}")
             return None
 
     def get_employee_group_name(self, group_id):
@@ -263,30 +312,48 @@ class Planday:
 
     def get_user_punchclock_records_of_timespan(self, employeeEmail, fromDate, toDate):
         employeeId = self.get_employee_id_by_email(employeeEmail)
+        if not employeeId:
+            raise ValueError("Invalid employee email provided.")
+
         auth_headers = {
-            "Authorization": "Bearer " + self.access_token,
+            "Authorization": f"Bearer {self.access_token}",
             "X-ClientId": self.client_id,
         }
 
         fromStart = fromDate.strftime("%Y-%m-%dT00:00")
         toEnd = toDate.strftime("%Y-%m-%dT23:59")
 
-        payload = {
+        params = {
             "employeeId": employeeId,
             "from": fromStart,
             "to": toEnd,
         }
 
-        response = self.session.request(
-            "GET",
-            self.base_url + "/punchclock/v1/punchclockshifts",
-            headers=auth_headers,
-            params=payload,
-        )
-        response = json.loads(response.text)
-        response = response["data"]
+        url = f"{self.base_url}/punchclock/v1/punchclockshifts"
 
-        return response
+        try:
+            response = self.session.get(
+                url,
+                headers=auth_headers,
+                params=params,
+                timeout=10,  # Timeout after 10 seconds
+            )
+            response.raise_for_status()  # Raise an exception for HTTP errors
+        except Timeout:
+            raise
+        except HTTPError:
+            raise
+        except RequestException:
+            raise
+
+        try:
+            data = response.json()
+        except ValueError:
+            raise
+
+        punch_clock_records = data.get("data", [])
+
+        return punch_clock_records
 
     def get_departments(self, limit=50, offset=0):
         """Fetches the list of departments from the Planday API."""
@@ -318,34 +385,45 @@ class Planday:
 
     def get_employee_groups(self, limit=50, offset=0):
         """Fetches the list of employee groups from the Planday API."""
-        auth_headers = {
-            "Authorization": "Bearer " + self.access_token,
-            "X-ClientId": self.client_id,
-        }
+        auth_headers = self.get_auth_headers()
 
         params = {
             "limit": limit,
             "offset": offset,
         }
 
-        response = self.session.get(
-            f"{self.base_url}/hr/v1.0/employeegroups",
-            headers=auth_headers,
-            params=params,
-        )
-
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                employee_groups = data.get("data", [])
-                return employee_groups
-            except json.JSONDecodeError:
-                print("Error decoding JSON response.")
-                return []
-        else:
-            print(
-                f"Failed to fetch employee groups. Status code: {response.status_code}"
+        try:
+            response = self.session.get(
+                f"{self.base_url}/hr/v1.0/employeegroups",
+                headers=auth_headers,
+                params=params,
+                timeout=10,  # Set a timeout of 10 seconds
             )
+            response.raise_for_status()
+        except requests.exceptions.Timeout:
+            print("Request timed out while fetching employee groups.")
+            return []
+        except requests.exceptions.ConnectionError as e:
+            print(f"Connection error occurred: {e}")
+            return []
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTP error occurred: {e}")
+            if e.response.status_code == 401:
+                # Token might have expired; re-authenticate
+                self.access_token = None  # Reset the token
+                return self.get_employee_groups(limit, offset)
+            return []
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e}")
+            return []
+
+        # Process the response if no exceptions occurred
+        try:
+            data = response.json()
+            employee_groups = data.get("data", [])
+            return employee_groups
+        except json.JSONDecodeError:
+            print("Error decoding JSON response.")
             return []
 
 
