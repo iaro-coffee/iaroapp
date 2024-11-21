@@ -18,6 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.i18n import set_language
 
 from . import views
 from .views import get_employees_list, get_next_user_shifts, planday_info
@@ -25,6 +26,7 @@ from .views import get_employees_list, get_next_user_shifts, planday_info
 urlpatterns = [
     path("", views.index, name="index"),
     path("admin/", admin.site.urls),
+    path("i18n/", set_language, name="set_language"),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     path("inventory/", include("inventory.urls")),
     path("procedures/", include("procedures.urls")),

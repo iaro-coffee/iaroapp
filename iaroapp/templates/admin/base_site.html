@@ -1,13 +1,45 @@
 {% extends "admin/base.html" %}
 {% load static %}
 
-{% block title %}iaro admin panel{% endblock %}
+{% block title %}
+    iaro admin panel
+{% endblock %}
+
+
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">iaro Administration</a></h1>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<h1 id="site-name"><a href="{% url 'admin:index' %}">iaro Admin</a></h1>
+
+<form method="post" action="{% url 'set_language' %}" id="languageForm" class="language-form">
+    {% csrf_token %}
+    <label for="language" class="language-label">
+        <i class="fa fa-globe" aria-hidden="true"></i>
+    </label>
+    <select name="language" id="language" onchange="this.form.submit();">
+        {% for lang_code, lang_name in LANGUAGES %}
+            <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
+                {{ lang_name }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+<script>
+    function changeLanguage(languageCode) {
+        const form = document.getElementById('languageForm');
+        form.elements.language.value = languageCode;
+        form.submit();
+    }
+</script>
+
+
     <style>
         .ck-content {
             color: black !important;
+        }
+        .language-form {
+            scale: 0.9;
         }
     </style>
 {% endblock %}

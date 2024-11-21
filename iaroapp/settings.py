@@ -108,6 +108,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -138,6 +139,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -188,6 +190,13 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Europe/Berlin"
 USE_I18N = True
 USE_TZ = True
+
+LANGUAGE_COOKIE_NAME = "django_language"
+LANGUAGE_COOKIE_PATH = "/"
+LANGUAGES = [
+    ("en", "English"),
+    ("de", "Deutsch"),
+]
 
 SITE_ID = 3
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "iaro - "
