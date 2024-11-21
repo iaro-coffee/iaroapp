@@ -1,121 +1,133 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from .models import PersonalInformation
 
 
 class PersonalInformationForm(forms.ModelForm):
     consent = forms.BooleanField(
-        label="I agree to allow Iaro Cafe to process my personal information",
+        label=_("I agree to allow Iaro Cafe to process my personal information"),
         required=True,
-        error_messages={"required": "You must agree to the terms to proceed."},
+        error_messages={"required": _("You must agree to the terms to proceed.")},
     )
 
     class Meta:
         model = PersonalInformation
         fields = [
-            "familienname",
-            "vorname",
-            "strasse_hausnummer",
-            "plz_ort",
-            "geburtsdatum",
-            "geschlecht",
-            "versicherungsnummer",
-            "geburtsort_land",
-            "schwerbehindert",
+            "last_name",
+            "first_name",
+            "street",
+            "city_zip",
+            "city_name",
+            "birth_date",
+            "gender_check",
+            "insurance_number",
+            "birth_place",
+            "disability_check",
+            "nationality",
             "iban",
             "bic",
-            "berufsbezeichnung",
-            "ausgeubte_tatigkeit",
-            "beschaftigungsart",
-            "weitere_beschaftigung",
-            "geringfugige_beschaftigung",
-            "hochster_schulabschluss",
-            "hochste_berufsausbildung",
-            "wochentliche_arbeitszeit",
-            "steuer_id",
-            "gesetzliche_krankenkasse",
-            "unterschrift_arbeitnehmer",
-            "consent",
+            "job_title",
+            "emp_type_check",
+            "additional_employment_check",
+            "minor_employment_check",
+            "highest_edu_check",
+            "highest_training_check",
+            "weekly_hours_check",
+            "tax_id",
+            "health_insurance",
+            "health_insurance_number",
         ]
+        labels = {
+            "last_name": _("Last Name"),
+            "first_name": _("First Name"),
+            "street": _("Street"),
+            "city_zip": _("City ZIP"),
+            "city_name": _("City"),
+            "birth_date": _("Birth Date"),
+            "gender_check": _("Gender"),
+            "insurance_number": _("Insurance Number"),
+            "birth_place": _("Place of Birth"),
+            "disability_check": _("Disability"),
+            "nationality": _("Nationality"),
+            "iban": _("IBAN"),
+            "bic": _("BIC"),
+            "job_title": _("Job Title"),
+            "emp_type_check": _("Employment Type"),
+            "additional_employment_check": _("Additional Employment"),
+            "minor_employment_check": _("Minor Employment"),
+            "highest_edu_check": _("Highest Education"),
+            "highest_training_check": _("Highest Training"),
+            "weekly_hours_check": _("Weekly Working Hours"),
+            "tax_id": _("Tax ID"),
+            "health_insurance": _("Health Insurance"),
+            "health_insurance_number": _("Health Insurance Number"),
+        }
 
         widgets = {
-            "familienname": forms.TextInput(
-                attrs={"placeholder": "Familienname", "class": "form-control"}
+            "last_name": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
             ),
-            "vorname": forms.TextInput(
-                attrs={"placeholder": "Vorname", "class": "form-control"}
+            "first_name": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
             ),
-            "strasse_hausnummer": forms.TextInput(
-                attrs={
-                    "placeholder": "Straße und Hausnummer inkl. Anschriftenzusatz",
-                    "class": "form-control",
-                }
+            "street": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
             ),
-            "plz_ort": forms.TextInput(
-                attrs={"placeholder": "PLZ, Ort", "class": "form-control"}
+            "city_zip": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
             ),
-            "geburtsdatum": forms.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+            "city_name": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
             ),
-            "geschlecht": forms.RadioSelect(choices=PersonalInformation.GENDER_CHOICES),
-            "versicherungsnummer": forms.TextInput(
-                attrs={
-                    "placeholder": "Versicherungsnummer, gem. Sozialvers. Ausweis",
-                    "class": "form-control",
-                }
+            "birth_date": forms.DateInput(
+                attrs={"type": "date", "class": "form-control"}
             ),
-            "geburtsort_land": forms.TextInput(
-                attrs={"placeholder": "Geburtsort, -land", "class": "form-control"}
+            "insurance_number": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
             ),
-            "schwerbehindert": forms.RadioSelect(
+            "birth_place": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
+            ),
+            "nationality": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
+            ),
+            "iban": forms.TextInput(attrs={"placeholder": "", "class": "form-control"}),
+            "bic": forms.TextInput(attrs={"placeholder": "", "class": "form-control"}),
+            "job_title": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
+            ),
+            "tax_id": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
+            ),
+            "health_insurance": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
+            ),
+            "health_insurance_number": forms.TextInput(
+                attrs={"placeholder": "", "class": "form-control"}
+            ),
+            "gender_check": forms.RadioSelect(
+                choices=PersonalInformation.GENDER_CHOICES
+            ),
+            "disability_check": forms.RadioSelect(
                 choices=PersonalInformation.DISABILITY_CHOICES
             ),
-            "iban": forms.TextInput(
-                attrs={"placeholder": "IBAN", "class": "form-control"}
-            ),
-            "bic": forms.TextInput(
-                attrs={"placeholder": "BIC", "class": "form-control"}
-            ),
-            "berufsbezeichnung": forms.TextInput(
-                attrs={"placeholder": "Berufsbezeichnung", "class": "form-control"}
-            ),
-            "ausgeubte_tatigkeit": forms.TextInput(
-                attrs={"placeholder": "Ausgeübte Tätigkeit", "class": "form-control"}
-            ),
-            "beschaftigungsart": forms.RadioSelect(
+            "emp_type_check": forms.RadioSelect(
                 choices=PersonalInformation.EMPLOYMENT_TYPE_CHOICES
             ),
-            "weitere_beschaftigung": forms.RadioSelect(
+            "additional_employment_check": forms.RadioSelect(
                 choices=PersonalInformation.ADDITIONAL_EMPLOYMENT_CHOICES
             ),
-            "geringfugige_beschaftigung": forms.RadioSelect(
+            "minor_employment_check": forms.RadioSelect(
                 choices=PersonalInformation.MINOR_EMPLOYMENT_CHOICES
             ),
-            "hochster_schulabschluss": forms.RadioSelect(
-                choices=PersonalInformation.EDUCATION_CHOICES
+            "highest_edu_check": forms.RadioSelect(
+                choices=PersonalInformation.HIGHEST_EDU_CHOICES
             ),
-            "hochste_berufsausbildung": forms.RadioSelect(
-                choices=PersonalInformation.TRAINING_CHOICES
+            "highest_training_check": forms.RadioSelect(
+                choices=PersonalInformation.HIGHEST_TRAINING_CHOICES
             ),
-            "wochentliche_arbeitszeit": forms.RadioSelect(
-                choices=PersonalInformation.WORK_HOURS_CHOICES
-            ),
-            "steuer_id": forms.TextInput(
-                attrs={
-                    "placeholder": "Steuer Identifikationsnr.",
-                    "class": "form-control",
-                }
-            ),
-            "gesetzliche_krankenkasse": forms.TextInput(
-                attrs={
-                    "placeholder": "Gesetzliche Krankenkasse",
-                    "class": "form-control",
-                }
-            ),
-            "unterschrift_arbeitnehmer": forms.TextInput(
-                attrs={
-                    "placeholder": "Unterschrift Arbeitnehmer",
-                    "class": "form-control",
-                }
+            "weekly_hours_check": forms.RadioSelect(
+                choices=PersonalInformation.WEEKLY_HOURS_CHOICES
             ),
         }

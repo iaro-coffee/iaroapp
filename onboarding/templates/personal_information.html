@@ -1,39 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+{% load i18n %}
+<html lang="{{ current_lang }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Personal Information</title>
+    <title>{% trans "Personal Information" %}</title>
     {% load static %}
     {% load crispy_forms_tags %}
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/employee_auth.css' %}">
-
     <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
 </head>
 
 <body>
 <div class="container-fluid p-4">
+    <div class="d-flex justify-content-end mb-3">
+        <a href="?lang=en" class="btn btn-outline-primary btn-sm">{% trans "English" %}</a>
+        <a href="?lang=de" class="btn btn-outline-primary btn-sm ms-2">{% trans "Deutsch" %}</a>
+    </div>
     <form method="post" class="card p-4">
         {% csrf_token %}
         {% if form.errors %}
             <div class="alert alert-light text-sm" role="alert">
-                There were errors with your submission. Please correct them and try again.
+                {% trans "There were errors with your submission. Please correct them and try again." %}
             </div>
         {% endif %}
 
-        {{ form.as_p }}
+        <h3 class="card-title mb-3">{% trans "Personal Information" %}</h3>
 
+        <!-- Render form fields -->
         <div class="form-group">
-            <label>Date Submitted:</label>
+            {{ form.as_p }}
+        </div>
+
+        <!-- Date Submitted Field -->
+        <div class="form-group mt-3">
+            <label>{% trans "Date Submitted:" %}</label>
             <input type="text" class="form-control" value="{{ form.instance.date_submitted }}" readonly>
         </div>
 
-        <button class="btn bg-gradient-primary mt-4" type="submit">Submit</button>
+        <!-- Submit Button -->
+        <button class="btn bg-gradient-primary mt-4" type="submit">{% trans "Submit" %}</button>
     </form>
 </div>
 
 <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
 </body>
+
+<style>
+    .errorlist {
+        margin-bottom: 0!important;
+        color: red;
+    }
+    .alert {
+        border: 1px solid red;
+    }
+</style>
+
 </html>

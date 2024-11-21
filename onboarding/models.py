@@ -1,96 +1,144 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from employees.models import EmployeeProfile
 
 
 class PersonalInformation(models.Model):
     GENDER_CHOICES = [
-        ("male", "Männlich"),
-        ("female", "Weiblich"),
+        ("gender_male", _("Male")),
+        ("gender_female", _("Female")),
     ]
 
     DISABILITY_CHOICES = [
-        ("yes", "Ja"),
-        ("no", "Nein"),
+        ("disability_yes", _("Yes")),
+        ("disability_no", _("No")),
     ]
 
     EMPLOYMENT_TYPE_CHOICES = [
-        ("main", "Hauptbeschäftigung"),
-        ("secondary", "Nebenbeschäftigung"),
+        ("emp_type_main", _("Main Employment")),
+        ("emp_type_secondary", _("Secondary Employment")),
     ]
 
     ADDITIONAL_EMPLOYMENT_CHOICES = [
-        ("yes", "Ja"),
-        ("no", "Nein"),
+        ("additional_employment_yes", _("Yes")),
+        ("additional_employment_no", _("No")),
     ]
 
     MINOR_EMPLOYMENT_CHOICES = [
-        ("yes", "Ja"),
-        ("no", "Nein"),
+        ("minor_employment_yes", _("Yes")),
+        ("minor_employment_no", _("No")),
     ]
 
-    EDUCATION_CHOICES = [
-        ("none", "Ohne Schulabschluss"),
-        ("primary", "Haupt-/Volksschulabschluss"),
-        ("secondary", "Mittlere Reife/gleichwertiger Abschluss"),
-        ("higher", "Abitur/Fachabitur"),
+    HIGHEST_EDU_CHOICES = [
+        ("highest_edu_none", _("No School Degree")),
+        ("highest_edu_primary", _("Primary School")),
+        ("highest_edu_secondary", _("Secondary School")),
+        ("highest_edu_higher", _("High School/Abitur")),
     ]
 
-    TRAINING_CHOICES = [
-        ("none", "Ohne beruflichen Ausbildungsabschluss"),
-        ("recognized", "Anerkannte Berufsausbildung"),
-        ("advanced", "Meister/Techniker/gleichwertiger Fachabschluss"),
-        ("bachelor", "Bachelor"),
-        ("master", "Diplom/Magister/Master/Staatsexamen"),
-        ("doctorate", "Promotion"),
+    HIGHEST_TRAINING_CHOICES = [
+        ("highest_training_none", _("No Professional Degree")),
+        ("highest_training_recognized", _("Recognized Apprenticeship")),
+        ("highest_training_advanced", _("Advanced Training/Technician")),
+        ("highest_training_bachelor", _("Bachelor")),
+        ("highest_training_master", _("Master/Diploma")),
+        ("highest_training_doctorate", _("Doctorate")),
     ]
 
-    WORK_HOURS_CHOICES = [
-        ("fulltime", "Vollzeit"),
-        ("parttime", "Teilzeit"),
+    WEEKLY_HOURS_CHOICES = [
+        ("weekly_hours_fulltime", _("Full-time")),
+        ("weekly_hours_halftime", _("Part-time")),
     ]
 
     # Personal info / Persönliche angaben
-    familienname = models.CharField(max_length=255)
-    vorname = models.CharField(max_length=255)
-    strasse_hausnummer = models.CharField(max_length=255)
-    plz_ort = models.CharField(max_length=100)
-    geburtsdatum = models.DateField()
-    geschlecht = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    versicherungsnummer = models.CharField(max_length=20)
-    geburtsort_land = models.CharField(max_length=255)
-    schwerbehindert = models.CharField(max_length=3, choices=DISABILITY_CHOICES)
-    iban = models.CharField(max_length=34)
-    bic = models.CharField(max_length=11)
+    last_name = models.CharField(max_length=255, verbose_name=_("Last Name"))
+    first_name = models.CharField(max_length=255, verbose_name=_("First Name"))
+    street = models.CharField(max_length=255, verbose_name=_("Street"))
+    city_zip = models.CharField(max_length=10, verbose_name=_("City ZIP"))
+    city_name = models.CharField(max_length=100, verbose_name=_("City"))
+    birth_date = models.DateField(verbose_name=_("Birth Date"))
+    gender_check = models.CharField(
+        max_length=20,
+        choices=[("male", _("Male")), ("female", _("Female"))],
+        verbose_name=_("Gender"),
+    )
+    insurance_number = models.CharField(
+        max_length=20, verbose_name=_("Insurance Number")
+    )
+    birth_place = models.CharField(max_length=255, verbose_name=_("Place of Birth"))
+    disability_check = models.CharField(
+        max_length=20,
+        choices=[("yes", _("Yes")), ("no", _("No"))],
+        verbose_name=_("Disability"),
+    )
+    nationality = models.CharField(max_length=100, verbose_name=_("Nationality"))
+    iban = models.CharField(max_length=34, verbose_name=_("IBAN"))
+    bic = models.CharField(max_length=11, verbose_name=_("BIC"))
 
     # Occupation details / beschaftung
-    berufsbezeichnung = models.CharField(max_length=255)
-    ausgeubte_tatigkeit = models.CharField(max_length=255)
-    beschaftigungsart = models.CharField(max_length=10, choices=EMPLOYMENT_TYPE_CHOICES)
-    weitere_beschaftigung = models.CharField(
-        max_length=3, choices=ADDITIONAL_EMPLOYMENT_CHOICES
+    job_title = models.CharField(max_length=255, verbose_name=_("Job Title"))
+    emp_type_check = models.CharField(
+        max_length=20,
+        choices=[
+            ("main", _("Main Employment")),
+            ("secondary", _("Secondary Employment")),
+        ],
+        verbose_name=_("Employment Type"),
     )
-    geringfugige_beschaftigung = models.CharField(
-        max_length=3, choices=MINOR_EMPLOYMENT_CHOICES
+    additional_employment_check = models.CharField(
+        max_length=30,
+        choices=[("yes", _("Yes")), ("no", _("No"))],
+        verbose_name=_("Additional Employment"),
     )
-    hochster_schulabschluss = models.CharField(max_length=20, choices=EDUCATION_CHOICES)
-    hochste_berufsausbildung = models.CharField(max_length=20, choices=TRAINING_CHOICES)
-    wochentliche_arbeitszeit = models.CharField(
-        max_length=10, choices=WORK_HOURS_CHOICES
+    minor_employment_check = models.CharField(
+        max_length=30,
+        choices=[("yes", _("Yes")), ("no", _("No"))],
+        verbose_name=_("Minor Employment"),
+    )
+    highest_edu_check = models.CharField(
+        max_length=30,
+        choices=[
+            ("none", _("No School Degree")),
+            ("primary", _("Primary School")),
+            ("secondary", _("Secondary School")),
+            ("high", _("High School/Abitur")),
+        ],
+        verbose_name=_("Highest Education"),
+    )
+    highest_training_check = models.CharField(
+        max_length=30,
+        choices=[
+            ("none", _("No Professional Degree")),
+            ("recognized", _("Recognized Apprenticeship")),
+            ("advanced", _("Advanced Training/Technician")),
+            ("bachelor", _("Bachelor")),
+            ("master", _("Master/Diploma")),
+            ("doctorate", _("Doctorate")),
+        ],
+        verbose_name=_("Highest Training"),
+    )
+    weekly_hours_check = models.CharField(
+        max_length=30,
+        choices=[("full", _("Full-time")), ("part", _("Part-time"))],
+        verbose_name=_("Weekly Working Hours"),
     )
 
     # Tax and social insurance / Steuer
-    steuer_id = models.CharField(max_length=11)
-    gesetzliche_krankenkasse = models.CharField(max_length=255)
-
-    # Submission
-    date_submitted = models.DateField(default=timezone.now)
-    unterschrift_arbeitnehmer = models.CharField(max_length=255)
+    tax_id = models.CharField(max_length=11, verbose_name=_("Tax ID"))
+    health_insurance = models.CharField(
+        max_length=255, verbose_name=_("Health Insurance")
+    )
+    health_insurance_number = models.CharField(
+        max_length=20, verbose_name=_("Health Insurance Number")
+    )
+    date_submitted = models.DateField(
+        auto_now_add=True, verbose_name=_("Date Submitted")
+    )
 
     def __str__(self):
-        return f"{self.familienname}, {self.vorname} - {self.date_submitted}"
+        return f"{self.last_name}, {self.first_name}"
 
 
 class Document(models.Model):

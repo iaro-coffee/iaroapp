@@ -1,7 +1,6 @@
 from typing import List, Tuple
 
 from django.contrib import admin
-from django.db import models
 
 from employees.models import EmployeeProfile
 
@@ -10,24 +9,25 @@ from .models import Document, PersonalInformation, SignedDocument
 
 @admin.register(PersonalInformation)
 class PersonalInformationAdmin(admin.ModelAdmin):
-    list_display: List[str] = ["familienname", "vorname", "date_submitted"]
-    search_fields: List[str] = ["familienname", "vorname", "steuer_id"]
+    list_display: List[str] = ["last_name", "first_name", "date_submitted"]
+    search_fields: List[str] = ["last_name", "first_name", "tax_id"]
     ordering: Tuple[str, ...] = ("-date_submitted",)
 
-    fieldsets: List[Tuple[str, models.fields]] = [
+    fieldsets: List[Tuple[str, dict]] = [
         (
             None,
             {
                 "fields": [
-                    "familienname",
-                    "vorname",
-                    "strasse_hausnummer",
-                    "plz_ort",
-                    "geburtsdatum",
-                    "geschlecht",
-                    "versicherungsnummer",
-                    "geburtsort_land",
-                    "schwerbehindert",
+                    "last_name",
+                    "first_name",
+                    "street",
+                    "city_zip",
+                    "city_name",
+                    "birth_date",
+                    "gender_check",
+                    "insurance_number",
+                    "birth_place",
+                    "disability_check",
                 ]
             },
         ),
@@ -35,26 +35,29 @@ class PersonalInformationAdmin(admin.ModelAdmin):
             "Occupation Details",
             {
                 "fields": [
-                    "berufsbezeichnung",
-                    "ausgeubte_tatigkeit",
-                    "beschaftigungsart",
-                    "weitere_beschaftigung",
-                    "geringfugige_beschaftigung",
-                    "hochster_schulabschluss",
-                    "hochste_berufsausbildung",
-                    "wochentliche_arbeitszeit",
+                    "job_title",
+                    "emp_type_check",
+                    "additional_employment_check",
+                    "minor_employment_check",
+                    "highest_edu_check",
+                    "highest_training_check",
+                    "weekly_hours_check",
                 ]
             },
         ),
         (
             "Tax and Social Insurance",
-            {"fields": ["steuer_id", "gesetzliche_krankenkasse"]},
-        ),
-        (
-            "Submission Details",
-            {"fields": ["date_submitted", "unterschrift_arbeitnehmer"]},
+            {"fields": ["tax_id", "health_insurance", "health_insurance_number"]},
         ),
     ]
+
+    readonly_fields = ["date_submitted"]
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly = list(super().get_readonly_fields(request, obj))
+        if obj:
+            readonly.append("date_submitted")
+        return readonly
 
 
 @admin.register(Document)

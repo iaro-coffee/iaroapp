@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import activate
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -15,63 +17,46 @@ from lib.zoho import (
 )
 
 from .forms import PersonalInformationForm
-from .models import Document, PersonalInformation, SignedDocument
+from .models import Document, SignedDocument
 
 
 class PersonalInformationView(View):
     template_name = "personal_information.html"
 
     def get(self, request):
-        try:
-            # Ensure the employee profile exists
-            employee_profile = request.user.employeeprofile
+        lang = request.GET.get("lang", "en")
+        activate(lang)
 
-            # Attempt to retrieve the personal information instance
-            personal_info = employee_profile.personal_information_form
-
-            if not personal_info:
-                # Create a blank instance but do not save until user submits the form
-                personal_info = PersonalInformation(
-                    familienname=employee_profile.last_name or "",
-                    vorname=employee_profile.first_name or "",
-                    geburtsdatum="1900-01-01",  # Default placeholder date
-                )
-                personal_info.save()
-                employee_profile.personal_information_form = personal_info
-                employee_profile.save()
-
-        except EmployeeProfile.DoesNotExist:
-            return redirect("error_page")
-
-        form = PersonalInformationForm(instance=personal_info)
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request):
         try:
             employee_profile = request.user.employeeprofile
             form = PersonalInformationForm(
-                request.POST, instance=employee_profile.personal_information_form
+                initial={
+                    "first_name": employee_profile.first_name,
+                    "last_name": employee_profile.last_name,
+                }
             )
-
-            if form.is_valid():
-                personal_info = form.save()
-
-                # Update the employee profile to reflect that the form is completed
-                employee_profile.personal_information_form = personal_info
-                employee_profile.onboarding_stages["personal_information"] = True
-                employee_profile.save()
-
-                messages.success(
-                    request, "Your information has been submitted successfully."
-                )
-                return redirect("index")
-            else:
-                messages.warning(request, "Please correct the errors below.")
-        except EmployeeProfile.DoesNotExist:
-            messages.error(request, "Employee profile not found.")
+        except AttributeError:
             return redirect("error_page")
 
-        return render(request, self.template_name, {"form": form})
+        return render(request, self.template_name, {"form": form, "current_lang": lang})
+
+    def post(self, request):
+        lang = request.GET.get("lang", "en")
+        activate(lang)
+
+        form = PersonalInformationForm(request.POST)
+        if form.is_valid():
+            personal_info = form.save()
+            request.user.employeeprofile.personal_information_form = personal_info
+            request.user.employeeprofile.save()
+            messages.success(
+                request, _("Your information has been submitted successfully.")
+            )
+            return redirect("index")
+        else:
+            messages.error(request, _("Please correct the errors below."))
+
+        return render(request, self.template_name, {"form": form, "current_lang": lang})
 
 
 class DocumentSignView(View):
