@@ -38,7 +38,5 @@ class EmployeeProfile(models.Model):
         related_name="employee_profile",
     )
 
-    organisation_role = models.CharField(max_length=255, null=True, blank=True)
-
     def __str__(self):
         return f"{self.user.username} Profile"

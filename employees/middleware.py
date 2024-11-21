@@ -25,8 +25,8 @@ class OnboardingCompletionMiddleware:
                     if not employee_profile.onboarding_stages.get(
                         "personal_information", False
                     ):
-                        if request.path != reverse("personal_information"):
-                            return redirect("personal_information")
+                        if request.path != reverse("onboarding:personal_information"):
+                            return redirect("onboarding:personal_information")
                 else:
                     # Exempt users with is_employee=0 from redirection
                     return self.get_response(request)

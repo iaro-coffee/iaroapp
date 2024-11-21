@@ -1,6 +1,13 @@
 from django.urls import path
 
-from .views import DocumentSignView, DocumentsListView, PersonalInformationView
+from .views import (
+    DocumentSignView,
+    DocumentsListView,
+    OrgChartView,
+    PersonalInformationView,
+)
+
+app_name = "onboarding"
 
 urlpatterns = [
     path(
@@ -14,4 +21,6 @@ urlpatterns = [
         DocumentSignView.as_view(),
         name="document_sign",
     ),
+    path("org-chart/", OrgChartView.as_view(), name="org_chart"),
+    # path("onboarding")
 ]

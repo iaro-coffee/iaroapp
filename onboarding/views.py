@@ -1,7 +1,9 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
+from django.views.generic import TemplateView
 
 from employees.models import EmployeeProfile
 from lib.zoho import (
@@ -213,3 +215,10 @@ class DocumentsListView(View):
             "documents": documents,
         }
         return render(request, self.template_name, context)
+
+
+class OrgChartView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = "org_chart.html"
+
+    def test_func(self):
+        return self.request.user.is_staff
