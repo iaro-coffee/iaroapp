@@ -26,6 +26,7 @@ from lib import planday
 from lib.planday import Planday
 from ratings.views import EmployeeRating
 from shifts.models import Shift
+from shifts.views import sync_shifts
 from tasks.models import TaskInstance
 from tasks.views import get_my_tasks
 
@@ -229,6 +230,7 @@ def index(request: HttpRequest):
     # Authenticate and fetch shifts for the user
     planday.authenticate()
     user_shifts = get_user_shifts(employee_id, today.isoformat(), today.isoformat())
+    sync_shifts(request.user)
 
     # Check if user_shifts contains data
     if user_shifts:
