@@ -86,6 +86,22 @@ class Planday:
             "Content-Type": "application/json",
         }
 
+    # Decorator to handle re-authentication on 401 errors
+    def planday_api_call(func):
+        def wrapper(self, *args, **kwargs):
+            try:
+                return func(self, *args, **kwargs)
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 401:
+                    # Token expired, re-authenticate and retry once
+                    self.access_token = None
+                    self.authenticate()
+                    return func(self, *args, **kwargs)
+                else:
+                    raise
+
+        return wrapper
+
     def get_portal_info(self):
         """
         Fetch the portal information from Planday API.
@@ -107,6 +123,7 @@ class Planday:
             else:
                 raise
 
+    @planday_api_call
     @retry(
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10)
     )
@@ -130,6 +147,7 @@ class Planday:
             raise ValueError(f"Unexpected employee data structure: {employees}")
         return employees
 
+    @planday_api_call
     def get_employee_id_by_email(self, email):
         employees = self.get_employees()
         for employee in employees:
@@ -137,6 +155,7 @@ class Planday:
                 return employee.get("id")
         return None
 
+    @planday_api_call
     def get_user_shifts(
         self, employee_id, from_date, to_date, limit=50, status="Assigned"
     ):
@@ -175,6 +194,7 @@ class Planday:
         except ValueError as e:
             raise ValueError(f"Invalid JSON response from Planday API: {e}")
 
+    @planday_api_call
     def get_shift_by_id(self, shift_id):
         """
         Fetch a shift by its ID from Planday.
@@ -202,6 +222,7 @@ class Planday:
             print(f"JSON decode error occurred: {json_err}")
             return None
 
+    @planday_api_call
     def punch_in_by_email(self, email, shift_id=None, comment=""):
         print(f"Attempting punch-in for email: {email}")
         employeeId = self.get_employee_id_by_email(email)
@@ -245,6 +266,7 @@ class Planday:
             print(f"Exception during punch-in: {str(e)}")
             return 500
 
+    @planday_api_call
     def punch_out_by_email(self, email, shift_id=None, comment=""):
         employeeId = self.get_employee_id_by_email(email)
         if employeeId is None:
@@ -283,6 +305,7 @@ class Planday:
             print(f"Exception during punch-out: {str(e)}")
             return None
 
+    @planday_api_call
     def get_employee_group_name(self, group_id):
         auth_headers = {
             "Authorization": "Bearer " + self.access_token,
@@ -297,6 +320,7 @@ class Planday:
         response = response["data"]
         return response["name"]
 
+    @planday_api_call
     def get_user_groups(self, employeeId):
         auth_headers = {
             "Authorization": "Bearer " + self.access_token,
@@ -310,6 +334,7 @@ class Planday:
         response = json.loads(response.text)
         return response["data"]["employeeGroups"]
 
+    @planday_api_call
     def get_user_punchclock_records_of_timespan(self, employeeEmail, fromDate, toDate):
         employeeId = self.get_employee_id_by_email(employeeEmail)
         if not employeeId:
@@ -355,6 +380,7 @@ class Planday:
 
         return punch_clock_records
 
+    @planday_api_call
     def get_departments(self, limit=50, offset=0):
         """Fetches the list of departments from the Planday API."""
         auth_headers = {
@@ -383,6 +409,7 @@ class Planday:
             print(f"Failed to fetch departments. Status code: {response.status_code}")
             return []
 
+    @planday_api_call
     def get_employee_groups(self, limit=50, offset=0):
         """Fetches the list of employee groups from the Planday API."""
         auth_headers = self.get_auth_headers()

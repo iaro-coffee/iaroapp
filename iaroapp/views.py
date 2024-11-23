@@ -3,12 +3,12 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from threading import local
 
 import livepopulartimes
 import requests
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Avg, Q
@@ -31,6 +31,8 @@ from tasks.models import TaskInstance
 from tasks.views import get_my_tasks
 
 logger = logging.getLogger(__name__)
+
+_thread_local = local()
 
 planday = planday.Planday()
 run_once_day = {}
@@ -75,22 +77,32 @@ def initialize_employee_groups_map():
     Initialize a dictionary that maps employeeGroupId to group names.
     Fetches group data from Planday.
     """
-    planday.authenticate()
+    if hasattr(_thread_local, "employee_groups_map"):
+        return _thread_local.employee_groups_map
     employee_groups = planday.get_employee_groups()
-    return {str(group["id"]): group["name"] for group in employee_groups}
+    _thread_local.employee_groups_map = {
+        str(group["id"]): group["name"] for group in employee_groups
+    }
+    return _thread_local.employee_groups_map
 
 
 def initialize_branches_by_department_id():
     """
     Initialize a dictionary that maps departmentId to both branch name and full address (street and city).
     """
-    return {
+    if hasattr(_thread_local, "branches_by_department_id"):
+        return _thread_local.branches_by_department_id
+    branches = Branch.objects.all().only(
+        "departmentId", "name", "street_address", "city"
+    )
+    _thread_local.branches_by_department_id = {
         str(branch.departmentId): {
             "name": branch.name,
             "address": f"{branch.street_address}, {branch.city}",
         }
-        for branch in Branch.objects.all()
+        for branch in branches
     }
+    return _thread_local.branches_by_department_id
 
 
 def enrich_shift_with_group_name(shift, employee_groups_map):
@@ -227,8 +239,7 @@ def index(request: HttpRequest):
     branches_by_department_id = initialize_branches_by_department_id()
     employee_groups_map = initialize_employee_groups_map()
 
-    # Authenticate and fetch shifts for the user
-    planday.authenticate()
+    # Fetch shifts for the user
     user_shifts = get_user_shifts(employee_id, today.isoformat(), today.isoformat())
     sync_shifts(request.user)
 
@@ -298,14 +309,22 @@ def index(request: HttpRequest):
         if record.get("endDateTime") is None:  # Active shift
             punched_in = True
             punch_in_time = parse_datetime(record["startDateTime"])
-            active_shift = planday.get_shift_by_id(record.get("shiftId"))
-            if active_shift:
-                active_shift = enrich_shift_with_group_name(
-                    enrich_shift_with_branch_name(
-                        active_shift, branches_by_department_id
-                    ),
-                    employee_groups_map,
+            shift_id = record.get("shiftId")
+            # Only fetch shift details if shift_id is not None
+            if shift_id:
+                active_shift = next(
+                    (shift for shift in user_shifts if shift["id"] == shift_id), None
                 )
+                if not active_shift:
+                    # As a fallback, fetch the shift by ID
+                    active_shift = planday.get_shift_by_id(shift_id)
+                    if active_shift:
+                        active_shift = enrich_shift_with_group_name(
+                            enrich_shift_with_branch_name(
+                                active_shift, branches_by_department_id
+                            ),
+                            employee_groups_map,
+                        )
             break
 
     # If there's an active shift, override the current shift
@@ -315,7 +334,8 @@ def index(request: HttpRequest):
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
     combined_notes = (
-        Note.objects.filter(Q(receivers=request.user) | Q(branches=user_branch))
+        Note.objects.select_related("sender")
+        .filter(Q(receivers=request.user) | Q(branches=user_branch))
         .distinct()
         .order_by("-timestamp")[:4]
     )
@@ -493,54 +513,59 @@ def getStatistics(request):
     }
     statisticsSum = {"workHours": 0, "tasks": 0, "ratings": 0}
 
-    sevenDaysAgo = timezone.now() - timedelta(days=7)
+    sevenDaysAgo = now - timedelta(days=7)
 
     taskQuerySet = TaskInstance.objects.filter(
         user=request.user,
-        date_done__gt=sevenDaysAgo,
+        date_done__gte=sevenDaysAgo,
+        date_done__lte=now,
     )
     statisticsSum["tasks"] = taskQuerySet.count()
 
     ratingsQuerySet = EmployeeRating.objects.filter(
         user=request.user,
-        date__gt=sevenDaysAgo,
+        date__gte=sevenDaysAgo,
+        date__lte=now,
     )
     ratingsAverage = ratingsQuerySet.aggregate(Avg("rating"))["rating__avg"]
     if ratingsAverage is not None:
         statisticsSum["ratings"] = round(ratingsAverage, 2)
 
-    if not punchClockRecordsWereCheckedToday(request.user.id):
-        run_once_day_punch_clock[request.user.id] = now.date()
-        planday.authenticate()
-        userEmail = User.objects.get(id=request.user.id).email
-        punchClockRecordsUser[request.user.id] = (
-            planday.get_user_punchclock_records_of_timespan(
-                userEmail, sevenDaysAgo, now
-            )
+    # Fetch punch clock records for the past 7 days
+    userEmail = request.user.email
+    punch_clock_records = planday.get_user_punchclock_records_of_timespan(
+        userEmail, sevenDaysAgo.date(), now.date()
+    )
+
+    # Organize punch clock records by date
+    punch_clock_records_by_date = {}
+    for record in punch_clock_records:
+        start_date_time = parse_datetime(record["startDateTime"])
+        end_date_time = (
+            parse_datetime(record["endDateTime"]) if record.get("endDateTime") else now
         )
+        date_str = start_date_time.strftime("%Y-%m-%d")
+        duration = (end_date_time - start_date_time).total_seconds() / 3600
+        punch_clock_records_by_date.setdefault(date_str, 0)
+        punch_clock_records_by_date[date_str] += duration
 
     for x in range(7):
-        d = now.date() - timedelta(days=x)
+        d = (now - timedelta(days=x)).date()
+        date_str = d.strftime("%Y-%m-%d")
         statistics["labels"].insert(0, d.strftime("%m-%d"))
 
-        tasks = taskQuerySet.filter(date_done__date=d)
-        taskCount = tasks.count()
-        statistics["tasks"].insert(0, taskCount)
+        # Tasks
+        task_count = taskQuerySet.filter(date_done__date=d).count()
+        statistics["tasks"].insert(0, task_count)
 
-        ratings = ratingsQuerySet.filter(date__date=d)
-        rating = ratings.first().rating if ratings.count() != 0 else None
-        statistics["ratings"].insert(0, rating)
+        # Ratings
+        daily_ratings = ratingsQuerySet.filter(date__date=d)
+        rating = daily_ratings.aggregate(Avg("rating"))["rating__avg"]
+        statistics["ratings"].insert(0, rating if rating is not None else 0)
 
-        hours = 0
-        if punchClockRecordsUser:
-            for record in punchClockRecordsUser[request.user.id]:
-                if "startDateTime" in record and "endDateTime" in record:
-                    start_date_time = parse_datetime(record["startDateTime"])
-                    end_date_time = parse_datetime(record["endDateTime"])
-                    if start_date_time.strftime("%m-%d") == d.strftime("%m-%d"):
-                        diff = end_date_time - start_date_time
-                        hours = diff.seconds / 3600
-        statistics["workHours"].insert(0, hours)
+        # Work Hours
+        hours = punch_clock_records_by_date.get(date_str, 0)
+        statistics["workHours"].insert(0, round(hours, 2))
 
     statisticsSum["workHours"] = round(sum(statistics["workHours"]), 2)
 
@@ -554,7 +579,6 @@ def planday_info(request: HttpRequest):
     View to fetch and display Planday portal information and departments.
     """
     planday = Planday()
-    planday.authenticate()
 
     # Fetch portal information
     portal_info = planday.get_portal_info()
@@ -582,7 +606,6 @@ def get_employees_list(request):
     """
     try:
         planday = Planday()
-        planday.authenticate()
 
         employees = planday.get_employees()
 

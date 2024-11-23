@@ -109,7 +109,7 @@
                                                 class="punchInButton btn mb-0 bg-gradient-primary"
                                                 data-user-id="{{ user.id }}"
                                                 data-shift-id="{{ shift.planday_shift_id }}">
-                                                Punch In
+                                                Start
                                             </button>
                                         {% endif %}
                                     </li>
@@ -483,7 +483,7 @@
                 <label for="managerNote" class="form-label">Add a note for your manager (optional):</label>
                 <textarea class="form-control" id="managerNote" name="managerNote" rows="3" placeholder="Enter your note here..."></textarea>
               </div>
-              <button type="submit" class="w-100 mt-2 btn btn-lg bg-success" style="color: white">Punch In</button>
+              <button type="submit" class="w-100 mt-2 btn btn-lg bg-success" style="color: white">Start Shift</button>
               <button type="button" class="w-100 mt-2 btn btn-lg btn-secondary" data-bs-dismiss="modal">Cancel</button>
               <!-- Hidden fields to store user and shift IDs -->
               <input type="hidden" id="modalUserId" name="userId" value="">
@@ -527,7 +527,7 @@
                     </div>
                     <!-- Reset Confirmation Section (initially hidden) -->
                     <div id="resetConfirmationSection" class="modal-content-section" style="display: none;">
-                        <p>Your shift duration is less than 2 minutes. Do you want to reset the shift and punch in
+                        <p>Your shift duration is less than 2 minutes. Do you want to reset the shift and start shift
                             again?</p>
                         <button type="button" id="confirmResetBtn" class="w-100 mt-2 btn btn-lg bg-gradient-primary">
                             Yes, Reset Shift

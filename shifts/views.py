@@ -34,7 +34,7 @@ def get_active_shift(user):
     else:
         # Check Planday for an active shift
         current_time = now()
-        planday.authenticate()
+
         punch_clock_records = planday.get_user_punchclock_records_of_timespan(
             user.email, current_time.date(), current_time.date()
         )
@@ -61,7 +61,6 @@ def sync_shifts(user):
     Also handles shifts that were reset (deleted) in Planday.
     """
     current_time = now()
-    planday.authenticate()
     # Get punch clock records for today
     punch_clock_records = planday.get_user_punchclock_records_of_timespan(
         user.email, current_time.date(), current_time.date()
@@ -141,7 +140,6 @@ class ShiftManagementView(View):
                     )
 
                 # Proceed to punch in
-                planday.authenticate()
                 status = planday.punch_in_by_email(email, shift_id, comment)
                 if status == 200:
                     Shift.objects.create(
@@ -190,7 +188,6 @@ class ShiftManagementView(View):
                             status=409,
                         )
 
-                planday.authenticate()
                 response = planday.punch_out_by_email(
                     email, active_shift.planday_shift_id, comment=comment
                 )
