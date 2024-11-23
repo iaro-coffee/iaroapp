@@ -228,12 +228,10 @@ def index(request: HttpRequest):
 
     # Authenticate and fetch shifts for the user
     planday.authenticate()
-    employee_id = user_profile.planday_id
     user_shifts = get_user_shifts(employee_id, today.isoformat(), today.isoformat())
 
     # Check if user_shifts contains data
     if user_shifts:
-        # Enrich the shift with both branch and group information
         current_shift = enrich_shift_with_group_name(
             enrich_shift_with_branch_name(user_shifts[0], branches_by_department_id),
             employee_groups_map,
@@ -251,41 +249,32 @@ def index(request: HttpRequest):
     ]
 
     # Fetch punch clock records for today
-    # Check if user has punched in
-    # Check if shift is already punched out
     punch_clock_records = planday.get_user_punchclock_records_of_timespan(
         request.user.email, today, today
     )
 
-    # Create a set of shift IDs that have been punched out
-    punched_out_shift_ids = set()
-    for record in punch_clock_records:
-        shift_id = record.get("shiftId")
-        if shift_id and record.get("endDateTime"):
-            punched_out_shift_ids.add(shift_id)
-
     # Dict to store punch times for each shift ID
     punch_times_by_shift = {}
+    punched_out_shift_ids = set()
 
     for record in punch_clock_records:
         shift_id = record.get("shiftId")
+        start_time = parse_datetime(record.get("startDateTime"))
+        end_time = (
+            parse_datetime(record.get("endDateTime"))
+            if record.get("endDateTime")
+            else None
+        )
+
         if shift_id:
-            start_time = parse_datetime(record["startDateTime"])
-            end_time = (
-                parse_datetime(record["endDateTime"])
-                if record.get("endDateTime")
-                else None
-            )
             punch_times_by_shift[shift_id] = {
                 "punch_in_time": start_time,
                 "punch_out_time": end_time,
             }
+            if end_time:
+                punched_out_shift_ids.add(shift_id)
 
-    # Display all shifts are done
-    all_shifts_done = True
-
-    # Include Planday shift ID
-    # Annotate each shift with 'punched_out' status and punch times
+    # Annotate shifts with punch times and statuses
     for shift in user_shifts:
         shift_id = shift.get("id")
         shift["planday_shift_id"] = shift_id
@@ -296,42 +285,30 @@ def index(request: HttpRequest):
         shift["punch_out_time"] = punch_times_by_shift.get(shift_id, {}).get(
             "punch_out_time"
         )
-        # check if all shifts are done
-        if not shift["punched_out"]:
-            all_shifts_done = False
 
-    # Ensure `punched_in` and `punch_in_time` are correctly derived
-    punched_in, punch_in_time, punch_out_time = False, None, None
+    # Check for an active shift in Planday
+    active_shift = None
+    punched_in = False
+    punch_in_time = None
+    punch_out_time = None
 
     for record in punch_clock_records:
-        if "endDateTime" not in record or record["endDateTime"] is None:
-            # User is punched in if there's no endDateTime
+        if record.get("endDateTime") is None:  # Active shift
             punched_in = True
             punch_in_time = parse_datetime(record["startDateTime"])
-        else:
-            # Capture punch-out time if available (last record should be the latest)
-            punch_out_time = parse_datetime(record["endDateTime"])
+            active_shift = planday.get_shift_by_id(record.get("shiftId"))
+            if active_shift:
+                active_shift = enrich_shift_with_group_name(
+                    enrich_shift_with_branch_name(
+                        active_shift, branches_by_department_id
+                    ),
+                    employee_groups_map,
+                )
+            break
 
-    # Check for an active shift
-    punched_in, active_shift = hasOngoingShift(request)
-
-    if punched_in and active_shift:
-        # Fetch current shift details from Planday using shift ID
-        planday_shift = planday.get_shift_by_id(active_shift.planday_shift_id)
-        if planday_shift:
-            current_shift = enrich_shift_with_group_name(
-                enrich_shift_with_branch_name(planday_shift, branches_by_department_id),
-                employee_groups_map,
-            )
-            punch_in_time = active_shift.start_date
-        else:
-            # Handle the case where the shift details couldn't be fetched
-            print("Failed to fetch shift details from Planday.")
-            current_shift = None
-            punch_in_time = None
-    else:
-        current_shift = None
-        punch_in_time = None
+    # If there's an active shift, override the current shift
+    if active_shift:
+        current_shift = active_shift
 
     # Retrieve Notes
     user_branch = user_profile.branch if user_profile else None
@@ -403,7 +380,6 @@ def index(request: HttpRequest):
         "punched_in": punched_in,
         "punch_in_time": punch_in_time,
         "punch_out_time": punch_out_time,
-        "all_shifts_done": all_shifts_done,
     }
 
     return render(request, "index.html", context=context)
