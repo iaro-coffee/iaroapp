@@ -299,6 +299,12 @@ def index(request: HttpRequest):
             "punch_out_time"
         )
 
+    # Determine if all shifts are done
+    if user_shifts:
+        all_shifts_done = all(shift.get("punched_out", False) for shift in user_shifts)
+    else:
+        all_shifts_done = False
+
     # Check for an active shift in Planday
     active_shift = None
     punched_in = False
@@ -402,6 +408,7 @@ def index(request: HttpRequest):
         "punched_in": punched_in,
         "punch_in_time": punch_in_time,
         "punch_out_time": punch_out_time,
+        "all_shifts_done": all_shifts_done,
     }
 
     return render(request, "index.html", context=context)
