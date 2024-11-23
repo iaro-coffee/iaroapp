@@ -1,11 +1,12 @@
 import json
 
+from dateutil.parser import parse as parse_datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
-from django.utils.timezone import now
+from django.utils.timezone import get_current_timezone, make_aware, now
 from django.views import View
 
 from lib.planday import Planday
@@ -17,7 +18,6 @@ planday = Planday()
 
 @method_decorator(login_required, name="dispatch")
 class ShiftManagementView(View):
-
     def post(self, request):
         """
         Handles Punch-In and Punch-Out based on user shift status.
@@ -29,24 +29,38 @@ class ShiftManagementView(View):
             rating = data.get("rating", None)
             comment = data.get("comment", "")
             confirm_reset = data.get("confirm_reset", False)
-            shift_id = data.get("shift_id", None)  # Get shift ID from request
-
-            # Add a print statement to verify the comment
-            print(f"Received comment: {comment}")
+            shift_id = data.get("shift_id", None)
 
             user = get_object_or_404(User, id=user_id)
             email = user.email
-            current_time = now()
+            current_time = now()  # Timezone-aware datetime
 
             planday.authenticate()
 
-            # Fetch the active shift for the user
+            # Fetch active shift from the local DB
             active_shift = Shift.objects.filter(user=user, end_date=None).first()
 
+            # Check Planday for an active shift if none exists in the local DB
+            if not active_shift and action == "punch_out":
+                punch_clock_records = planday.get_user_punchclock_records_of_timespan(
+                    email, current_time.date(), current_time.date()
+                )
+                for record in punch_clock_records:
+                    if record.get("endDateTime") is None:  # Active shift found
+                        planday_shift_id = record.get("shiftId")
+                        start_time = parse_datetime_to_aware(record["startDateTime"])
+
+                        # Create the shift in the local DB
+                        active_shift = Shift.objects.create(
+                            user=user,
+                            planday_shift_id=planday_shift_id,
+                            start_date=start_time,
+                            note="Imported from Planday",
+                        )
+                        break
+
             if action == "punch_in":
-                # Punch-In logic
                 if active_shift:
-                    # If a shift already exists, invalid operation
                     return JsonResponse(
                         {"status": "error", "message": "You are already punched in."},
                         status=400,
@@ -64,12 +78,11 @@ class ShiftManagementView(View):
                 status = planday.punch_in_by_email(email, shift_id, comment)
 
                 if status == 200:
-                    # Create a shift record in the DB with the Planday shift ID
                     Shift.objects.create(
                         user=user,
                         start_date=current_time,
                         planday_shift_id=int(shift_id),
-                        note=comment,  # Save the note
+                        note=comment,
                     )
                     return JsonResponse(
                         {"status": "success", "message": "Punched In successfully."},
@@ -82,27 +95,22 @@ class ShiftManagementView(View):
                     )
 
             elif action == "punch_out":
-                # Punch-Out logic with rating
                 if not active_shift:
-                    # If no active shift, invalid operation
                     return JsonResponse(
                         {"status": "error", "message": "No active shift found."},
                         status=400,
                     )
 
                 if shift_id and int(shift_id) != active_shift.planday_shift_id:
-                    # The shift ID provided does not match the active shift
                     return JsonResponse(
                         {"status": "error", "message": "Shift ID mismatch."}, status=400
                     )
 
-                # Check if reset confirmation is needed
                 if not confirm_reset:
                     shift_duration = (
                         current_time - active_shift.start_date
                     ).total_seconds()
                     if shift_duration < 120:
-                        # Shift is less than 2 minutes
                         return JsonResponse(
                             {
                                 "status": "warning",
@@ -128,7 +136,6 @@ class ShiftManagementView(View):
                 status = response.status_code
 
                 if confirm_reset:
-                    # If reset was confirmed, delete the shift record
                     active_shift.delete()
                     return JsonResponse(
                         {"status": "success", "message": "Shift reset successfully."},
@@ -136,7 +143,6 @@ class ShiftManagementView(View):
                     )
 
                 if status == 200:
-                    # Successful punch-out
                     if rating:
                         rating_obj = EmployeeRating.objects.create(
                             user=user, rating=rating, date=current_time, comment=comment
@@ -154,10 +160,17 @@ class ShiftManagementView(View):
                         status=status,
                     )
 
-            else:
-                return JsonResponse(
-                    {"status": "error", "message": "Invalid action."}, status=400
-                )
+            return JsonResponse(
+                {"status": "error", "message": "Invalid action."}, status=400
+            )
 
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+
+# Convert naive datetime to timezone-aware
+def parse_datetime_to_aware(date_str):
+    dt = parse_datetime(date_str)
+    if dt.tzinfo is None:  # Check if the datetime is naive
+        dt = make_aware(dt, get_current_timezone())
+    return dt
