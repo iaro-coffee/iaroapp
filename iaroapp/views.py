@@ -224,7 +224,7 @@ def index(request: HttpRequest):
     Render the dashboard page for the user with relevant data including shifts,
     tasks, and popular times data based on the user's branch address.
     """
-    today = datetime.today().date()
+    today = timezone.localdate()
     tomorrow = today + timedelta(days=1)
     myTasks = get_my_tasks(request)
     ongoingShift = hasOngoingShift(request)
@@ -509,6 +509,13 @@ def getTasksDoneLastMonth(request):
     return tasks.count()
 
 
+def parse_datetime_to_aware(date_str):
+    dt = parse_datetime(date_str)
+    if dt is not None and dt.tzinfo is None:
+        dt = timezone.make_aware(dt)
+    return dt
+
+
 def getStatistics(request):
     now = timezone.now()
 
@@ -547,9 +554,11 @@ def getStatistics(request):
     # Organize punch clock records by date
     punch_clock_records_by_date = {}
     for record in punch_clock_records:
-        start_date_time = parse_datetime(record["startDateTime"])
+        start_date_time = parse_datetime_to_aware(record["startDateTime"])
         end_date_time = (
-            parse_datetime(record["endDateTime"]) if record.get("endDateTime") else now
+            parse_datetime_to_aware(record["endDateTime"])
+            if record.get("endDateTime")
+            else now
         )
         date_str = start_date_time.strftime("%Y-%m-%d")
         duration = (end_date_time - start_date_time).total_seconds() / 3600
