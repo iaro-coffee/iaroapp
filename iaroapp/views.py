@@ -11,7 +11,8 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Avg, Q
+from django.db.models import Avg, Count, Q
+from django.db.models.functions import TruncDate
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
@@ -529,6 +530,7 @@ def getStatistics(request):
 
     sevenDaysAgo = now - timedelta(days=7)
 
+    # Fetch and annotate tasks per day
     taskQuerySet = TaskInstance.objects.filter(
         user=request.user,
         date_done__gte=sevenDaysAgo,
@@ -536,6 +538,14 @@ def getStatistics(request):
     )
     statisticsSum["tasks"] = taskQuerySet.count()
 
+    tasks_per_day = (
+        taskQuerySet.annotate(day=TruncDate("date_done"))
+        .values("day")
+        .annotate(count=Count("id"))
+    )
+    tasks_per_day_dict = {item["day"]: item["count"] for item in tasks_per_day}
+
+    # Fetch and annotate ratings per day
     ratingsQuerySet = EmployeeRating.objects.filter(
         user=request.user,
         date__gte=sevenDaysAgo,
@@ -544,6 +554,13 @@ def getStatistics(request):
     ratingsAverage = ratingsQuerySet.aggregate(Avg("rating"))["rating__avg"]
     if ratingsAverage is not None:
         statisticsSum["ratings"] = round(ratingsAverage, 2)
+
+    ratings_per_day = (
+        ratingsQuerySet.annotate(day=TruncDate("date"))
+        .values("day")
+        .annotate(avg_rating=Avg("rating"))
+    )
+    ratings_per_day_dict = {item["day"]: item["avg_rating"] for item in ratings_per_day}
 
     # Fetch punch clock records for the past 7 days
     userEmail = request.user.email
@@ -571,12 +588,11 @@ def getStatistics(request):
         statistics["labels"].insert(0, d.strftime("%m-%d"))
 
         # Tasks
-        task_count = taskQuerySet.filter(date_done__date=d).count()
+        task_count = tasks_per_day_dict.get(d, 0)
         statistics["tasks"].insert(0, task_count)
 
         # Ratings
-        daily_ratings = ratingsQuerySet.filter(date__date=d)
-        rating = daily_ratings.aggregate(Avg("rating"))["rating__avg"]
+        rating = ratings_per_day_dict.get(d, 0)
         statistics["ratings"].insert(0, rating if rating is not None else 0)
 
         # Work Hours
