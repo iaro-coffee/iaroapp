@@ -14,6 +14,23 @@ from tenacity import (
 load_dotenv(find_dotenv())
 
 
+# Decorator to handle re-authentication on 401 errors
+def planday_api_call(func):
+    def wrapper(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 401:
+                # Token expired, re-authenticate and retry once
+                self.access_token = None
+                self.authenticate()
+                return func(self, *args, **kwargs)
+            else:
+                raise
+
+    return wrapper
+
+
 class Planday:
     auth_url = "https://id.planday.com/connect/token"
     base_url = "https://openapi.planday.com"
@@ -85,22 +102,6 @@ class Planday:
             "X-ClientId": self.client_id,
             "Content-Type": "application/json",
         }
-
-    # Decorator to handle re-authentication on 401 errors
-    def planday_api_call(func):
-        def wrapper(self, *args, **kwargs):
-            try:
-                return func(self, *args, **kwargs)
-            except requests.exceptions.HTTPError as e:
-                if e.response.status_code == 401:
-                    # Token expired, re-authenticate and retry once
-                    self.access_token = None
-                    self.authenticate()
-                    return func(self, *args, **kwargs)
-                else:
-                    raise
-
-        return wrapper
 
     def get_portal_info(self):
         """
