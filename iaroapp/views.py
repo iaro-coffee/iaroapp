@@ -227,193 +227,304 @@ def index(request: HttpRequest):
     """
     today = timezone.localdate()
     tomorrow = today + timedelta(days=1)
-    myTasks = get_my_tasks(request)
-    ongoingShift = hasOngoingShift(request)
-    tasksDoneLastMonth = getTasksDoneLastMonth(request)
-    statistics, statisticsSum = getStatistics(request)
-    user_profile = get_employee_profile(request.user)
-    customer_profile = get_customer_profile(request.user)
-    current_month_year = today.strftime("%B %Y")
-    employee_id = user_profile.planday_id
 
-    # Initialize branches_by_department_id and employee_groups_map
-    branches_by_department_id = initialize_branches_by_department_id()
-    employee_groups_map = initialize_employee_groups_map()
-
-    # Fetch shifts for the user
-    user_shifts = get_user_shifts(employee_id, today.isoformat(), today.isoformat())
-    sync_shifts(request.user)
-
-    # Check if user_shifts contains data
-    if user_shifts:
-        current_shift = enrich_shift_with_group_name(
-            enrich_shift_with_branch_name(user_shifts[0], branches_by_department_id),
-            employee_groups_map,
-        )
-    else:
-        current_shift = None
-
-    # Enrich all shifts
-    user_shifts = [
-        enrich_shift_with_group_name(
-            enrich_shift_with_branch_name(shift, branches_by_department_id),
-            employee_groups_map,
-        )
-        for shift in user_shifts
-    ]
-
-    # Fetch punch clock records for today
-    punch_clock_records = planday.get_user_punchclock_records_of_timespan(
-        request.user.email, today, today
-    )
-
-    # Dict to store punch times for each shift ID
-    punch_times_by_shift = {}
-    punched_out_shift_ids = set()
-
-    for record in punch_clock_records:
-        shift_id = record.get("shiftId")
-        start_time = parse_datetime(record.get("startDateTime"))
-        end_time = (
-            parse_datetime(record.get("endDateTime"))
-            if record.get("endDateTime")
-            else None
-        )
-
-        if shift_id:
-            punch_times_by_shift[shift_id] = {
-                "punch_in_time": start_time,
-                "punch_out_time": end_time,
-            }
-            if end_time:
-                punched_out_shift_ids.add(shift_id)
-
-    # Annotate shifts with punch times and statuses
-    for shift in user_shifts:
-        shift_id = shift.get("id")
-        shift["planday_shift_id"] = shift_id
-        shift["punched_out"] = shift_id in punched_out_shift_ids
-        shift["punch_in_time"] = punch_times_by_shift.get(shift_id, {}).get(
-            "punch_in_time"
-        )
-        shift["punch_out_time"] = punch_times_by_shift.get(shift_id, {}).get(
-            "punch_out_time"
-        )
-
-    # Determine if all shifts are done
-    if user_shifts:
-        all_shifts_done = all(shift.get("punched_out", False) for shift in user_shifts)
-    else:
-        all_shifts_done = False
-
-    # Check for an active shift in Planday
-    active_shift = None
-    punched_in = False
-    punch_in_time = None
-    punch_out_time = None
-
-    for record in punch_clock_records:
-        if record.get("endDateTime") is None:  # Active shift
-            punched_in = True
-            punch_in_time = parse_datetime(record["startDateTime"])
-            shift_id = record.get("shiftId")
-            # Only fetch shift details if shift_id is not None
-            if shift_id:
-                active_shift = next(
-                    (shift for shift in user_shifts if shift["id"] == shift_id), None
-                )
-                if not active_shift:
-                    # As a fallback, fetch the shift by ID
-                    active_shift = planday.get_shift_by_id(shift_id)
-                    if active_shift:
-                        active_shift = enrich_shift_with_group_name(
-                            enrich_shift_with_branch_name(
-                                active_shift, branches_by_department_id
-                            ),
-                            employee_groups_map,
-                        )
-            break
-
-    # If there's an active shift, override the current shift
-    if active_shift:
-        current_shift = active_shift
-
-    # Retrieve Notes
-    user_branch = user_profile.branch if user_profile else None
-    combined_notes = (
-        Note.objects.select_related("sender")
-        .filter(Q(receivers=request.user) | Q(branches=user_branch))
-        .distinct()
-        .order_by("-timestamp")[:4]
-    )
-
-    # HOLIDAYS API
-    holidays_cache_key = f"holidays_{today}"
-    holiday_data = cache.get(holidays_cache_key)
-
-    if holiday_data is None:
-        calendarific_api_key = os.getenv("CALENDARIFIC_API_KEY")
-        country = "DE"
-        year = today.year
-        url = f"https://calendarific.com/api/v2/holidays?&api_key={calendarific_api_key}&country={country}&year={year}"
-
-        response = requests.get(url, timeout=10)
-        if response.status_code == 200:
-            data = response.json()
-            holidays = data.get("response", {}).get("holidays", [])
-            cache.set(holidays_cache_key, holidays, timeout=24 * 60 * 60)
-            holiday_data = holidays
-        else:
-            holiday_data = []
-
-    # Filter holidays for today and tomorrow
-    today_holidays = [
-        holiday
-        for holiday in holiday_data
-        if holiday["date"]["iso"] == today.isoformat()
-    ]
-    tomorrow_holidays = [
-        holiday
-        for holiday in holiday_data
-        if holiday["date"]["iso"] == tomorrow.isoformat()
-    ]
-
-    formatted_today = today.strftime("%A, %B %d")
-
-    colleagues_at_work = get_colleagues_at_work(user_profile, today)
-
+    # Initialize context with default values
     context = {
         "pageTitle": "Dashboard",
-        "task_list": myTasks[:5],
-        "tasks_done_last_month": tasksDoneLastMonth,
-        "statistics_json": json.dumps(statistics, cls=DjangoJSONEncoder),
-        "statistics": statistics,
-        "statistics_sum": statisticsSum,
-        "ongoingShift": ongoingShift[0] if ongoingShift else None,
-        "shiftStart": ongoingShift[1] if ongoingShift else None,
-        "user_profile": user_profile,
-        "customer_profile": customer_profile,
-        "received_notes": combined_notes,
+        "task_list": [],
+        "tasks_done_last_month": 0,
+        "statistics_json": "{}",
+        "statistics": {},
+        "statistics_sum": {},
+        "ongoingShift": None,
+        "shiftStart": None,
+        "user_profile": None,
+        "customer_profile": None,
+        "received_notes": [],
         "today": today,
-        "formatted_today": formatted_today,
+        "formatted_today": today.strftime("%A, %B %d"),
         "tomorrow": tomorrow,
-        "today_holidays": today_holidays,
-        "tomorrow_holidays": tomorrow_holidays,
-        "current_month_year": current_month_year,
-        "branches_by_department_id": branches_by_department_id,
-        "user_group": (
-            current_shift.get("group_name", "Unknown Group")
-            if current_shift
-            else "Unknown Group"
-        ),
-        "current_shift": current_shift,
-        "user_shifts": user_shifts,
-        "punched_in": punched_in,
-        "punch_in_time": punch_in_time,
-        "punch_out_time": punch_out_time,
-        "all_shifts_done": all_shifts_done,
-        "colleagues_at_work": colleagues_at_work,
+        "today_holidays": [],
+        "tomorrow_holidays": [],
+        "current_month_year": today.strftime("%B %Y"),
+        "branches_by_department_id": {},
+        "user_group": "Unknown Group",
+        "current_shift": None,
+        "user_shifts": [],
+        "punched_in": False,
+        "punch_in_time": None,
+        "punch_out_time": None,
+        "all_shifts_done": False,
+        "colleagues_at_work": [],
     }
+
+    try:
+        # Get tasks
+        try:
+            myTasks = get_my_tasks(request)
+            context["task_list"] = myTasks[:5]
+        except Exception as e:
+            logger.error(f"Error getting tasks: {e}")
+
+        # Get ongoing shift
+        try:
+            ongoingShift = hasOngoingShift(request)
+            context["ongoingShift"] = ongoingShift[0] if ongoingShift else None
+            context["shiftStart"] = ongoingShift[1] if ongoingShift else None
+        except Exception as e:
+            logger.error(f"Error getting ongoing shift: {e}")
+
+        # Get tasks done last month
+        try:
+            tasksDoneLastMonth = getTasksDoneLastMonth(request)
+            context["tasks_done_last_month"] = tasksDoneLastMonth
+        except Exception as e:
+            logger.error(f"Error getting tasks done last month: {e}")
+
+        # Get statistics
+        try:
+            statistics, statisticsSum = getStatistics(request)
+            context["statistics"] = statistics
+            context["statistics_sum"] = statisticsSum
+            context["statistics_json"] = json.dumps(statistics, cls=DjangoJSONEncoder)
+        except Exception as e:
+            logger.error(f"Error getting statistics: {e}")
+
+        # Get user profile
+        try:
+            user_profile = get_employee_profile(request.user)
+            context["user_profile"] = user_profile
+        except Exception as e:
+            logger.error(f"Error getting user profile: {e}")
+
+        # Get customer profile
+        try:
+            customer_profile = get_customer_profile(request.user)
+            context["customer_profile"] = customer_profile
+        except Exception as e:
+            logger.error(f"Error getting customer profile: {e}")
+
+        # Get branches and employee groups
+        try:
+            branches_by_department_id = initialize_branches_by_department_id()
+            context["branches_by_department_id"] = branches_by_department_id
+        except Exception as e:
+            logger.error(f"Error initializing branches: {e}")
+            branches_by_department_id = {}
+
+        try:
+            employee_groups_map = initialize_employee_groups_map()
+        except Exception as e:
+            logger.error(f"Error initializing employee groups map: {e}")
+            employee_groups_map = {}
+
+        # Fetch shifts for the user
+        user_shifts = []
+        if user_profile and user_profile.planday_id:
+            employee_id = user_profile.planday_id
+            try:
+                user_shifts = get_user_shifts(
+                    employee_id, today.isoformat(), today.isoformat()
+                )
+                # Enrich shifts
+                user_shifts = [
+                    enrich_shift_with_group_name(
+                        enrich_shift_with_branch_name(shift, branches_by_department_id),
+                        employee_groups_map,
+                    )
+                    for shift in user_shifts
+                ]
+                context["user_shifts"] = user_shifts
+                # Check if user_shifts contains data
+                if user_shifts:
+                    current_shift = user_shifts[0]
+                    context["current_shift"] = current_shift
+                    context["user_group"] = current_shift.get(
+                        "group_name", "Unknown Group"
+                    )
+                else:
+                    context["current_shift"] = None
+                    context["user_group"] = "Unknown Group"
+            except Exception as e:
+                logger.error(f"Error fetching or processing user shifts: {e}")
+                context["user_shifts"] = []
+                context["current_shift"] = None
+                context["user_group"] = "Unknown Group"
+        else:
+            logger.warning("User profile or planday_id not found.")
+            context["user_shifts"] = []
+            context["current_shift"] = None
+            context["user_group"] = "Unknown Group"
+
+        # Sync shifts
+        try:
+            sync_shifts(request.user)
+        except Exception as e:
+            logger.error(f"Error syncing shifts: {e}")
+
+        # Fetch punch clock records for today
+        try:
+            punch_clock_records = planday.get_user_punchclock_records_of_timespan(
+                request.user.email, today, today
+            )
+            # Process punch clock records
+            # Dict to store punch times for each shift ID
+            punch_times_by_shift = {}
+            punched_out_shift_ids = set()
+
+            for record in punch_clock_records:
+                shift_id = record.get("shiftId")
+                start_time = parse_datetime(record.get("startDateTime"))
+                end_time = (
+                    parse_datetime(record.get("endDateTime"))
+                    if record.get("endDateTime")
+                    else None
+                )
+
+                if shift_id:
+                    punch_times_by_shift[shift_id] = {
+                        "punch_in_time": start_time,
+                        "punch_out_time": end_time,
+                    }
+                    if end_time:
+                        punched_out_shift_ids.add(shift_id)
+
+            # Annotate shifts with punch times and statuses
+            for shift in user_shifts:
+                shift_id = shift.get("id")
+                shift["planday_shift_id"] = shift_id
+                shift["punched_out"] = shift_id in punched_out_shift_ids
+                shift["punch_in_time"] = punch_times_by_shift.get(shift_id, {}).get(
+                    "punch_in_time"
+                )
+                shift["punch_out_time"] = punch_times_by_shift.get(shift_id, {}).get(
+                    "punch_out_time"
+                )
+
+            # Determine if all shifts are done
+            if user_shifts:
+                all_shifts_done = all(
+                    shift.get("punched_out", False) for shift in user_shifts
+                )
+            else:
+                all_shifts_done = False
+            context["all_shifts_done"] = all_shifts_done
+
+            # Check for an active shift in Planday
+            active_shift = None
+            punched_in = False
+            punch_in_time = None
+            punch_out_time = None
+
+            for record in punch_clock_records:
+                if record.get("endDateTime") is None:  # Active shift
+                    punched_in = True
+                    punch_in_time = parse_datetime(record["startDateTime"])
+                    shift_id = record.get("shiftId")
+                    # Only fetch shift details if shift_id is not None
+                    if shift_id:
+                        active_shift = next(
+                            (shift for shift in user_shifts if shift["id"] == shift_id),
+                            None,
+                        )
+                        if not active_shift:
+                            # As a fallback, fetch the shift by ID
+                            try:
+                                active_shift = planday.get_shift_by_id(shift_id)
+                                if active_shift:
+                                    active_shift = enrich_shift_with_group_name(
+                                        enrich_shift_with_branch_name(
+                                            active_shift, branches_by_department_id
+                                        ),
+                                        employee_groups_map,
+                                    )
+                            except Exception as e:
+                                logger.error(f"Error fetching shift by ID: {e}")
+                                active_shift = None
+                    break
+
+            # If there's an active shift, override the current shift
+            if active_shift:
+                context["current_shift"] = active_shift
+
+            context["punched_in"] = punched_in
+            context["punch_in_time"] = punch_in_time
+            context["punch_out_time"] = punch_out_time
+
+        except Exception as e:
+            logger.error(f"Error processing punch clock records: {e}")
+            context["punched_in"] = False
+            context["punch_in_time"] = None
+            context["punch_out_time"] = None
+            context["all_shifts_done"] = False
+
+        # Retrieve Notes
+        try:
+            user_branch = user_profile.branch if user_profile else None
+            combined_notes = (
+                Note.objects.select_related("sender")
+                .filter(Q(receivers=request.user) | Q(branches=user_branch))
+                .distinct()
+                .order_by("-timestamp")[:4]
+            )
+            context["received_notes"] = combined_notes
+        except Exception as e:
+            logger.error(f"Error fetching notes: {e}")
+            context["received_notes"] = []
+
+        # HOLIDAYS API
+        try:
+            holidays_cache_key = f"holidays_{today}"
+            holiday_data = cache.get(holidays_cache_key)
+
+            if holiday_data is None:
+                calendarific_api_key = os.getenv("CALENDARIFIC_API_KEY")
+                country = "DE"
+                year = today.year
+                url = f"https://calendarific.com/api/v2/holidays?&api_key={calendarific_api_key}&country={country}&year={year}"
+
+                response = requests.get(url, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    holidays = data.get("response", {}).get("holidays", [])
+                    cache.set(holidays_cache_key, holidays, timeout=24 * 60 * 60)
+                    holiday_data = holidays
+                else:
+                    holiday_data = []
+            else:
+                holiday_data = holiday_data
+
+            # Filter holidays for today and tomorrow
+            today_holidays = [
+                holiday
+                for holiday in holiday_data
+                if holiday["date"]["iso"] == today.isoformat()
+            ]
+            tomorrow_holidays = [
+                holiday
+                for holiday in holiday_data
+                if holiday["date"]["iso"] == tomorrow.isoformat()
+            ]
+            context["today_holidays"] = today_holidays
+            context["tomorrow_holidays"] = tomorrow_holidays
+        except Exception as e:
+            logger.error(f"Error fetching holidays: {e}")
+            context["today_holidays"] = []
+            context["tomorrow_holidays"] = []
+
+        # Get colleagues at work
+        try:
+            colleagues_at_work = get_colleagues_at_work(user_profile, today)
+            context["colleagues_at_work"] = colleagues_at_work
+        except Exception as e:
+            logger.error(f"Error fetching colleagues at work: {e}")
+            context["colleagues_at_work"] = []
+
+    except Exception as e:
+        logger.error(f"An unexpected error occurred in index view: {e}")
+        context["error_message"] = (
+            "An unexpected error occurred. Please send a report to igor@iaro.co"
+        )
 
     return render(request, "index.html", context=context)
 
@@ -653,13 +764,12 @@ def get_employees_list(request):
 
 def get_colleagues_at_work(user_profile, today):
     # Ensure the user has a branch assigned
-    if not user_profile.branch:
+    if not user_profile or not user_profile.branch:
         print("User does not have a branch assigned.")
         return []
 
     # Get the department ID (departmentId) of the user's branch
     user_department_id = str(user_profile.branch.departmentId)
-    print(f"User Department ID: {user_department_id}")
 
     # Get all EmployeeProfiles in the same department, excluding the current user
     colleagues_profiles = EmployeeProfile.objects.filter(
@@ -670,19 +780,26 @@ def get_colleagues_at_work(user_profile, today):
     colleagues_by_planday_id = {
         str(colleague.planday_id): colleague
         for colleague in colleagues_profiles
-        if colleague.planday_id
+        if colleague.planday_id and str(colleague.planday_id).isdigit()
     }
 
     colleagues_planday_ids = list(colleagues_by_planday_id.keys())
 
     if not colleagues_planday_ids:
-        print("No colleagues with Planday IDs found.")
+        print("No colleagues with valid Planday IDs found.")
         return []
 
     # Fetch shifts for all colleagues on the current day
     from_date = today.isoformat()
     to_date = today.isoformat()
-    shifts = planday.get_user_shifts_bulk(colleagues_planday_ids, from_date, to_date)
+
+    try:
+        shifts = planday.get_user_shifts_bulk(
+            colleagues_planday_ids, from_date, to_date
+        )
+    except Exception as e:
+        print(f"Error fetching shifts for colleagues: {e}")
+        return []  # Return empty list if there's an error
 
     branches_by_department_id = initialize_branches_by_department_id()
     employee_groups_map = initialize_employee_groups_map()

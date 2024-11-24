@@ -470,19 +470,29 @@ class Planday:
             "ShiftStatus": "Assigned",
         }
 
-        response = self.session.get(
-            f"{self.base_url}/scheduling/v1.0/shifts",
-            headers=auth_headers,
-            params=payload,
-        )
-        response.raise_for_status()
-
         try:
+            response = self.session.get(
+                f"{self.base_url}/scheduling/v1.0/shifts",
+                headers=auth_headers,
+                params=payload,
+            )
+            response.raise_for_status()
+
             response_data = response.json()
             shifts = response_data.get("data", [])
             return shifts
+
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTP error when fetching shifts in bulk: {e}")
+            return []
+
         except ValueError as e:
-            raise ValueError(f"Invalid JSON response from Planday API: {e}")
+            print(f"Invalid JSON response from Planday API: {e}")
+            return []
+
+        except Exception as e:
+            print(f"Unexpected error in get_user_shifts_bulk: {e}")
+            return []
 
 
 """
