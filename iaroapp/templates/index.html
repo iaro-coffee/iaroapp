@@ -553,7 +553,7 @@
                                         <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
                                         <label class="star star-1" for="star-1"></label>
                                     </div>
-                                    <textarea id="comment" class="form-control mt-3"
+                                    <textarea id="comment" class="form-control"
                                               placeholder="Leave a comment about your shift (optional)"></textarea>
                                 </div>
                             </div>
@@ -654,6 +654,10 @@
         }
 
         .stars {
+            display: flex !important;
+            justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
             scale: 0.75;
         }
     </style>
