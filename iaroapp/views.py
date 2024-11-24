@@ -666,16 +666,14 @@ def get_colleagues_at_work(user_profile, today):
         branch__departmentId=user_department_id
     ).exclude(user=user_profile.user)
 
-    print(f"Found {colleagues_profiles.count()} colleagues in the same department.")
-
-    # Get Planday IDs of colleagues
-    colleagues_planday_ids = [
-        colleague.planday_id
+    # Build a mapping from planday_id to colleague profile
+    colleagues_by_planday_id = {
+        str(colleague.planday_id): colleague
         for colleague in colleagues_profiles
         if colleague.planday_id
-    ]
+    }
 
-    print(f"Colleagues Planday IDs: {colleagues_planday_ids}")
+    colleagues_planday_ids = list(colleagues_by_planday_id.keys())
 
     if not colleagues_planday_ids:
         print("No colleagues with Planday IDs found.")
@@ -686,22 +684,28 @@ def get_colleagues_at_work(user_profile, today):
     to_date = today.isoformat()
     shifts = planday.get_user_shifts_bulk(colleagues_planday_ids, from_date, to_date)
 
-    print(f"Fetched {len(shifts)} shifts for colleagues.")
+    branches_by_department_id = initialize_branches_by_department_id()
+    employee_groups_map = initialize_employee_groups_map()
 
-    # Extract the Planday IDs of colleagues who have shifts today
-    colleagues_with_shifts_ids = {str(shift.get("employeeId")) for shift in shifts}
-
-    print(f"Colleagues with shifts today: {colleagues_with_shifts_ids}")
-
-    # Filter the colleagues to only those who have shifts today
-    colleagues_at_work = [
-        colleague
-        for colleague in colleagues_profiles
-        if colleague.planday_id in colleagues_with_shifts_ids
-    ]
-
-    print(
-        f"Colleagues at work: {[colleague.first_name for colleague in colleagues_at_work]}"
-    )
+    # For each shift, get the colleague and build data
+    colleagues_at_work = []
+    for shift in shifts:
+        employee_id = str(shift.get("employeeId"))
+        colleague = colleagues_by_planday_id.get(employee_id)
+        if colleague:
+            shift = enrich_shift_with_group_name(
+                enrich_shift_with_branch_name(shift, branches_by_department_id),
+                employee_groups_map,
+            )
+            colleague_data = {
+                "colleague": colleague,
+                "shift": shift,
+                "department_name": (
+                    colleague.branch.name if colleague.branch else "Unknown Department"
+                ),
+            }
+            colleagues_at_work.append(colleague_data)
+        else:
+            print(f"No colleague found for employee ID {employee_id}")
 
     return colleagues_at_work

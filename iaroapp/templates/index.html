@@ -85,7 +85,7 @@
                                     <a href="#next-shifts" class="scroll-link"><strong>Check upcoming</strong></a>
                                 </p>
                             {% else %}
-                                <p class="text-sm">Hey <strong>{{ user_profile.first_name }}</strong>, have an awesome shift ahead! 🌟 <br></p>
+                                <p class="text-sm">Hey <strong>{{ user_profile.first_name }}</strong>, have an awesome shift ahead!<br></p>
                             {% endif %}
                             <ul class="list-group">
                                 {% for shift in user_shifts %}
@@ -503,33 +503,41 @@
     </div>
 
     <!-- Colleagues at Work Modal -->
-    <div class="modal fade" id="colleaguesModal" tabindex="-1" aria-labelledby="colleaguesModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content card card-body rounded-4 shadow">
-          <div class="modal-header">
-            <h5 class="modal-title" id="colleaguesModalLabel">Colleagues at Work Today</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            {% if colleagues_at_work %}
-                <ul class="list-group">
-                    {% for colleague in colleagues_at_work %}
-                        <li class="list-group-item d-flex align-items-center">
-                            <img src="{{ colleague.avatar.url }}" alt="{{ colleague.first_name }} {{ colleague.last_name }}" class="avatar me-3">
-                            <div>
-                                <strong>{{ colleague.first_name }} {{ colleague.last_name }}</strong><br>
-                                <!-- Additional info can be added here -->
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No colleagues are working today.</p>
-            {% endif %}
-          </div>
+    <div class="modal fade" id="colleaguesModal" tabindex="-1" aria-labelledby="colleaguesModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content card card-body rounded-4 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="colleaguesModalLabel">Colleagues at Work Today</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% if colleagues_at_work %}
+                        <ul class="list-group">
+                            {% for colleague_data in colleagues_at_work %}
+                                <li class="list-group-item d-flex align-items-center">
+                                    <img src="{{ colleague_data.colleague.avatar.url }}"
+                                         alt="{{ colleague_data.colleague.first_name }} {{ colleague_data.colleague.last_name }}"
+                                         class="avatar me-3">
+                                    <div>
+                                        <strong>{{ colleague_data.colleague.first_name }} {{ colleague_data.colleague.last_name }}</strong><br>
+                                        <div class="text-secondary text-xs">
+                                        {{ colleague_data.department_name }} - {{ colleague_data.shift.group_name }}<br>
+                                        {{ colleague_data.shift.startDateTime|date:"H:i" }}
+                                        - {{ colleague_data.shift.endDateTime|date:"H:i" }}<br>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No colleagues are working today.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-      </div>
     </div>
+
 
     <!-- Modal for Rating -->
     <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
