@@ -380,6 +380,8 @@ def index(request: HttpRequest):
 
     formatted_today = today.strftime("%A, %B %d")
 
+    colleagues_at_work = get_colleagues_at_work(user_profile, today)
+
     context = {
         "pageTitle": "Dashboard",
         "task_list": myTasks[:5],
@@ -410,6 +412,7 @@ def index(request: HttpRequest):
         "punch_in_time": punch_in_time,
         "punch_out_time": punch_out_time,
         "all_shifts_done": all_shifts_done,
+        "colleagues_at_work": colleagues_at_work,
     }
 
     return render(request, "index.html", context=context)
@@ -646,3 +649,59 @@ def get_employees_list(request):
         return JsonResponse({"employees": employees_list})
     except Exception:
         return JsonResponse({"error": "Unable to fetch employees list."}, status=500)
+
+
+def get_colleagues_at_work(user_profile, today):
+    # Ensure the user has a branch assigned
+    if not user_profile.branch:
+        print("User does not have a branch assigned.")
+        return []
+
+    # Get the department ID (departmentId) of the user's branch
+    user_department_id = str(user_profile.branch.departmentId)
+    print(f"User Department ID: {user_department_id}")
+
+    # Get all EmployeeProfiles in the same department, excluding the current user
+    colleagues_profiles = EmployeeProfile.objects.filter(
+        branch__departmentId=user_department_id
+    ).exclude(user=user_profile.user)
+
+    print(f"Found {colleagues_profiles.count()} colleagues in the same department.")
+
+    # Get Planday IDs of colleagues
+    colleagues_planday_ids = [
+        colleague.planday_id
+        for colleague in colleagues_profiles
+        if colleague.planday_id
+    ]
+
+    print(f"Colleagues Planday IDs: {colleagues_planday_ids}")
+
+    if not colleagues_planday_ids:
+        print("No colleagues with Planday IDs found.")
+        return []
+
+    # Fetch shifts for all colleagues on the current day
+    from_date = today.isoformat()
+    to_date = today.isoformat()
+    shifts = planday.get_user_shifts_bulk(colleagues_planday_ids, from_date, to_date)
+
+    print(f"Fetched {len(shifts)} shifts for colleagues.")
+
+    # Extract the Planday IDs of colleagues who have shifts today
+    colleagues_with_shifts_ids = {str(shift.get("employeeId")) for shift in shifts}
+
+    print(f"Colleagues with shifts today: {colleagues_with_shifts_ids}")
+
+    # Filter the colleagues to only those who have shifts today
+    colleagues_at_work = [
+        colleague
+        for colleague in colleagues_profiles
+        if colleague.planday_id in colleagues_with_shifts_ids
+    ]
+
+    print(
+        f"Colleagues at work: {[colleague.first_name for colleague in colleagues_at_work]}"
+    )
+
+    return colleagues_at_work

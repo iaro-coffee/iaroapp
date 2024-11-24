@@ -454,6 +454,36 @@ class Planday:
             print("Error decoding JSON response.")
             return []
 
+    @planday_api_call
+    def get_user_shifts_bulk(self, employee_ids, from_date, to_date, limit=500):
+        """
+        Fetch shifts for multiple employees within the provided date range.
+        """
+        auth_headers = self.get_auth_headers()
+        employee_ids_str = ",".join(map(str, employee_ids))
+
+        payload = {
+            "From": from_date,
+            "To": to_date,
+            "EmployeeId": employee_ids_str,
+            "Limit": str(limit),
+            "ShiftStatus": "Assigned",
+        }
+
+        response = self.session.get(
+            f"{self.base_url}/scheduling/v1.0/shifts",
+            headers=auth_headers,
+            params=payload,
+        )
+        response.raise_for_status()
+
+        try:
+            response_data = response.json()
+            shifts = response_data.get("data", [])
+            return shifts
+        except ValueError as e:
+            raise ValueError(f"Invalid JSON response from Planday API: {e}")
+
 
 """
   ## response example
