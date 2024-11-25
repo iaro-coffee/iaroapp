@@ -1,0 +1,106 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<div class="container p-0">
+    <div id="onboarding-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+        <div class="carousel-inner">
+            {% for slide in slides %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}" style="transition: all 0.75s ease;">
+                <div class="card scale-card">
+                    <div class="card-header p-3 d-flex justify-content-between align-items-center text-center">
+                        <button class="btn btn-secondary btn-sm carousel-control-prev" type="button" data-bs-target="#onboarding-carousel" data-bs-slide="prev">
+                            &larr;
+                        </button>
+                        <span class="mx-auto text-center w-100">Page {{ forloop.counter }} of {{ slides|length }}</span>
+                        <button class="btn btn-secondary btn-sm carousel-control-next" type="button" data-bs-target="#onboarding-carousel" data-bs-slide="next">
+                            &rarr;
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <h3>{{ slide.title }}</h3>
+                        <p>{{ slide.content|safe }}</p>
+                        {% for section in slide.sections.all %}
+                        <h5>{{ section.heading }}</h5>
+                        {{ section.details|safe }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        margin-top: -24px!important;
+    }
+    .carousel-inner {
+        margin-bottom: 1rem;
+    }
+
+    .card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.75s ease;
+    }
+
+    .scale-card {
+        transform: scale(1);
+    }
+
+    .scale-card.animating {
+        transform: scale(0.8);
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-bottom: 1px solid #dee2e6;
+        text-align: center;
+    }
+
+    .btn {
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        margin: 0.65rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        border: 1px solid white!important;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const carouselElement = document.querySelector('#onboarding-carousel');
+
+        carouselElement.addEventListener('slide.bs.carousel', (e) => {
+            const activeItem = carouselElement.querySelector('.carousel-item.active .card');
+            if (activeItem) {
+                activeItem.classList.add('animating');
+            }
+        });
+
+        carouselElement.addEventListener('slid.bs.carousel', (e) => {
+            const animatingItems = carouselElement.querySelectorAll('.carousel-item .card.animating');
+            animatingItems.forEach(item => item.classList.remove('animating'));
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const carouselElement = document.querySelector('#onboarding-carousel');
+        const carouselInstance = new bootstrap.Carousel(carouselElement, {
+            interval: false,
+            ride: false
+        });
+    });
+</script>
+{% endblock %}

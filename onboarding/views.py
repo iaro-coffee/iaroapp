@@ -17,7 +17,7 @@ from lib.zoho import (
 )
 
 from .forms import PersonalInformationForm
-from .models import Document, SignedDocument
+from .models import Document, OnboardingSlide, SignedDocument
 
 
 class PersonalInformationView(View):
@@ -207,3 +207,13 @@ class OrgChartView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def test_func(self):
         return self.request.user.is_staff
+
+
+class InitialInformationView(TemplateView):
+    template_name = "initial_information.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["slides"] = OnboardingSlide.objects.prefetch_related("sections").all()
+        context["pageTitle"] = "Welcome to iaro!"
+        return context

@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     DocumentSignView,
     DocumentsListView,
+    InitialInformationView,
     OrgChartView,
     PersonalInformationView,
 )
@@ -22,5 +23,5 @@ urlpatterns = [
         name="document_sign",
     ),
     path("org-chart/", OrgChartView.as_view(), name="org_chart"),
-    # path("onboarding")
+    path("onboarding/", InitialInformationView.as_view(), name="onboarding"),
 ]

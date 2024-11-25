@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django_ckeditor_5.fields import CKEditor5Field
 
 from employees.models import EmployeeProfile
 
@@ -180,3 +181,33 @@ class SignedDocument(models.Model):
             return "No Profile"
 
     user_full_name.short_description = "Full Name"
+
+
+class OnboardingSlide(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Slide Title")
+    content = CKEditor5Field(
+        config_name="default", verbose_name="Slide Content", blank=True
+    )
+    order = models.PositiveIntegerField(default=0, verbose_name="Order")
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.title
+
+
+class OnboardingSection(models.Model):
+    slide = models.ForeignKey(
+        OnboardingSlide,
+        related_name="sections",
+        on_delete=models.CASCADE,
+        verbose_name="Slide",
+    )
+    heading = models.CharField(max_length=200, verbose_name="Section Heading")
+    details = CKEditor5Field(
+        config_name="default", verbose_name="Section Details", blank=True
+    )
+
+    def __str__(self):
+        return f"{self.heading} (Slide: {self.slide.title})"

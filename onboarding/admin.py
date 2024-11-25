@@ -4,7 +4,13 @@ from django.contrib import admin
 
 from employees.models import EmployeeProfile
 
-from .models import Document, PersonalInformation, SignedDocument
+from .models import (
+    Document,
+    OnboardingSection,
+    OnboardingSlide,
+    PersonalInformation,
+    SignedDocument,
+)
 
 
 @admin.register(PersonalInformation)
@@ -108,3 +114,26 @@ class SignedDocumentAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         return self.readonly_fields
+
+
+class SectionInline(admin.TabularInline):
+    model = OnboardingSection
+    extra = 0
+    fields = ["heading", "details"]
+    verbose_name = "Section"
+    verbose_name_plural = "Sections"
+
+
+@admin.register(OnboardingSlide)
+class SlideAdmin(admin.ModelAdmin):
+    list_display = ["title", "order"]
+    list_editable = ["order"]
+    inlines = [SectionInline]
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("title", "content", "order"),
+            },
+        ),
+    )
