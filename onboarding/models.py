@@ -211,3 +211,8 @@ class OnboardingSection(models.Model):
 
     def __str__(self):
         return f"{self.heading} (Slide: {self.slide.title})"
+
+
+class OrgChart(models.Model):
+    data = models.JSONField(default=dict)
+    updated_at = models.DateTimeField(auto_now=True)

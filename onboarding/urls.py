@@ -22,6 +22,6 @@ urlpatterns = [
         DocumentSignView.as_view(),
         name="document_sign",
     ),
-    path("org-chart/", OrgChartView.as_view(), name="org_chart"),
+    path('api/org-chart/', OrgChartView.as_view(), name='org_chart_api'),
     path("onboarding/", InitialInformationView.as_view(), name="onboarding"),
 ]

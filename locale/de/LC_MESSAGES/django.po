@@ -1,0 +1,1126 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-21 18:08+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: customers/forms.py:16
+msgid "Keep me signed in"
+msgstr ""
+
+#: customers/forms.py:21 customers/forms.py:22 customers/forms.py:30
+#: customers/forms.py:32
+msgid "Email"
+msgstr ""
+
+#: customers/templates/account/account_inactive.html:5
+#: customers/templates/account/account_inactive.html:9
+msgid "Account Inactive"
+msgstr ""
+
+#: customers/templates/account/account_inactive.html:12
+msgid "This account is inactive."
+msgstr ""
+
+#: customers/templates/account/account_inactive.html:15
+#: customers/templates/account/email_confirm.html:36
+#: customers/templates/account/email_confirm.html:49
+#: customers/templates/account/password_reset.html:33
+#: customers/templates/account/password_reset_done.html:19
+#: customers/templates/account/password_reset_from_key_done.html:14
+#: customers/templates/account/signup_closed.html:15
+#: customers/templates/account/verification_sent.html:17
+#: customers/templates/account/verified_email_required.html:28
+msgid "Get back to"
+msgstr ""
+
+#: customers/templates/account/base_reauthenticate.html:5
+#: customers/templates/account/base_reauthenticate.html:9
+msgid "Confirm Access"
+msgstr ""
+
+#: customers/templates/account/base_reauthenticate.html:12
+msgid "Please reauthenticate to safeguard your account."
+msgstr ""
+
+#: customers/templates/account/base_reauthenticate.html:19
+msgid "Alternative options"
+msgstr ""
+
+#: customers/templates/account/confirm_login_code.html:5
+#: customers/templates/account/confirm_login_code.html:27
+#: customers/templates/account/request_login_code.html:5
+#: customers/templates/allauth/layouts/base.html:64
+#: customers/templates/socialaccount/login.html:5
+#: customers/templates/socialaccount/login_redirect.html:5
+msgid "Sign In"
+msgstr ""
+
+#: customers/templates/account/confirm_login_code.html:9
+msgid "Enter Sign-In Code"
+msgstr ""
+
+#: customers/templates/account/confirm_login_code.html:15
+#, python-format
+msgid ""
+"We’ve sent a code to %(email_link)s. The code expires shortly, so please "
+"enter it soon."
+msgstr ""
+
+#: customers/templates/account/confirm_login_code.html:34
+#: customers/templates/account/request_login_code.html:31
+msgid "Other sign-in options"
+msgstr ""
+
+#: customers/templates/account/email.html:4
+#: customers/templates/account/email.html:8
+msgid "Email Addresses"
+msgstr ""
+
+#: customers/templates/account/email.html:12
+msgid "The following email addresses are associated with your account:"
+msgstr ""
+
+#: customers/templates/account/email.html:25
+msgid "Verified"
+msgstr ""
+
+#: customers/templates/account/email.html:29
+msgid "Unverified"
+msgstr ""
+
+#: customers/templates/account/email.html:34
+msgid "Primary"
+msgstr ""
+
+#: customers/templates/account/email.html:44
+msgid "Make Primary"
+msgstr ""
+
+#: customers/templates/account/email.html:47
+#: customers/templates/account/email_change.html:37
+msgid "Re-send Verification"
+msgstr ""
+
+#: customers/templates/account/email.html:50
+#: customers/templates/socialaccount/connections.html:40
+msgid "Remove"
+msgstr ""
+
+#: customers/templates/account/email.html:59
+msgid "Add Email Address"
+msgstr ""
+
+#: customers/templates/account/email.html:70
+msgid "Add Email"
+msgstr ""
+
+#: customers/templates/account/email.html:79
+msgid "Do you really want to remove the selected email address?"
+msgstr ""
+
+#: customers/templates/account/email/account_already_exists_message.txt:4
+#, python-format
+msgid ""
+"You are receiving this email because you or someone else tried to signup for "
+"an\n"
+"account using email address:\n"
+"\n"
+"%(email)s\n"
+"\n"
+"However, an account using that email address already exists.  In case you "
+"have\n"
+"forgotten about this, please use the password forgotten procedure to "
+"recover\n"
+"your account:\n"
+"\n"
+"%(password_reset_url)s"
+msgstr ""
+
+#: customers/templates/account/email/account_already_exists_subject.txt:3
+msgid "Account Already Exists"
+msgstr ""
+
+#: customers/templates/account/email/base_message.txt:1
+#, python-format
+msgid "Hello from %(site_name)s!"
+msgstr ""
+
+#: customers/templates/account/email/base_message.txt:5
+#, python-format
+msgid ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+
+#: customers/templates/account/email/base_notification.txt:5
+msgid ""
+"You are receiving this mail because the following change was made to your "
+"account:"
+msgstr ""
+
+#: customers/templates/account/email/base_notification.txt:10
+#, python-format
+msgid ""
+"If you do not recognize this change then please take proper security "
+"precautions immediately. The change to your account originates from:\n"
+"\n"
+"- IP address: %(ip)s\n"
+"- Browser: %(user_agent)s\n"
+"- Date: %(timestamp)s"
+msgstr ""
+
+#: customers/templates/account/email/email_changed_message.txt:4
+#, python-format
+msgid "Your email has been changed from %(from_email)s to %(to_email)s."
+msgstr ""
+
+#: customers/templates/account/email/email_changed_subject.txt:3
+msgid "Email Changed"
+msgstr ""
+
+#: customers/templates/account/email/email_confirm_message.txt:4
+msgid "Your email has been confirmed."
+msgstr ""
+
+#: customers/templates/account/email/email_confirm_subject.txt:3
+msgid "Email Confirmation"
+msgstr ""
+
+#: customers/templates/account/email/email_confirmation_message.txt:5
+#, python-format
+msgid ""
+"You're receiving this email because user %(user_display)s has given your "
+"email address to register an account on %(site_domain)s.\n"
+"\n"
+"To confirm this is correct, go to %(activate_url)s"
+msgstr ""
+
+#: customers/templates/account/email/email_confirmation_subject.txt:3
+msgid "Please Confirm Your Email Address"
+msgstr ""
+
+#: customers/templates/account/email/email_deleted_message.txt:4
+#, python-format
+msgid "Email address %(deleted_email)s has been removed from your account."
+msgstr ""
+
+#: customers/templates/account/email/email_deleted_subject.txt:3
+msgid "Email Removed"
+msgstr ""
+
+#: customers/templates/account/email/login_code_message.txt:5
+msgid ""
+"Your sign-in code is listed below. Please enter it in your open browser "
+"window."
+msgstr ""
+
+#: customers/templates/account/email/login_code_message.txt:9
+#: customers/templates/account/email/unknown_account_message.txt:6
+msgid "This mail can be safely ignored if you did not initiate this action."
+msgstr ""
+
+#: customers/templates/account/email/login_code_subject.txt:3
+msgid "Sign-In Code"
+msgstr ""
+
+#: customers/templates/account/email/password_changed_message.txt:4
+msgid "Your password has been changed."
+msgstr ""
+
+#: customers/templates/account/email/password_changed_subject.txt:3
+msgid "Password Changed"
+msgstr ""
+
+#: customers/templates/account/email/password_reset_key_message.txt:4
+msgid ""
+"You're receiving this email because you or someone else has requested a "
+"password reset for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+
+#: customers/templates/account/email/password_reset_key_message.txt:9
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr ""
+
+#: customers/templates/account/email/password_reset_key_subject.txt:3
+msgid "Password Reset Email"
+msgstr ""
+
+#: customers/templates/account/email/password_reset_message.txt:4
+msgid "Your password has been reset."
+msgstr ""
+
+#: customers/templates/account/email/password_reset_subject.txt:3
+#: customers/templates/account/password_reset.html:4
+#: customers/templates/account/password_reset.html:8
+#: customers/templates/account/password_reset_done.html:6
+#: customers/templates/account/password_reset_done.html:10
+msgid "Password Reset"
+msgstr ""
+
+#: customers/templates/account/email/password_set_message.txt:4
+msgid "Your password has been set."
+msgstr ""
+
+#: customers/templates/account/email/password_set_subject.txt:3
+msgid "Password Set"
+msgstr ""
+
+#: customers/templates/account/email/unknown_account_message.txt:4
+#, python-format
+msgid ""
+"You are receiving this email because you, or someone else, tried to access "
+"an account with email %(email)s. However, we do not have any record of such "
+"an account in our database."
+msgstr ""
+
+#: customers/templates/account/email/unknown_account_message.txt:8
+msgid "If it was you, you can sign up for an account using the link below."
+msgstr ""
+
+#: customers/templates/account/email/unknown_account_subject.txt:3
+msgid "Unknown Account"
+msgstr ""
+
+#: customers/templates/account/email_change.html:5
+#: customers/templates/account/email_change.html:9
+msgid "Email Address"
+msgstr ""
+
+#: customers/templates/account/email_change.html:21
+#: customers/templates/account/email_change.html:29
+msgid "Current email"
+msgstr ""
+
+#: customers/templates/account/email_change.html:31
+msgid "Changing to"
+msgstr ""
+
+#: customers/templates/account/email_change.html:35
+msgid "Your email address is still pending verification."
+msgstr ""
+
+#: customers/templates/account/email_change.html:41
+msgid "Cancel Change"
+msgstr ""
+
+#: customers/templates/account/email_change.html:49
+msgid "Change to"
+msgstr ""
+
+#: customers/templates/account/email_change.html:55
+#: customers/templates/allauth/layouts/base.html:33
+msgid "Change Email"
+msgstr ""
+
+#: customers/templates/account/email_confirm.html:6
+#: customers/templates/account/email_confirm.html:10
+msgid "Confirm Email Address"
+msgstr ""
+
+#: customers/templates/account/email_confirm.html:16
+#, python-format
+msgid ""
+"Please confirm that\n"
+"                    <a href=\"mailto:%(email)s\">%(email)s</a> is an email "
+"address for user %(user_display)s.\n"
+"                "
+msgstr ""
+
+#: customers/templates/account/email_confirm.html:26
+#: customers/templates/account/reauthenticate.html:18
+msgid "Confirm"
+msgstr ""
+
+#: customers/templates/account/email_confirm.html:32
+#, python-format
+msgid ""
+"Unable to confirm %(email)s because it is already confirmed by a different "
+"account.\n"
+"                "
+msgstr ""
+
+#: customers/templates/account/email_confirm.html:45
+#, python-format
+msgid ""
+"This email confirmation link expired or is invalid. Please\n"
+"                <a href=\"%(email_url)s\">issue a new email confirmation "
+"request</a>."
+msgstr ""
+
+#: customers/templates/account/logout.html:4
+#: customers/templates/account/logout.html:8
+#: customers/templates/account/logout.html:21
+#: customers/templates/allauth/layouts/base.html:57
+msgid "Sign Out"
+msgstr ""
+
+#: customers/templates/account/logout.html:11
+msgid "Are you sure you want to sign out?"
+msgstr ""
+
+#: customers/templates/account/messages/cannot_delete_primary_email.txt:2
+#, python-format
+msgid "You cannot remove your primary email address (%(email)s)."
+msgstr ""
+
+#: customers/templates/account/messages/email_confirmation_failed.txt:2
+#, python-format
+msgid ""
+"Unable to confirm %(email)s because it is already confirmed by a different "
+"account."
+msgstr ""
+
+#: customers/templates/account/messages/email_confirmation_sent.txt:2
+#, python-format
+msgid "Confirmation email sent to %(email)s."
+msgstr ""
+
+#: customers/templates/account/messages/email_confirmed.txt:2
+#, python-format
+msgid "You have confirmed %(email)s."
+msgstr ""
+
+#: customers/templates/account/messages/email_deleted.txt:2
+#, python-format
+msgid "Removed email address %(email)s."
+msgstr ""
+
+#: customers/templates/account/messages/logged_in.txt:4
+#, python-format
+msgid "Successfully signed in as %(name)s."
+msgstr ""
+
+#: customers/templates/account/messages/logged_out.txt:2
+msgid "You have signed out."
+msgstr ""
+
+#: customers/templates/account/messages/login_code_sent.txt:2
+#, python-format
+msgid "A sign-in code has been mailed to %(email)s."
+msgstr ""
+
+#: customers/templates/account/messages/password_changed.txt:2
+msgid "Password successfully changed."
+msgstr ""
+
+#: customers/templates/account/messages/password_set.txt:2
+msgid "Password successfully set."
+msgstr ""
+
+#: customers/templates/account/messages/primary_email_set.txt:2
+msgid "Primary email address set."
+msgstr ""
+
+#: customers/templates/account/messages/unverified_primary_email.txt:2
+msgid "Your primary email address must be verified."
+msgstr ""
+
+#: customers/templates/account/password_change.html:4
+#: customers/templates/account/password_change.html:8
+#: customers/templates/account/password_change.html:20
+#: customers/templates/account/password_reset_from_key.html:5
+#: customers/templates/account/password_reset_from_key.html:12
+#: customers/templates/account/password_reset_from_key.html:30
+#: customers/templates/account/password_reset_from_key_done.html:5
+#: customers/templates/account/password_reset_from_key_done.html:9
+#: customers/templates/allauth/layouts/base.html:39
+msgid "Change Password"
+msgstr ""
+
+#: customers/templates/account/password_change.html:22
+msgid "Forgot Password?"
+msgstr ""
+
+#: customers/templates/account/password_reset.html:14
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll send you "
+"an email allowing you to reset it."
+msgstr ""
+
+#: customers/templates/account/password_reset.html:25
+msgid "Reset My Password"
+msgstr ""
+
+#: customers/templates/account/password_reset.html:30
+msgid "Please contact us if you have any trouble resetting your password."
+msgstr ""
+
+#: customers/templates/account/password_reset_done.html:16
+msgid ""
+"We have sent you an email. If you have not received it please check your "
+"spam folder. Otherwise contact us if you do not receive it in a few minutes."
+msgstr ""
+
+#: customers/templates/account/password_reset_from_key.html:10
+msgid "Bad Token"
+msgstr ""
+
+#: customers/templates/account/password_reset_from_key.html:18
+#, python-format
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
+"a>."
+msgstr ""
+
+#: customers/templates/account/password_reset_from_key_done.html:12
+msgid "Your password is now changed."
+msgstr ""
+
+#: customers/templates/account/password_set.html:5
+#: customers/templates/account/password_set.html:9
+#: customers/templates/account/password_set.html:21
+msgid "Set Password"
+msgstr ""
+
+#: customers/templates/account/reauthenticate.html:6
+msgid "Enter your password:"
+msgstr ""
+
+#: customers/templates/account/request_login_code.html:9
+msgid "Mail me a sign-in code"
+msgstr ""
+
+#: customers/templates/account/request_login_code.html:12
+msgid ""
+"You will receive an email containing a special code for a password-free sign-"
+"in."
+msgstr ""
+
+#: customers/templates/account/request_login_code.html:24
+msgid "Request Code"
+msgstr ""
+
+#: customers/templates/account/signup.html:4
+#: customers/templates/socialaccount/signup.html:5
+msgid "Signup"
+msgstr ""
+
+#: customers/templates/account/signup.html:8
+#: customers/templates/account/signup.html:30
+#: customers/templates/allauth/layouts/base.html:70
+#: customers/templates/socialaccount/signup.html:9
+#: customers/templates/socialaccount/signup.html:25
+msgid "Sign Up"
+msgstr ""
+
+#: customers/templates/account/signup.html:17
+#, python-format
+msgid "Already have an account? Then please %(link)ssign in%(end_link)s."
+msgstr ""
+
+#: customers/templates/account/signup_closed.html:5
+#: customers/templates/account/signup_closed.html:9
+msgid "Sign Up Closed"
+msgstr ""
+
+#: customers/templates/account/signup_closed.html:12
+msgid "We are sorry, but the sign up is currently closed."
+msgstr ""
+
+#: customers/templates/account/snippets/already_logged_in.html:7
+msgid "Note"
+msgstr ""
+
+#: customers/templates/account/snippets/already_logged_in.html:7
+#, python-format
+msgid "You are already logged in as %(user_display)s."
+msgstr ""
+
+#: customers/templates/account/snippets/warn_no_email.html:3
+msgid "Warning:"
+msgstr ""
+
+#: customers/templates/account/snippets/warn_no_email.html:3
+msgid ""
+"You currently do not have any email address set up. You should really add an "
+"email address so you can receive notifications, reset your password, etc."
+msgstr ""
+
+#: customers/templates/account/verification_sent.html:5
+#: customers/templates/account/verification_sent.html:9
+#: customers/templates/account/verified_email_required.html:5
+#: customers/templates/account/verified_email_required.html:9
+msgid "Verify Your Email Address"
+msgstr ""
+
+#: customers/templates/account/verification_sent.html:12
+msgid ""
+"We have sent an email to you for verification. Follow the link provided to "
+"finalize the signup\n"
+"            process. If you do not see the verification email in your main "
+"inbox, check your spam folder. Please contact\n"
+"            us if you do not receive the verification email within a few "
+"minutes."
+msgstr ""
+
+#: customers/templates/account/verified_email_required.html:13
+msgid ""
+"This part of the site requires us to verify that\n"
+"            you are who you claim to be. For this purpose, we require that "
+"you\n"
+"            verify ownership of your email address. "
+msgstr ""
+
+#: customers/templates/account/verified_email_required.html:18
+msgid ""
+"We have sent an email to you for\n"
+"            verification. Please click on the link inside that email. If you "
+"do not see the verification email in your\n"
+"            main inbox, check your spam folder. Otherwise\n"
+"            contact us if you do not receive it within a few minutes."
+msgstr ""
+
+#: customers/templates/account/verified_email_required.html:24
+#, python-format
+msgid ""
+"<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your "
+"email address</a>.\n"
+"        "
+msgstr ""
+
+#: customers/templates/allauth/layouts/base.html:20
+msgid "Messages:"
+msgstr ""
+
+#: customers/templates/allauth/layouts/base.html:27
+msgid "Menu:"
+msgstr ""
+
+#: customers/templates/allauth/layouts/base.html:45
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: customers/templates/allauth/layouts/base.html:51
+msgid "Sessions"
+msgstr ""
+
+#: customers/templates/socialaccount/authentication_error.html:5
+#: customers/templates/socialaccount/authentication_error.html:9
+msgid "Third-Party Login Failure"
+msgstr ""
+
+#: customers/templates/socialaccount/authentication_error.html:12
+msgid ""
+"An error occurred while attempting to login via your third-party account."
+msgstr ""
+
+#: customers/templates/socialaccount/connections.html:5
+#: customers/templates/socialaccount/connections.html:9
+msgid "Account Connections"
+msgstr ""
+
+#: customers/templates/socialaccount/connections.html:13
+msgid ""
+"You can sign in to your account using any of the following third-party "
+"accounts:"
+msgstr ""
+
+#: customers/templates/socialaccount/connections.html:46
+msgid "You currently have no third-party accounts connected to this account."
+msgstr ""
+
+#: customers/templates/socialaccount/connections.html:50
+msgid "Add a Third-Party Account"
+msgstr ""
+
+#: customers/templates/socialaccount/email/account_connected_message.txt:4
+#, python-format
+msgid ""
+"A third-party account from %(provider)s has been connected to your account."
+msgstr ""
+
+#: customers/templates/socialaccount/email/account_connected_subject.txt:3
+msgid "Third-Party Account Connected"
+msgstr ""
+
+#: customers/templates/socialaccount/email/account_disconnected_message.txt:4
+#, python-format
+msgid ""
+"A third-party account from %(provider)s has been disconnected from your "
+"account."
+msgstr ""
+
+#: customers/templates/socialaccount/email/account_disconnected_subject.txt:3
+msgid "Third-Party Account Disconnected"
+msgstr ""
+
+#: customers/templates/socialaccount/login.html:10
+#, python-format
+msgid "Connect %(provider)s"
+msgstr ""
+
+#: customers/templates/socialaccount/login.html:13
+#, python-format
+msgid "You are about to connect a new third-party account from %(provider)s."
+msgstr ""
+
+#: customers/templates/socialaccount/login.html:17
+#, python-format
+msgid "Sign In Via %(provider)s"
+msgstr ""
+
+#: customers/templates/socialaccount/login.html:20
+#, python-format
+msgid "You are about to sign in using a third-party account from %(provider)s."
+msgstr ""
+
+#: customers/templates/socialaccount/login.html:27
+#: customers/templates/socialaccount/login_redirect.html:10
+msgid "Continue"
+msgstr ""
+
+#: customers/templates/socialaccount/login_cancelled.html:5
+#: customers/templates/socialaccount/login_cancelled.html:9
+msgid "Login Cancelled"
+msgstr ""
+
+#: customers/templates/socialaccount/login_cancelled.html:13
+#, python-format
+msgid ""
+"You decided to cancel logging in to our site using one of your existing "
+"accounts. If this was a mistake, please proceed to <a "
+"href=\"%(login_url)s\">sign in</a>."
+msgstr ""
+
+#: customers/templates/socialaccount/messages/account_connected.txt:2
+msgid "The third-party account has been connected."
+msgstr ""
+
+#: customers/templates/socialaccount/messages/account_connected_other.txt:2
+msgid "The third-party account is already connected to a different account."
+msgstr ""
+
+#: customers/templates/socialaccount/messages/account_disconnected.txt:2
+msgid "The third-party account has been disconnected."
+msgstr ""
+
+#: customers/templates/socialaccount/signup.html:12
+#, python-format
+msgid ""
+"You are about to use your %(provider_name)s account to login to\n"
+"%(site_name)s. As a final step, please complete the following form:"
+msgstr ""
+
+#: customers/templates/socialaccount/snippets/login.html:10
+msgid "Or login using social account:"
+msgstr ""
+
+#: onboarding/forms.py:8
+msgid "I agree to allow Iaro Cafe to process my personal information"
+msgstr ""
+
+#: onboarding/forms.py:10
+msgid "You must agree to the terms to proceed."
+msgstr ""
+
+#: onboarding/forms.py:42
+msgid "Last Name"
+msgstr ""
+
+#: onboarding/forms.py:43
+msgid "First Name"
+msgstr ""
+
+#: onboarding/forms.py:44
+msgid "Street"
+msgstr ""
+
+#: onboarding/forms.py:45
+msgid "City ZIP"
+msgstr ""
+
+#: onboarding/forms.py:46
+msgid "City"
+msgstr ""
+
+#: onboarding/forms.py:47
+msgid "Birth Date"
+msgstr ""
+
+#: onboarding/forms.py:48
+msgid "Gender"
+msgstr ""
+
+#: onboarding/forms.py:49
+msgid "Insurance Number"
+msgstr ""
+
+#: onboarding/forms.py:50
+msgid "Place of Birth"
+msgstr ""
+
+#: onboarding/forms.py:51
+msgid "Disability"
+msgstr ""
+
+#: onboarding/forms.py:52
+msgid "Nationality"
+msgstr ""
+
+#: onboarding/forms.py:53
+msgid "IBAN"
+msgstr ""
+
+#: onboarding/forms.py:54
+msgid "BIC"
+msgstr ""
+
+#: onboarding/forms.py:55
+msgid "Job Title"
+msgstr ""
+
+#: onboarding/forms.py:56
+msgid "Employment Type"
+msgstr ""
+
+#: onboarding/forms.py:57
+msgid "Additional Employment"
+msgstr ""
+
+#: onboarding/forms.py:58
+msgid "Minor Employment"
+msgstr ""
+
+#: onboarding/forms.py:59
+msgid "Highest Education"
+msgstr ""
+
+#: onboarding/forms.py:60
+msgid "Highest Training"
+msgstr ""
+
+#: onboarding/forms.py:61
+msgid "Weekly Working Hours"
+msgstr ""
+
+#: onboarding/forms.py:62
+msgid "Tax ID"
+msgstr ""
+
+#: onboarding/forms.py:63
+msgid "Health Insurance"
+msgstr ""
+
+#: onboarding/forms.py:64
+msgid "Health Insurance Number"
+msgstr ""
+
+#: onboarding/models.py:11
+msgid "Male"
+msgstr ""
+
+#: onboarding/models.py:12
+msgid "Female"
+msgstr ""
+
+#: onboarding/models.py:16 onboarding/models.py:26 onboarding/models.py:31
+msgid "Yes"
+msgstr ""
+
+#: onboarding/models.py:17 onboarding/models.py:27 onboarding/models.py:32
+msgid "No"
+msgstr ""
+
+#: onboarding/models.py:21
+msgid "Main Employment"
+msgstr ""
+
+#: onboarding/models.py:22
+msgid "Secondary Employment"
+msgstr ""
+
+#: onboarding/models.py:36
+msgid "No School Degree"
+msgstr ""
+
+#: onboarding/models.py:37
+msgid "Primary School"
+msgstr ""
+
+#: onboarding/models.py:38
+msgid "Secondary School"
+msgstr ""
+
+#: onboarding/models.py:39
+msgid "High School/Abitur"
+msgstr ""
+
+#: onboarding/models.py:43
+msgid "No Professional Degree"
+msgstr ""
+
+#: onboarding/models.py:44
+msgid "Recognized Apprenticeship"
+msgstr ""
+
+#: onboarding/models.py:45
+msgid "Advanced Training/Technician"
+msgstr ""
+
+#: onboarding/models.py:46
+msgid "Bachelor"
+msgstr ""
+
+#: onboarding/models.py:47
+msgid "Master/Diploma"
+msgstr ""
+
+#: onboarding/models.py:48
+msgid "Doctorate"
+msgstr ""
+
+#: onboarding/models.py:52
+msgid "Full-time"
+msgstr ""
+
+#: onboarding/models.py:53
+msgid "Part-time"
+msgstr ""
+
+#: onboarding/templates/personal_information.html:7
+msgid "Personal Information"
+msgstr ""
+
+#: onboarding/templates/personal_information.html:20
+msgid "English"
+msgstr ""
+
+#: onboarding/templates/personal_information.html:21
+msgid "Deutsch"
+msgstr ""
+
+#: onboarding/templates/personal_information.html:28
+msgid ""
+"There were errors with your submission. Please correct them and try again."
+msgstr ""
+
+#: onboarding/templates/personal_information.html:51
+msgid "Date Submitted:"
+msgstr ""
+
+#: onboarding/templates/personal_information.html:55
+msgid "Submit"
+msgstr ""
+
+#: onboarding/forms.py:42
+msgid "Last Name"
+msgstr "Nachname"
+
+#: onboarding/forms.py:43
+msgid "First Name"
+msgstr "Vorname"
+
+#: onboarding/forms.py:44
+msgid "Street"
+msgstr "Straße"
+
+#: onboarding/forms.py:45
+msgid "City ZIP"
+msgstr "Postleitzahl"
+
+#: onboarding/forms.py:46
+msgid "City"
+msgstr "Stadt"
+
+#: onboarding/forms.py:47
+msgid "Birth Date"
+msgstr "Geburtsdatum"
+
+#: onboarding/forms.py:48
+msgid "Gender"
+msgstr "Geschlecht"
+
+#: onboarding/forms.py:49
+msgid "Insurance Number"
+msgstr "Versicherungsnummer"
+
+#: onboarding/forms.py:50
+msgid "Place of Birth"
+msgstr "Geburtsort"
+
+#: onboarding/forms.py:51
+msgid "Disability"
+msgstr "Schwerbehinderung"
+
+#: onboarding/forms.py:52
+msgid "Nationality"
+msgstr "Nationalität"
+
+#: onboarding/forms.py:53
+msgid "IBAN"
+msgstr "IBAN"
+
+#: onboarding/forms.py:54
+msgid "BIC"
+msgstr "BIC"
+
+#: onboarding/forms.py:55
+msgid "Job Title"
+msgstr "Berufsbezeichnung"
+
+#: onboarding/forms.py:56
+msgid "Employment Type"
+msgstr "Beschäftigungsart"
+
+#: onboarding/forms.py:57
+msgid "Additional Employment"
+msgstr "Zusätzliche Beschäftigung"
+
+#: onboarding/forms.py:58
+msgid "Minor Employment"
+msgstr "Geringfügige Beschäftigung"
+
+#: onboarding/forms.py:59
+msgid "Highest Education"
+msgstr "Höchster Bildungsabschluss"
+
+#: onboarding/forms.py:60
+msgid "Highest Training"
+msgstr "Höchste berufliche Ausbildung"
+
+#: onboarding/forms.py:61
+msgid "Weekly Working Hours"
+msgstr "Wöchentliche Arbeitszeit"
+
+#: onboarding/forms.py:62
+msgid "Tax ID"
+msgstr "Steuer-ID"
+
+#: onboarding/forms.py:63
+msgid "Health Insurance"
+msgstr "Krankenversicherung"
+
+#: onboarding/forms.py:64
+msgid "Health Insurance Number"
+msgstr "Versicherungsnummer"
+
+# Choices for Gender
+#: onboarding/models.py:11
+msgid "Male"
+msgstr "Männlich"
+
+#: onboarding/models.py:12
+msgid "Female"
+msgstr "Weiblich"
+
+# Yes/No Choices
+#: onboarding/models.py:16 onboarding/models.py:26 onboarding/models.py:31
+msgid "Yes"
+msgstr "Ja"
+
+#: onboarding/models.py:17 onboarding/models.py:27 onboarding/models.py:32
+msgid "No"
+msgstr "Nein"
+
+# Employment Type Choices
+#: onboarding/models.py:21
+msgid "Main Employment"
+msgstr "Hauptbeschäftigung"
+
+#: onboarding/models.py:22
+msgid "Secondary Employment"
+msgstr "Nebenbeschäftigung"
+
+# Highest Education Choices
+#: onboarding/models.py:36
+msgid "No School Degree"
+msgstr "Ohne Schulabschluss"
+
+#: onboarding/models.py:37
+msgid "Primary School"
+msgstr "Grundschule"
+
+#: onboarding/models.py:38
+msgid "Secondary School"
+msgstr "Mittlere Reife"
+
+#: onboarding/models.py:39
+msgid "High School/Abitur"
+msgstr "Abitur"
+
+# Highest Training Choices
+#: onboarding/models.py:43
+msgid "No Professional Degree"
+msgstr "Ohne beruflichen Abschluss"
+
+#: onboarding/models.py:44
+msgid "Recognized Apprenticeship"
+msgstr "Anerkannte Berufsausbildung"
+
+#: onboarding/models.py:45
+msgid "Advanced Training/Technician"
+msgstr "Weiterbildung/Techniker"
+
+#: onboarding/models.py:46
+msgid "Bachelor"
+msgstr "Bachelor"
+
+#: onboarding/models.py:47
+msgid "Master/Diploma"
+msgstr "Master/Diplom"
+
+#: onboarding/models.py:48
+msgid "Doctorate"
+msgstr "Promotion"
+
+# Weekly Hours Choices
+#: onboarding/models.py:52
+msgid "Full-time"
+msgstr "Vollzeit"
+
+#: onboarding/models.py:53
+msgid "Part-time"
+msgstr "Teilzeit"
+
+# Additional Translations
+#: onboarding/forms.py:8
+msgid "I agree to allow Iaro Cafe to process my personal information"
+msgstr "Ich stimme zu, dass Iaro Cafe meine persönlichen Daten verarbeitet"
+
+#: onboarding/forms.py:10
+msgid "You must agree to the terms to proceed."
+msgstr "Sie müssen den Bedingungen zustimmen, um fortzufahren."
+
+#: onboarding/templates/personal_information.html:7
+msgid "Personal Information"
+msgstr "Persönliche Informationen"
+
+#: onboarding/templates/personal_information.html:20
+msgid "English"
+msgstr "Englisch"
+
+#: onboarding/templates/personal_information.html:21
+msgid "Deutsch"
+msgstr "Deutsch"
+
+#: onboarding/templates/personal_information.html:28
+msgid "There were errors with your submission. Please correct them and try again."
+msgstr "Es gab Fehler bei Ihrer Eingabe. Bitte korrigieren Sie diese und versuchen Sie es erneut."
+
+#: onboarding/templates/personal_information.html:51
+msgid "Date Submitted:"
+msgstr "Eingereicht am:"
+
+#: onboarding/templates/personal_information.html:55
+msgid "Submit"
+msgstr "Einreichen"
+

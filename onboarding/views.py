@@ -6,6 +6,8 @@ from django.utils.translation import activate
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import TemplateView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from employees.models import EmployeeProfile
 from lib.zoho import (
@@ -18,6 +20,9 @@ from lib.zoho import (
 
 from .forms import PersonalInformationForm
 from .models import Document, OnboardingSlide, SignedDocument
+
+import json
+from .models import OrgChart
 
 
 class PersonalInformationView(View):
@@ -202,11 +207,26 @@ class DocumentsListView(View):
         return render(request, self.template_name, context)
 
 
-class OrgChartView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = "org_chart.html"
+@method_decorator(csrf_exempt, name='dispatch')
+class OrgChartView(View):
+    def get(self, request):
+        chart, created = OrgChart.objects.get_or_create(id=1)
+        return JsonResponse(chart.data, safe=False)
 
-    def test_func(self):
-        return self.request.user.is_staff
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            chart, created = OrgChart.objects.get_or_create(id=1)
+            chart.data = data
+            chart.save()
+            return JsonResponse({'status': 'success'}, status=200)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["pageTitle"] = "iaro People"
+        return context
 
 
 class InitialInformationView(TemplateView):
