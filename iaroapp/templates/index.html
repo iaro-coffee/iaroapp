@@ -24,111 +24,112 @@
                 <div class="card h-100">
                     <div class="card-header pb-0">
                         <h6>Punch Clock</h6>
-                        <p class="text-sm mb-0">
-                            {% if user_shifts %}
-                                <!-- At least one shift today -->
-                                {% if punched_in %}
-                                    <i class="fa fa-clock text-info" aria-hidden="true"></i>
-                                    <b><span style="color: #82d616;">Punched in:</span></b>
-                                    {{ punch_in_time|date:"H:i" }} - ?
-                                {% elif all_shifts_done %}
-                                    <i class="fa fa-coffee text-success" aria-hidden="true"></i>
-                                    Enjoy your well-deserved time off!
-                                {% else %}
-                                    <i class="fa fa-clock text-info" aria-hidden="true"></i>
-                                    <b><span>Ready to start?</span></b>
-                                {% endif %}
-                            {% else %}
-                                <!-- No shifts today -->
-                                <i class="fa fa-coffee text-success" aria-hidden="true"></i>
-                                Enjoy your well-deserved time off!
-                            {% endif %}
-                        </p>
+{#                        <p class="text-sm mb-0">#}
+{#                            {% if user_shifts %}#}
+{#                                <!-- At least one shift today -->#}
+{#                                {% if punched_in %}#}
+{#                                    <i class="fa fa-clock text-info" aria-hidden="true"></i>#}
+{#                                    <b><span style="color: #82d616;">Punched in:</span></b>#}
+{#                                    {{ punch_in_time|date:"H:i" }} - ?#}
+{#                                {% elif all_shifts_done %}#}
+{#                                    <i class="fa fa-coffee text-success" aria-hidden="true"></i>#}
+{#                                    Enjoy your well-deserved time off!#}
+{#                                {% else %}#}
+{#                                    <i class="fa fa-clock text-info" aria-hidden="true"></i>#}
+{#                                    <b><span>Ready to start?</span></b>#}
+{#                                {% endif %}#}
+{#                            {% else %}#}
+{#                                <!-- No shifts today -->#}
+{#                                <i class="fa fa-coffee text-success" aria-hidden="true"></i>#}
+{#                                Enjoy your well-deserved time off!#}
+{#                            {% endif %}#}
+{#                        </p>#}
                     </div>
 
                     <div class="card-body text-center">
-                        {% if punched_in %}
-                            <!-- User is punched in -->
-                            <div class="mb-4 mt-2">
-                                <b><span id="timeElapsed" class="timer text-2xl"></span></b><br>
-                            </div>
-
-                            <div class="text-xs">
-                                {% if punch_in_time %}
-                                    <span>{{ punch_in_time|date:"l, F d" }}</span> <br>
-                                {% else %}
-                                    <span>Punch-in time is not available.</span> <br>
-                                {% endif %}
-                                <span class="text-secondary">
-                                    {{ current_shift.branch_name|default:"Unknown Branch" }} -
-                                    {{ current_shift.group_name|default:"Unknown Group" }} <br>
-                                    {{ current_shift.startDateTime|date:"H:i" }} - {{ current_shift.endDateTime|date:"H:i" }}
-                                </span>
-                            </div>
-
-                            <!-- Punch Out Button -->
-                            <div class="d-flex justify-content-center">
-                                <button
-                                    id="punchOutButton"
-                                    class="btn mt-3 w-100"
-                                    style="background-color: #fd3b2d; color: white;"
-                                    data-user-id="{{ user.id }}"
-                                    data-shift-id="{{ current_shift.planday_shift_id }}">
-                                    End Shift
-                                </button>
-                            </div>
-                        {% elif user_shifts %}
-                            <!-- User is not punched in but has shifts today -->
-                            {% if all_shifts_done %}
-                                <p class="text-sm">
-                                    Hey <strong>{{ user_profile.first_name }}</strong>, today's shifts are done!
-                                    <a href="#next-shifts" class="scroll-link"><strong>Check upcoming</strong></a>
-                                </p>
-                            {% else %}
-                                <p class="text-sm">Hey <strong>{{ user_profile.first_name }}</strong>, have an awesome shift ahead!<br></p>
-                            {% endif %}
-                            <ul class="list-group">
-                                {% for shift in user_shifts %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div class="text-start">
-                                            <strong>{{ shift.startDateTime|date:"H:i" }} - {{ shift.endDateTime|date:"H:i" }}</strong><br>
-                                            <span class="text-secondary text-xs">{{ shift.branch_name|default:"Unknown Branch" }} -
-                                                {{ shift.group_name|default:"Unknown Group" }}</span>
-                                        </div>
-                                        {% if shift.punched_out %}
-                                            <div class="text-end">
-                                                <strong class="text-success">Done</strong>
-                                                <br>
-                                                <span class="text-secondary text-xs">
-                                                    {{ shift.punch_in_time|date:"H:i" }} -
-                                                    {{ shift.punch_out_time|date:"H:i" }}
-                                                </span>
-                                            </div>
-                                        {% else %}
-                                            <button
-                                                class="punchInButton btn mb-0 bg-gradient-primary"
-                                                data-user-id="{{ user.id }}"
-                                                data-shift-id="{{ shift.planday_shift_id }}">
-                                                Start
-                                            </button>
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                            <div class="d-flex justify-content-center">
-                                <button class="btn mt-3 w-100 bg-gradient-primary" style="color: white;"
-                                        data-bs-toggle="modal" data-bs-target="#colleaguesModal">
-                                    Details
-                                    <i class="fa fa-info-circle" style="margin-left: 5px"></i>
-                                </button>
-                            </div>
-                        {% else %}
-                            <!-- User has no shifts today -->
-                            <p class="text-sm">
-                                Hey <strong>{{ user_profile.first_name }}</strong>, there are no shifts available for you today.
-                                <a href="#next-shifts" class="scroll-link"><strong>Check upcoming</strong></a>
-                            </p>
-                        {% endif %}
+{#                        {% if punched_in %}#}
+{#                            <!-- User is punched in -->#}
+{#                            <div class="mb-4 mt-2">#}
+{#                                <b><span id="timeElapsed" class="timer text-2xl"></span></b><br>#}
+{#                            </div>#}
+{##}
+{#                            <div class="text-xs">#}
+{#                                {% if punch_in_time %}#}
+{#                                    <span>{{ punch_in_time|date:"l, F d" }}</span> <br>#}
+{#                                {% else %}#}
+{#                                    <span>Punch-in time is not available.</span> <br>#}
+{#                                {% endif %}#}
+{#                                <span class="text-secondary">#}
+{#                                    {{ current_shift.branch_name|default:"Unknown Branch" }} -#}
+{#                                    {{ current_shift.group_name|default:"Unknown Group" }} <br>#}
+{#                                    {{ current_shift.startDateTime|date:"H:i" }} - {{ current_shift.endDateTime|date:"H:i" }}#}
+{#                                </span>#}
+{#                            </div>#}
+{##}
+{#                            <!-- Punch Out Button -->#}
+{#                            <div class="d-flex justify-content-center">#}
+{#                                <button#}
+{#                                    id="punchOutButton"#}
+{#                                    class="btn mt-3 w-100"#}
+{#                                    style="background-color: #fd3b2d; color: white;"#}
+{#                                    data-user-id="{{ user.id }}"#}
+{#                                    data-shift-id="{{ current_shift.planday_shift_id }}">#}
+{#                                    End Shift#}
+{#                                </button>#}
+{#                            </div>#}
+{#                        {% elif user_shifts %}#}
+{#                            <!-- User is not punched in but has shifts today -->#}
+{#                            {% if all_shifts_done %}#}
+{#                                <p class="text-sm">#}
+{#                                    Hey <strong>{{ user_profile.first_name }}</strong>, today's shifts are done!#}
+{#                                    <a href="#next-shifts" class="scroll-link"><strong>Check upcoming</strong></a>#}
+{#                                </p>#}
+{#                            {% else %}#}
+{#                                <p class="text-sm">Hey <strong>{{ user_profile.first_name }}</strong>, have an awesome shift ahead!<br></p>#}
+{#                            {% endif %}#}
+{#                            <ul class="list-group">#}
+{#                                {% for shift in user_shifts %}#}
+{#                                    <li class="list-group-item d-flex justify-content-between align-items-center">#}
+{#                                        <div class="text-start">#}
+{#                                            <strong>{{ shift.startDateTime|date:"H:i" }} - {{ shift.endDateTime|date:"H:i" }}</strong><br>#}
+{#                                            <span class="text-secondary text-xs">{{ shift.branch_name|default:"Unknown Branch" }} -#}
+{#                                                {{ shift.group_name|default:"Unknown Group" }}</span>#}
+{#                                        </div>#}
+{#                                        {% if shift.punched_out %}#}
+{#                                            <div class="text-end">#}
+{#                                                <strong class="text-success">Done</strong>#}
+{#                                                <br>#}
+{#                                                <span class="text-secondary text-xs">#}
+{#                                                    {{ shift.punch_in_time|date:"H:i" }} -#}
+{#                                                    {{ shift.punch_out_time|date:"H:i" }}#}
+{#                                                </span>#}
+{#                                            </div>#}
+{#                                        {% else %}#}
+{#                                            <button#}
+{#                                                class="punchInButton btn mb-0 bg-gradient-primary"#}
+{#                                                data-user-id="{{ user.id }}"#}
+{#                                                data-shift-id="{{ shift.planday_shift_id }}">#}
+{#                                                Start#}
+{#                                            </button>#}
+{#                                        {% endif %}#}
+{#                                    </li>#}
+{#                                {% endfor %}#}
+{#                            </ul>#}
+{#                            <div class="d-flex justify-content-center">#}
+{#                                <button class="btn mt-3 w-100 bg-gradient-primary" style="color: white;"#}
+{#                                        data-bs-toggle="modal" data-bs-target="#colleaguesModal">#}
+{#                                    Details#}
+{#                                    <i class="fa fa-info-circle" style="margin-left: 5px"></i>#}
+{#                                </button>#}
+{#                            </div>#}
+{#                        {% else %}#}
+{#                            <!-- User has no shifts today -->#}
+{#                            <p class="text-sm">#}
+{#                                Hey <strong>{{ user_profile.first_name }}</strong>, there are no shifts available for you today.#}
+{#                                <a href="#next-shifts" class="scroll-link"><strong>Check upcoming</strong></a>#}
+{#                            </p>#}
+{#                        {% endif %}#}
+    <p>🛠️ Maintenance</p>
 
                     </div>
                 </div>
@@ -415,13 +416,15 @@
                         <h6>Your work hours: last 7 days</h6>
                         <p class="text-sm">
                             <i class="fa fa-clock text-success"></i>
-                            <span class="font-weight-bold">{{ statistics_sum.workHours }}h</span>
+{#                            <span class="font-weight-bold">{{ statistics_sum.workHours }}h</span>#}
                         </p>
                     </div>
                     <div class="card-body">
-                        <div class="chart">
-                            <canvas id="chart-line1" class="chart-canvas" height="300"></canvas>
-                        </div>
+{#                        <div class="chart">#}
+{#                            <canvas id="chart-line1" class="chart-canvas" height="300"></canvas>#}
+{#                        </div>#}
+    <p>🛠️ Maintenance</p>
+
                     </div>
                 </div>
             </div>
@@ -432,13 +435,15 @@
                         <h6>Your tasks done: last 7 days</h6>
                         <p class="text-sm">
                             <i class="fa fa-thumbtack text-success"></i>
-                            <span class="font-weight-bold">{{ statistics_sum.tasks }}</span>
+{#                            <span class="font-weight-bold">{{ statistics_sum.tasks }}</span>#}
                         </p>
                     </div>
                     <div class="card-body">
-                        <div class="chart">
-                            <canvas id="chart-line2" class="chart-canvas" height="300"></canvas>
-                        </div>
+{#                        <div class="chart">#}
+{#                            <canvas id="chart-line2" class="chart-canvas" height="300"></canvas>#}
+{#                        </div>#}
+    <p>🛠️ Maintenance</p>
+
                     </div>
                 </div>
             </div>
@@ -449,13 +454,15 @@
                         <h6>How your shifts went: last 7 days</h6>
                         <p class="text-sm">
                             <i class="fa fa-star text-success"></i>
-                            <span class="font-weight-bold">{{ statistics_sum.ratings }}</span>
+{#                            <span class="font-weight-bold">{{ statistics_sum.ratings }}</span>#}
                         </p>
                     </div>
                     <div class="card-body">
-                        <div class="chart">
-                            <canvas id="chart-line3" class="chart-canvas" height="300"></canvas>
-                        </div>
+{#                        <div class="chart">#}
+{#                            <canvas id="chart-line3" class="chart-canvas" height="300"></canvas>#}
+{#                        </div>#}
+    <p>🛠️ Maintenance</p>
+
                     </div>
                 </div>
             </div>
@@ -479,112 +486,112 @@
     </div>
 
     <!-- Punch In Modal -->
-    <div class="modal fade modal-tour" id="punchInModal" tabindex="-1" aria-labelledby="punchInModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content card card-body rounded-4 shadow">
-          <div class="modal-body p-5">
-            <form id="punchInForm" class="modal-content-section">
-              <h2 class="fw-bold mb-0" id="punchInModalLabel">Confirm Punch In</h2>
-              <br>
-              <p>Are you sure you want to start your shift?</p>
-              <div class="mb-3">
-                <label for="managerNote" class="form-label">Add a note for your manager (optional):</label>
-                <textarea class="form-control" id="managerNote" name="managerNote" rows="3" placeholder="Enter your note here..."></textarea>
-              </div>
-              <button type="submit" class="w-100 mt-2 btn btn-lg bg-success" style="color: white">Start Shift</button>
-              <button type="button" class="w-100 mt-2 btn btn-lg btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <!-- Hidden fields to store user and shift IDs -->
-              <input type="hidden" id="modalUserId" name="userId" value="">
-              <input type="hidden" id="modalShiftId" name="shiftId" value="">
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+{#    <div class="modal fade modal-tour" id="punchInModal" tabindex="-1" aria-labelledby="punchInModalLabel" aria-hidden="true">#}
+{#      <div class="modal-dialog modal-dialog-centered" role="document">#}
+{#        <div class="modal-content card card-body rounded-4 shadow">#}
+{#          <div class="modal-body p-5">#}
+{#            <form id="punchInForm" class="modal-content-section">#}
+{#              <h2 class="fw-bold mb-0" id="punchInModalLabel">Confirm Punch In</h2>#}
+{#              <br>#}
+{#              <p>Are you sure you want to start your shift?</p>#}
+{#              <div class="mb-3">#}
+{#                <label for="managerNote" class="form-label">Add a note for your manager (optional):</label>#}
+{#                <textarea class="form-control" id="managerNote" name="managerNote" rows="3" placeholder="Enter your note here..."></textarea>#}
+{#              </div>#}
+{#              <button type="submit" class="w-100 mt-2 btn btn-lg bg-success" style="color: white">Start Shift</button>#}
+{#              <button type="button" class="w-100 mt-2 btn btn-lg btn-secondary" data-bs-dismiss="modal">Cancel</button>#}
+{#              <!-- Hidden fields to store user and shift IDs -->#}
+{#              <input type="hidden" id="modalUserId" name="userId" value="">#}
+{#              <input type="hidden" id="modalShiftId" name="shiftId" value="">#}
+{#            </form>#}
+{#          </div>#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>#}
 
     <!-- Colleagues at Work Modal -->
-    <div class="modal fade" id="colleaguesModal" tabindex="-1" aria-labelledby="colleaguesModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content card card-body rounded-4 shadow">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="colleaguesModalLabel">Colleagues at Work Today</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    {% if colleagues_at_work %}
-                        <ul class="list-group">
-                            {% for colleague_data in colleagues_at_work %}
-                                <li class="list-group-item d-flex align-items-center">
-                                    <img src="{{ colleague_data.colleague.avatar.url }}"
-                                         alt="{{ colleague_data.colleague.first_name }} {{ colleague_data.colleague.last_name }}"
-                                         class="avatar me-3">
-                                    <div>
-                                        <strong>{{ colleague_data.colleague.first_name }} {{ colleague_data.colleague.last_name }}</strong><br>
-                                        <div class="text-secondary text-xs">
-                                        {{ colleague_data.department_name }} - {{ colleague_data.shift.group_name }}<br>
-                                        {{ colleague_data.shift.startDateTime|date:"H:i" }}
-                                        - {{ colleague_data.shift.endDateTime|date:"H:i" }}<br>
-                                        </div>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No colleagues are working today.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+{#    <div class="modal fade" id="colleaguesModal" tabindex="-1" aria-labelledby="colleaguesModalLabel"#}
+{#         aria-hidden="true">#}
+{#        <div class="modal-dialog modal-dialog-centered">#}
+{#            <div class="modal-content card card-body rounded-4 shadow">#}
+{#                <div class="modal-header">#}
+{#                    <h5 class="modal-title" id="colleaguesModalLabel">Colleagues at Work Today</h5>#}
+{#                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
+{#                </div>#}
+{#                <div class="modal-body">#}
+{#                    {% if colleagues_at_work %}#}
+{#                        <ul class="list-group">#}
+{#                            {% for colleague_data in colleagues_at_work %}#}
+{#                                <li class="list-group-item d-flex align-items-center">#}
+{#                                    <img src="{{ colleague_data.colleague.avatar.url }}"#}
+{#                                         alt="{{ colleague_data.colleague.first_name }} {{ colleague_data.colleague.last_name }}"#}
+{#                                         class="avatar me-3">#}
+{#                                    <div>#}
+{#                                        <strong>{{ colleague_data.colleague.first_name }} {{ colleague_data.colleague.last_name }}</strong><br>#}
+{#                                        <div class="text-secondary text-xs">#}
+{#                                        {{ colleague_data.department_name }} - {{ colleague_data.shift.group_name }}<br>#}
+{#                                        {{ colleague_data.shift.startDateTime|date:"H:i" }}#}
+{#                                        - {{ colleague_data.shift.endDateTime|date:"H:i" }}<br>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </li>#}
+{#                            {% endfor %}#}
+{#                        </ul>#}
+{#                    {% else %}#}
+{#                        <p>No colleagues are working today.</p>#}
+{#                    {% endif %}#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
 
 
     <!-- Modal for Rating -->
-    <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content card card-body rounded-4 shadow">
-                <div class="modal-body p-5">
-                    <div id="punchOutConfirmationSection">
-                        <form id="ratingForm" class="modal-content-section">
-                            <h2 class="fw-bold mb-0" id="modalTitle">Rate your shift</h2>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="stars">
-                                        <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>
-                                        <label class="star star-5" for="star-5"></label>
-                                        <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>
-                                        <label class="star star-4" for="star-4"></label>
-                                        <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>
-                                        <label class="star star-3" for="star-3"></label>
-                                        <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>
-                                        <label class="star star-2" for="star-2"></label>
-                                        <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>
-                                        <label class="star star-1" for="star-1"></label>
-                                    </div>
-                                    <textarea id="comment" class="form-control"
-                                              placeholder="Leave a comment about your shift (optional)"></textarea>
-                                </div>
-                            </div>
-                            <button type="button" id="submitRatingBtn" class="w-100 mt-2 btn btn-lg bg-gradient-primary">
-                                Submit
-                            </button>
-                        </form>
-                    </div>
-                    <!-- Reset Confirmation Section (initially hidden) -->
-                    <div id="resetConfirmationSection" class="modal-content-section" style="display: none;">
-                        <p>Your shift duration is less than 2 minutes. Do you want to reset the shift and start shift
-                            again?</p>
-                        <button type="button" id="confirmResetBtn" class="w-100 mt-2 btn btn-lg bg-gradient-primary">
-                            Yes, Reset Shift
-                        </button>
-                        <button type="button" id="cancelResetBtn" class="w-100 mt-2 btn btn-lg btn-secondary">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+{#    <div class="modal fade modal-tour" tabindex="-1" role="dialog" id="submitModal">#}
+{#        <div class="modal-dialog modal-dialog-centered" role="document">#}
+{#            <div class="modal-content card card-body rounded-4 shadow">#}
+{#                <div class="modal-body p-5">#}
+{#                    <div id="punchOutConfirmationSection">#}
+{#                        <form id="ratingForm" class="modal-content-section">#}
+{#                            <h2 class="fw-bold mb-0" id="modalTitle">Rate your shift</h2>#}
+{#                            <div class="row">#}
+{#                                <div class="col-md-12">#}
+{#                                    <div class="stars">#}
+{#                                        <input class="star star-5" id="star-5" type="radio" name="star" value="5"/>#}
+{#                                        <label class="star star-5" for="star-5"></label>#}
+{#                                        <input class="star star-4" id="star-4" type="radio" name="star" value="4"/>#}
+{#                                        <label class="star star-4" for="star-4"></label>#}
+{#                                        <input class="star star-3" id="star-3" type="radio" name="star" value="3"/>#}
+{#                                        <label class="star star-3" for="star-3"></label>#}
+{#                                        <input class="star star-2" id="star-2" type="radio" name="star" value="2"/>#}
+{#                                        <label class="star star-2" for="star-2"></label>#}
+{#                                        <input class="star star-1" id="star-1" type="radio" name="star" value="1"/>#}
+{#                                        <label class="star star-1" for="star-1"></label>#}
+{#                                    </div>#}
+{#                                    <textarea id="comment" class="form-control"#}
+{#                                              placeholder="Leave a comment about your shift (optional)"></textarea>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <button type="button" id="submitRatingBtn" class="w-100 mt-2 btn btn-lg bg-gradient-primary">#}
+{#                                Submit#}
+{#                            </button>#}
+{#                        </form>#}
+{#                    </div>#}
+{#                    <!-- Reset Confirmation Section (initially hidden) -->#}
+{#                    <div id="resetConfirmationSection" class="modal-content-section" style="display: none;">#}
+{#                        <p>Your shift duration is less than 2 minutes. Do you want to reset the shift and start shift#}
+{#                            again?</p>#}
+{#                        <button type="button" id="confirmResetBtn" class="w-100 mt-2 btn btn-lg bg-gradient-primary">#}
+{#                            Yes, Reset Shift#}
+{#                        </button>#}
+{#                        <button type="button" id="cancelResetBtn" class="w-100 mt-2 btn btn-lg btn-secondary">#}
+{#                            Cancel#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
 
 
 
