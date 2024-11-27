@@ -208,20 +208,39 @@ class DocumentsListView(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class OrgChartView(View):
+class ApiOrgChartView(View):
+    """
+    Handles API requests for fetching and updating the organizational chart.
+    """
     def get(self, request):
-        chart, created = OrgChart.objects.get_or_create(id=1)
+        chart, created = OrgChart.objects.get_or_create(
+            id=1,
+            defaults={"data": [{"id": 1, "name": "Root Node", "title": "CEO"}]}
+        )
+        if not isinstance(chart.data, list) or not chart.data:
+            chart.data = [{"id": 1, "name": "Root Node", "title": "CEO"}]
+            chart.save()
         return JsonResponse(chart.data, safe=False)
 
     def post(self, request):
         try:
             data = json.loads(request.body)
+            if not isinstance(data, list):
+                return JsonResponse({'status': 'error', 'message': 'Invalid data format'}, status=400)
+
             chart, created = OrgChart.objects.get_or_create(id=1)
             chart.data = data
             chart.save()
             return JsonResponse({'status': 'success'}, status=200)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+class RenderOrgChartView(TemplateView):
+    """
+    Renders the organizational chart page.
+    """
+    template_name = "org_chart.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

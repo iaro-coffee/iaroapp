@@ -214,5 +214,5 @@ class OnboardingSection(models.Model):
 
 
 class OrgChart(models.Model):
-    data = models.JSONField(default=dict)
+    data = models.JSONField(default=list)
     updated_at = models.DateTimeField(auto_now=True)
