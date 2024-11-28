@@ -28,6 +28,40 @@
 {% block content %}
 <div class="row">
     <div class="col-12">
+        <div class="col-12 mb-4">
+            <div class="card h-100 p-4">
+                <h6>Initial Information</h6>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Onboarding
+                        <a href="{% url 'onboarding:onboarding' %}" class="btn mb-0 py-0 px-2 text-xs btn-secondary "
+                           style="text-transform: none; !important; text-wrap: nowrap; ">
+                            <div class="py-1" style="border-right: 1px solid rgba(39,48,72,0.3)">
+                                <span style="margin-right: 5px; ">Learn</span>
+                            </div>
+                            <div class="py-1">
+                                <span style="margin-left: 4px">-></span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        iaro Team
+                        <a href="{% url 'onboarding:org_chart' %}" class="btn mb-0 py-0 px-2 text-xs btn-secondary "
+                           style="text-transform: none; !important; text-wrap: nowrap; ">
+                            <div class="py-1" style="border-right: 1px solid rgba(39,48,72,0.3)">
+                                <span style="margin-right: 5px; ">Learn</span>
+                            </div>
+                            <div class="py-1">
+                                <span style="margin-left: 4px">-></span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
         <div class="card mb-4">
                 <div class="d-flex px-4 py-2 border-bottom border-secondary">
                     <div class="text-secondary text-uppercase text-xxs w-50">
