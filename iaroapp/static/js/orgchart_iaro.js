@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const treeElement = document.getElementById("tree");
+    const isSuperuser = treeElement.getAttribute("data-is-superuser") === "true";
+    console.log(isSuperuser);
     // Department Template
     OrgChart.templates.departmentTemplate = Object.assign({}, OrgChart.templates.ana);
 
@@ -95,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
         mouseScrool: OrgChart.action.ctrlZoom,
         scaleInitial: 1,
         enableSearch: false,
-        enableDragDrop: true,
+        enableDragDrop: isSuperuser,
         assistantSeparation: 170,
         template: "defaultNodeTemplate",
         toolbar: {
@@ -109,47 +112,49 @@ document.addEventListener("DOMContentLoaded", function () {
             field_1: "title",
             img_0: "img",
         },
-        nodeMenu: {
-            details: { text: "Details" },
-            edit: { text: "Edit Node" },
-            add: { text: "Add Node" },
-            remove: { text: "Remove Node" },
-            addShareholder: {
-                text: "Add Shareholder",
-                icon: OrgChart.icon.add(24, 24, "#039BE5"),
-                onClick: function (nodeId) {
-                    const node = chart.getNode(nodeId);
-                    const newId = OrgChart.randomId();
-                    const shareholderName = prompt("Enter Shareholder Name:");
-                    if (shareholderName) {
-                        chart.addNode({
-                            id: newId,
-                            pid: null,
-                            name: shareholderName,
-                            title: "Shareholder",
-                            tags: ["shareholder"],
-                        });
-                    }
+        nodeMenu: isSuperuser
+            ? {
+                details: { text: "Details" },
+                edit: { text: "Edit Node" },
+                add: { text: "Add Node" },
+                remove: { text: "Remove Node" },
+                addShareholder: {
+                    text: "Add Shareholder",
+                    icon: OrgChart.icon.add(24, 24, "#039BE5"),
+                    onClick: function (nodeId) {
+                        const node = chart.getNode(nodeId);
+                        const newId = OrgChart.randomId();
+                        const shareholderName = prompt("Enter Shareholder Name:");
+                        if (shareholderName) {
+                            chart.addNode({
+                                id: newId,
+                                pid: null,
+                                name: shareholderName,
+                                title: "Shareholder",
+                                tags: ["shareholder"],
+                            });
+                        }
+                    },
                 },
-            },
-            addDepartment: {
-                text: "Add Department",
-                icon: OrgChart.icon.add(24, 24, "#039BE5"),
-                onClick: function (nodeId) {
-                    const newId = OrgChart.randomId();
-                    const departmentName = prompt("Enter Department Name:");
-                    if (departmentName) {
-                        chart.addNode({
-                            id: newId,
-                            pid: nodeId,
-                            name: departmentName,
-                            title: "Department",
-                            tags: ["department"],
-                        });
-                    }
+                addDepartment: {
+                    text: "Add Department",
+                    icon: OrgChart.icon.add(24, 24, "#039BE5"),
+                    onClick: function (nodeId) {
+                        const newId = OrgChart.randomId();
+                        const departmentName = prompt("Enter Department Name:");
+                        if (departmentName) {
+                            chart.addNode({
+                                id: newId,
+                                pid: nodeId,
+                                name: departmentName,
+                                title: "Department",
+                                tags: ["department"],
+                            });
+                        }
+                    },
                 },
-            },
-        },
+            }
+            : null, // Hide node menu for non-superusers
         tags: {
             root: {
                 template: "group",

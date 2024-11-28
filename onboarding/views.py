@@ -246,6 +246,8 @@ class RenderOrgChartView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["pageTitle"] = "iaro Team"
+        context["is_superuser"] = self.request.user.is_superuser
+        print(context["is_superuser"])
         return context
 
 

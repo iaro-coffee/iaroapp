@@ -3,8 +3,16 @@
 
 {% block content %}
 
-    <div id="tree"></div>
-    <button class="btn btn-secondary" id="saveChartBtn">Save Changes</button>
+    <div id="tree" data-is-superuser="{{ is_superuser|yesno:'true,false' }}"></div>
+
+    <button
+        id="saveChartBtn"
+        class="btn btn-secondary"
+        style="display: {% if is_superuser %}block{% else %}none{% endif %};"
+    >
+        Save Changes
+    </button>
+
     <style>
         #tree {
             top: -24px;
@@ -31,7 +39,9 @@
         g[data-ctrl-n-menu-id] circle {
             fill: #17c1e8 !important;
         }
-
+        [data-l-id] path {
+            stroke: #ffffff;
+        }
 
     </style>
 
