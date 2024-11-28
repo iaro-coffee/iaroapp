@@ -8,6 +8,7 @@ from .models import (
     Document,
     OnboardingSection,
     OnboardingSlide,
+    OrgChart,
     PersonalInformation,
     SignedDocument,
 )
@@ -137,3 +138,10 @@ class SlideAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+
+@admin.register(OrgChart)
+class OrgChartAdmin(admin.ModelAdmin):
+    list_display = ("id", "updated_at")
+    readonly_fields = ("updated_at",)
+    fields = ("data", "updated_at")

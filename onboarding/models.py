@@ -216,3 +216,6 @@ class OnboardingSection(models.Model):
 class OrgChart(models.Model):
     data = models.JSONField(default=list)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"OrgChart {self.id}"

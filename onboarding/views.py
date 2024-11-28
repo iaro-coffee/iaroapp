@@ -1,13 +1,14 @@
+import json
+
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.decorators import method_decorator
 from django.utils.translation import activate
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 
 from employees.models import EmployeeProfile
 from lib.zoho import (
@@ -19,10 +20,7 @@ from lib.zoho import (
 )
 
 from .forms import PersonalInformationForm
-from .models import Document, OnboardingSlide, SignedDocument
-
-import json
-from .models import OrgChart
+from .models import Document, OnboardingSlide, OrgChart, SignedDocument
 
 
 class PersonalInformationView(View):
@@ -207,15 +205,15 @@ class DocumentsListView(View):
         return render(request, self.template_name, context)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name="dispatch")
 class ApiOrgChartView(View):
     """
     Handles API requests for fetching and updating the organizational chart.
     """
+
     def get(self, request):
         chart, created = OrgChart.objects.get_or_create(
-            id=1,
-            defaults={"data": [{"id": 1, "name": "Root Node", "title": "CEO"}]}
+            id=1, defaults={"data": [{"id": 1, "name": "Root Node", "title": "CEO"}]}
         )
         if not isinstance(chart.data, list) or not chart.data:
             chart.data = [{"id": 1, "name": "Root Node", "title": "CEO"}]
@@ -226,25 +224,28 @@ class ApiOrgChartView(View):
         try:
             data = json.loads(request.body)
             if not isinstance(data, list):
-                return JsonResponse({'status': 'error', 'message': 'Invalid data format'}, status=400)
+                return JsonResponse(
+                    {"status": "error", "message": "Invalid data format"}, status=400
+                )
 
             chart, created = OrgChart.objects.get_or_create(id=1)
             chart.data = data
             chart.save()
-            return JsonResponse({'status': 'success'}, status=200)
+            return JsonResponse({"status": "success"}, status=200)
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
 
 class RenderOrgChartView(TemplateView):
     """
-    Renders the organizational chart page.
+    Renders the org chart page.
     """
+
     template_name = "org_chart.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["pageTitle"] = "iaro People"
+        context["pageTitle"] = "iaro Team"
         return context
 
 

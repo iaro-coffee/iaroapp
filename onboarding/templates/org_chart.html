@@ -3,123 +3,44 @@
 
 {% block content %}
 
-<div id="tree"></div>
-<button id="saveChartBtn" style="margin-top: 20px; padding: 10px 20px; font-size: 16px;">Save Changes</button>
-<style>
-#tree {
-    top: -24px;
-    width: 100%;
-    height: 100%;
-    border-radius: 1rem;
-    background: radial-gradient(circle, #4a77d4, #2b5876, #232526);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-}
+    <div id="tree"></div>
+    <button class="btn btn-secondary" id="saveChartBtn">Save Changes</button>
+    <style>
+        #tree {
+            top: -24px;
+            width: 100%;
+            height: 100%;
+            border-radius: 1rem;
+            background: radial-gradient(
+                    circle,
+                    #f9f9f6,
+                    #eae5df,
+                    #d6c9b8,
+                    #bfb49a
+            );
+            background-size: 300% 300%;
+        }
 
-/* Gradient animation */
-@keyframes gradientShift {
-    0% {
-        background-position: 50% 50%;
-    }
-    50% {
-        background-position: 75% 75%;
-    }
-    100% {
-        background-position: 50% 50%;
-    }
-}
-    .boc-fill {
+        .boc-light {
+            font-family: 'Inter', sans-serif !important;
+        }
 
-    }
-</style>
+        g[data-ctrl-n-menu-id] rect {
+            fill: #17c1e8 !important;
+        }
+        g[data-ctrl-n-menu-id] circle {
+            fill: #17c1e8 !important;
+        }
 
-<!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Include OrgChart.js -->
-<script src="{% static 'js/orgchart.js' %}"></script>
-<script src="{% static 'js/orgchart_iaro.js' %}"></script>
 
-<style id="myStyles">
-    /* Custom styles */
-    [lcn='hr-team']>rect {
-        fill: #FFCA28;
-    }
+    </style>
 
-    [lcn='sales-team']>rect {
-        fill: #F57C00;
-    }
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include OrgChart.js -->
+    <script src="{% static 'js/orgchart.js' %}"></script>
+    <script src="{% static 'js/orgchart_iaro.js' %}"></script>
 
-    [lcn='top-management']>rect {
-        fill: #f2f2f2;
-    }
 
-    [lcn='top-management']>text,
-    .assistant>text {
-        fill: #aeaeae;
-    }
-
-    [lcn='top-management'] circle,
-    [lcn='assistant'] {
-        fill: #aeaeae;
-        width: 200px;
-        height: 200px;
-    }
-
-    .assistant>rect {
-        fill: #ffffff;
-    }
-
-    .assistant [data-ctrl-n-menu-id]>circle {
-        fill: #aeaeae;
-    }
-
-    .it-team>rect {
-        fill: #b4ffff;
-    }
-
-    .it-team>text {
-        fill: #039BE5;
-    }
-
-    .it-team>[data-ctrl-n-menu-id] line {
-        stroke: #039BE5;
-    }
-
-    .it-team>g>.ripple {
-        fill: #00efef;
-    }
-
-    .hr-team>rect {
-        fill: #fff5d8;
-    }
-
-    .hr-team>text {
-        fill: #ecaf00;
-    }
-
-    .hr-team>[data-ctrl-n-menu-id] line {
-        stroke: #ecaf00;
-    }
-
-    .hr-team>g>.ripple {
-        fill: #ecaf00;
-    }
-
-    .sales-team>rect {
-        fill: #ffeedd;
-    }
-
-    .sales-team>text {
-        fill: #F57C00;
-    }
-
-    .sales-team>[data-ctrl-n-menu-id] line {
-        stroke: #F57C00;
-    }
-
-    .sales-team>g>.ripple {
-        fill: #F57C00;
-    }
-</style>
 
 {% endblock content %}
